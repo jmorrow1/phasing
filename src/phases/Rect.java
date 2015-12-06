@@ -96,4 +96,9 @@ public class Rect {
 	public void setHeight(float height) {
 		this.height = height;
 	}
+	
+	public void translate(float dx, float dy) {
+		cenx += dx;
+		ceny += dy;
+	}
 }
