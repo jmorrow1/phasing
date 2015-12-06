@@ -1,14 +1,15 @@
 package views;
 
-import phases.Rect;
+import geom.Point;
+import geom.Rect;
 import processing.core.PApplet;
 
 public class Piano extends Rect {
-	//independent parameter
+	//independent parameters
 	private int numOctaves;
 	private boolean facePositive;
 	//keys
-	private Rect[] whiteKeys, blackKeys;
+	private Rect[] whiteKeys, blackKeys, keys;
 
 	public Piano(int numOctaves, Rect rect, boolean facePositive) {
 		super(rect);
@@ -16,13 +17,19 @@ public class Piano extends Rect {
 		this.numOctaves = numOctaves;
 		this.facePositive = facePositive;
 		
-		initArrays();
-		initRects();
+		if (numOctaves >= 0) {
+			initArrays();
+		}
+		if (numOctaves > 0) {
+			initRects();
+		}
 	}
 	
 	private void initArrays() {
+		int numKeys = numOctaves * 12;
 		int numWhiteKeys = numOctaves * 7;
 		int numBlackKeys = numOctaves * 5;
+		keys = new Rect[numKeys];
 		whiteKeys = new Rect[numWhiteKeys];
 		blackKeys = new Rect[numBlackKeys];
 	}
@@ -38,6 +45,7 @@ public class Piano extends Rect {
 		float blackKeyWidth = whiteKeyWidth * 0.625f;
 		float blackKeyHeight = whiteKeyHeight * 0.625f;
 		
+		//init keys
 		float x1 = this.getX1();
 		float y1 = this.getY1();
 		int j=0; //looping variable for whiteKeys
@@ -45,6 +53,7 @@ public class Piano extends Rect {
 		for (int i=0; i<numKeys; i++) { //looping variable for all keys
 			//init white keys
 			whiteKeys[j++] = new Rect(x1, y1, whiteKeyWidth, whiteKeyHeight, PApplet.CORNER);
+			keys[i] = whiteKeys[j-1];
 			//init black keys
 			if (i % 12 != 4 && i % 12 != 11) {
 				if (getWidth() > getHeight()) {
@@ -62,6 +71,7 @@ public class Piano extends Rect {
 						blackKeys[k-1].translate(whiteKeyWidth-blackKeyWidth, 0);
 					}
 				}
+				keys[i] = blackKeys[k-1];
 				i++;
 			}
 			//increment key position
@@ -93,12 +103,16 @@ public class Piano extends Rect {
 	
 	public void setWidth(float width) {
 		super.setWidth(width);
-		initRects();
+		if (numOctaves > 0) {
+			initRects();
+		}
 	}
 	
 	public void setHeight(float height) {
 		super.setHeight(height);
-		initRects();
+		if (numOctaves > 0) {
+			initRects();
+		}
 	}
 	
 	public int getNumOctaves() {
@@ -107,8 +121,12 @@ public class Piano extends Rect {
 	
 	public void setNumOctaves(int numOctaves) {
 		this.numOctaves = numOctaves;
-		initArrays();
-		initRects();
+		if (numOctaves >= 0) {
+			initArrays();
+		}
+		if (numOctaves > 0) {
+			initRects();
+		}
 	}
 	
 	public boolean getFacePositive() {
@@ -119,6 +137,68 @@ public class Piano extends Rect {
 		if (facePositive != value) {
 			facePositive = value;
 			initRects();
+		}
+	}
+	
+	/**
+	 * Returns a rectangle copy of the key indexed by i.
+	 * @param i
+	 * @return
+	 */
+	public Rect getKeyCopy(int i) {
+		if (0 <= i && i < keys.length) {
+			return new Rect(keys[i]);
+		}
+		else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Returns the center coordinate of the key indexed by i.
+	 * @param i
+	 * @return
+	 */
+	public Point getKeyCenter(int i) {
+		if (0 <= i && i < keys.length) {
+			return new Point(keys[i].getCenx(), keys[i].getCeny());
+		}
+		else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Returns a rectangle the same size as the white keys in this piano.
+	 * The rectangle will be centered about (0, 0).
+	 * @return
+	 */
+	public Rect getWhiteKeyCopy() {
+		if (whiteKeys.length > 0) {
+			Rect copy = new Rect(whiteKeys[0]);
+			copy.setCenx(0);
+			copy.setCeny(0);
+			return copy;
+		}
+		else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Returns a rectangle the same size as the black keys in this piano.
+	 * The rectangle will be centered about (0, 0).
+	 * @return
+	 */
+	public Rect getBlackKeyCopy() {
+		if (blackKeys.length > 0) {
+			Rect copy = new Rect(blackKeys[0]);
+			copy.setCenx(0);
+			copy.setCeny(0);
+			return copy;
+		}
+		else {
+			return null;
 		}
 	}
 }

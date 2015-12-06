@@ -1,7 +1,7 @@
 package views;
 
+import geom.Rect;
 import phases.Phrase;
-import phases.Rect;
 import processing.core.PApplet;
 
 public abstract class View extends Rect {

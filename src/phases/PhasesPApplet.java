@@ -1,5 +1,6 @@
 package phases;
 
+import geom.Rect;
 import processing.core.PApplet;
 import views.GHView;
 import views.View;
