@@ -12,7 +12,8 @@ public class GHView extends View {
 	private final float PIANO_SIZE = 50;
 	//conversion
 	private int firstPitchOfPiano = 60;
-	private float rectHeightOfWholeNote;
+	private float pixelsPerWholeNote;
+	
 	//note views
 	private Rect[] list1, list2;
 	private int pointer1=0, pointer2=0; //points to rectangle closest to edge
@@ -32,19 +33,19 @@ public class GHView extends View {
 		switch (noteMovement) {
 			case RIGHT:
 				piano = new Piano(3, new Rect(getX2() - PIANO_SIZE, getY1(), PIANO_SIZE, getHeight(), PApplet.CORNER), false);
-				rectHeightOfWholeNote = getWidth() / phrase.getTotalDuration();
+				pixelsPerWholeNote = getWidth() / phrase.getTotalDuration();
 				break;
 			case DOWN:
 				piano = new Piano(3, new Rect(getX1(), getY2() - PIANO_SIZE, getWidth(), PIANO_SIZE, PApplet.CORNER), true);
-				rectHeightOfWholeNote = getHeight() / phrase.getTotalDuration();
+				pixelsPerWholeNote = getHeight() / phrase.getTotalDuration();
 				break;
 			case LEFT:
 				piano = new Piano(3, new Rect(getX1(), getY1(), PIANO_SIZE, getHeight(), PApplet.CORNER), true);
-				rectHeightOfWholeNote = getWidth() / phrase.getTotalDuration();
+				pixelsPerWholeNote = getWidth() / phrase.getTotalDuration();
 				break;
 			case UP:
 				piano = new Piano(3, new Rect(getX1(), getY1(), getWidth(), PIANO_SIZE, PApplet.CORNER), true);
-				rectHeightOfWholeNote = getHeight() / phrase.getTotalDuration();
+				pixelsPerWholeNote = getHeight() / phrase.getTotalDuration();
 				break;
 		}
 		
@@ -81,7 +82,7 @@ public class GHView extends View {
 	}
 	
 	private int update(Rect[] list, float dBeatpt, int pointer) {
-		float dpos = dBeatpt * rectHeightOfWholeNote;
+		float dpos = dBeatpt * pixelsPerWholeNote;
 
 		for (int i=0; i<list.length; i++) {
 			list[i].display(pa);
@@ -192,19 +193,19 @@ public class GHView extends View {
 		
 		switch(noteMovement) {
 			case RIGHT:
-				rect.setWidth(rectHeightOfWholeNote * phrase.getDuration(noteIndex));
+				rect.setWidth(pixelsPerWholeNote * phrase.getDuration(noteIndex));
 				rect.setX1(piano.getX2() - rect.getWidth());
 				break;
 			case DOWN:
-				rect.setHeight(rectHeightOfWholeNote * phrase.getDuration(noteIndex));
+				rect.setHeight(pixelsPerWholeNote * phrase.getDuration(noteIndex));
 				rect.setY1(piano.getY2() - rect.getHeight());
 				break;
 			case LEFT:
-				rect.setWidth(rectHeightOfWholeNote * phrase.getDuration(noteIndex));
+				rect.setWidth(pixelsPerWholeNote * phrase.getDuration(noteIndex));
 				rect.setX1(piano.getX1());
 				break;
 			case UP:
-				rect.setHeight(rectHeightOfWholeNote * phrase.getDuration(noteIndex));
+				rect.setHeight(pixelsPerWholeNote * phrase.getDuration(noteIndex));
 				rect.setY1(piano.getY1());
 				break;
 		}

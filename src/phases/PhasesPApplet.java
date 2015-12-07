@@ -5,6 +5,7 @@ import geom.Rect;
 import processing.core.PApplet;
 import views.GHView;
 import views.View;
+import views.WavesView;
 
 public class PhasesPApplet extends PApplet {
 	boolean playing;
@@ -20,6 +21,7 @@ public class PhasesPApplet extends PApplet {
 	SCScore player1 = new SCScore();
 	SCScore player2 = new SCScore();
 	//views
+	Rect[] viewFrames;
 	View[] views = new View[4];
 	
 	public void settings() {
@@ -31,8 +33,18 @@ public class PhasesPApplet extends PApplet {
 				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
 				            new float[] {0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f});
 		
-		views[0] = new GHView(new Rect(0, 0, width/2f, height/2f, PApplet.CORNER), phrase, GHView.DOWN,
-				false, true, color(255, 100, 100), color(100, 100, 255), 100, this);
+		viewFrames = new Rect[] {
+				new Rect(0, 0, width/2f, height/2f, PApplet.CORNER),
+				new Rect(width/2f, 0, width/2f, height/2f, PApplet.CORNER),
+				new Rect(0, height/2f, width/2f, height/2f, PApplet.CORNER),
+				new Rect(width/2f, height/2f, width/2f, height/2f, PApplet.CORNER)
+		};
+		
+		views[0] = new GHView(viewFrames[0], phrase, GHView.DOWN,
+				false, false, color(255, 100, 100), color(100, 100, 255), 100, this);
+		
+		views[1] = new WavesView(viewFrames[1], phrase, color(255, 100, 100), color(100, 100, 255),
+				100, 0.9f, 0.1f, true, this);
 
 		phrase.addToScore(player1, 0, 0, 0);
 		phrase.addToScore(player2, 0, 0, 0);
@@ -57,6 +69,7 @@ public class PhasesPApplet extends PApplet {
 	
 		//drawing
 		background(255);
+		stroke(0);
 		line(width/2f, 0, width/2f, height);
 		line(0, height/2f, width, height/2f);
 		

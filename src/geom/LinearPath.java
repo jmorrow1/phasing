@@ -23,7 +23,7 @@ public class LinearPath {
 	}
 	
 	public LinearPath(LinearPath lp) {
-		Point[] pts = new Point[lp.pts.length];
+		pts = new Point[lp.pts.length];
 		for (int i=0; i<pts.length; i++) {
 			pts[i] = new Point(lp.pts[i]);
 		}
@@ -78,6 +78,13 @@ public class LinearPath {
 			pa.vertex(pts[i].x, pts[i].y);
 		}
 		pa.endShape();
+	}
+	
+	public void translate(float dx, float dy) {
+		for (int i=0; i<pts.length; i++) {
+			pts[i].x += dx;
+			pts[i].y += dy;
+		}
 	}
 	
 	public float getPerimeter() {
