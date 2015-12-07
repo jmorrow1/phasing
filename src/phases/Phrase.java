@@ -4,10 +4,42 @@ import arb.soundcipher.SCScore;
 import processing.core.PApplet;
 
 public class Phrase {
-	private float defaultArt = 0.6f, defaultPan = 0.6f;
+	private float defaultArt, defaultPan;
 	private float[] pitches, dynamics, durations, arts, pans;
 	
 	public Phrase() {}
+	
+	public Phrase(float[] pitches, float[] dynamics, float[] durations) {
+		this(pitches, dynamics, durations, 0.5f, 63);
+	}
+	
+	public Phrase(float[] pitches, float[] dynamics, float[] durations, float defaultArt, float defaultPan) {
+		if (pitches.length == dynamics.length && dynamics.length == durations.length) {
+			this.pitches = pitches;
+			this.dynamics = dynamics;
+			this.durations = durations;
+			this.defaultArt = defaultArt;
+			this.defaultPan = defaultPan;
+			int n = pitches.length;
+			arts = new float[n];
+			pans = new float[n];
+			for (int i=0; i<n; i++) {
+				arts[i] = defaultArt;
+				pans[i] = defaultPan;
+			}
+		}
+	}
+	
+	public Phrase(float[] pitches, float[] dynamics, float[] durations, float[] arts, float[] pans) {
+		if (pitches.length == dynamics.length && dynamics.length == durations.length &&
+				durations.length == arts.length && arts.length == pans.length) {
+			this.pitches = pitches;
+			this.dynamics = dynamics;
+			this.durations = durations;
+			this.arts = arts;
+			this.pans = pans;
+		}
+	}
 	
 	public void addNote(float pitch, float dynamic, float duration) {
 		pitches = PApplet.append(pitches, pitch);
@@ -22,7 +54,7 @@ public class Phrase {
 			pitches[i] = pitch;
 		}
 		else {
-			System.err.println("Index out of bounds in method setPitch(i) in Phrase");
+			System.err.println("Index out of bounds in method setPitch(" + i + ") in Phrase");
 		}
 	}
 	
@@ -31,7 +63,7 @@ public class Phrase {
 			dynamics[i] = dynamic;
 		}
 		else {
-			System.err.println("Index out of bounds in method setDynamic(i) in Phrase");
+			System.err.println("Index out of bounds in method setDynamic(" + i + ") in Phrase");
 		}
 	}
 	
@@ -40,7 +72,7 @@ public class Phrase {
 			durations[i] = duration;
 		}
 		else {
-			System.err.println("Index out of bounds in method setDuration(i) in Phrase");
+			System.err.println("Index out of bounds in method setDuration(" + i + ") in Phrase");
 		}
 	}
 	
