@@ -71,8 +71,8 @@ public class Piano extends Rect {
 						blackKeys[k-1].translate(whiteKeyWidth-blackKeyWidth, 0);
 					}
 				}
-				keys[i] = blackKeys[k-1];
 				i++;
+				keys[i] = blackKeys[k-1];
 			}
 			//increment key position
 			if (getWidth() > getHeight()) {
@@ -150,6 +150,7 @@ public class Piano extends Rect {
 			return new Rect(keys[i]);
 		}
 		else {
+			System.err.println("index out of range in call to Piano.getKeyCopy(" + i + ")");
 			return null;
 		}
 	}
@@ -164,20 +165,21 @@ public class Piano extends Rect {
 			return new Point(keys[i].getCenx(), keys[i].getCeny());
 		}
 		else {
+			System.err.println("index out of range in call to Piano.getKeyCenter(" + i + ")");
 			return null;
 		}
 	}
 	
 	/**
 	 * Returns a rectangle the same size as the white keys in this piano.
-	 * The rectangle will be centered about (0, 0).
+	 * The rectangle will be positioned with its upper left corner at (0, 0).
 	 * @return
 	 */
 	public Rect getWhiteKeyCopy() {
 		if (whiteKeys.length > 0) {
 			Rect copy = new Rect(whiteKeys[0]);
-			copy.setCenx(0);
-			copy.setCeny(0);
+			copy.setX1(0);
+			copy.setY1(0);
 			return copy;
 		}
 		else {
@@ -187,18 +189,28 @@ public class Piano extends Rect {
 	
 	/**
 	 * Returns a rectangle the same size as the black keys in this piano.
-	 * The rectangle will be centered about (0, 0).
+     * The rectangle will be positioned with its upper left corner at (0, 0).
 	 * @return
 	 */
 	public Rect getBlackKeyCopy() {
 		if (blackKeys.length > 0) {
 			Rect copy = new Rect(blackKeys[0]);
-			copy.setCenx(0);
-			copy.setCeny(0);
+			copy.setX1(0);
+			copy.setY1(0);
 			return copy;
 		}
 		else {
 			return null;
 		}
+	}
+	
+	public static boolean isWhiteKey(int i) {
+		i %= 12;
+		return !isBlackKey(i);
+	}
+	
+	public static boolean isBlackKey(int i) {
+		i %= 12;
+		return i == 1 || i == 3 || i == 6 || i == 8 || i == 10;
 	}
 }

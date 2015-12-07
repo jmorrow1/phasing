@@ -87,6 +87,30 @@ public class Phrase {
 		score.addPhrase(startBeat, channel, instrument, pitches, dynamics, durations, arts, pans);
 	}
 	
+	public int getNumNotes() {
+		return pitches.length;
+	}
+	
+	public int getPitch(int i) {
+		return (int)pitches[i];
+	}
+	
+	public float getDuration(int i) {
+		return durations[i];
+	}
+	
+	public float getDynamic(int i) {
+		return dynamics[i];
+	}
+	
+	public float getArticulation(int i) {
+		return arts[i];
+	}
+	
+	public float getPan(int i) {
+		return pans[i];
+	}
+	
 	public String toString() {
 		return "{pitches: " + pitches.toString() + ", dynamics: " + dynamics.toString()
 		+ ", durations: " + durations.toString() + ", pan: " + defaultPan + "}";
