@@ -10,31 +10,37 @@ import processing.core.PApplet;
 
 public class WavesView extends View {
 	private Wave a, b;
-	private float pixelsPerWholeNote;
+	private Wave c, d;
+	private float phraseRate, quarterNoteRate;
 	private boolean movementRelativeToPathA;
 	public final static int LINEAR_PLOT = 0, SINE_WAVE = 1;
 	
 	public WavesView(Rect rect, Phrase phrase, int color1, int color2, int opacity, 
-			float lowYAmt, float highYAmt, boolean movementRelativeToPathA, int waveType, PApplet pa) {
+			float amp1Amt, float amp2Amt, boolean movementRelativeToPathA, int waveType, PApplet pa) {
 		super(rect, phrase, color1, color2, opacity, pa);
 		
 		this.movementRelativeToPathA = movementRelativeToPathA;
 		
-		float lowY = this.getY1() + PApplet.constrain(lowYAmt, 0, 1) * this.getHeight();
-		float highY = this.getY1() + PApplet.constrain(highYAmt, 0, 1) * this.getHeight();
+		float amp1 = this.getY1() + PApplet.constrain(amp1Amt, 0, 0.5f) * this.getHeight();
+		float amp2 = this.getY1() + PApplet.constrain(amp2Amt, 0, 0.5f) * this.getHeight();
 		
 		switch(waveType) {
 			case LINEAR_PLOT: 
-				a = makePlot(phrase, lowY, highY);
+				a = makePlot(phrase, amp1);
 				b = new LinearPlot((LinearPlot)a);
+				c = makePlot(phrase, amp2);
+				d = new LinearPlot((LinearPlot)c);
 				break;
 			case SINE_WAVE:
-				a = new SineWave(this.getX1(), this.getX2(), this.getCeny(), this.getHeight()*0.25f);
+				a = new SineWave(this.getX1(), this.getX2(), this.getCeny(), this.getHeight()*0.45f);
 				b = new SineWave((SineWave)a);
+				c = new SineWave(this.getX1(), this.getX2(), this.getCeny(), this.getHeight()*0.25f);
+				d = new SineWave(this.getX1(), this.getX2(), this.getCeny(), this.getHeight()*0.25f);
 				break;
 		}
 		
-		pixelsPerWholeNote = this.getWidth() / phrase.getTotalDuration();
+		phraseRate = this.getWidth() / phrase.getTotalDuration();
+		quarterNoteRate = this.getWidth() / 0.25f;
 	}
 
 	@Override
@@ -44,25 +50,28 @@ public class WavesView extends View {
 		
 		if (!movementRelativeToPathA) {
 			pa.stroke(color1, opacity);
-			update(a, dNotept1);
+			update(a, dNotept1 * phraseRate);
+			if (c != null) update(c, dNotept1 * quarterNoteRate);
 			pa.stroke(color2, opacity);
-			update(b, dNotept2);
+			update(b, dNotept2 * phraseRate);
+			if (d != null) update(d, dNotept2 * quarterNoteRate);
 		}
 		else {
 			pa.stroke(color1, opacity);
 			a.display(pa);
+			if (c != null) c.display(pa);
 			pa.stroke(color2, opacity);
-			update(b, dNotept2 - dNotept1);
+			update(b, (dNotept2 - dNotept1)*phraseRate);
+			if (d != null) update(d, (dNotept2 - dNotept1)*quarterNoteRate);
 		}
 	}
 	
-	private void update(Wave w, float dNotept) {
-		float dx = dNotept * pixelsPerWholeNote;
+	private void update(Wave w, float dx) {
 		w.translate(dx, 0);
 		w.display(pa);
 	}
 	
-	private LinearPlot makePlot(Phrase phrase, float lowY, float highY) {
+	private LinearPlot makePlot(Phrase phrase, float amp) {
 		//determine min and max pitch values of phrase
 		float minPitch = minPitch(phrase);
 		float maxPitch = maxPitch(phrase);
@@ -70,11 +79,12 @@ public class WavesView extends View {
 		//convert each pitch value to a point
 		float lowX = this.getX1();
 		float highX = this.getX2();
+		float ycen = this.getCeny();
 		Point[] pts = new Point[phrase.getNumNotes()];
 		float x = lowX;
 		float dx = (highX-lowX) / phrase.getNumNotes();
 		for (int i=0; i<pts.length; i++) {
-			pts[i] = new Point(x, PApplet.map(phrase.getPitch(i), minPitch, maxPitch, lowY, highY));
+			pts[i] = new Point(x, PApplet.map(phrase.getPitch(i), minPitch, maxPitch, ycen - amp, ycen + amp));
 			x += dx;
 		}
 		
