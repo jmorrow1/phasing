@@ -14,7 +14,7 @@ public class PhasesPApplet extends PApplet {
 	Phrase phrase;
 	int bpm1 = 80;
 	float bpms1 = bpm1 / 60000f;
-	int bpm2 = 82;
+	int bpm2 = 85;
 	float bpms2 = bpm2 / 60000f;
 	//playback
 	SCScore player1 = new SCScore();
@@ -31,7 +31,7 @@ public class PhasesPApplet extends PApplet {
 				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
 				            new float[] {0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f});
 		
-		views[0] = new GHView(new Rect(0, 0, width/2f, height/2f, PApplet.CORNER), phrase, GHView.DOWN, this);
+		views[0] = new GHView(new Rect(0, 0, width/2f, height/2f, PApplet.CORNER), phrase, GHView.DOWN, false, true, this);
 
 		phrase.addToScore(player1, 0, 0, 0);
 		phrase.addToScore(player2, 0, 0, 0);
@@ -64,5 +64,11 @@ public class PhasesPApplet extends PApplet {
 				views[i].update(dBeatpt1, dBeatpt2);
 			}
 		}
+	}
+	
+	public static int remainder(int num, int denom) {
+		if (0 <= num && num < denom) return num;
+		else if (num > 0) return num % denom;
+		else return denom - ((-num) % denom);
 	}
 }
