@@ -7,4 +7,9 @@ public class Point {
 		this.x = x;
 		this.y = y;
 	}
+	
+	public Point(Point pt) {
+		this.x = pt.x;
+		this.y = pt.y;
+	}
 }

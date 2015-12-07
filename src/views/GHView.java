@@ -7,22 +7,23 @@ import processing.core.PApplet;
 
 public class GHView extends View {
 	//piano
-	boolean displayPiano;
-	Piano piano;
-	final float PIANO_SIZE = 50;
+	private boolean displayPiano;
+	private Piano piano;
+	private final float PIANO_SIZE = 50;
 	//conversion
-	int firstPitchOfPiano = 60;
-	float rectHeightOfWholeNote;
+	private int firstPitchOfPiano = 60;
+	private float rectHeightOfWholeNote;
 	//note views
-	Rect[] redList, blueList;
-	int pointer1=0, pointer2=0; //points to rectangle closest to edge
+	private Rect[] list1, list2;
+	private int pointer1=0, pointer2=0; //points to rectangle closest to edge
 	public final static int RIGHT=2, DOWN=1, LEFT=-2, UP=-1;
-	int noteMovement;
-	boolean movementRelativeToList1;
-	boolean blueListIsReversed = false;
+	private int noteMovement;
+	private boolean movementRelativeToList1;
+	private boolean list1IsReversed = false;
 	
-	public GHView(Rect rect, Phrase phrase, int noteMovement, boolean displayPiano, boolean movementRelativeToList1, PApplet pa) {
-		super(rect, phrase, pa);
+	public GHView(Rect rect, Phrase phrase, int noteMovement, boolean displayPiano, boolean movementRelativeToList1,
+			int color1, int color2, int opacity, PApplet pa) {
+		super(rect, phrase, color1, color2, opacity, pa);
 		
 		this.noteMovement = noteMovement;
 		this.displayPiano = displayPiano;
@@ -47,35 +48,35 @@ public class GHView extends View {
 				break;
 		}
 		
-		redList = initList(phrase);
-		blueList = initList(phrase);
+		list1 = initList(phrase);
+		list2 = initList(phrase);
 	}
 	
 	public void update(float dBeatpt1, float dBeatpt2) {
 		if (displayPiano) piano.display(pa);
 		
 		//list1
-		pa.fill(255, 100, 100, 100);
+		pa.fill(color1, opacity);
 		if (movementRelativeToList1) {
-			for (int i=0; i<redList.length; i++) {
-				redList[i].display(pa);
+			for (int i=0; i<list1.length; i++) {
+				list1[i].display(pa);
 			}
 		}
 		else {
-			pointer1 = update(redList, dBeatpt1, pointer1);
+			pointer1 = update(list1, dBeatpt1, pointer1);
 		}
 		
 		//list2
-		pa.fill(100, 100, 255, 100);
+		pa.fill(color2, opacity);
 		if (movementRelativeToList1) {		
-			if ((!blueListIsReversed && dBeatpt2 - dBeatpt1 < 0) || (blueListIsReversed && dBeatpt2 - dBeatpt1 > 0)) {
-				reverse(blueList);
-				blueListIsReversed = !blueListIsReversed;
+			if ((!list1IsReversed && dBeatpt2 - dBeatpt1 < 0) || (list1IsReversed && dBeatpt2 - dBeatpt1 > 0)) {
+				reverse(list2);
+				list1IsReversed = !list1IsReversed;
 			}
-			pointer2 = update(blueList, dBeatpt2 - dBeatpt1, pointer2);
+			pointer2 = update(list2, dBeatpt2 - dBeatpt1, pointer2);
 		}
 		else {
-			pointer2 = update(blueList, dBeatpt2, pointer2);
+			pointer2 = update(list2, dBeatpt2, pointer2);
 		}
 	}
 	
