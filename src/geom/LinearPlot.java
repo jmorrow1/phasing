@@ -8,21 +8,21 @@ import processing.core.PApplet;
  * @author James Morrow
  *
  */
-public class LinearPath {
+public class LinearPlot extends Wave {
 	private Point[] pts;
 	private float perimeter;
 	private float[] lengths;
 	private float[] breaks;
 	private float width, height;
 	
-	public LinearPath(Point[] pts) {
+	public LinearPlot(Point[] pts) {
 		this.pts = pts;
 		breaks = new float[pts.length];
 		lengths = new float[pts.length];
 		recompute();
 	}
 	
-	public LinearPath(LinearPath lp) {
+	public LinearPlot(LinearPlot lp) {
 		pts = new Point[lp.pts.length];
 		for (int i=0; i<pts.length; i++) {
 			pts[i] = new Point(lp.pts[i]);
@@ -97,5 +97,11 @@ public class LinearPath {
 
 	public float height() {
 		return height;
+	}
+
+	@Override
+	public void interpolate(float amt) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -44,7 +44,7 @@ public class PhasesPApplet extends PApplet {
 				false, false, color(255, 100, 100), color(100, 100, 255), 100, this);
 		
 		views[1] = new WavesView(viewFrames[1], phrase, color(255, 100, 100), color(100, 100, 255),
-				100, 0.9f, 0.1f, true, this);
+				150, 0.9f, 0.1f, true, WavesView.SINE_WAVE, this);
 
 		phrase.addToScore(player1, 0, 0, 0);
 		phrase.addToScore(player2, 0, 0, 0);
@@ -69,6 +69,7 @@ public class PhasesPApplet extends PApplet {
 	
 		//drawing
 		background(255);
+		strokeWeight(1);
 		stroke(0);
 		line(width/2f, 0, width/2f, height);
 		line(0, height/2f, width, height/2f);

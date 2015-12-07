@@ -56,6 +56,8 @@ public class GHView extends View {
 	public void update(float dBeatpt1, float dBeatpt2) {
 		if (displayPiano) piano.display(pa);
 		
+		pa.strokeWeight(1);
+		
 		//list1
 		pa.fill(color1, opacity);
 		if (movementRelativeToList1) {
