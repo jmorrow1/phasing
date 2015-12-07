@@ -31,7 +31,7 @@ public class PhasesPApplet extends PApplet {
 				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
 				            new float[] {0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f});
 		
-		views[0] = new GHView(new Rect(0, 0, width/2f, height/2f, PApplet.CORNER), phrase, this);
+		views[0] = new GHView(new Rect(0, 0, width/2f, height/2f, PApplet.CORNER), phrase, GHView.DOWN, this);
 
 		phrase.addToScore(player1, 0, 0, 0);
 		phrase.addToScore(player2, 0, 0, 0);

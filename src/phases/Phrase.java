@@ -111,6 +111,14 @@ public class Phrase {
 		return pans[i];
 	}
 	
+	public float getTotalDuration() {
+		float sum = 0;
+		for (int i=0; i<durations.length; i++) {
+			sum += durations[i];
+		}
+		return sum;
+	}
+	
 	public String toString() {
 		return "{pitches: " + pitches.toString() + ", dynamics: " + dynamics.toString()
 		+ ", durations: " + durations.toString() + ", pan: " + defaultPan + "}";
