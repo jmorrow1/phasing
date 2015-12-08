@@ -28,8 +28,8 @@ public class WavesView extends View {
 			case LINEAR_PLOT: 
 				a = makePlot(phrase, amp1);
 				b = new LinearPlot((LinearPlot)a);
-				c = makePlot(phrase, amp2);
-				d = new LinearPlot((LinearPlot)c);
+				//c = makePlot(phrase, amp2);
+				//d = new LinearPlot((LinearPlot)c);
 				break;
 			case SINE_WAVE:
 				a = new SineWave(this.getX1(), this.getX2(), this.getCeny(), this.getHeight()*0.45f);
@@ -55,11 +55,13 @@ public class WavesView extends View {
 			pa.stroke(color2, opacity);
 			update(b, dNotept2 * phraseRate);
 			if (d != null) update(d, dNotept2 * quarterNoteRate);
+			
+			
 		}
 		else {
 			pa.stroke(color1, opacity);
-			a.display(pa);
-			if (c != null) c.display(pa);
+			a.display(pa, this.getX1(), this.getX2());
+			if (c != null) c.display(pa, this.getX1(), this.getX2());
 			pa.stroke(color2, opacity);
 			update(b, (dNotept2 - dNotept1)*phraseRate);
 			if (d != null) update(d, (dNotept2 - dNotept1)*quarterNoteRate);
@@ -68,7 +70,8 @@ public class WavesView extends View {
 	
 	private void update(Wave w, float dx) {
 		w.translate(dx, 0);
-		w.display(pa);
+		w.display(pa, this.getX1(), this.getX2());
+		
 	}
 	
 	private LinearPlot makePlot(Phrase phrase, float amp) {

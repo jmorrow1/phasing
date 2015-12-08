@@ -19,11 +19,7 @@ public class SineWave extends Wave {
 		this.amplitude = sw.amplitude;
 	}
 	
-	public static void displayAddedWaves(PApplet pa, SineWave a, SineWave b) {
-		//y = ycen + a.amplitude * sin(alpha) + b.amplitude * sin(beta)
-	}
-	
-	public void display(PApplet pa) {
+	public void display(PApplet pa, float x1, float x2) {
 		pa.beginShape();
 			float x = x1;
 			float dx = 2;
