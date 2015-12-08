@@ -38,7 +38,7 @@ public class LinearPlot extends Wave {
 		this.drawVertices = lp.drawVertices;
 	}
 
-	public void display(PApplet pa, float x1, float x2, int color, int opacity) {
+	public void display(PApplet pa, int color, int opacity) {
 		//draw lines
 		pa.noFill();
 		pa.stroke(color, opacity);
