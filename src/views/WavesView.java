@@ -71,46 +71,21 @@ public class WavesView extends View {
 	private void update(Wave w, float dx) {
 		w.translate(dx, 0);
 		w.display(pa, this.getX1(), this.getX2());
-		
+	
 	}
 	
 	private LinearPlot makePlot(Phrase phrase, float amp) {
 		//determine min and max pitch values of phrase
-		float minPitch = minPitch(phrase);
-		float maxPitch = maxPitch(phrase);
+		float minPitch = phrase.minPitch();
+		float maxPitch = phrase.maxPitch();
 		
 		//convert each pitch value to a point
-		float lowX = this.getX1();
-		float highX = this.getX2();
 		float ycen = this.getCeny();
-		Point[] pts = new Point[phrase.getNumNotes()];
-		float x = lowX;
-		float dx = (highX-lowX) / phrase.getNumNotes();
-		for (int i=0; i<pts.length; i++) {
-			pts[i] = new Point(x, PApplet.map(phrase.getPitch(i), minPitch, maxPitch, ycen - amp, ycen + amp));
-			x += dx;
+		float[] ys = new float[phrase.getNumNotes()];
+		for (int i=0; i<ys.length; i++) {
+			ys[i] = PApplet.map(phrase.getPitch(i), minPitch, maxPitch, ycen + amp, ycen - amp);
 		}
 		
-		return new LinearPlot(pts);
-	}
-	
-	private float minPitch(Phrase phrase) {
-		float minPitch = Float.MAX_VALUE;
-		for (int i=0; i<phrase.getNumNotes(); i++) {
-			if (phrase.getPitch(i) < minPitch) {
-				minPitch = phrase.getPitch(i);
-			}
-		}
-		return minPitch;
-	}
-	
-	private float maxPitch(Phrase phrase) {
-		float maxPitch = Float.MIN_VALUE;
-		for (int i=0; i<phrase.getNumNotes(); i++) {
-			if (phrase.getPitch(i) > maxPitch) {
-				maxPitch = phrase.getPitch(i);
-			}
-		}
-		return maxPitch;
+		return new LinearPlot(ys, this.getX1(), this.getX2());
 	}
 }

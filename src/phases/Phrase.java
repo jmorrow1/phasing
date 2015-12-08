@@ -87,6 +87,26 @@ public class Phrase {
 		score.addPhrase(startBeat, channel, instrument, pitches, dynamics, durations, arts, pans);
 	}
 	
+	public float minPitch() {
+		float minPitch = Float.MAX_VALUE;
+		for (int i=0; i<this.getNumNotes(); i++) {
+			if (this.getPitch(i) < minPitch) {
+				minPitch = this.getPitch(i);
+			}
+		}
+		return minPitch;
+	}
+	
+	public float maxPitch() {
+		float maxPitch = Float.MIN_VALUE;
+		for (int i=0; i<this.getNumNotes(); i++) {
+			if (this.getPitch(i) > maxPitch) {
+				maxPitch = this.getPitch(i);
+			}
+		}
+		return maxPitch;
+	}
+	
 	public int getNumNotes() {
 		return pitches.length;
 	}
