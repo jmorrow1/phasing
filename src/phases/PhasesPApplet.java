@@ -48,7 +48,7 @@ public class PhasesPApplet extends PApplet {
 		
 		views[1] = new WavesView(viewFrames[1], phrase, color1, color2, 150, 0.45f, 0.25f, true, WavesView.LINEAR_PLOT, this);
 		
-		views[2] = new KeyboardsView(viewFrames[2], phrase, color1, color2, 100, this);
+		views[2] = new KeyboardsView(viewFrames[2], phrase, color1, color2, 100, true, this);
 
 		phrase.addToScore(player1, 0, 0, 0);
 		phrase.addToScore(player2, 0, 0, 0);

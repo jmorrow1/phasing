@@ -9,31 +9,56 @@ public class KeyboardsView extends View {
 	private Phrase phrase;
 	private PhraseReader a, b;
 	//piano
-	private Piano piano;
+	private Piano keyboardA, keyboardB;
+	private Piano keyboardAB;
 	private final int PIANO_SIZE = 50;
 	//conversion
-	private Rect[] noteIndexToKey;
 	private int firstPitchOfPiano = 60;
 	
-	public KeyboardsView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
+	public KeyboardsView(Rect rect, Phrase phrase, int color1, int color2, int opacity,
+			boolean superimposeKeyboards, PApplet pa) {
 		super(rect, phrase, color1, color2, opacity, pa);
 		
 		this.phrase = phrase;
 		
-		piano = new Piano(2, new Rect(this.getCenx(), this.getCeny(),
-				0.75f*this.getWidth(), PIANO_SIZE, PApplet.CENTER), true, pa.color(255));
-		noteIndexToKey = new Rect[phrase.getNumNotes()];
-		for (int i=0; i<noteIndexToKey.length; i++) {
-			noteIndexToKey[i] = piano.getKeyCopy(phrase.getPitch(i) - firstPitchOfPiano);
+		if (superimposeKeyboards) {
+			keyboardAB = new Piano(2, new Rect(this.getCenx(), this.getCeny(),
+					0.75f*this.getWidth(), PIANO_SIZE, PApplet.CENTER), true, pa.color(255));
+		}
+		else {
+			keyboardA = new Piano(2, new Rect(this.getCenx(), this.getCeny() - PIANO_SIZE,
+							0.75f*this.getWidth(), PIANO_SIZE, PApplet.CENTER), true, pa.color(255));
+			
+			keyboardB = new Piano(2, new Rect(this.getCenx(), this.getCeny() + PIANO_SIZE,
+							0.75f*this.getWidth(), PIANO_SIZE, PApplet.CENTER), true, pa.color(255));
 		}
 		
-		a = new PhraseReader(phrase, noteIndexToKey, color1, opacity);
-		b = new PhraseReader(phrase, noteIndexToKey, color2, opacity);
+		Rect[] noteIndexToKeyA = new Rect[phrase.getNumNotes()];
+		Rect[] noteIndexToKeyB = null;
+		
+		if (superimposeKeyboards) {
+			for (int i=0; i<noteIndexToKeyA.length; i++) {
+				noteIndexToKeyA[i] = keyboardAB.getKeyCopy(phrase.getPitch(i) - firstPitchOfPiano);
+			}
+			noteIndexToKeyB = noteIndexToKeyA;
+		}
+		else {
+			noteIndexToKeyB = new Rect[phrase.getNumNotes()];
+			for (int i=0; i<noteIndexToKeyA.length; i++) {
+				noteIndexToKeyA[i] = keyboardA.getKeyCopy(phrase.getPitch(i) - firstPitchOfPiano);
+				noteIndexToKeyB[i] = keyboardB.getKeyCopy(phrase.getPitch(i) - firstPitchOfPiano);
+			}
+		}
+		
+		a = new PhraseReader(phrase, noteIndexToKeyA, color1, opacity);
+		b = new PhraseReader(phrase, noteIndexToKeyB, color2, opacity);
 	}
 
 	@Override
 	public void update(float dNotept1, float dNotept2) {		
-		piano.display(pa);
+		if (keyboardAB != null) keyboardAB.display(pa);
+		if (keyboardA != null) keyboardA.display(pa);
+		if (keyboardB != null) keyboardB.display(pa);
 		
 		a.update(dNotept1);
 		b.update(dNotept2);
