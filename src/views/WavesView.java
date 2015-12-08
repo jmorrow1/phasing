@@ -28,8 +28,8 @@ public class WavesView extends View {
 			case LINEAR_PLOT: 
 				a = makePlot(phrase, amp1);
 				b = new LinearPlot((LinearPlot)a);
-				//c = makePlot(phrase, amp2);
-				//d = new LinearPlot((LinearPlot)c);
+				c = makePlot(phrase, amp2);
+				d = new LinearPlot((LinearPlot)c);
 				break;
 			case SINE_WAVE:
 				a = new SineWave(this.getX1(), this.getX2(), this.getCeny(), this.getHeight()*0.45f);

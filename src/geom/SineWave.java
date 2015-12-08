@@ -19,6 +19,10 @@ public class SineWave extends Wave {
 		this.amplitude = sw.amplitude;
 	}
 	
+	public static void displayAddedWaves(PApplet pa, SineWave a, SineWave b) {
+		//y = ycen + a.amplitude * sin(alpha) + b.amplitude * sin(beta)
+	}
+	
 	public void display(PApplet pa) {
 		pa.beginShape();
 			float x = x1;
@@ -40,11 +44,5 @@ public class SineWave extends Wave {
 		x1 += dx;
 		x2 += dx;
 		ycen += dy;
-	}
-
-	@Override
-	public void interpolate(float amt) {
-		// TODO Auto-generated method stub
-		
 	}
 }
