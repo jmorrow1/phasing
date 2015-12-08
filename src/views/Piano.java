@@ -10,8 +10,13 @@ public class Piano extends Rect {
 	private boolean facePositive;
 	//keys
 	private Rect[] whiteKeys, blackKeys, keys;
-
+	private int blackKeyColor;
+	
 	public Piano(int numOctaves, Rect rect, boolean facePositive) {
+		this(numOctaves, rect, facePositive, 0);
+	}
+
+	public Piano(int numOctaves, Rect rect, boolean facePositive, int blackKeyColor) {
 		super(rect);
 		
 		this.numOctaves = numOctaves;
@@ -23,6 +28,8 @@ public class Piano extends Rect {
 		if (numOctaves > 0) {
 			initRects();
 		}
+		
+		this.blackKeyColor = blackKeyColor;
 	}
 	
 	private void initArrays() {
@@ -89,13 +96,13 @@ public class Piano extends Rect {
 		pa.stroke(100);
 		
 		//draw white keys
-		pa.noFill();
+		pa.fill(255);
 		for (int i=0; i<whiteKeys.length; i++) {
 			whiteKeys[i].display(pa);
 		}
 			
 		//draw black keys
-		pa.fill(100);
+		pa.fill(blackKeyColor);
 		for (int i=0; i<blackKeys.length; i++) {
 			blackKeys[i].display(pa);
 		}
