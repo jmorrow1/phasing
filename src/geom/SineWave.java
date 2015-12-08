@@ -19,7 +19,9 @@ public class SineWave extends Wave {
 		this.amplitude = sw.amplitude;
 	}
 	
-	public void display(PApplet pa, float x1, float x2) {
+	public void display(PApplet pa, float x1, float x2, int color, int opacity) {
+		pa.noFill();
+		pa.stroke(color, opacity);
 		pa.beginShape();
 			float x = x1;
 			float dx = 2;

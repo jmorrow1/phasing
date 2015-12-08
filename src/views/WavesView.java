@@ -49,29 +49,25 @@ public class WavesView extends View {
 		pa.noFill();
 		
 		if (!movementRelativeToPathA) {
-			pa.stroke(color1, opacity);
-			update(a, dNotept1 * phraseRate);
-			if (c != null) update(c, dNotept1 * quarterNoteRate);
-			pa.stroke(color2, opacity);
-			update(b, dNotept2 * phraseRate);
-			if (d != null) update(d, dNotept2 * quarterNoteRate);
+			update(a, dNotept1 * phraseRate, color1, opacity);
+			if (c != null) update(c, dNotept1 * quarterNoteRate, color1, opacity);
+			update(b, dNotept2 * phraseRate, color2, opacity);
+			if (d != null) update(d, dNotept2 * quarterNoteRate, color2, opacity);
 			
 			
 		}
 		else {
-			pa.stroke(color1, opacity);
-			a.display(pa, this.getX1(), this.getX2());
-			if (c != null) c.display(pa, this.getX1(), this.getX2());
+			a.display(pa, this.getX1(), this.getX2(), color1, opacity);
+			if (c != null) c.display(pa, this.getX1(), this.getX2(), color1, opacity);
 			pa.stroke(color2, opacity);
-			update(b, (dNotept2 - dNotept1)*phraseRate);
-			if (d != null) update(d, (dNotept2 - dNotept1)*quarterNoteRate);
+			update(b, (dNotept2 - dNotept1)*phraseRate, color2, opacity);
+			if (d != null) update(d, (dNotept2 - dNotept1)*quarterNoteRate, color2, opacity);
 		}
 	}
 	
-	private void update(Wave w, float dx) {
+	private void update(Wave w, float dx, int color, int opacity) {
 		w.translate(dx, 0);
-		w.display(pa, this.getX1(), this.getX2());
-	
+		w.display(pa, this.getX1(), this.getX2(), color, opacity);
 	}
 	
 	private LinearPlot makePlot(Phrase phrase, float amp) {
