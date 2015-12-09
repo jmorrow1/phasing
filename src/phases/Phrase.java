@@ -143,4 +143,51 @@ public class Phrase {
 		return "{pitches: " + pitches.toString() + ", dynamics: " + dynamics.toString()
 		+ ", durations: " + durations.toString() + ", pan: " + defaultPan + "}";
 	}
+	
+	public static String convertPitch(float code, boolean useSharps) {
+	    return convertPitch((int)code, useSharps);
+	}
+
+	public static String convertPitch(int code, boolean useSharps) {
+	    if (21 <= code && code <= 108) {
+	        String s = "";
+	        code -= 21;
+	        int octave = code / 12 + 1;
+	        int note = code % 12;
+	        switch(note) {
+	            case 0 : s += "A"; break;
+	            case 1 : 
+	                if (useSharps) s += "A#";
+	                else s += "Bb";
+	                break;
+	            case 2 : s += "B"; break;
+	            case 3 : s += "C"; break;
+	            case 4 :
+	                if (useSharps) s += "C#";
+	                else s += "Db";
+	                break;
+	            case 5 : s += "D"; break;
+	            case 6 : 
+	                if (useSharps) s += "D#";
+	                else s += "Eb";
+	                break;
+	            case 7 : s += "E"; break;
+	            case 8 : s += "F"; break;
+	            case 9 : 
+	                if (useSharps) s += "F#";
+	                else s += "Gb";
+	                break;
+	            case 10 : s += "G"; break;
+	            case 11 :
+	                if (useSharps) s += "G#"; 
+	                else s += "Ab";
+	                break;
+	        }
+	        //s += octave;
+	        return s;
+	    }
+	    else {
+	        return "";
+	    }
+	}
 }
