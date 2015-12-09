@@ -4,8 +4,9 @@ import phases.Phrase;
 import processing.core.PApplet;
 
 public class LinearPlot extends Wave {
+	private Point leftEdgePoint, rightEdgePoint;
 	private Point[] pts;
-	private float x1, x2, dx;
+	private float x1, x2, dx, width;
 	private boolean drawVertices;
 	
 	public LinearPlot(float[] ys, float x1, float x2) {
@@ -20,9 +21,13 @@ public class LinearPlot extends Wave {
 			pts[i] = new Point(x, ys[i]);
 			x += dx;
 		}
-		
+		if (ys.length > 0) {
+			leftEdgePoint = new Point(pts[0]);
+			rightEdgePoint = new Point(x2, pts[0].y);
+		}
 		this.x1 = x1;
 		this.x2 = x2;
+		this.width = x2-x1;
 		this.dx = dx;
 		this.drawVertices = drawVertices;
 	}
@@ -32,8 +37,13 @@ public class LinearPlot extends Wave {
 		for (int i=0; i<pts.length; i++) {
 			pts[i] = new Point(lp.pts[i]);
 		}
+		if (lp.leftEdgePoint != null && lp.rightEdgePoint != null) {
+			this.leftEdgePoint = new Point(lp.leftEdgePoint);
+			this.rightEdgePoint = new Point(lp.rightEdgePoint);
+		}
 		this.x1 = lp.x1;
 		this.x2 = lp.x2;
+		this.width = lp.width;
 		this.dx = lp.dx;
 		this.drawVertices = lp.drawVertices;
 	}
@@ -43,9 +53,11 @@ public class LinearPlot extends Wave {
 		pa.noFill();
 		pa.stroke(color, opacity);
 		pa.beginShape();
+		pa.vertex(leftEdgePoint.x, leftEdgePoint.y);
 		for (int i=0; i<pts.length; i++) {
 			pa.vertex(pts[i].x, pts[i].y);
 		}
+		pa.vertex(rightEdgePoint.x, rightEdgePoint.y);
 		pa.endShape();
 		
 		if (drawVertices) {
@@ -59,16 +71,64 @@ public class LinearPlot extends Wave {
 		}
 	}
 	
-	public void translate(float dx, float dy) {
+	public void translate(float dx) {
+		//translate
 		for (int i=0; i<pts.length; i++) {
 			pts[i].x += dx;
-			pts[i].y += dy;
 		}
-		x1 += dx;
-		x2 += dx;
+		
+		//screen wrap
+		if (dx < 0) {
+			while (pts[0].x < x1) {
+				pts[0].x += width;
+				leftShift(pts);
+			}
+			float lerpAmt = (pts[0].x - x1) / this.dx;
+			leftEdgePoint.y = PApplet.lerp(pts[0].y, pts[pts.length-1].y, lerpAmt);
+			rightEdgePoint.y = PApplet.lerp(pts[0].y, pts[pts.length-1].y, lerpAmt);
+		}
+		else if (dx > 0) {
+			while (pts[pts.length-1].x > x2) {
+				pts[pts.length-1].x -= width;
+				rightShift(pts);
+			}
+			float lerpAmt = (pts[0].x - x1) / this.dx;
+			leftEdgePoint.y = PApplet.lerp(pts[0].y, pts[pts.length-1].y, lerpAmt);
+			rightEdgePoint.y = PApplet.lerp(pts[0].y, pts[pts.length-1].y, lerpAmt);
+		}
 	}
 	
 	public void drawVertices(boolean value) {
 		drawVertices = value;
+	}
+	
+	private static void leftShift(Point[] xs) {
+	    if (xs.length > 0) {
+	        int i = xs.length-1;
+	        Point next = xs[i];
+	        xs[i] = xs[0];
+	        i--;
+	        while (i >= 0) {
+	            Point temp = xs[i];
+	            xs[i] = next;
+	            next = temp;
+	            i--;
+	        }
+	    }
+	}
+
+	private static void rightShift(Point[] xs) {
+	    if (xs.length > 0) {
+	        int i=0;
+	        Point prev = xs[i];
+	        xs[i] = xs[xs.length-1];
+	        i++;
+	        while (i < xs.length) {
+	        	Point temp = xs[i];
+	            xs[i] = prev;
+	            prev = temp;
+	            i++;
+	        }
+	    }
 	}
 }

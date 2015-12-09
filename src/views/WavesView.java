@@ -53,8 +53,6 @@ public class WavesView extends View {
 			if (c != null) update(c, dNotept1 * quarterNoteRate, color1, opacity);
 			update(b, dNotept2 * phraseRate, color2, opacity);
 			if (d != null) update(d, dNotept2 * quarterNoteRate, color2, opacity);
-			
-			
 		}
 		else {
 			a.display(pa, color1, opacity);
@@ -66,7 +64,7 @@ public class WavesView extends View {
 	}
 	
 	private void update(Wave w, float dx, int color, int opacity) {
-		w.translate(dx, 0);
+		w.translate(dx);
 		w.display(pa, color, opacity);
 	}
 	

@@ -16,7 +16,7 @@ public class PhasesPApplet extends PApplet {
 	Phrase phrase;
 	int bpm1 = 80;
 	float bpms1 = bpm1 / 60000f;
-	int bpm2 = 82;
+	int bpm2 = 78;
 	float bpms2 = bpm2 / 60000f;
 	//playback
 	SCScore player1 = new SCScore();
@@ -46,7 +46,7 @@ public class PhasesPApplet extends PApplet {
 		
 		//views[0] = new GHView(viewFrames[0], phrase, GHView.DOWN, false, false, color1, color2, 100, this);
 		
-		views[1] = new WavesView(viewFrames[1], phrase, color1, color2, 150, 0.45f, 0.25f, true, WavesView.SINE_WAVE, this);
+		views[1] = new WavesView(viewFrames[1], phrase, color1, color2, 150, 0.45f, 0.25f, true, WavesView.LINEAR_PLOT, this);
 		
 		views[2] = new KeyboardsView(viewFrames[2], phrase, color1, color2, 100, true, this);
 

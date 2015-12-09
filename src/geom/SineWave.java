@@ -41,9 +41,8 @@ public class SineWave extends Wave {
 	}
 
 	@Override
-	public void translate(float dx, float dy) {
-		startAngle += dx/width * PApplet.TWO_PI;
-		//startAngle += PApplet.map(dx, 0, width, 0, PApplet.TWO_PI);
-		ycen += dy;
+	public void translate(float dx) {
+		startAngle -= dx/width * PApplet.TWO_PI;
+		//startAngle -= PApplet.map(dx, 0, width, 0, PApplet.TWO_PI);
 	}
 }
