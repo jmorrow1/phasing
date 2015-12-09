@@ -55,39 +55,68 @@ public class KeyboardsView extends View {
 	}
 
 	@Override
-	public void update(float dNotept1, float dNotept2) {		
-		if (keyboardAB != null) keyboardAB.display(pa);
-		if (keyboardA != null) keyboardA.display(pa);
-		if (keyboardB != null) keyboardB.display(pa);
+	public void update(float dNotept1, float dNotept2) {	
+		boolean aIsOnWhiteKey = a.update(dNotept1);
+		boolean bIsOnWhiteKey = b.update(dNotept2);
 		
-		a.update(dNotept1);
-		b.update(dNotept2);
+		if (keyboardAB != null) {
+			keyboardAB.drawWhiteKeys(pa);
+			if (aIsOnWhiteKey) a.draw();
+			if (bIsOnWhiteKey) b.draw();
+			keyboardAB.drawBlackKeys(pa);
+			if (!aIsOnWhiteKey) a.draw();
+			if (!bIsOnWhiteKey) b.draw();
+		}
+		if (keyboardA != null) {
+			keyboardA.drawWhiteKeys(pa);
+			if (aIsOnWhiteKey) a.draw();
+			keyboardA.drawBlackKeys(pa);
+			if (!aIsOnWhiteKey) a.draw();
+		}
+		if (keyboardB != null) {
+			keyboardB.drawWhiteKeys(pa);
+			if (bIsOnWhiteKey) b.draw();
+			keyboardB.drawBlackKeys(pa);
+			if (!bIsOnWhiteKey) b.draw();
+		}
+		
+		
 	}
 	
 	private class PhraseReader {
-		int noteIndex = 0;
+		int noteIndex;
 		float noteTimeTillNextNote;
 		Phrase phrase;
 		Rect[] noteIndexToKey;
 		int color;
 		int opacity;
+		boolean currNoteIsWhiteKey;
 		
 		PhraseReader(Phrase phrase, Rect[] noteIndexToKey, int color, int opacity) {
+			noteIndex = 0;
 			this.phrase = phrase;
 			this.noteIndexToKey = noteIndexToKey;
-			this.noteTimeTillNextNote = phrase.getDuration(0);
+			this.noteTimeTillNextNote = phrase.getDuration(noteIndex);
 			this.color = color;
 			this.opacity = opacity;
+			currNoteIsWhiteKey = Piano.isWhiteKey(phrase.getPitch(noteIndex));
 		}
 		
-		void update(float dNotept) {
+		
+		
+		boolean update(float dNotept) {
 			noteTimeTillNextNote -= dNotept;
 			
 			if (noteTimeTillNextNote <= 0) {
 				noteIndex = (noteIndex+1) % phrase.getNumNotes();
 				noteTimeTillNextNote = noteTimeTillNextNote + phrase.getDuration(noteIndex);
+				currNoteIsWhiteKey = Piano.isWhiteKey(phrase.getPitch(noteIndex));
 			}
 			
+			return currNoteIsWhiteKey;
+		}
+		
+		void draw() {
 			pa.noStroke();
 			pa.fill(color, opacity);
 			noteIndexToKey[noteIndex].display(pa);

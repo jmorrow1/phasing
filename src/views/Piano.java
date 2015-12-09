@@ -92,16 +92,22 @@ public class Piano extends Rect {
 	}
 	
 	public void display(PApplet pa) {
+		drawWhiteKeys(pa);			
+		drawBlackKeys(pa);
+	}
+	
+	public void drawWhiteKeys(PApplet pa) {
 		pa.strokeWeight(1);
 		pa.stroke(100);
-		
-		//draw white keys
 		pa.fill(255);
 		for (int i=0; i<whiteKeys.length; i++) {
 			whiteKeys[i].display(pa);
 		}
-			
-		//draw black keys
+	}
+	
+	public void drawBlackKeys(PApplet pa) {
+		pa.strokeWeight(1);
+		pa.stroke(100);
 		pa.fill(blackKeyColor);
 		for (int i=0; i<blackKeys.length; i++) {
 			blackKeys[i].display(pa);
