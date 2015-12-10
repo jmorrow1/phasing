@@ -5,18 +5,19 @@ import java.util.Queue;
 
 import geom.Rect;
 import phases.ColoredDot;
+import phases.PhasesPApplet;
 import phases.Phrase;
 import processing.core.PApplet;
 
 public class LiveGraphView extends View {
 	private Queue<ColoredDot> dots;
-	private final float DOT_DIAM = 8;
-	private float x;
-	private float[] ys; //maps to notes in the phrase
-	private float pixelsPerWholeNote;
+	private final double DOT_DIAM = 8;
+	private double x;
+	private double[] ys; //maps to notes in the phrase
+	private double pixelsPerWholeNote;
 	private PhraseReader readerA, readerB;
 
-	public LiveGraphView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
+	public LiveGraphView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PhasesPApplet pa) {
 		super(rect, color1, color2, opacity, pa);
 		
 		pixelsPerWholeNote = 50;
@@ -25,13 +26,13 @@ public class LiveGraphView extends View {
 		
 		x = this.getCenx();
 		
-		ys = new float[phrase.getNumNotes()];	
-		float y1 = this.getY1() + this.getHeight()/2.5f;
-		float y2 = this.getY2() - this.getHeight()/2.5f;
-		float minPitch = phrase.minPitch();
-		float maxPitch = phrase.maxPitch();
+		ys = new double[phrase.getNumNotes()];	
+		double y1 = this.getY1() + this.getHeight()/2.5f;
+		double y2 = this.getY2() - this.getHeight()/2.5f;
+		double minPitch = phrase.minPitch();
+		double maxPitch = phrase.maxPitch();
 		for (int i=0; i<ys.length; i++) {
-			ys[i] = PApplet.map(phrase.getPitch(i), minPitch, maxPitch, y2, y1);
+			ys[i] = PhasesPApplet.map(phrase.getPitch(i), minPitch, maxPitch, y2, y1);
 		}
 		
 		readerA = new PhraseReader(phrase, color1);
@@ -42,8 +43,8 @@ public class LiveGraphView extends View {
 	}
 
 	@Override
-	public void update(float dNotept1, float dNotept2) {
-		float dx = -dNotept1 * pixelsPerWholeNote;
+	public void update(double dNotept1, double dNotept2) {
+		double dx = -dNotept1 * pixelsPerWholeNote;
 		
 		readerA.update(dNotept1);
 		readerB.update(dNotept2);
@@ -52,7 +53,7 @@ public class LiveGraphView extends View {
 		updateGraph(dx);
 	}
 	
-	private void updateGraph(float dx) {
+	private void updateGraph(double dx) {
 		//draw it and translate it
 		pa.stroke(100);
 		pa.noFill();
@@ -83,7 +84,7 @@ public class LiveGraphView extends View {
 	private class PhraseReader {
 		Phrase phrase;
 		int noteIndex;
-		float noteTimeTillNextNote;
+		double noteTimeTillNextNote;
 		int color;
 		
 		PhraseReader(Phrase phrase, int color) {
@@ -93,7 +94,7 @@ public class LiveGraphView extends View {
 			this.color = color;
 		}
 		
-		void update(float dNotept) {
+		void update(double dNotept) {
 			noteTimeTillNextNote -= dNotept;
 			
 			if (noteTimeTillNextNote <= 0) {

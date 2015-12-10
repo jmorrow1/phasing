@@ -4,16 +4,16 @@ import arb.soundcipher.SCScore;
 import processing.core.PApplet;
 
 public class Phrase {
-	private float defaultArt, defaultPan;
-	private float[] pitches, dynamics, durations, arts, pans;
+	private double defaultArt, defaultPan;
+	private double[] pitches, dynamics, durations, arts, pans;
 	
 	public Phrase() {}
 	
-	public Phrase(float[] pitches, float[] dynamics, float[] durations) {
+	public Phrase(double[] pitches, double[] dynamics, double[] durations) {
 		this(pitches, dynamics, durations, 0.5f, 63);
 	}
 	
-	public Phrase(float[] pitches, float[] dynamics, float[] durations, float defaultArt, float defaultPan) {
+	public Phrase(double[] pitches, double[] dynamics, double[] durations, double defaultArt, double defaultPan) {
 		if (pitches.length == dynamics.length && dynamics.length == durations.length) {
 			this.pitches = pitches;
 			this.dynamics = dynamics;
@@ -21,8 +21,8 @@ public class Phrase {
 			this.defaultArt = defaultArt;
 			this.defaultPan = defaultPan;
 			int n = pitches.length;
-			arts = new float[n];
-			pans = new float[n];
+			arts = new double[n];
+			pans = new double[n];
 			for (int i=0; i<n; i++) {
 				arts[i] = defaultArt;
 				pans[i] = defaultPan;
@@ -30,7 +30,7 @@ public class Phrase {
 		}
 	}
 	
-	public Phrase(float[] pitches, float[] dynamics, float[] durations, float[] arts, float[] pans) {
+	public Phrase(double[] pitches, double[] dynamics, double[] durations, double[] arts, double[] pans) {
 		if (pitches.length == dynamics.length && dynamics.length == durations.length &&
 				durations.length == arts.length && arts.length == pans.length) {
 			this.pitches = pitches;
@@ -41,15 +41,15 @@ public class Phrase {
 		}
 	}
 	
-	public void addNote(float pitch, float dynamic, float duration) {
-		pitches = PApplet.append(pitches, pitch);
-		dynamics = PApplet.append(dynamics, dynamic);
-		durations = PApplet.append(durations, duration);
-		arts = PApplet.append(arts, defaultArt);
-		pans = PApplet.append(pans, defaultPan);
-	}
+	/*public void addNote(double pitch, double dynamic, double duration) {
+		pitches = PhasesPApplet.append(pitches, pitch);
+		dynamics = PhasesPApplet.append(dynamics, dynamic);
+		durations = PhasesPApplet.append(durations, duration);
+		arts = PhasesPApplet.append(arts, defaultArt);
+		pans = PhasesPApplet.append(pans, defaultPan);
+	}*/
 	
-	public void setPitch(int i, float pitch) {
+	public void setPitch(int i, double pitch) {
 		if (i <= 0 && i < pitches.length) {
 			pitches[i] = pitch;
 		}
@@ -58,7 +58,7 @@ public class Phrase {
 		}
 	}
 	
-	public void setDynamic(int i, float dynamic) {
+	public void setDynamic(int i, double dynamic) {
 		if (i <= 0 && i < dynamics.length) {
 			dynamics[i] = dynamic;
 		}
@@ -67,7 +67,7 @@ public class Phrase {
 		}
 	}
 	
-	public void setDuration(int i, float duration) {
+	public void setDuration(int i, double duration) {
 		if (i <= 0 && i < durations.length) {
 			durations[i] = duration;
 		}
@@ -76,19 +76,19 @@ public class Phrase {
 		}
 	}
 	
-	public void panPhrase(float pan) {
+	public void panPhrase(double pan) {
 		defaultPan = pan;
 		for (int i=0; i<pans.length; i++) {
 			pans[i] = pan;
 		}
 	}
 	
-	public void addToScore(SCScore score, float startBeat, float channel, float instrument) {
+	public void addToScore(SCScore score, double startBeat, double channel, double instrument) {
 		score.addPhrase(startBeat, channel, instrument, pitches, dynamics, durations, arts, pans);
 	}
 	
-	public float minPitch() {
-		float minPitch = Float.MAX_VALUE;
+	public double minPitch() {
+		double minPitch = Float.MAX_VALUE;
 		for (int i=0; i<this.getNumNotes(); i++) {
 			if (this.getPitch(i) < minPitch) {
 				minPitch = this.getPitch(i);
@@ -97,8 +97,8 @@ public class Phrase {
 		return minPitch;
 	}
 	
-	public float maxPitch() {
-		float maxPitch = Float.MIN_VALUE;
+	public double maxPitch() {
+		double maxPitch = Float.MIN_VALUE;
 		for (int i=0; i<this.getNumNotes(); i++) {
 			if (this.getPitch(i) > maxPitch) {
 				maxPitch = this.getPitch(i);
@@ -115,24 +115,24 @@ public class Phrase {
 		return (int)pitches[i];
 	}
 	
-	public float getDuration(int i) {
+	public double getDuration(int i) {
 		return durations[i];
 	}
 	
-	public float getDynamic(int i) {
+	public double getDynamic(int i) {
 		return dynamics[i];
 	}
 	
-	public float getArticulation(int i) {
+	public double getArticulation(int i) {
 		return arts[i];
 	}
 	
-	public float getPan(int i) {
+	public double getPan(int i) {
 		return pans[i];
 	}
 	
-	public float getTotalDuration() {
-		float sum = 0;
+	public double getTotalDuration() {
+		double sum = 0;
 		for (int i=0; i<durations.length; i++) {
 			sum += durations[i];
 		}
@@ -144,7 +144,7 @@ public class Phrase {
 		+ ", durations: " + durations.toString() + ", pan: " + defaultPan + "}";
 	}
 	
-	public static String convertPitch(float code, boolean useSharps) {
+	public static String convertPitch(double code, boolean useSharps) {
 	    return convertPitch((int)code, useSharps);
 	}
 

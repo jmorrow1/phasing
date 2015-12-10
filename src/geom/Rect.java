@@ -1,9 +1,10 @@
 package geom;
 
+import phases.PhasesPApplet;
 import processing.core.PApplet;
 
 public class Rect {
-    private float x1, y1, width, height;
+    private double x1, y1, width, height;
     
     public Rect(Rect rect) {
     	this.x1 = rect.x1;
@@ -12,7 +13,7 @@ public class Rect {
     	this.height = rect.height;
     }
     
-    public Rect(float a, float b, float c, float d, int rectMode) {
+    public Rect(double a, double b, double c, double d, int rectMode) {
         if (rectMode == PApplet.CENTER) {
         	this.width = c;
             this.height = d;
@@ -41,65 +42,65 @@ public class Rect {
         }
     }
     
-    public void display(PApplet pa) {
+    public void display(PhasesPApplet pa) {
         pa.rectMode(pa.CORNER);
         pa.rect(x1, y1, width, height);
     }
     
-    public boolean intersects(float x, float y) {
+    public boolean intersects(double x, double y) {
         return (x1 <= x && x <= x1 + width &&
                 y1 <= y && y <= y1 + height);
     }
     
-    public float getX1() {
+    public double getX1() {
         return x1;
     }
     
-    public float getY1() {
+    public double getY1() {
         return y1;
     }
     
-    public float getX2() {
+    public double getX2() {
         return x1 + width;
     }
     
-    public float getY2() {
+    public double getY2() {
         return y1 + height;
     }
 
-	public float getCenx() {
+	public double getCenx() {
 		return x1 + width/2f;
 	}
 
-	public void setX1(float x1) {
+	public void setX1(double x1) {
 		this.x1 = x1;
 	}
 
-	public float getCeny() {
+	public double getCeny() {
 		return y1 + height/2f;
 	}
 
-	public void setY1(float y1) {
+	public void setY1(double y1) {
 		this.y1 = y1;
 	}
 
-	public float getWidth() {
+	public double getWidth() {
 		return width;
 	}
 
-	public void setWidth(float width) {
+	public void setWidth(double width) {
 		this.width = width;
 	}
 
-	public float getHeight() {
+	public double getHeight() {
 		return height;
 	}
 
-	public void setHeight(float height) {
+	public void setHeight(double height) {
 		this.height = height;
 	}
 	
-	public void translate(float dx, float dy) {
+	public void translate(double dx, double dy) {
 		x1 += dx;
 		y1 += dy;
 	}

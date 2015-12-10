@@ -1,6 +1,7 @@
 package views;
 
 import geom.Rect;
+import phases.PhasesPApplet;
 import phases.Phrase;
 import processing.core.PApplet;
 
@@ -15,7 +16,7 @@ public class KeyboardsView extends View {
 	private int firstPitchOfPiano = 60;
 	
 	public KeyboardsView(Rect rect, Phrase phrase, int color1, int color2, int opacity,
-			boolean superimposeKeyboards, PApplet pa) {
+			boolean superimposeKeyboards, PhasesPApplet pa) {
 		super(rect, color1, color2, opacity, pa);
 
 		if (superimposeKeyboards) {
@@ -52,7 +53,7 @@ public class KeyboardsView extends View {
 	}
 
 	@Override
-	public void update(float dNotept1, float dNotept2) {	
+	public void update(double dNotept1, double dNotept2) {	
 		boolean aIsOnWhiteKey = a.update(dNotept1);
 		boolean bIsOnWhiteKey = b.update(dNotept2);
 		
@@ -80,7 +81,7 @@ public class KeyboardsView extends View {
 	
 	private class PhraseReader {
 		int noteIndex;
-		float noteTimeTillNextNote;
+		double noteTimeTillNextNote;
 		Phrase phrase;
 		Rect[] noteIndexToKey;
 		int color;
@@ -97,7 +98,7 @@ public class KeyboardsView extends View {
 			currNoteIsWhiteKey = Piano.isWhiteKey(phrase.getPitch(noteIndex));
 		}
 		
-		boolean update(float dNotept) {
+		boolean update(double dNotept) {
 			noteTimeTillNextNote -= dNotept;
 			
 			if (noteTimeTillNextNote <= 0) {

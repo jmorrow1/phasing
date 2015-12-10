@@ -1,22 +1,21 @@
 package geom;
 
-import phases.Phrase;
-import processing.core.PApplet;
+import phases.PhasesPApplet;
 
 public class LinearPlot extends Wave {
 	private Point leftEdgePoint, rightEdgePoint;
 	private Point[] pts;
-	private float x1, x2, dx, width;
+	private double x1, x2, dx, width;
 	private boolean drawVertices;
 	
-	public LinearPlot(float[] ys, float x1, float x2) {
+	public LinearPlot(double[] ys, double x1, double x2) {
 		this(ys, x1, x2, true);
 	}
 	
-	public LinearPlot(float[] ys, float x1, float x2, boolean drawVertices) {
+	public LinearPlot(double[] ys, double x1, double x2, boolean drawVertices) {
 		pts = new Point[ys.length];
-		float x = x1;
-		float dx = (x2-x1) / ys.length;
+		double x = x1;
+		double dx = (x2-x1) / ys.length;
 		for (int i=0; i<pts.length; i++) {
 			pts[i] = new Point(x, ys[i]);
 			x += dx;
@@ -48,7 +47,7 @@ public class LinearPlot extends Wave {
 		this.drawVertices = lp.drawVertices;
 	}
 
-	public void display(PApplet pa, int color, int opacity) {
+	public void display(PhasesPApplet pa, int color, int opacity) {
 		//draw lines
 		pa.noFill();
 		pa.stroke(color, opacity);
@@ -71,7 +70,7 @@ public class LinearPlot extends Wave {
 		}
 	}
 	
-	public void translate(float dx) {
+	public void translate(double dx) {
 		//translate
 		for (int i=0; i<pts.length; i++) {
 			pts[i].x += dx;
@@ -83,18 +82,18 @@ public class LinearPlot extends Wave {
 				pts[0].x += width;
 				leftShift(pts);
 			}
-			float lerpAmt = (pts[0].x - x1) / this.dx;
-			leftEdgePoint.y = PApplet.lerp(pts[0].y, pts[pts.length-1].y, lerpAmt);
-			rightEdgePoint.y = PApplet.lerp(pts[0].y, pts[pts.length-1].y, lerpAmt);
+			double lerpAmt = (pts[0].x - x1) / this.dx;
+			leftEdgePoint.y = PhasesPApplet.lerp(pts[0].y, pts[pts.length-1].y, lerpAmt);
+			rightEdgePoint.y = PhasesPApplet.lerp(pts[0].y, pts[pts.length-1].y, lerpAmt);
 		}
 		else if (dx > 0) {
 			while (pts[pts.length-1].x > x2) {
 				pts[pts.length-1].x -= width;
 				rightShift(pts);
 			}
-			float lerpAmt = (pts[0].x - x1) / this.dx;
-			leftEdgePoint.y = PApplet.lerp(pts[0].y, pts[pts.length-1].y, lerpAmt);
-			rightEdgePoint.y = PApplet.lerp(pts[0].y, pts[pts.length-1].y, lerpAmt);
+			double lerpAmt = (pts[0].x - x1) / this.dx;
+			leftEdgePoint.y = PhasesPApplet.lerp(pts[0].y, pts[pts.length-1].y, lerpAmt);
+			rightEdgePoint.y = PhasesPApplet.lerp(pts[0].y, pts[pts.length-1].y, lerpAmt);
 		}
 	}
 	
