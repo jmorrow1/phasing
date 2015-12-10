@@ -3,13 +3,13 @@ package views;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import geom.Point;
 import geom.Rect;
+import phases.ColoredDot;
 import phases.Phrase;
 import processing.core.PApplet;
 
 public class LiveGraphView extends View {
-	private Queue<Dot> dots;
+	private Queue<ColoredDot> dots;
 	private final float DOT_DIAM = 8;
 	private float x;
 	private float[] ys; //maps to notes in the phrase
@@ -21,7 +21,7 @@ public class LiveGraphView extends View {
 		
 		pixelsPerWholeNote = 50;
 		
-		dots = new LinkedList<Dot>();
+		dots = new LinkedList<ColoredDot>();
 		
 		x = this.getCenx();
 		
@@ -36,11 +36,14 @@ public class LiveGraphView extends View {
 		
 		readerA = new PhraseReader(phrase, color1);
 		readerB = new PhraseReader(phrase, color2);
+		
+		plotNote(0, color1);
+		plotNote(0, color2);
 	}
 
 	@Override
 	public void update(float dNotept1, float dNotept2) {
-		float dx = -(dNotept1 * pixelsPerWholeNote);
+		float dx = -dNotept1 * pixelsPerWholeNote;
 		
 		readerA.update(dNotept1);
 		readerB.update(dNotept2);
@@ -54,14 +57,14 @@ public class LiveGraphView extends View {
 		pa.stroke(100);
 		pa.noFill();
 		pa.beginShape();
-		for (Dot d : dots) {
+		for (ColoredDot d : dots) {
 			pa.vertex(d.x, d.y);
 		}
 		pa.endShape();
 		
-		pa.ellipseMode(pa.CENTER);
-		for (Dot d : dots) {
-			d.display();
+		ColoredDot.style(pa);
+		for (ColoredDot d : dots) {
+			d.display(pa);
 			d.x += dx;
 		}
 	}
@@ -74,7 +77,7 @@ public class LiveGraphView extends View {
 	
 	//callback:
 	private void plotNote(int noteIndex, int color) {
-		dots.add(new Dot(x, ys[noteIndex], DOT_DIAM, color));
+		dots.add(new ColoredDot(x, ys[noteIndex], DOT_DIAM, color, opacity));
 	}
 	
 	private class PhraseReader {
@@ -98,26 +101,6 @@ public class LiveGraphView extends View {
 				noteTimeTillNextNote = noteTimeTillNextNote + phrase.getDuration(noteIndex);
 				plotNote(noteIndex, color); //<-- callback
 			}
-		}
-	}
-	
-	private class Dot {
-		float x, y;
-		float diam;
-		int color;
-		
-		Dot(float x, float y, float diam, int color) {
-			this.x = x;
-			this.y = y;
-			this.diam = diam;
-			this.color = color;
-		}
-		
-		void display() {
-			pa.noStroke();
-			pa.fill(color);
-			pa.ellipseMode(pa.CENTER);
-			pa.ellipse(x, y, diam, diam);
 		}
 	}
 }

@@ -76,8 +76,6 @@ public class KeyboardsView extends View {
 			keyboardB.drawBlackKeys(pa);
 			if (!bIsOnWhiteKey) b.draw();
 		}
-		
-		
 	}
 	
 	private class PhraseReader {
