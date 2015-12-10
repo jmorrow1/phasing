@@ -99,8 +99,6 @@ public class KeyboardsView extends View {
 			currNoteIsWhiteKey = Piano.isWhiteKey(phrase.getPitch(noteIndex));
 		}
 		
-		
-		
 		boolean update(float dNotept) {
 			noteTimeTillNextNote -= dNotept;
 			

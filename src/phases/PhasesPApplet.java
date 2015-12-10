@@ -4,6 +4,7 @@ import arb.soundcipher.SCScore;
 import geom.Rect;
 import processing.core.PApplet;
 import views.KeyboardsView;
+import views.LiveGraphView;
 import views.SymbolicView;
 import views.View;
 import views.WavesView;
@@ -46,6 +47,8 @@ public class PhasesPApplet extends PApplet {
 		
 		//views[0] = new GHView(viewFrames[0], phrase, GHView.DOWN, false, false, color1, color2, 100, this);
 		
+		views[0] = new LiveGraphView(viewFrames[0], phrase, color1, color2, 150, this);
+		
 		views[1] = new WavesView(viewFrames[1], phrase, color1, color2, 150, 0.45f, 0.25f, true, WavesView.LINEAR_PLOT, this);
 		
 		views[2] = new KeyboardsView(viewFrames[2], phrase, color1, color2, 100, true, this);
@@ -75,16 +78,18 @@ public class PhasesPApplet extends PApplet {
 	
 		//drawing
 		background(255);
-		strokeWeight(1);
-		stroke(0);
-		line(width/2f, 0, width/2f, height);
-		line(0, height/2f, width, height/2f);
-		
+
 		for (int i=0; i<views.length; i++) {
 			if (views[i] != null) {
 				views[i].update(dBeatpt1, dBeatpt2);
 			}
 		}
+		
+		strokeWeight(2);
+		stroke(0);
+		line(width/2f, 0, width/2f, height);
+		line(0, height/2f, width, height/2f);
+		
 	}
 	
 	public static int remainder(int num, int denom) {
