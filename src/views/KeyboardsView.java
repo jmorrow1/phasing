@@ -6,7 +6,6 @@ import processing.core.PApplet;
 
 public class KeyboardsView extends View {
 	//music
-	private Phrase phrase;
 	private PhraseReader a, b;
 	//piano
 	private Piano keyboardA, keyboardB;
@@ -17,10 +16,8 @@ public class KeyboardsView extends View {
 	
 	public KeyboardsView(Rect rect, Phrase phrase, int color1, int color2, int opacity,
 			boolean superimposeKeyboards, PApplet pa) {
-		super(rect, phrase, color1, color2, opacity, pa);
-		
-		this.phrase = phrase;
-		
+		super(rect, color1, color2, opacity, pa);
+
 		if (superimposeKeyboards) {
 			keyboardAB = new Piano(2, new Rect(this.getCenx(), this.getCeny(),
 					0.75f*this.getWidth(), PIANO_SIZE, PApplet.CENTER), true, pa.color(255));

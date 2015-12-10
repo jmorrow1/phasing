@@ -7,14 +7,14 @@ import processing.core.PFont;
 
 public class SymbolicView extends View {
 	private float x1, x2, width;
-	private PFont pfont;
+	//private PFont pfont;
 	private PhraseGraphic a, b;
 	private float pixelsPerWholeNote;
 	private boolean movementRelativeToNotesA;
 	
 	public SymbolicView(Rect rect, Phrase phrase, int color1, int color2, int opacity,
 			boolean movementRelativeToNotesA, PApplet pa) {
-		super(rect, phrase, color1, color2, opacity, pa);
+		super(rect, color1, color2, opacity, pa);
 		
 		x1 = this.getX1() + this.getWidth()/20f;
 		x2 = this.getX2() - this.getWidth()/20f;
@@ -110,6 +110,8 @@ public class SymbolicView extends View {
 		
 		void display() {
 			pa.fill(color, opacity);
+			pa.textAlign(pa.TOP, pa.CENTER);
+			pa.textSize(32);
 			for (int i=0; i<notes.length; i++) {
 				if (notes[i].x1 < x2) {
 					notes[i].display();
@@ -139,7 +141,6 @@ public class SymbolicView extends View {
 		}
 		
 		void display() {
-			pa.textAlign(pa.TOP, pa.CENTER);
 			pa.text(name.charAt(0), x1, y1);
 		}
 		

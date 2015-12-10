@@ -24,7 +24,7 @@ public class GHView extends View {
 	
 	public GHView(Rect rect, Phrase phrase, int noteMovement, boolean displayPiano, boolean movementRelativeToList1,
 			int color1, int color2, int opacity, PApplet pa) {
-		super(rect, phrase, color1, color2, opacity, pa);
+		super(rect, color1, color2, opacity, pa);
 		
 		this.noteMovement = noteMovement;
 		this.displayPiano = displayPiano;

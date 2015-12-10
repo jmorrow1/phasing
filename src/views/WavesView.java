@@ -17,7 +17,7 @@ public class WavesView extends View {
 	
 	public WavesView(Rect rect, Phrase phrase, int color1, int color2, int opacity, 
 			float amp1Amt, float amp2Amt, boolean movementRelativeToPathA, int waveType, PApplet pa) {
-		super(rect, phrase, color1, color2, opacity, pa);
+		super(rect, color1, color2, opacity, pa);
 		
 		this.movementRelativeToPathA = movementRelativeToPathA;
 		
