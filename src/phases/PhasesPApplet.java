@@ -4,7 +4,6 @@ import arb.soundcipher.SCScore;
 import geom.Rect;
 import processing.core.PApplet;
 import views.KeyboardsView;
-import views.SectorView;
 import views.SymbolicView;
 import views.View;
 import views.WavesView;
@@ -46,7 +45,6 @@ public class PhasesPApplet extends PApplet {
 		int color2 = color(100, 100, 255);
 		
 		//views[0] = new GHView(viewFrames[0], phrase, GHView.DOWN, false, false, color1, color2, 100, this);
-		views[0] = new SectorView(viewFrames[0], phrase, color1, color2, 100, this);
 		
 		views[1] = new WavesView(viewFrames[1], phrase, color1, color2, 150, 0.45f, 0.25f, true, WavesView.LINEAR_PLOT, this);
 		
