@@ -1,14 +1,13 @@
 package phases;
 
-import arb.soundcipher.SCScore;
 import geom.Rect;
 import processing.core.PApplet;
+import soundcipher.SCScore;
 import views.KeyboardsView;
 import views.LiveGraphView;
 import views.RhythmView;
 import views.SymbolicView;
 import views.View;
-import views.WavesView;
 
 public class PhasesPApplet extends PApplet {
 	boolean playing;

@@ -1,7 +1,7 @@
 package phases;
 
-import arb.soundcipher.SCScore;
 import processing.core.PApplet;
+import soundcipher.SCScore;
 
 public class Phrase {
 	private float defaultArt, defaultPan;
