@@ -3,12 +3,12 @@ package phases;
 import processing.core.PApplet;
 
 public class ColoredDot {
-	public double x, y;
-	public double diam;
+	public float x, y;
+	public float diam;
 	public int color;
-	public double opacity;
+	public float opacity;
 	
-	public ColoredDot(double x, double y, double diam, int color, int opacity) {
+	public ColoredDot(float x, float y, float diam, int color, int opacity) {
 		this.x = x;
 		this.y = y;
 		this.diam = diam;
@@ -16,12 +16,12 @@ public class ColoredDot {
 		this.opacity = opacity;
 	}
 	
-	public void display(PhasesPApplet pa) {
+	public void display(PApplet pa) {
 		pa.fill(color, opacity);
 		pa.ellipse(x, y, diam, diam);
 	}
 	
-	public static void style(PhasesPApplet pa) {
+	public static void style(PApplet pa) {
 		pa.ellipseMode(pa.CENTER);
 		pa.noStroke();
 	}

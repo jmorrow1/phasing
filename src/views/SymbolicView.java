@@ -1,18 +1,19 @@
 package views;
 
 import geom.Rect;
-import phases.PhasesPApplet;
 import phases.Phrase;
+import processing.core.PApplet;
+import processing.core.PFont;
 
 public class SymbolicView extends View {
-	private double x1, x2, width;
+	private float x1, x2, width;
 	//private PFont pfont;
 	private PhraseGraphic a, b;
-	private double pixelsPerWholeNote;
+	private float pixelsPerWholeNote;
 	private boolean movementRelativeToNotesA;
 	
 	public SymbolicView(Rect rect, Phrase phrase, int color1, int color2, int opacity,
-			boolean movementRelativeToNotesA, PhasesPApplet pa) {
+			boolean movementRelativeToNotesA, PApplet pa) {
 		super(rect, color1, color2, opacity, pa);
 		
 		x1 = this.getX1() + this.getWidth()/20f;
@@ -29,8 +30,8 @@ public class SymbolicView extends View {
 		
 		NoteGraphic[] notesA = new NoteGraphic[phrase.getNumNotes()];
 		NoteGraphic[] notesB = new NoteGraphic[phrase.getNumNotes()];
-		double x = x1;
-		double y = rect.getY1() + rect.getHeight()/2f;
+		float x = x1;
+		float y = rect.getY1() + rect.getHeight()/2f;
 		for (int i=0; i<phrase.getNumNotes(); i++) {
 			notesA[i] = new NoteGraphic(phrase.convertPitch(phrase.getPitch(i), true), x, y - 15);
 			notesB[i] = new NoteGraphic(phrase.convertPitch(phrase.getPitch(i), true), x, y + 15);
@@ -42,7 +43,7 @@ public class SymbolicView extends View {
 	}
 
 	@Override
-	public void update(double dNotept1, double dNotept2) {
+	public void update(float dNotept1, float dNotept2) {
 		//pa.textFont(pfont);
 		if (!movementRelativeToNotesA) {
 			a.update(dNotept1);
@@ -73,7 +74,7 @@ public class SymbolicView extends View {
 			this.opacity = opacity;
 		}
 		
-		void update(double dNotept) {
+		void update(float dNotept) {
 			//wrap
 			pa.fill(color, opacity);
 			if (dNotept < 0) {
@@ -98,7 +99,7 @@ public class SymbolicView extends View {
 			}
 			
 			//translate
-			double dx = pixelsPerWholeNote * dNotept;
+			float dx = pixelsPerWholeNote * dNotept;
 			for (int i=0; i<notes.length; i++) {
 				notes[i].x1 += dx;
 			}
@@ -121,10 +122,10 @@ public class SymbolicView extends View {
 	
 	private class NoteGraphic {
 		String name;
-		double x1, y1;
-		double width;
+		float x1, y1;
+		float width;
 		
-		NoteGraphic(String name, double x, double y) {
+		NoteGraphic(String name, float x, float y) {
 			this.name = String.valueOf(name.charAt(0));
 			this.x1 = x;
 			this.y1 = y;
@@ -143,12 +144,12 @@ public class SymbolicView extends View {
 			pa.text(name.charAt(0), x1, y1);
 		}
 		
-		void displayShifted(double dx) {
+		void displayShifted(float dx) {
 			pa.textAlign(pa.TOP, pa.CENTER);
 			pa.text(name, x1 + dx, y1);
 		}
 		
-		double x2() {return x1+width;}
+		float x2() {return x1+width;}
 	}
 	
 	private static void leftShift(NoteGraphic[] xs) {

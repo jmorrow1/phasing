@@ -1,9 +1,9 @@
 package geom;
 
 public class Point {
-	public double x, y;
+	public float x, y;
 	
-	public Point(double x, double y) {
+	public Point(float x, float y) {
 		this.x = x;
 		this.y = y;
 	}

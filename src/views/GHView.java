@@ -9,10 +9,10 @@ public class GHView extends View {
 	//piano
 	private boolean displayPiano;
 	private Piano piano;
-	private final double PIANO_SIZE = 50;
+	private final float PIANO_SIZE = 50;
 	//conversion
 	private int firstPitchOfPiano = 60;
-	private double pixelsPerWholeNote;
+	private float pixelsPerWholeNote;
 	
 	//note views
 	private Rect[] list1, list2;
@@ -23,7 +23,7 @@ public class GHView extends View {
 	private boolean list1IsReversed = false;
 	
 	public GHView(Rect rect, Phrase phrase, int noteMovement, boolean displayPiano, boolean movementRelativeToList1,
-			int color1, int color2, int opacity, PhasesPApplet pa) {
+			int color1, int color2, int opacity, PApplet pa) {
 		super(rect, color1, color2, opacity, pa);
 		
 		this.noteMovement = noteMovement;
@@ -53,7 +53,7 @@ public class GHView extends View {
 		list2 = initList(phrase);
 	}
 	
-	public void update(double dBeatpt1, double dBeatpt2) {
+	public void update(float dBeatpt1, float dBeatpt2) {
 		if (displayPiano) piano.display(pa);
 		
 		pa.strokeWeight(1);
@@ -83,8 +83,8 @@ public class GHView extends View {
 		}
 	}
 	
-	private int update(Rect[] list, double dBeatpt, int pointer) {
-		double dpos = dBeatpt * pixelsPerWholeNote;
+	private int update(Rect[] list, float dBeatpt, int pointer) {
+		float dpos = dBeatpt * pixelsPerWholeNote;
 
 		for (int i=0; i<list.length; i++) {
 			list[i].display(pa);
@@ -162,8 +162,8 @@ public class GHView extends View {
 	
 	private Rect[] initList(Phrase phrase) {
 		Rect[] set = new Rect[phrase.getNumNotes()];
-		double dx = 0;
-		double dy = 0;
+		float dx = 0;
+		float dy = 0;
 		set[0] = noteToRect(phrase, 0);
 		for (int i=1; i<phrase.getNumNotes(); i++) {
 			set[i] = noteToRect(phrase, i);

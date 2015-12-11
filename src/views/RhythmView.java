@@ -5,19 +5,19 @@ import java.util.Queue;
 
 import geom.Rect;
 import phases.ColoredDot;
-import phases.PhasesPApplet;
 import phases.Phrase;
+import processing.core.PApplet;
 
 public class RhythmView extends View {
-	private double x1, x2, y1, y2, width;
-	private double noteX, noteY, dNoteY;
-	private double pixelsPerWholeNote;
+	private float x1, x2, y1, y2, width;
+	private float noteX, noteY, dNoteY;
+	private float pixelsPerWholeNote;
  	private Queue<ColoredDot> dots = new LinkedList<ColoredDot>();
  	private final int DOT_DIAM = 12;
  	
  	private PhraseReader a, b;
 	
-	public RhythmView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PhasesPApplet pa) {
+	public RhythmView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
 		super(rect, color1, color2, opacity, pa);
 		
 		x1 = this.getX1() + 10;
@@ -39,7 +39,7 @@ public class RhythmView extends View {
 	}
 
 	@Override
-	public void update(double dNotept1, double dNotept2) {
+	public void update(float dNotept1, float dNotept2) {
 		noteX += pixelsPerWholeNote*dNotept1;
 		if (noteX >= x2) {
 			noteX = x1;
@@ -72,7 +72,7 @@ public class RhythmView extends View {
 	private class PhraseReader {
 		Phrase phrase;
 		int noteIndex;
-		double noteTimeTillNextNote;
+		float noteTimeTillNextNote;
 		int color;
 		
 		PhraseReader(Phrase phrase, int color) {
@@ -82,7 +82,7 @@ public class RhythmView extends View {
 			this.color = color;
 		}
 		
-		void update(double dNotept) {
+		void update(float dNotept) {
 			noteTimeTillNextNote -= dNotept;
 			
 			if (noteTimeTillNextNote <= 0) {

@@ -2,7 +2,6 @@ package views;
 
 import geom.Point;
 import geom.Rect;
-import phases.PhasesPApplet;
 import processing.core.PApplet;
 
 public class Piano extends Rect {
@@ -45,17 +44,17 @@ public class Piano extends Rect {
 	private void initRects() {
 		//dependent parameters
 		int numKeys = numOctaves * 12;
-		double whiteKeyWidth = (getWidth() > getHeight()) ? (getWidth()-1) / (numOctaves*7f) : 
+		float whiteKeyWidth = (getWidth() > getHeight()) ? (getWidth()-1) / (numOctaves*7f) : 
 			                                                getWidth();
 		
-		double whiteKeyHeight = (getHeight() > getWidth()) ? (getHeight()-1) / (numOctaves*7f) :
+		float whiteKeyHeight = (getHeight() > getWidth()) ? (getHeight()-1) / (numOctaves*7f) :
 			                                                 getHeight();
-		double blackKeyWidth = whiteKeyWidth * 0.625f;
-		double blackKeyHeight = whiteKeyHeight * 0.625f;
+		float blackKeyWidth = whiteKeyWidth * 0.625f;
+		float blackKeyHeight = whiteKeyHeight * 0.625f;
 		
 		//init keys
-		double x1 = this.getX1();
-		double y1 = this.getY1();
+		float x1 = this.getX1();
+		float y1 = this.getY1();
 		int j=0; //looping variable for whiteKeys
 		int k=0; //looping variable for blackKeys
 		for (int i=0; i<numKeys; i++) { //looping variable for all keys
@@ -92,12 +91,12 @@ public class Piano extends Rect {
 		}
 	}
 	
-	public void display(PhasesPApplet pa) {
+	public void display(PApplet pa) {
 		drawWhiteKeys(pa);			
 		drawBlackKeys(pa);
 	}
 	
-	public void drawWhiteKeys(PhasesPApplet pa) {
+	public void drawWhiteKeys(PApplet pa) {
 		pa.strokeWeight(1);
 		pa.stroke(100);
 		pa.fill(255);
@@ -106,7 +105,7 @@ public class Piano extends Rect {
 		}
 	}
 	
-	public void drawBlackKeys(PhasesPApplet pa) {
+	public void drawBlackKeys(PApplet pa) {
 		pa.strokeWeight(1);
 		pa.stroke(100);
 		pa.fill(blackKeyColor);
@@ -115,14 +114,14 @@ public class Piano extends Rect {
 		}
 	}
 	
-	public void setWidth(double width) {
+	public void setWidth(float width) {
 		super.setWidth(width);
 		if (numOctaves > 0) {
 			initRects();
 		}
 	}
 	
-	public void setHeight(double height) {
+	public void setHeight(float height) {
 		super.setHeight(height);
 		if (numOctaves > 0) {
 			initRects();
