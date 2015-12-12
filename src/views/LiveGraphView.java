@@ -6,6 +6,7 @@ import java.util.Queue;
 
 import geom.Rect;
 import phases.ColoredDot;
+import phases.PhasesPApplet;
 import phases.Phrase;
 import phases.PhraseReader;
 import processing.core.PApplet;
@@ -101,15 +102,15 @@ public class LiveGraphView extends View {
 	
 	/*Settings*/
 	
-	public void drawLines(boolean drawLines) {
+	private void drawLines(boolean drawLines) {
 		this.drawLines = drawLines;
 	}
 	
-	public void drawDots(boolean drawDots) {
+	private void drawDots(boolean drawDots) {
 		this.drawDots = drawDots;
 	}
 	
-	public void setColor1(int color1) {
+	private void setColor1(int color1) {
 		this.color1 = color1;
 		for (ColoredDot d : dots) {
 			if (d.getId() == ONE_ID) {
@@ -118,12 +119,49 @@ public class LiveGraphView extends View {
 		}
 	}
 	
-	public void setColor2(int color2) {
+	private void setColor2(int color2) {
 		this.color2 = color2;
 		for (ColoredDot d : dots) {
 			if (d.getId() == TWO_ID) {
 				d.setColor(color2);
 			}
+		}
+	}
+
+	@Override
+	public void incrementPreset() {
+		preset = (preset+1) % 5;
+		switch(preset) {
+			case 0 :
+				drawLines(true);
+				drawDots(true);
+				setColor1(PhasesPApplet.color1);
+				setColor2(PhasesPApplet.color2);
+				break;
+			case 1 :
+				drawLines(true);
+				drawDots(false);
+				setColor1(PhasesPApplet.color1);
+				setColor2(PhasesPApplet.color2);
+				break;
+			case 2 :
+				drawLines(false);
+				drawDots(true);
+				setColor1(PhasesPApplet.color1);
+				setColor2(PhasesPApplet.color2);
+				break;
+			case 3 :
+				drawLines(true);
+				drawDots(true);
+				setColor1(pa.color(0));
+				setColor2(pa.color(0));
+				break;
+			case 4 :
+				drawLines(false);
+				drawDots(true);
+				setColor1(pa.color(0));
+				setColor2(pa.color(0));
+				break;
 		}
 	}
 }

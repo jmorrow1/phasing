@@ -95,7 +95,20 @@ public class WavesView extends View {
 	
 	/*Settings*/
 	
-	public void setCameraRelativeToMovement(boolean cameraRelativeToMovement) {
+	private void setCameraRelativeToMovement(boolean cameraRelativeToMovement) {
 		this.cameraRelativeToMovement = cameraRelativeToMovement;
+	}
+
+	@Override
+	public void incrementPreset() {
+		preset = (preset+1) % 2;
+		switch(preset) {
+			case 0 :
+				setCameraRelativeToMovement(false);
+				break;
+			case 1 :
+				setCameraRelativeToMovement(true);
+				break;
+		}
 	}
 }

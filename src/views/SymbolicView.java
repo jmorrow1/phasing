@@ -204,7 +204,20 @@ public class SymbolicView extends View {
 	
 	/*Settings*/
 	
-	public void setCameraRelativeToNotes(boolean cameraRelativeToMotion) {
+	private void setCameraRelativeToMotion(boolean cameraRelativeToMotion) {
 		cameraRelativeToMotion = cameraRelativeToMotion;
+	}
+
+	@Override
+	public void incrementPreset() {
+		preset = (preset+1) % 2;
+		switch(preset) {
+			case 0 :
+				setCameraRelativeToMotion(false);
+				break;
+			case 1 :
+				setCameraRelativeToMotion(true);
+				break;
+		}
 	}
 }

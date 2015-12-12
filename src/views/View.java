@@ -7,6 +7,7 @@ import processing.core.PApplet;
 public abstract class View extends Rect {
 	protected PApplet pa;
 	protected int color1, color2, opacity;
+	protected int preset;
 	
 	public View(Rect rect, int color1, int color2, int opacity, PApplet pa) {
 		super(rect);
@@ -17,4 +18,6 @@ public abstract class View extends Rect {
 	}
 
 	public abstract void update(float dNotept1, float dNotept2, int sign);
+	
+	public abstract void incrementPreset();
 }

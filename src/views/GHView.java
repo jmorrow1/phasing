@@ -230,7 +230,20 @@ public class GHView extends View {
 	
 	/*Settings*/
 	
-	public void displayPiano(boolean displayPiano) {
+	private void displayPiano(boolean displayPiano) {
 		this.displayPiano = displayPiano;
+	}
+
+	@Override
+	public void incrementPreset() {
+		preset = (preset+1) % 2;
+		switch(preset) {
+			case 0 :
+				displayPiano(false);
+				break;
+			case 1 :
+				displayPiano(true);
+				break;
+		}
 	}
 }

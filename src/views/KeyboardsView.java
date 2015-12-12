@@ -134,8 +134,21 @@ public class KeyboardsView extends View {
 	
 	/*Settings*/
 	
-	public void superimposeKeyboards(boolean superimposeKeyboards) {
+	private void superimposeKeyboards(boolean superimposeKeyboards) {
 		initPianos(superimposeKeyboards);
 		initPianoPlayers(superimposeKeyboards);
+	}
+
+	@Override
+	public void incrementPreset() {
+		preset = (preset+1) % 2;
+		switch(preset) {
+			case 0 :
+				superimposeKeyboards(false);
+				break;
+			case 1 :
+				superimposeKeyboards(true);
+				break;
+		}
 	}
 }

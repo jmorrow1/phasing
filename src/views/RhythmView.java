@@ -74,4 +74,9 @@ public class RhythmView extends View {
 		dots.add(new ColoredDot(noteX, noteY, DOT_DIAM,
 				(reader.getId() == ONE_ID) ? color1 : color2, opacity, reader.getId()));
 	}
+
+	@Override
+	public void incrementPreset() {
+		//RhythmView has only the default preset at the moment
+	}
 }

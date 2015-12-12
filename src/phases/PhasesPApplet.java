@@ -24,6 +24,7 @@ public class PhasesPApplet extends PApplet {
 	SCScorePlus player1 = new SCScorePlus();
 	SCScorePlus player2 = new SCScorePlus();
 	//views
+	public static int color1, color2;
 	Rect[] viewFrames;
 	View[] views = new View[4];
 	
@@ -43,8 +44,8 @@ public class PhasesPApplet extends PApplet {
 				new Rect(width/2f, height/2f, width/2f, height/2f, PApplet.CORNER)
 		};
 		
-		int color1 = color(255, 100, 100);
-		int color2 = color(100, 100, 255);
+		color1 = color(255, 100, 100);
+		color2 = color(100, 100, 255);
 		
 		//views[0] = new GHView(viewFrames[0], phrase, GHView.DOWN, false, true, color1, color2, 100, this);
 		
