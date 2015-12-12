@@ -77,26 +77,24 @@ public class SymbolicView extends View {
 		void update(float dNotept) {
 			//wrap
 			pa.fill(color, opacity);
-			if (dNotept < 0) {
-				if (notes[0].x1 < x1) {
-					while (notes[0].x2() < x1) {
-						notes[0].x1 += width;
-						leftShift(notes);
-					}
-					
-					notes[0].displayShifted(width);
+			
+			if (notes[0].x1 < x1) {
+				while (notes[0].x2() < x1) {
+					notes[0].x1 += width;
+					leftShift(notes);
 				}
+				
+				notes[0].displayShifted(width);
 			}
-			else {
-				if (notes[notes.length-1].x2() > x2) {
-					while (notes[notes.length-1].x1 > x2) {
-						notes[notes.length-1].x1 -= width;
-						rightShift(notes);
-					}
-					
-					notes[notes.length-1].displayShifted(-width);
+			else if (notes[notes.length-1].x2() > x2) {
+				while (notes[notes.length-1].x1 > x2) {
+					notes[notes.length-1].x1 -= width;
+					rightShift(notes);
 				}
+				
+				notes[notes.length-1].displayShifted(-width);
 			}
+			
 			
 			//translate
 			float dx = pixelsPerWholeNote * dNotept;

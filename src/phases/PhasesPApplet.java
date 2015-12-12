@@ -5,19 +5,20 @@ import processing.core.PApplet;
 import soundcipher.SCScore;
 import views.KeyboardsView;
 import views.LiveGraphView;
-import views.RhythmView;
 import views.SymbolicView;
 import views.View;
+import views.WavesView;
 
 public class PhasesPApplet extends PApplet {
 	boolean playing;
 	//time
 	long prev_t;
+	float prev_beatpt1, prev_beatpt2;
 	//music
 	Phrase phrase;
 	int bpm1 = 90;
 	float bpms1 = bpm1 / 60000f;
-	int bpm2 = 91;
+	int bpm2 = 95;
 	float bpms2 = bpm2 / 60000f;
 	//playback
 	SCScore player1 = new SCScore();
@@ -49,9 +50,9 @@ public class PhasesPApplet extends PApplet {
 		
 		views[0] = new LiveGraphView(viewFrames[0], phrase, color1, color2, 175, this);
 		
-		views[1] = new RhythmView(viewFrames[1], phrase, color1, color2, 175, this);
+		//views[1] = new RhythmView(viewFrames[1], phrase, color1, color2, 175, this);
 		
-		//views[1] = new WavesView(viewFrames[1], phrase, color1, color2, 150, 0.45f, 0.25f, true, WavesView.LINEAR_PLOT, this);
+		views[1] = new WavesView(viewFrames[1], phrase, color1, color2, 150, 0.45f, 0.25f, true, WavesView.LINEAR_PLOT, this);
 		
 		views[2] = new KeyboardsView(viewFrames[2], phrase, color1, color2, 100, true, this);
 		
@@ -69,15 +70,33 @@ public class PhasesPApplet extends PApplet {
 		playing = true;
 		
 		prev_t = System.currentTimeMillis();
+		prev_beatpt1 = 0;
+		prev_beatpt2 = 0;
 	}
 	
 	public void draw() {
 		//time
-		long dt = System.currentTimeMillis() - prev_t;
-		prev_t = System.currentTimeMillis();
-		float dBeatpt1 = (playing) ? dt * bpms1 : 0;
-		float dBeatpt2 = (playing) ? dt * bpms2 : 0;
-	
+		float beatpt1 = PApplet.map(player1.getTickPosition(),
+				                    0, player1.getTickLength(),
+				                    0, 3);
+		float beatpt2 = PApplet.map(player2.getTickPosition(),
+				                    0, player2.getTickLength(),
+				                    0, 3);
+		
+		float dBeatpt1 = beatpt1 - prev_beatpt1;
+		float dBeatpt2 = beatpt2 - prev_beatpt2;
+		
+		if (dBeatpt1 < 0) {
+			dBeatpt1 += 3;
+		}
+		
+		if (dBeatpt2 < 0) {
+			dBeatpt2 += 3;
+		}
+		
+		prev_beatpt1 = beatpt1;
+		prev_beatpt2 = beatpt2;
+
 		//drawing
 		background(255);
 

@@ -118,6 +118,14 @@ public class SCScore extends SCUtilities implements MetaEventListener,
             e.printStackTrace();
         }
     }
+    
+    public long getTickPosition() {
+    	return sequencer.getTickPosition();
+    }
+    
+    public long getTickLength() {
+    	return sequencer.getTickLength();
+    }
 
     /**
      * Specify the default channel for notes added to this score.
