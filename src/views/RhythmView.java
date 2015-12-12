@@ -21,7 +21,7 @@ public class RhythmView extends View {
  	private final int ONE_ID = 0, TWO_ID = 1;
 	
 	public RhythmView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
-		super(rect, color1, color2, opacity, pa);
+		super(rect, color1, color2, opacity, 0, pa);
 		
 		x1 = this.getX1() + 10;
 		x2 = this.getX2() - 10;
@@ -74,9 +74,14 @@ public class RhythmView extends View {
 		dots.add(new ColoredDot(noteX, noteY, DOT_DIAM,
 				(reader.getId() == ONE_ID) ? color1 : color2, opacity, reader.getId()));
 	}
+	
+	@Override
+	public int numPresets() {
+		return 1;
+	}
 
 	@Override
-	public void incrementPreset() {
+	public void loadPreset(int preset) {
 		//RhythmView has only the default preset at the moment
 	}
 }

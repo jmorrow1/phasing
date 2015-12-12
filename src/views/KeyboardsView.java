@@ -18,17 +18,13 @@ public class KeyboardsView extends View {
 	//conversion
 	private int firstPitchOfPiano = 60;
 	
-	public KeyboardsView(Rect rect, Phrase phrase, int color1, int color2, int opacity,
-			boolean superimposeKeyboards, PApplet pa) {
-		super(rect, color1, color2, opacity, pa);
+	public KeyboardsView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
+		super(rect, color1, color2, opacity, 0, pa);
 		
 		this.phrase = phrase;
-
-		//init pianos
-		initPianos(superimposeKeyboards);
 		
-		//init piano players
-		initPianoPlayers(superimposeKeyboards);
+		initPianos(false);
+		initPianoPlayers(false);
 		
 		//init phrase readers
 		try {
@@ -134,21 +130,16 @@ public class KeyboardsView extends View {
 	
 	/*Settings*/
 	
-	private void superimposeKeyboards(boolean superimposeKeyboards) {
+	/*private void superimposeKeyboards(boolean superimposeKeyboards) {
 		initPianos(superimposeKeyboards);
 		initPianoPlayers(superimposeKeyboards);
+	}*/
+	
+	public void loadPreset(int preset) {
+		
 	}
-
-	@Override
-	public void incrementPreset() {
-		preset = (preset+1) % 2;
-		switch(preset) {
-			case 0 :
-				superimposeKeyboards(false);
-				break;
-			case 1 :
-				superimposeKeyboards(true);
-				break;
-		}
+	
+	public int numPresets() {
+		return 1;
 	}
 }

@@ -47,17 +47,17 @@ public class PhasesPApplet extends PApplet {
 		color1 = color(255, 100, 100);
 		color2 = color(100, 100, 255);
 		
-		//views[0] = new GHView(viewFrames[0], phrase, GHView.DOWN, false, true, color1, color2, 100, this);
+		//views[0] = new GHView(viewFrames[0], phrase, color1, color2, 100, this);
 		
-		views[0] = new LiveGraphView(viewFrames[0], phrase, color1, color2, 175, true, false, this);
+		views[0] = new LiveGraphView(viewFrames[0], phrase, color1, color2, 175, this);
 		
 		//views[3] = new RhythmView(viewFrames[3], phrase, color1, color2, 175, this);
 		
-		views[1] = new WavesView(viewFrames[1], phrase, color1, color2, 150, 0.45f, 0.25f, true, WavesView.LINEAR_PLOT, this);
+		views[1] = new WavesView(viewFrames[1], phrase, color1, color2, 150, this);
 		
-		views[2] = new KeyboardsView(viewFrames[2], phrase, color1, color2, 100, true, this);
+		views[2] = new KeyboardsView(viewFrames[2], phrase, color1, color2, 100, this);
 		
-		views[3] = new SymbolicView(viewFrames[3], phrase, color1, color2, 175, true, this);
+		views[3] = new SymbolicView(viewFrames[3], phrase, color1, color2, 175, this);
 
 		phrase.addToScore(player1, 0, 0, 0);
 		phrase.addToScore(player2, 0, 0, 0);
@@ -121,6 +121,17 @@ public class PhasesPApplet extends PApplet {
 		stroke(0);
 		line(width/2f, 0, width/2f, height);
 		line(0, height/2f, width, height/2f);
+	}
+	
+	public void mousePressed() {
+		for (View v : views) {
+			if (v != null) {
+				if (v.intersects(mouseX, mouseY)) {
+					v.mousePressedInArea();
+					break;
+				}
+			}
+		}
 	}
 	
 	public static int remainder(int num, int denom) {

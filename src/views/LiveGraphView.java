@@ -22,10 +22,9 @@ public class LiveGraphView extends View {
 	private boolean drawLines, drawDots;
 	//etc:
 	private final int ONE_ID = 0, TWO_ID = 1;
-
-	public LiveGraphView(Rect rect, Phrase phrase, int color1, int color2,
-			int opacity, boolean drawLines, boolean drawDots, PApplet pa) {
-		super(rect, color1, color2, opacity, pa);
+	
+	public LiveGraphView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
+		super(rect, color1, color2, opacity, 0, pa);
 		
 		pixelsPerWholeNote = 50;
 		
@@ -49,9 +48,6 @@ public class LiveGraphView extends View {
 		} catch (NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 		}
-		
-		this.drawLines = drawLines;
-		this.drawDots = drawDots;
 	}
 
 	@Override
@@ -112,25 +108,33 @@ public class LiveGraphView extends View {
 	
 	private void setColor1(int color1) {
 		this.color1 = color1;
-		for (ColoredDot d : dots) {
-			if (d.getId() == ONE_ID) {
-				d.setColor(color1);
+		if (dots != null) {
+			for (ColoredDot d : dots) {
+				if (d.getId() == ONE_ID) {
+					d.setColor(color1);
+				}
 			}
 		}
 	}
 	
 	private void setColor2(int color2) {
 		this.color2 = color2;
-		for (ColoredDot d : dots) {
-			if (d.getId() == TWO_ID) {
-				d.setColor(color2);
+		if (dots != null) {
+			for (ColoredDot d : dots) {
+				if (d.getId() == TWO_ID) {
+					d.setColor(color2);
+				}
 			}
 		}
 	}
+	
+	@Override
+	public int numPresets() {
+		return 5;
+	}
 
 	@Override
-	public void incrementPreset() {
-		preset = (preset+1) % 5;
+	public void loadPreset(int preset) {
 		switch(preset) {
 			case 0 :
 				drawLines(true);

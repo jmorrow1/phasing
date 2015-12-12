@@ -19,16 +19,11 @@ public class GHView extends View {
 	private int pointer1=0, pointer2=0; //points to rectangle closest to edge
 	public final static int RIGHT=2, DOWN=1, LEFT=-2, UP=-1;
 	private int noteMovement;
-	private boolean movementRelativeToList1;
+	private boolean cameraRelativeToMotion;
 	private boolean list1IsReversed = false;
 	
-	public GHView(Rect rect, Phrase phrase, int noteMovement, boolean displayPiano, boolean movementRelativeToList1,
-			int color1, int color2, int opacity, PApplet pa) {
-		super(rect, color1, color2, opacity, pa);
-		
-		this.noteMovement = noteMovement;
-		this.displayPiano = displayPiano;
-		this.movementRelativeToList1 = movementRelativeToList1;
+	public GHView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
+		super(rect, color1, color2, opacity, 0, pa);
 		
 		switch (noteMovement) {
 			case RIGHT:
@@ -60,7 +55,7 @@ public class GHView extends View {
 		
 		//list1
 		pa.fill(color1, opacity);
-		if (movementRelativeToList1) {
+		if (cameraRelativeToMotion) {
 			for (int i=0; i<list1.length; i++) {
 				list1[i].display(pa);
 			}
@@ -71,7 +66,7 @@ public class GHView extends View {
 		
 		//list2
 		pa.fill(color2, opacity);
-		if (movementRelativeToList1) {		
+		if (cameraRelativeToMotion) {		
 			if ((!list1IsReversed && dNotept2 - dNotept1 < 0) || (list1IsReversed && dNotept2 - dNotept1 > 0)) {
 				reverse(list2);
 				list1IsReversed = !list1IsReversed;
@@ -233,10 +228,15 @@ public class GHView extends View {
 	private void displayPiano(boolean displayPiano) {
 		this.displayPiano = displayPiano;
 	}
-
-	@Override
-	public void incrementPreset() {
-		preset = (preset+1) % 2;
+	
+	public int numPresets() {
+		return 2;
+	}
+	
+	public void loadPreset(int preset) {
+		noteMovement = RIGHT;
+		cameraRelativeToMotion = true;
+		
 		switch(preset) {
 			case 0 :
 				displayPiano(false);

@@ -11,19 +11,17 @@ import processing.core.PApplet;
 public class WavesView extends View {
 	private Wave a, b;
 	private Wave c, d;
+	private int waveType;
 	private float phraseRate, quarterNoteRate;
 	private boolean cameraRelativeToMovement;
 	public final static int LINEAR_PLOT = 0, SINE_WAVE = 1;
 	private float dNoteptAcc;
 	
-	public WavesView(Rect rect, Phrase phrase, int color1, int color2, int opacity, 
-			float amp1Amt, float amp2Amt, boolean cameraRelativeToMovement, int waveType, PApplet pa) {
-		super(rect, color1, color2, opacity, pa);
+	public WavesView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
+		super(rect, color1, color2, opacity, 0, pa);
 		
-		this.cameraRelativeToMovement = cameraRelativeToMovement;
-		
-		float amp1 = this.getY1() + PApplet.constrain(amp1Amt, 0, 0.5f) * this.getHeight();
-		float amp2 = this.getY1() + PApplet.constrain(amp2Amt, 0, 0.5f) * this.getHeight();
+		float amp1 = this.getY1() + PApplet.constrain(0.45f, 0, 0.5f) * this.getHeight();
+		float amp2 = this.getY1() + PApplet.constrain(0.25f, 0, 0.5f) * this.getHeight();
 		
 		switch(waveType) {
 			case LINEAR_PLOT: 
@@ -41,7 +39,7 @@ public class WavesView extends View {
 		}
 		
 		phraseRate = this.getWidth() / phrase.getTotalDuration();
-		quarterNoteRate = this.getWidth() / 0.25f;
+		quarterNoteRate = this.getWidth() / 0.25f;	
 	}
 
 	@Override
@@ -98,16 +96,19 @@ public class WavesView extends View {
 	private void setCameraRelativeToMovement(boolean cameraRelativeToMovement) {
 		this.cameraRelativeToMovement = cameraRelativeToMovement;
 	}
+	
+	public int numPresets() {
+		return 2;
+	}
 
 	@Override
-	public void incrementPreset() {
-		preset = (preset+1) % 2;
+	public void loadPreset(int preset) {
 		switch(preset) {
 			case 0 :
-				setCameraRelativeToMovement(false);
+				setCameraRelativeToMovement(true);
 				break;
 			case 1 :
-				setCameraRelativeToMovement(true);
+				setCameraRelativeToMovement(false);
 				break;
 		}
 	}

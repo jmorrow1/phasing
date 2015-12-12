@@ -13,16 +13,14 @@ public class SymbolicView extends View {
 	private boolean cameraRelativeToMotion;
 	private float dNoteptAcc;
 	
-	public SymbolicView(Rect rect, Phrase phrase, int color1, int color2, int opacity,
-			boolean cameraRelativeToMotion, PApplet pa) {
-		super(rect, color1, color2, opacity, pa);
+	public SymbolicView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
+		super(rect, color1, color2, opacity, 0, pa);
 		
 		x1 = this.getX1() + this.getWidth()/20f;
 		x2 = this.getX2() - this.getWidth()/20f;
 		width = x2-x1;
 		
 		pixelsPerWholeNote = (x2-x1) / phrase.getTotalDuration();
-		this.cameraRelativeToMotion = cameraRelativeToMotion;
 		
 		//pfont = pa.createFont("Gisha-Bold-48.vlw", 32);
 		//pfont = pa.createFont("LilyUPCBold-48.vlw", 32);
@@ -205,18 +203,22 @@ public class SymbolicView extends View {
 	/*Settings*/
 	
 	private void setCameraRelativeToMotion(boolean cameraRelativeToMotion) {
-		cameraRelativeToMotion = cameraRelativeToMotion;
+		this.cameraRelativeToMotion = cameraRelativeToMotion;
+	}
+	
+	public int numPresets() {
+		return 2;
 	}
 
 	@Override
-	public void incrementPreset() {
-		preset = (preset+1) % 2;
+	public void loadPreset(int preset) {
+		
 		switch(preset) {
 			case 0 :
-				setCameraRelativeToMotion(false);
+				setCameraRelativeToMotion(true);
 				break;
 			case 1 :
-				setCameraRelativeToMotion(true);
+				setCameraRelativeToMotion(false);
 				break;
 		}
 	}
