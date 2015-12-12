@@ -1,11 +1,14 @@
 package phases;
 
+import arb.soundcipher.SCScore;
 import processing.core.PApplet;
-import soundcipher.SCScore;
 
 public class Phrase {
 	private float defaultArt, defaultPan;
 	private float[] pitches, dynamics, durations, arts, pans;
+	
+	private final float NOT_INITIALIZED = -1;
+	private float totalDuration = NOT_INITIALIZED;
 	
 	public Phrase() {}
 	
@@ -47,6 +50,7 @@ public class Phrase {
 		durations = PApplet.append(durations, duration);
 		arts = PApplet.append(arts, defaultArt);
 		pans = PApplet.append(pans, defaultPan);
+		totalDuration = NOT_INITIALIZED;
 	}
 	
 	public void setPitch(int i, float pitch) {
@@ -70,6 +74,7 @@ public class Phrase {
 	public void setDuration(int i, float duration) {
 		if (i <= 0 && i < durations.length) {
 			durations[i] = duration;
+			totalDuration = NOT_INITIALIZED;
 		}
 		else {
 			System.err.println("Index out of bounds in method setDuration(" + i + ") in Phrase");
@@ -132,11 +137,14 @@ public class Phrase {
 	}
 	
 	public float getTotalDuration() {
-		float sum = 0;
-		for (int i=0; i<durations.length; i++) {
-			sum += durations[i];
+		if (totalDuration == NOT_INITIALIZED) {
+			float sum = 0;
+			for (int i=0; i<durations.length; i++) {
+				sum += durations[i];
+			}
+			totalDuration = sum;
 		}
-		return sum;
+		return totalDuration;
 	}
 	
 	public String toString() {

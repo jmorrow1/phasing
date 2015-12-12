@@ -2,7 +2,6 @@ package phases;
 
 import geom.Rect;
 import processing.core.PApplet;
-import soundcipher.SCScore;
 import views.KeyboardsView;
 import views.LiveGraphView;
 import views.SymbolicView;
@@ -21,8 +20,8 @@ public class PhasesPApplet extends PApplet {
 	int bpm2 = 95;
 	float bpms2 = bpm2 / 60000f;
 	//playback
-	SCScore player1 = new SCScore();
-	SCScore player2 = new SCScore();
+	SCScorePlus player1 = new SCScorePlus();
+	SCScorePlus player2 = new SCScorePlus();
 	//views
 	Rect[] viewFrames;
 	View[] views = new View[4];
@@ -78,10 +77,10 @@ public class PhasesPApplet extends PApplet {
 		//time
 		float beatpt1 = PApplet.map(player1.getTickPosition(),
 				                    0, player1.getTickLength(),
-				                    0, 3);
+				                    0, phrase.getTotalDuration());
 		float beatpt2 = PApplet.map(player2.getTickPosition(),
 				                    0, player2.getTickLength(),
-				                    0, 3);
+				                    0, phrase.getTotalDuration());
 		
 		float dBeatpt1 = beatpt1 - prev_beatpt1;
 		float dBeatpt2 = beatpt2 - prev_beatpt2;
