@@ -1,11 +1,13 @@
 package views;
 
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.Queue;
 
 import geom.Rect;
 import phases.ColoredDot;
 import phases.Phrase;
+import phases.PhraseReader;
 import processing.core.PApplet;
 
 public class RhythmView extends View {
@@ -15,7 +17,7 @@ public class RhythmView extends View {
  	private Queue<ColoredDot> dots = new LinkedList<ColoredDot>();
  	private final int DOT_DIAM = 12;
  	
- 	private PhraseReader a, b;
+ 	private PhraseReader readerA, readerB;
 	
 	public RhythmView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
 		super(rect, color1, color2, opacity, pa);
@@ -31,11 +33,13 @@ public class RhythmView extends View {
 		noteX = x1;
 		noteY = y1;
 		
-		a = new PhraseReader(phrase, color1);
-		b = new PhraseReader(phrase, color2);
-		
-		writeNote(color1);
-		writeNote(color2);
+		try {
+			Method callback = RhythmView.class.getMethod("writeNote", PhraseReader.class);
+			readerA = new PhraseReader(phrase, color1, this, callback);
+			readerB = new PhraseReader(phrase, color2, this, callback);
+		} catch (NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -50,8 +54,8 @@ public class RhythmView extends View {
 			}
 		}
 		
-		a.update(dNotept1);
-		b.update(dNotept2);
+		readerA.update(dNotept1);
+		readerB.update(dNotept2);
 		
 		ColoredDot.style(pa);
 		for (ColoredDot d : dots) {
@@ -65,31 +69,7 @@ public class RhythmView extends View {
 	}
 	
 	//callback:
-	private void writeNote(int color) {
-		dots.add(new ColoredDot(noteX, noteY, DOT_DIAM, color, opacity));
-	}
-	
-	private class PhraseReader {
-		Phrase phrase;
-		int noteIndex;
-		float noteTimeTillNextNote;
-		int color;
-		
-		PhraseReader(Phrase phrase, int color) {
-			this.phrase = phrase;
-			noteIndex = 0;
-			noteTimeTillNextNote = phrase.getDuration(noteIndex);
-			this.color = color;
-		}
-		
-		void update(float dNotept) {
-			noteTimeTillNextNote -= dNotept;
-			
-			if (noteTimeTillNextNote <= 0) {
-				noteIndex = (noteIndex+1) % phrase.getNumNotes();
-				noteTimeTillNextNote = noteTimeTillNextNote + phrase.getDuration(noteIndex);
-				writeNote(color); //<-- callback
-			}
-		}
+	public void writeNote(PhraseReader reader) {
+		dots.add(new ColoredDot(noteX, noteY, DOT_DIAM, reader.getColor(), opacity));
 	}
 }

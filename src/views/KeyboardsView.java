@@ -2,15 +2,18 @@ package views;
 
 import geom.Rect;
 import phases.Phrase;
+import phases.PhraseReader;
 import processing.core.PApplet;
 
 public class KeyboardsView extends View {
 	//music
-	private PhraseReader a, b;
+	private PhraseReader readerA, readerB;
 	//piano
 	private Piano keyboardA, keyboardB;
 	private Piano keyboardAB;
 	private final int PIANO_SIZE = 50;
+	//piano players
+	private PianoPlayer pianoPlayerA, pianoPlayerB;
 	//conversion
 	private int firstPitchOfPiano = 60;
 	
@@ -18,6 +21,7 @@ public class KeyboardsView extends View {
 			boolean superimposeKeyboards, PApplet pa) {
 		super(rect, color1, color2, opacity, pa);
 
+		//init pianos
 		if (superimposeKeyboards) {
 			keyboardAB = new Piano(2, new Rect(this.getCenx(), this.getCeny(),
 					0.75f*this.getWidth(), PIANO_SIZE, PApplet.CENTER), true, pa.color(255));
@@ -30,89 +34,89 @@ public class KeyboardsView extends View {
 							0.75f*this.getWidth(), PIANO_SIZE, PApplet.CENTER), true, pa.color(255));
 		}
 		
-		Rect[] noteIndexToKeyA = new Rect[phrase.getNumNotes()];
-		Rect[] noteIndexToKeyB = null;
-		
+		//init piano players
 		if (superimposeKeyboards) {
-			for (int i=0; i<noteIndexToKeyA.length; i++) {
-				noteIndexToKeyA[i] = keyboardAB.getKeyCopy(phrase.getPitch(i) - firstPitchOfPiano);
-			}
-			noteIndexToKeyB = noteIndexToKeyA;
+			pianoPlayerA = new PianoPlayer(color1, keyboardAB, phrase);
+			pianoPlayerB = new PianoPlayer(color2, keyboardAB, phrase);
 		}
 		else {
-			noteIndexToKeyB = new Rect[phrase.getNumNotes()];
-			for (int i=0; i<noteIndexToKeyA.length; i++) {
-				noteIndexToKeyA[i] = keyboardA.getKeyCopy(phrase.getPitch(i) - firstPitchOfPiano);
-				noteIndexToKeyB[i] = keyboardB.getKeyCopy(phrase.getPitch(i) - firstPitchOfPiano);
-			}
+			pianoPlayerA = new PianoPlayer(color1, keyboardA, phrase);
+			pianoPlayerB = new PianoPlayer(color2, keyboardB, phrase);
 		}
 		
-		a = new PhraseReader(phrase, noteIndexToKeyA, color1, opacity);
-		b = new PhraseReader(phrase, noteIndexToKeyB, color2, opacity);
+		//init phrase readers
+		try {
+			readerA = new PhraseReader(phrase, color1, pianoPlayerA,
+					PianoPlayer.class.getMethod("setActiveKey", PhraseReader.class));
+			readerB = new PhraseReader(phrase, color2, pianoPlayerB,
+					PianoPlayer.class.getMethod("setActiveKey", PhraseReader.class));
+
+		} catch (NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	public void update(float dNotept1, float dNotept2) {	
-		boolean aIsOnWhiteKey = a.update(dNotept1);
-		boolean bIsOnWhiteKey = b.update(dNotept2);
+	public void update(float dNotept1, float dNotept2) {
+		readerA.update(dNotept1);
+		readerB.update(dNotept2);
 		
 		if (keyboardAB != null) {
 			keyboardAB.drawWhiteKeys(pa);
-			if (aIsOnWhiteKey) a.draw();
-			if (bIsOnWhiteKey) b.draw();
+			pianoPlayerA.displayIfWhite(pa);
+			pianoPlayerB.displayIfWhite(pa);
 			keyboardAB.drawBlackKeys(pa);
-			if (!aIsOnWhiteKey) a.draw();
-			if (!bIsOnWhiteKey) b.draw();
+			pianoPlayerA.displayIfBlack(pa);
+			pianoPlayerB.displayIfBlack(pa);
 		}
 		if (keyboardA != null) {
 			keyboardA.drawWhiteKeys(pa);
-			if (aIsOnWhiteKey) a.draw();
+			pianoPlayerA.displayIfWhite(pa);
 			keyboardA.drawBlackKeys(pa);
-			if (!aIsOnWhiteKey) a.draw();
+			pianoPlayerA.displayIfBlack(pa);
 		}
 		if (keyboardB != null) {
 			keyboardB.drawWhiteKeys(pa);
-			if (bIsOnWhiteKey) b.draw();
+			pianoPlayerB.displayIfWhite(pa);
 			keyboardB.drawBlackKeys(pa);
-			if (!bIsOnWhiteKey) b.draw();
+			pianoPlayerB.displayIfBlack(pa);
 		}
 	}
 	
-	private class PhraseReader {
-		int noteIndex;
-		float noteTimeTillNextNote;
-		Phrase phrase;
-		Rect[] noteIndexToKey;
-		int color;
-		int opacity;
-		boolean currNoteIsWhiteKey;
+	public class PianoPlayer {
+		private Phrase phrase;
+		private Rect[] keyCopies;
+		private boolean keyIsWhite;
+		private Rect activeKey;
+		private int color;
 		
-		PhraseReader(Phrase phrase, Rect[] noteIndexToKey, int color, int opacity) {
-			noteIndex = 0;
-			this.phrase = phrase;
-			this.noteIndexToKey = noteIndexToKey;
-			this.noteTimeTillNextNote = phrase.getDuration(noteIndex);
+		private PianoPlayer(int color, Piano piano, Phrase phrase) {
 			this.color = color;
-			this.opacity = opacity;
-			currNoteIsWhiteKey = Piano.isWhiteKey(phrase.getPitch(noteIndex));
-		}
-		
-		boolean update(float dNotept) {
-			noteTimeTillNextNote -= dNotept;
-			
-			if (noteTimeTillNextNote <= 0) {
-				noteIndex = (noteIndex+1) % phrase.getNumNotes();
-				noteTimeTillNextNote = noteTimeTillNextNote + phrase.getDuration(noteIndex);
-				currNoteIsWhiteKey = Piano.isWhiteKey(phrase.getPitch(noteIndex));
+			keyCopies = new Rect[phrase.getNumNotes()];
+			for (int i=0; i<keyCopies.length; i++) {
+				keyCopies[i] = piano.getKeyCopy(phrase.getPitch(i) - firstPitchOfPiano);
 			}
 			
-			return currNoteIsWhiteKey;
+			this.phrase = phrase;
 		}
 		
-		void draw() {
-			pa.noStroke();
-			pa.fill(color, opacity);
-			noteIndexToKey[noteIndex].display(pa);
+		public void displayIfWhite(PApplet pa) {
+			if (keyIsWhite) {
+				pa.fill(color, opacity);
+				activeKey.display(pa);
+			}
+		}
+		
+		public void displayIfBlack(PApplet pa) {
+			if (!keyIsWhite) {
+				pa.fill(color, opacity);
+				activeKey.display(pa);
+			}
+		}
+		
+		public void setActiveKey(PhraseReader reader) {
+			activeKey = keyCopies[reader.getNoteIndex()];
+			keyIsWhite = Piano.isWhiteKey(phrase.getPitch(reader.getNoteIndex()));
 		}
 	}
 }

@@ -7,12 +7,9 @@ public class PhraseReader {
 	//data
 	private Phrase phrase;
 	private int color;
-	private float phraseDuration;
 	//bookkeeping
-	private float[] notepts;
-	private int noteIndex, nextNoteIndex;
-	private boolean wait;
-	private float lastNotePt;
+	private int noteIndex;
+	private float noteTimeTillNextNote;
 	//callback
 	private Object callee;
 	private Method callback;
@@ -20,47 +17,40 @@ public class PhraseReader {
 	public PhraseReader(Phrase phrase, int color, Object callee, Method callback) {
 		this.phrase = phrase;
 		this.color = color;
-		phraseDuration = phrase.getTotalDuration();
 		
-		notepts = new float[phrase.getNumNotes()];
-		for (int i=1; i<notepts.length; i++) {
-			notepts[i] = notepts[i-1] + phrase.getDuration(i-1);
-		}
 		noteIndex = 0;
-		nextNoteIndex = (noteIndex+1) % phrase.getNumNotes();
-		wait = false;
+		noteTimeTillNextNote = phrase.getDuration(noteIndex);
 		
 		this.callee = callee;
 		this.callback = callback;
-	}
-	
-	public void update2(float normalpt) {
-		update3(normalpt * phraseDuration);
-	}
-	
-	public void update3(float notept) {
-		if (wait) {
-			if (notept < lastNotePt) wait = false;
-		}
 		
-		if (notept > notepts[nextNoteIndex] && !wait) {
-			noteIndex = nextNoteIndex;
-			nextNoteIndex = (nextNoteIndex+1) % phrase.getNumNotes();
-			
-			if (nextNoteIndex == 0) {
-				lastNotePt = notept;
-				wait = true;
-			}
-			
+		try {
+			callback.invoke(callee, this);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void update(float dNotept) {
+		noteTimeTillNextNote -= dNotept;
+		
+		if (noteTimeTillNextNote <= 0) {
+			noteIndex = (noteIndex+1) % phrase.getNumNotes();
+			noteTimeTillNextNote = noteTimeTillNextNote + phrase.getDuration(noteIndex);
 			try {
-				callback.invoke(callee, noteIndex, this);
+				callback.invoke(callee, this);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	
+
 	public int getColor() {
 		return color;
+	}
+	
+	public int getNoteIndex() {
+		return noteIndex;
 	}
 }
