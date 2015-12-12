@@ -10,11 +10,11 @@ public class SymbolicView extends View {
 	//private PFont pfont;
 	private PhraseGraphic a, b;
 	private float pixelsPerWholeNote;
-	private boolean movementRelativeToNotesA;
+	private boolean cameraRelativeToMotion;
 	private float dNoteptAcc;
 	
 	public SymbolicView(Rect rect, Phrase phrase, int color1, int color2, int opacity,
-			boolean movementRelativeToNotesA, PApplet pa) {
+			boolean cameraRelativeToMotion, PApplet pa) {
 		super(rect, color1, color2, opacity, pa);
 		
 		x1 = this.getX1() + this.getWidth()/20f;
@@ -22,7 +22,7 @@ public class SymbolicView extends View {
 		width = x2-x1;
 		
 		pixelsPerWholeNote = (x2-x1) / phrase.getTotalDuration();
-		this.movementRelativeToNotesA = movementRelativeToNotesA;
+		this.cameraRelativeToMotion = cameraRelativeToMotion;
 		
 		//pfont = pa.createFont("Gisha-Bold-48.vlw", 32);
 		//pfont = pa.createFont("LilyUPCBold-48.vlw", 32);
@@ -45,7 +45,7 @@ public class SymbolicView extends View {
 
 	@Override
 	public void update(float dNotept1, float dNotept2, int sign) {
-		if (!movementRelativeToNotesA) {
+		if (!cameraRelativeToMotion) {
 			a.update(dNotept1);
 			b.update(dNotept2);
 		}
@@ -200,5 +200,11 @@ public class SymbolicView extends View {
 	            i++;
 	        }
 	    }
+	}
+	
+	/*Settings*/
+	
+	public void setCameraRelativeToNotes(boolean cameraRelativeToMotion) {
+		cameraRelativeToMotion = cameraRelativeToMotion;
 	}
 }

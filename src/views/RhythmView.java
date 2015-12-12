@@ -16,8 +16,9 @@ public class RhythmView extends View {
 	private float pixelsPerWholeNote;
  	private Queue<ColoredDot> dots = new LinkedList<ColoredDot>();
  	private final int DOT_DIAM = 12;
- 	
  	private PhraseReader readerA, readerB;
+ 	
+ 	private final int ONE_ID = 0, TWO_ID = 1;
 	
 	public RhythmView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
 		super(rect, color1, color2, opacity, pa);
@@ -35,8 +36,8 @@ public class RhythmView extends View {
 		
 		try {
 			Method callback = RhythmView.class.getMethod("writeNote", PhraseReader.class);
-			readerA = new PhraseReader(phrase, color1, this, callback);
-			readerB = new PhraseReader(phrase, color2, this, callback);
+			readerA = new PhraseReader(phrase, ONE_ID, this, callback);
+			readerB = new PhraseReader(phrase, TWO_ID, this, callback);
 		} catch (NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 		}
@@ -70,6 +71,7 @@ public class RhythmView extends View {
 	
 	//callback:
 	public void writeNote(PhraseReader reader) {
-		dots.add(new ColoredDot(noteX, noteY, DOT_DIAM, reader.getColor(), opacity));
+		dots.add(new ColoredDot(noteX, noteY, DOT_DIAM,
+				(reader.getId() == ONE_ID) ? color1 : color2, opacity, reader.getId()));
 	}
 }

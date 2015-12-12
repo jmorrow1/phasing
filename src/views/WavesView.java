@@ -12,15 +12,15 @@ public class WavesView extends View {
 	private Wave a, b;
 	private Wave c, d;
 	private float phraseRate, quarterNoteRate;
-	private boolean movementRelativeToPathA;
+	private boolean cameraRelativeToMovement;
 	public final static int LINEAR_PLOT = 0, SINE_WAVE = 1;
 	private float dNoteptAcc;
 	
 	public WavesView(Rect rect, Phrase phrase, int color1, int color2, int opacity, 
-			float amp1Amt, float amp2Amt, boolean movementRelativeToPathA, int waveType, PApplet pa) {
+			float amp1Amt, float amp2Amt, boolean cameraRelativeToMovement, int waveType, PApplet pa) {
 		super(rect, color1, color2, opacity, pa);
 		
-		this.movementRelativeToPathA = movementRelativeToPathA;
+		this.cameraRelativeToMovement = cameraRelativeToMovement;
 		
 		float amp1 = this.getY1() + PApplet.constrain(amp1Amt, 0, 0.5f) * this.getHeight();
 		float amp2 = this.getY1() + PApplet.constrain(amp2Amt, 0, 0.5f) * this.getHeight();
@@ -49,7 +49,7 @@ public class WavesView extends View {
 		pa.strokeWeight(3);
 		pa.noFill();
 		
-		if (!movementRelativeToPathA) {
+		if (!cameraRelativeToMovement) {
 			update(a, dNotept1 * phraseRate, color1, opacity);
 			if (c != null) update(c, dNotept1 * quarterNoteRate, color1, opacity);
 			update(b, dNotept2 * phraseRate, color2, opacity);
@@ -91,5 +91,11 @@ public class WavesView extends View {
 		}
 		
 		return new LinearPlot(ys, this.getX1(), this.getX2());
+	}
+	
+	/*Settings*/
+	
+	public void setCameraRelativeToMovement(boolean cameraRelativeToMovement) {
+		this.cameraRelativeToMovement = cameraRelativeToMovement;
 	}
 }

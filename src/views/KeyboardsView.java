@@ -7,6 +7,7 @@ import processing.core.PApplet;
 
 public class KeyboardsView extends View {
 	//music
+	private Phrase phrase;
 	private PhraseReader readerA, readerB;
 	//piano
 	private Piano keyboardA, keyboardB;
@@ -20,8 +21,28 @@ public class KeyboardsView extends View {
 	public KeyboardsView(Rect rect, Phrase phrase, int color1, int color2, int opacity,
 			boolean superimposeKeyboards, PApplet pa) {
 		super(rect, color1, color2, opacity, pa);
+		
+		this.phrase = phrase;
 
 		//init pianos
+		initPianos(superimposeKeyboards);
+		
+		//init piano players
+		initPianoPlayers(superimposeKeyboards);
+		
+		//init phrase readers
+		try {
+			readerA = new PhraseReader(phrase, -1, pianoPlayerA,
+					PianoPlayer.class.getMethod("setActiveKey", PhraseReader.class));
+			readerB = new PhraseReader(phrase, -1, pianoPlayerB,
+					PianoPlayer.class.getMethod("setActiveKey", PhraseReader.class));
+
+		} catch (NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void initPianos(boolean superimposeKeyboards) {
 		if (superimposeKeyboards) {
 			keyboardAB = new Piano(2, new Rect(this.getCenx(), this.getCeny(),
 					0.75f*this.getWidth(), PIANO_SIZE, PApplet.CENTER), true, pa.color(255));
@@ -33,8 +54,9 @@ public class KeyboardsView extends View {
 			keyboardB = new Piano(2, new Rect(this.getCenx(), this.getCeny() + PIANO_SIZE,
 							0.75f*this.getWidth(), PIANO_SIZE, PApplet.CENTER), true, pa.color(255));
 		}
-		
-		//init piano players
+	}
+	
+	private void initPianoPlayers(boolean superimposeKeyboards) {
 		if (superimposeKeyboards) {
 			pianoPlayerA = new PianoPlayer(color1, keyboardAB, phrase);
 			pianoPlayerB = new PianoPlayer(color2, keyboardAB, phrase);
@@ -42,17 +64,6 @@ public class KeyboardsView extends View {
 		else {
 			pianoPlayerA = new PianoPlayer(color1, keyboardA, phrase);
 			pianoPlayerB = new PianoPlayer(color2, keyboardB, phrase);
-		}
-		
-		//init phrase readers
-		try {
-			readerA = new PhraseReader(phrase, color1, pianoPlayerA,
-					PianoPlayer.class.getMethod("setActiveKey", PhraseReader.class));
-			readerB = new PhraseReader(phrase, color2, pianoPlayerB,
-					PianoPlayer.class.getMethod("setActiveKey", PhraseReader.class));
-
-		} catch (NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -114,9 +125,17 @@ public class KeyboardsView extends View {
 			}
 		}
 		
+		//callback:
 		public void setActiveKey(PhraseReader reader) {
 			activeKey = keyCopies[reader.getNoteIndex()];
 			keyIsWhite = Piano.isWhiteKey(phrase.getPitch(reader.getNoteIndex()));
 		}
+	}
+	
+	/*Settings*/
+	
+	public void superimposeKeyboards(boolean superimposeKeyboards) {
+		initPianos(superimposeKeyboards);
+		initPianoPlayers(superimposeKeyboards);
 	}
 }

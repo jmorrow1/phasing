@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 
 public class PhraseReader {
 	//data
+	private int id;
 	private Phrase phrase;
-	private int color;
 	//bookkeeping
 	private int noteIndex;
 	private float noteTimeTillNextNote;
@@ -14,9 +14,9 @@ public class PhraseReader {
 	private Object callee;
 	private Method callback;
 	
-	public PhraseReader(Phrase phrase, int color, Object callee, Method callback) {
+	public PhraseReader(Phrase phrase, int id, Object callee, Method callback) {
 		this.phrase = phrase;
-		this.color = color;
+		this.id = id;
 		
 		noteIndex = 0;
 		noteTimeTillNextNote = phrase.getDuration(noteIndex);
@@ -45,9 +45,9 @@ public class PhraseReader {
 			}
 		}
 	}
-
-	public int getColor() {
-		return color;
+	
+	public int getId() {
+		return id;
 	}
 	
 	public int getNoteIndex() {

@@ -227,4 +227,10 @@ public class GHView extends View {
 	    	j--;
 	    }
 	}
+	
+	/*Settings*/
+	
+	public void displayPiano(boolean displayPiano) {
+		this.displayPiano = displayPiano;
+	}
 }
