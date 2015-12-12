@@ -46,7 +46,7 @@ public class LiveGraphView extends View {
 	}
 
 	@Override
-	public void update(float dNotept1, float dNotept2) {
+	public void update(float dNotept1, float dNotept2, int sign) {
 		float dx = -dNotept1 * pixelsPerWholeNote;
 		
 		readerA.update(dNotept1);

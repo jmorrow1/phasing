@@ -103,4 +103,34 @@ public class Rect {
 		x1 += dx;
 		y1 += dy;
 	}
+	
+	public static void leftShift(Rect[] xs) {
+	    if (xs.length > 0) {
+	        int i = xs.length-1;
+	        Rect next = xs[i];
+	        xs[i] = xs[0];
+	        i--;
+	        while (i >= 0) {
+	        	Rect temp = xs[i];
+	            xs[i] = next;
+	            next = temp;
+	            i--;
+	        }
+	    }
+	}
+
+	public static void rightShift(Rect[] xs) {
+	    if (xs.length > 0) {
+	        int i=0;
+	        Rect prev = xs[i];
+	        xs[i] = xs[xs.length-1];
+	        i++;
+	        while (i < xs.length) {
+	        	Rect temp = xs[i];
+	            xs[i] = prev;
+	            prev = temp;
+	            i++;
+	        }
+	    }
+	}
 }

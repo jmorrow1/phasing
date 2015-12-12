@@ -2,22 +2,24 @@ package phases;
 
 import geom.Rect;
 import processing.core.PApplet;
+import views.GHView;
 import views.KeyboardsView;
-import views.LiveGraphView;
-import views.RhythmView;
+import views.SymbolicView;
 import views.View;
+import views.WavesView;
 
 public class PhasesPApplet extends PApplet {
 	boolean playing;
 	//time
 	long prev_t;
-	float prev_beatpt1, prev_beatpt2;
+	float prev_notept1, prev_notept2;
 	//music
 	Phrase phrase;
 	int bpm1 = 90;
 	float bpms1 = bpm1 / 60000f;
-	int bpm2 = 95;
+	int bpm2 = 91;
 	float bpms2 = bpm2 / 60000f;
+	int sign;
 	//playback
 	SCScorePlus player1 = new SCScorePlus();
 	SCScorePlus player2 = new SCScorePlus();
@@ -44,17 +46,17 @@ public class PhasesPApplet extends PApplet {
 		int color1 = color(255, 100, 100);
 		int color2 = color(100, 100, 255);
 		
-		//views[0] = new GHView(viewFrames[0], phrase, GHView.DOWN, false, false, color1, color2, 100, this);
+		//views[0] = new GHView(viewFrames[0], phrase, GHView.DOWN, false, true, color1, color2, 100, this);
 		
-		views[0] = new LiveGraphView(viewFrames[0], phrase, color1, color2, 175, this);
+		//views[0] = new LiveGraphView(viewFrames[0], phrase, color1, color2, 175, this);
 		
-		views[1] = new RhythmView(viewFrames[1], phrase, color1, color2, 175, this);
+		//views[1] = new RhythmView(viewFrames[1], phrase, color1, color2, 175, this);
 		
-		//views[1] = new WavesView(viewFrames[1], phrase, color1, color2, 150, 0.45f, 0.25f, true, WavesView.LINEAR_PLOT, this);
+		views[1] = new WavesView(viewFrames[1], phrase, color1, color2, 150, 0.45f, 0.25f, true, WavesView.LINEAR_PLOT, this);
 		
-		views[2] = new KeyboardsView(viewFrames[2], phrase, color1, color2, 100, true, this);
+		//views[2] = new KeyboardsView(viewFrames[2], phrase, color1, color2, 100, true, this);
 		
-		//views[3] = new SymbolicView(viewFrames[3], phrase, color1, color2, 175, true, this);
+		views[3] = new SymbolicView(viewFrames[3], phrase, color1, color2, 175, true, this);
 
 		phrase.addToScore(player1, 0, 0, 0);
 		phrase.addToScore(player2, 0, 0, 0);
@@ -68,39 +70,49 @@ public class PhasesPApplet extends PApplet {
 		playing = true;
 		
 		prev_t = System.currentTimeMillis();
-		prev_beatpt1 = 0;
-		prev_beatpt2 = 0;
+		prev_notept1 = 0;
+		prev_notept2 = 0;
+		
+		if (bpm1 < bpm2) {
+			sign = 1;
+		}
+		else if (bpm1 > bpm2) {
+			sign = -1;
+		}
+		else {
+			sign = 0;
+		}
 	}
 	
 	public void draw() {
 		//time
-		float beatpt1 = PApplet.map(player1.getTickPosition(),
+		float notept1 = PApplet.map(player1.getTickPosition(),
 				                    0, player1.getTickLength(),
 				                    0, phrase.getTotalDuration());
-		float beatpt2 = PApplet.map(player2.getTickPosition(),
+		float notept2 = PApplet.map(player2.getTickPosition(),
 				                    0, player2.getTickLength(),
 				                    0, phrase.getTotalDuration());
 		
-		float dBeatpt1 = beatpt1 - prev_beatpt1;
-		float dBeatpt2 = beatpt2 - prev_beatpt2;
+		float dNotept1 = notept1 - prev_notept1;
+		float dNotept2 = notept2 - prev_notept2;
 		
-		if (dBeatpt1 < 0) {
-			dBeatpt1 += 3;
+		if (dNotept1 < 0) {
+			dNotept1 += phrase.getTotalDuration();
 		}
 		
-		if (dBeatpt2 < 0) {
-			dBeatpt2 += 3;
+		if (dNotept2 < 0) {
+			dNotept2 += phrase.getTotalDuration();
 		}
 		
-		prev_beatpt1 = beatpt1;
-		prev_beatpt2 = beatpt2;
+		prev_notept1 = notept1;
+		prev_notept2 = notept2;
 
 		//drawing
 		background(255);
 
 		for (int i=0; i<views.length; i++) {
 			if (views[i] != null) {
-				views[i].update(dBeatpt1, dBeatpt2);
+				views[i].update(dNotept1, dNotept2, sign);
 			}
 		}
 		

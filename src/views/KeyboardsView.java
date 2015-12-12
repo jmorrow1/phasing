@@ -57,7 +57,7 @@ public class KeyboardsView extends View {
 	}
 
 	@Override
-	public void update(float dNotept1, float dNotept2) {
+	public void update(float dNotept1, float dNotept2, int sign) {
 		readerA.update(dNotept1);
 		readerB.update(dNotept2);
 		

@@ -15,6 +15,6 @@ public abstract class View extends Rect {
 		this.opacity = opacity;
 		this.pa = pa;
 	}
-	
-	public abstract void update(float dBeatpt1, float dBeatpt2);
+
+	public abstract void update(float dNotept1, float dNotept2, int sign);
 }

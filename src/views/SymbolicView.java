@@ -11,6 +11,7 @@ public class SymbolicView extends View {
 	private PhraseGraphic a, b;
 	private float pixelsPerWholeNote;
 	private boolean movementRelativeToNotesA;
+	private float dNoteptAcc;
 	
 	public SymbolicView(Rect rect, Phrase phrase, int color1, int color2, int opacity,
 			boolean movementRelativeToNotesA, PApplet pa) {
@@ -43,15 +44,37 @@ public class SymbolicView extends View {
 	}
 
 	@Override
-	public void update(float dNotept1, float dNotept2) {
-		//pa.textFont(pfont);
+	public void update(float dNotept1, float dNotept2, int sign) {
 		if (!movementRelativeToNotesA) {
 			a.update(dNotept1);
 			b.update(dNotept2);
 		}
 		else {
+			dNoteptAcc += (dNotept2 - dNotept1);
+			//if, on average, dNotept2 should be greater than dNotept1
+			if (sign > 0) {
+				if (dNoteptAcc > 0) {
+					b.update(dNoteptAcc);
+					dNoteptAcc = 0;
+				}
+				else {
+					b.display();
+				}
+			}
+			//if, on average, dNotept2 should be less than dNotept2
+			else if (sign < 0) {
+				if (dNoteptAcc < 0) {
+					b.update(dNoteptAcc);
+					dNoteptAcc = 0;
+				}
+				else {
+					b.display();
+				}
+			}
+			else {
+				b.display();
+			}
 			a.display();
-			b.update(dNotept2 - dNotept1);
 		}
 		
 		//draw white rectangles to make the phrase graphics appear to screen wrap
@@ -75,6 +98,17 @@ public class SymbolicView extends View {
 		}
 		
 		void update(float dNotept) {
+			//translate
+			float dx = pixelsPerWholeNote * dNotept;
+			for (int i=0; i<notes.length; i++) {
+				notes[i].x1 += dx;
+			}
+			
+			//display
+			display();
+		}
+		
+		void display() {
 			//wrap
 			pa.fill(color, opacity);
 			
@@ -95,18 +129,6 @@ public class SymbolicView extends View {
 				notes[notes.length-1].displayShifted(-width);
 			}
 			
-			
-			//translate
-			float dx = pixelsPerWholeNote * dNotept;
-			for (int i=0; i<notes.length; i++) {
-				notes[i].x1 += dx;
-			}
-			
-			//display
-			display();
-		}
-		
-		void display() {
 			pa.fill(color, opacity);
 			pa.textAlign(pa.TOP, pa.CENTER);
 			pa.textSize(32);

@@ -53,7 +53,7 @@ public class GHView extends View {
 		list2 = initList(phrase);
 	}
 	
-	public void update(float dBeatpt1, float dBeatpt2) {
+	public void update(float dNotept1, float dNotept2, int sign) {
 		if (displayPiano) piano.display(pa);
 		
 		pa.strokeWeight(1);
@@ -66,20 +66,20 @@ public class GHView extends View {
 			}
 		}
 		else {
-			pointer1 = update(list1, dBeatpt1, pointer1);
+			pointer1 = update(list1, dNotept1, pointer1);
 		}
 		
 		//list2
 		pa.fill(color2, opacity);
 		if (movementRelativeToList1) {		
-			if ((!list1IsReversed && dBeatpt2 - dBeatpt1 < 0) || (list1IsReversed && dBeatpt2 - dBeatpt1 > 0)) {
+			if ((!list1IsReversed && dNotept2 - dNotept1 < 0) || (list1IsReversed && dNotept2 - dNotept1 > 0)) {
 				reverse(list2);
 				list1IsReversed = !list1IsReversed;
 			}
-			pointer2 = update(list2, dBeatpt2 - dBeatpt1, pointer2);
+			pointer2 = update(list2, dNotept2 - dNotept1, pointer2);
 		}
 		else {
-			pointer2 = update(list2, dBeatpt2, pointer2);
+			pointer2 = update(list2, dNotept2, pointer2);
 		}
 	}
 	

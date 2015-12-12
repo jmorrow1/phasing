@@ -14,6 +14,7 @@ public class WavesView extends View {
 	private float phraseRate, quarterNoteRate;
 	private boolean movementRelativeToPathA;
 	public final static int LINEAR_PLOT = 0, SINE_WAVE = 1;
+	private float dNoteptAcc;
 	
 	public WavesView(Rect rect, Phrase phrase, int color1, int color2, int opacity, 
 			float amp1Amt, float amp2Amt, boolean movementRelativeToPathA, int waveType, PApplet pa) {
@@ -44,7 +45,7 @@ public class WavesView extends View {
 	}
 
 	@Override
-	public void update(float dNotept1, float dNotept2) {
+	public void update(float dNotept1, float dNotept2, int sign) {
 		pa.strokeWeight(3);
 		pa.noFill();
 		
@@ -57,9 +58,18 @@ public class WavesView extends View {
 		else {
 			a.display(pa, color1, opacity);
 			if (c != null) c.display(pa, color1, opacity);
+			
+			dNoteptAcc += (dNotept2 - dNotept1);
 			pa.stroke(color2, opacity);
-			update(b, (dNotept2 - dNotept1)*phraseRate, color2, opacity);
-			if (d != null) update(d, (dNotept2 - dNotept1)*quarterNoteRate, color2, opacity);
+			if ( (sign < 0 && dNoteptAcc < 0) || (sign > 0 && dNoteptAcc > 0) ) {
+				update(b, dNoteptAcc*phraseRate, color2, opacity);
+				if (d != null) update(d, dNoteptAcc*quarterNoteRate, color2, opacity);
+				dNoteptAcc = 0;
+			}
+			else {
+				b.display(pa, color2, opacity);
+				if (d != null) d.display(pa, color2, opacity);
+			}
 		}
 	}
 	

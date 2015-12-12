@@ -43,7 +43,7 @@ public class RhythmView extends View {
 	}
 
 	@Override
-	public void update(float dNotept1, float dNotept2) {
+	public void update(float dNotept1, float dNotept2, int sign) {
 		noteX += pixelsPerWholeNote*dNotept1;
 		if (noteX >= x2) {
 			noteX = x1;
