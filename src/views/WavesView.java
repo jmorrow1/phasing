@@ -18,7 +18,7 @@ public class WavesView extends View {
 	private float dNoteptAcc;
 	
 	public WavesView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
-		super(rect, color1, color2, opacity, 0, pa);
+		super(rect, phrase, color1, color2, opacity, 0, pa);
 		
 		float amp1 = this.getY1() + PApplet.constrain(0.45f, 0, 0.5f) * this.getHeight();
 		float amp2 = this.getY1() + PApplet.constrain(0.25f, 0, 0.5f) * this.getHeight();

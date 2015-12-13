@@ -14,7 +14,7 @@ public class SymbolicView extends View {
 	private float dNoteptAcc;
 	
 	public SymbolicView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
-		super(rect, color1, color2, opacity, 0, pa);
+		super(rect, phrase, color1, color2, opacity, 0, pa);
 		
 		x1 = this.getX1() + this.getWidth()/20f;
 		x2 = this.getX2() - this.getWidth()/20f;

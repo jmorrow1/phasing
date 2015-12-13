@@ -12,7 +12,7 @@ public class GHView extends View {
 	private Piano piano;
 	private final float PIANO_SIZE = 50;
 	//conversion
-	private int firstPitchOfPiano = 60;
+	private int firstPitchOfPiano;
 	private float pixelsPerWholeNote;
 	//note views
 	private Rect[] list1, list2;
@@ -22,22 +22,16 @@ public class GHView extends View {
 	//other
 	private float dNoteptAcc;
 	
-	public GHView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
-		super(rect, color1, color2, opacity, 0, pa);
-		
-		switch (noteMovement) {
-			case RIGHT:
-				piano = new Piano(3, new Rect(getX2() - PIANO_SIZE, getY1(), PIANO_SIZE, getHeight(), PApplet.CORNER), false);
-				pixelsPerWholeNote = getWidth() / phrase.getTotalDuration();
-				break;
-			case DOWN:
-				piano = new Piano(3, new Rect(getX1(), getY2() - PIANO_SIZE, getWidth(), PIANO_SIZE, PApplet.CORNER), true);
-				pixelsPerWholeNote = getHeight() / phrase.getTotalDuration();
-				break;
-		}
-		
+	protected void init() {
+		firstPitchOfPiano = 60;
+		noteMovement = RIGHT;
+		initPiano(phrase);
 		list1 = initList(phrase);
 		list2 = initList(phrase);
+	}
+	
+	public GHView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
+		super(rect, phrase, color1, color2, opacity, 0, pa);
 	}
 	
 	public void update(float dNotept1, float dNotept2, int sign) {
@@ -135,6 +129,19 @@ public class GHView extends View {
 		}
 	}
 	
+	private void initPiano(Phrase phrase) {
+		switch (noteMovement) {
+			case RIGHT:
+				piano = new Piano(3, new Rect(getX2() - PIANO_SIZE, getY1(), PIANO_SIZE, getHeight(), PApplet.CORNER), false);
+				pixelsPerWholeNote = getWidth() / phrase.getTotalDuration();
+				break;
+			case DOWN:
+				piano = new Piano(3, new Rect(getX1(), getY2() - PIANO_SIZE, getWidth(), PIANO_SIZE, PApplet.CORNER), true);
+				pixelsPerWholeNote = getHeight() / phrase.getTotalDuration();
+				break;
+		}
+	}
+	
 	private Rect[] initList(Phrase phrase) {
 		Rect[] set = new Rect[phrase.getNumNotes()];
 		float dx = 0;
@@ -183,19 +190,29 @@ public class GHView extends View {
 		this.displayPiano = displayPiano;
 	}
 	
+	private void setCameraRelativeToMotion(boolean cameraRelativeToMotion) {
+		this.cameraRelativeToMotion = cameraRelativeToMotion;
+	}
+	
 	public int numPresets() {
-		return 2;
+		return 3;
 	}
 	
 	public void loadPreset(int preset) {
-		noteMovement = DOWN;
+		this.noteMovement = RIGHT;
 		cameraRelativeToMotion = true;
 		
 		switch(preset) {
 			case 0 :
+				setCameraRelativeToMotion(true);
 				displayPiano(false);
 				break;
 			case 1 :
+				setCameraRelativeToMotion(false);
+				displayPiano(false);
+				break;
+			case 2 :
+				setCameraRelativeToMotion(false);
 				displayPiano(true);
 				break;
 		}

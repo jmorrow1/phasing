@@ -21,7 +21,7 @@ public class RhythmView extends View {
  	private final int ONE_ID = 0, TWO_ID = 1;
 	
 	public RhythmView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
-		super(rect, color1, color2, opacity, 0, pa);
+		super(rect, phrase, color1, color2, opacity, 0, pa);
 		
 		x1 = this.getX1() + 10;
 		x2 = this.getX2() - 10;

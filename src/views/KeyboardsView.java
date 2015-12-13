@@ -8,7 +8,6 @@ import processing.core.PApplet;
 
 public class KeyboardsView extends View {
 	//music
-	private Phrase phrase;
 	private PhraseReader readerA, readerB;
 	//piano
 	private Piano keyboardA, keyboardB;
@@ -20,7 +19,7 @@ public class KeyboardsView extends View {
 	private int firstPitchOfPiano = 60;
 	
 	public KeyboardsView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
-		super(rect, color1, color2, opacity, 0, pa);
+		super(rect, phrase, color1, color2, opacity, 0, pa);
 		
 		this.phrase = phrase;
 		
