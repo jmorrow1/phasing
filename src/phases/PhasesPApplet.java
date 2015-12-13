@@ -2,8 +2,8 @@ package phases;
 
 import geom.Rect;
 import processing.core.PApplet;
+import views.GHView;
 import views.KeyboardsView;
-import views.LiveGraphView;
 import views.SymbolicView;
 import views.View;
 import views.WavesView;
@@ -17,7 +17,7 @@ public class PhasesPApplet extends PApplet {
 	Phrase phrase;
 	int bpm1 = 90;
 	float bpms1 = bpm1 / 60000f;
-	int bpm2 = 91;
+	int bpm2 = 80;
 	float bpms2 = bpm2 / 60000f;
 	int sign;
 	//playback
@@ -47,9 +47,9 @@ public class PhasesPApplet extends PApplet {
 		color1 = color(255, 100, 100);
 		color2 = color(100, 100, 255);
 		
-		//views[0] = new GHView(viewFrames[0], phrase, color1, color2, 100, this);
+		views[0] = new GHView(viewFrames[0], phrase, color1, color2, 100, this);
 		
-		views[0] = new LiveGraphView(viewFrames[0], phrase, color1, color2, 175, this);
+		//views[0] = new LiveGraphView(viewFrames[0], phrase, color1, color2, 175, this);
 		
 		//views[3] = new RhythmView(viewFrames[3], phrase, color1, color2, 175, this);
 		

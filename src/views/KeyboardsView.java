@@ -3,6 +3,7 @@ package views;
 import geom.Rect;
 import phases.Phrase;
 import phases.PhraseReader;
+import phases.Piano;
 import processing.core.PApplet;
 
 public class KeyboardsView extends View {
@@ -23,8 +24,8 @@ public class KeyboardsView extends View {
 		
 		this.phrase = phrase;
 		
-		initPianos(false);
-		initPianoPlayers(false);
+		initPianos(true);
+		initPianoPlayers(true);
 		
 		//init phrase readers
 		try {

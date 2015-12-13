@@ -46,6 +46,40 @@ public class Rect {
         pa.rect(x1, y1, width, height);
     }
     
+    public void displayHorizontallyWrapped(PApplet pa, float x1, float x2) {
+    	pa.rectMode(pa.CORNER);
+    	if (this.x1 < x1 && this.getX2() > x1) {
+    		float surplusWidth = x1 - this.x1;
+    		pa.rect(x1, this.y1, this.width-surplusWidth, this.height);
+    		pa.rect(x2 - surplusWidth, this.y1, surplusWidth, this.height);
+    	}
+    	else if (this.getX2() > x2 && this.getX1() < x2) {
+    		float surplusWidth = this.getX2() - x2;
+    		pa.rect(this.x1, this.y1, this.width-surplusWidth, this.height);
+    		pa.rect(x1, this.y1, surplusWidth, this.height);
+    	}
+    	else {
+    		display(pa);
+    	}
+    }
+    
+    public void displayVerticallyWrapped(PApplet pa, float y1, float y2) {
+    	pa.rectMode(pa.CORNER);
+    	if (this.y1 < y1 && this.getY2() > y1) {
+    		float surplusHeight = y1 - this.y1;
+    		pa.rect(this.x1, y1, this.width, this.height-surplusHeight);
+    		pa.rect(this.x1, y2 - surplusHeight, this.width, surplusHeight);
+    	}
+    	else if (this.getY2() > y2 && this.getY1() < y2) {
+    		float surplusHeight = this.getY2() - y2;
+    		pa.rect(this.x1, this.y1, this.width, this.height-surplusHeight);
+    		pa.rect(this.x1, y1, this.width, surplusHeight);
+    	}
+    	else {
+    		display(pa);
+    	}
+    }
+    
     public boolean intersects(float x, float y) {
         return (x1 <= x && x <= x1 + width &&
                 y1 <= y && y <= y1 + height);

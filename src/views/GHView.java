@@ -3,6 +3,7 @@ package views;
 import geom.Rect;
 import phases.PhasesPApplet;
 import phases.Phrase;
+import phases.Piano;
 import processing.core.PApplet;
 
 public class GHView extends View {
@@ -13,14 +14,13 @@ public class GHView extends View {
 	//conversion
 	private int firstPitchOfPiano = 60;
 	private float pixelsPerWholeNote;
-	
 	//note views
 	private Rect[] list1, list2;
-	private int pointer1=0, pointer2=0; //points to rectangle closest to edge
-	public final static int RIGHT=2, DOWN=1, LEFT=-2, UP=-1;
+	public final static int RIGHT=0, DOWN=1;
 	private int noteMovement;
 	private boolean cameraRelativeToMotion;
-	private boolean list1IsReversed = false;
+	//other
+	private float dNoteptAcc;
 	
 	public GHView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
 		super(rect, color1, color2, opacity, 0, pa);
@@ -32,14 +32,6 @@ public class GHView extends View {
 				break;
 			case DOWN:
 				piano = new Piano(3, new Rect(getX1(), getY2() - PIANO_SIZE, getWidth(), PIANO_SIZE, PApplet.CORNER), true);
-				pixelsPerWholeNote = getHeight() / phrase.getTotalDuration();
-				break;
-			case LEFT:
-				piano = new Piano(3, new Rect(getX1(), getY1(), PIANO_SIZE, getHeight(), PApplet.CORNER), true);
-				pixelsPerWholeNote = getWidth() / phrase.getTotalDuration();
-				break;
-			case UP:
-				piano = new Piano(3, new Rect(getX1(), getY1(), getWidth(), PIANO_SIZE, PApplet.CORNER), true);
 				pixelsPerWholeNote = getHeight() / phrase.getTotalDuration();
 				break;
 		}
@@ -61,29 +53,33 @@ public class GHView extends View {
 			}
 		}
 		else {
-			pointer1 = update(list1, dNotept1, pointer1);
+			update(list1, dNotept1);
 		}
 		
 		//list2
 		pa.fill(color2, opacity);
-		if (cameraRelativeToMotion) {		
-			if ((!list1IsReversed && dNotept2 - dNotept1 < 0) || (list1IsReversed && dNotept2 - dNotept1 > 0)) {
-				reverse(list2);
-				list1IsReversed = !list1IsReversed;
+		if (cameraRelativeToMotion) {
+			
+			dNoteptAcc += (dNotept2 - dNotept1);
+			
+			if ( (sign < 0 && dNoteptAcc < 0) || (sign > 0 && dNoteptAcc > 0) ) {
+				update(list2, dNoteptAcc);
+				dNoteptAcc = 0;
 			}
-			pointer2 = update(list2, dNotept2 - dNotept1, pointer2);
+			else {
+				update(list2, 0);
+			}
 		}
 		else {
-			pointer2 = update(list2, dNotept2, pointer2);
+			update(list2, dNotept2);
 		}
 	}
 	
-	private int update(Rect[] list, float dBeatpt, int pointer) {
+	private void update(Rect[] list, float dBeatpt) {
 		float dpos = dBeatpt * pixelsPerWholeNote;
-
-		for (int i=0; i<list.length; i++) {
-			list[i].display(pa);
 			
+		//translate
+		for (int i=0; i<list.length; i++) {	
 			switch(noteMovement) {
 				case RIGHT:
 					list[i].translate(dpos, 0);
@@ -91,68 +87,52 @@ public class GHView extends View {
 				case DOWN:
 					list[i].translate(0, dpos);
 					break;
-				case LEFT:
-					list[i].translate(-dpos, 0);
-					break;
-				case UP:
-					list[i].translate(0, -dpos);
-					break;
 			}
 		}
-	
-		pointer = wrap(list, pointer, dBeatpt < 0);
-		return pointer;
+		
+		//wrap
+		wrap(list);
+		
+		//display
+		for (int i=0; i<list.length; i++) {
+			if (i == 0 || i == list.length-1) {
+				if (noteMovement == RIGHT) {
+					list[i].displayHorizontallyWrapped(pa, this.getX1(), this.getX2());
+				}
+				else {
+					list[i].displayVerticallyWrapped(pa, this.getY1(), this.getY2());
+				}
+			}
+			else {
+				list[i].display(pa);
+			}
+		}
 	}
 
-	private int wrap(Rect[] list, int pointer, boolean movingInReverse) {
-		//handle wrapping
+	private void wrap(Rect[] list) {
 		pa.rectMode(pa.CORNER);
-		
-		int directionOfMovement = noteMovement;
-		if (movingInReverse) directionOfMovement *= -1;
-		
-		boolean movePointer = false;
-		
-		switch(directionOfMovement) {
-			case RIGHT:
-				pa.rect(list[pointer].getX1() - this.getWidth(), list[pointer].getY1(),
-						list[pointer].getWidth(), list[pointer].getHeight());
+		if (noteMovement == RIGHT) {
+			if (list[0].getX2() < this.getX1()) {
+				list[0].translate(this.getWidth(), 0);
+				leftShift(list);
 				
-				if (list[pointer].getX1() > this.getX2()) {
-					list[pointer].translate(-this.getWidth(), 0);
-					pointer = PhasesPApplet.remainder(pointer+1, list.length);
-				}
-				break;
-			case DOWN:
-				pa.rect(list[pointer].getX1(), list[pointer].getY1() - this.getHeight(),
-						list[pointer].getWidth(), list[pointer].getHeight());
-				
-				if (list[pointer].getY1() > this.getY2()) {
-					list[pointer].translate(0, -this.getHeight());
-					pointer = PhasesPApplet.remainder(pointer+1, list.length);
-				}
-				break;
-			case LEFT:
-				pa.rect(list[pointer].getX1() + this.getWidth(), list[pointer].getY1(),
-						list[pointer].getWidth(), list[pointer].getHeight());
-				
-				if (list[pointer].getX2() < this.getX1()) {
-					list[pointer].translate(this.getWidth(), 0);
-					pointer = PhasesPApplet.remainder(pointer+1, list.length);
-				}
-				break;
-			case UP:
-				pa.rect(list[pointer].getX1(), list[pointer].getY1() + this.getHeight(),
-						list[pointer].getWidth(), list[pointer].getHeight());
-				
-				if (list[pointer].getY2() < this.getY1()) {
-					list[pointer].translate(0, this.getHeight());
-					pointer = PhasesPApplet.remainder(pointer+1, list.length);
-				}
-				break;
+			}
+			else if (list[list.length-1].getX1() > this.getX2()) {
+				list[list.length-1].translate(-this.getWidth(), 0);
+				rightShift(list);
+			}
 		}
-		
-		return pointer;
+		else {
+			if (list[0].getY2() < this.getY1()) {
+				list[0].translate(0, this.getHeight());
+				leftShift(list);
+				
+			}
+			else if (list[list.length-1].getY1() > this.getY2()) {
+				list[list.length-1].translate(0, -this.getHeight());
+				rightShift(list);
+			}
+		}
 	}
 	
 	private Rect[] initList(Phrase phrase) {
@@ -165,15 +145,9 @@ public class GHView extends View {
 			//setup translation
 			switch(noteMovement) {
 				case RIGHT:
-					dx -= set[i-1].getWidth();
-					break;
-				case DOWN:	
-					dy -= set[i-1].getHeight();
-					break;
-				case LEFT:
 					dx += set[i-1].getWidth();
 					break;
-				case UP:
+				case DOWN:	
 					dy += set[i-1].getHeight();
 					break;
 			}
@@ -191,36 +165,16 @@ public class GHView extends View {
 		switch(noteMovement) {
 			case RIGHT:
 				rect.setWidth(pixelsPerWholeNote * phrase.getDuration(noteIndex));
-				rect.setX1(piano.getX2() - rect.getWidth());
+				rect.setX1(getX1());
 				break;
 			case DOWN:
 				rect.setHeight(pixelsPerWholeNote * phrase.getDuration(noteIndex));
-				rect.setY1(piano.getY2() - rect.getHeight());
-				break;
-			case LEFT:
-				rect.setWidth(pixelsPerWholeNote * phrase.getDuration(noteIndex));
-				rect.setX1(piano.getX1());
-				break;
-			case UP:
-				rect.setHeight(pixelsPerWholeNote * phrase.getDuration(noteIndex));
-				rect.setY1(piano.getY1());
+				rect.setY1(getY1());
 				break;
 		}
 		
 
 		return rect;
-	}
-	
-	private static void reverse(Rect[] xs) {
-	    int i=0;
-	    int j=xs.length-1;
-	    while (i < j) {
-	    	Rect temp = xs[i];
-	    	xs[i] = xs[j];
-	    	xs[j] = temp;
-	    	i++;
-	    	j--;
-	    }
 	}
 	
 	/*Settings*/
@@ -234,7 +188,7 @@ public class GHView extends View {
 	}
 	
 	public void loadPreset(int preset) {
-		noteMovement = RIGHT;
+		noteMovement = DOWN;
 		cameraRelativeToMotion = true;
 		
 		switch(preset) {

@@ -1,4 +1,4 @@
-package views;
+package phases;
 
 import geom.Point;
 import geom.Rect;
@@ -65,8 +65,7 @@ public class Piano extends Rect {
 			if (i % 12 != 4 && i % 12 != 11) {
 				if (getWidth() > getHeight()) {
 					blackKeys[k++] = new Rect(x1 + whiteKeyWidth - blackKeyWidth/2f, y1, 
-							                  blackKeyWidth, blackKeyHeight, PApplet.CORNER);
-					
+							                  blackKeyWidth, blackKeyHeight, PApplet.CORNER);	
 					if (!facePositive) {
 						blackKeys[k-1].translate(0, whiteKeyHeight-blackKeyHeight);
 					}
