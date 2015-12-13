@@ -25,9 +25,9 @@ public class GHView extends View {
 	protected void init() {
 		firstPitchOfPiano = 60;
 		noteMovement = RIGHT;
-		initPiano(phrase);
-		list1 = initList(phrase);
-		list2 = initList(phrase);
+		initPiano();
+		list1 = initList();
+		list2 = initList();
 	}
 	
 	public GHView(Rect rect, Phrase phrase, int color1, int color2, int opacity, PApplet pa) {
@@ -129,7 +129,7 @@ public class GHView extends View {
 		}
 	}
 	
-	private void initPiano(Phrase phrase) {
+	private void initPiano() {
 		switch (noteMovement) {
 			case RIGHT:
 				piano = new Piano(3, new Rect(getX2() - PIANO_SIZE, getY1(), PIANO_SIZE, getHeight(), PApplet.CORNER), false);
@@ -142,13 +142,13 @@ public class GHView extends View {
 		}
 	}
 	
-	private Rect[] initList(Phrase phrase) {
+	private Rect[] initList() {
 		Rect[] set = new Rect[phrase.getNumNotes()];
 		float dx = 0;
 		float dy = 0;
-		set[0] = noteToRect(phrase, 0);
+		set[0] = noteToRect(0);
 		for (int i=1; i<phrase.getNumNotes(); i++) {
-			set[i] = noteToRect(phrase, i);
+			set[i] = noteToRect(i);
 			//setup translation
 			switch(noteMovement) {
 				case RIGHT:
@@ -166,7 +166,7 @@ public class GHView extends View {
 		return set;
 	}
 	
-	private Rect noteToRect(Phrase phrase, int noteIndex) {
+	private Rect noteToRect(int noteIndex) {
 		Rect rect = piano.getKeyCopy(phrase.getPitch(noteIndex) - firstPitchOfPiano);
 		
 		switch(noteMovement) {
@@ -194,24 +194,61 @@ public class GHView extends View {
 		this.cameraRelativeToMotion = cameraRelativeToMotion;
 	}
 	
+	private void setNoteMovement(int noteMovement) {
+		if ( (this.noteMovement == RIGHT && noteMovement == DOWN) ||
+				(this.noteMovement == DOWN && noteMovement == RIGHT)) {
+			rotateRects(list1);
+			rotateRects(list2);
+		}
+		this.noteMovement = noteMovement;
+		initPiano();
+	}
+	
+	private void rotateRects(Rect[] list) {
+		for (int i=0; i<list.length; i++) {
+			float x1 = PApplet.map(list[i].getY1(), this.getY1(), this.getY2(), this.getX1(), this.getX2());
+			float y1 = PApplet.map(list[i].getX1(), this.getX1(), this.getX2(), this.getY1(), this.getY2());
+			float x2 = PApplet.map(list[i].getY2(), this.getY1(), this.getY2(), this.getX1(), this.getX2());
+			float y2 = PApplet.map(list[i].getX2(), this.getX1(), this.getX2(), this.getY1(), this.getY2());
+			list[i] = new Rect(x1, y1, x2, y2, PApplet.CORNERS);
+		}
+	}
+	
 	public int numPresets() {
-		return 3;
+		return 6;
 	}
 	
 	public void loadPreset(int preset) {
-		this.noteMovement = RIGHT;
 		cameraRelativeToMotion = true;
 		
 		switch(preset) {
 			case 0 :
+				setNoteMovement(RIGHT);
 				setCameraRelativeToMotion(true);
 				displayPiano(false);
 				break;
 			case 1 :
+				setNoteMovement(RIGHT);
 				setCameraRelativeToMotion(false);
 				displayPiano(false);
 				break;
 			case 2 :
+				setNoteMovement(RIGHT);
+				setCameraRelativeToMotion(false);
+				displayPiano(true);
+				break;
+			case 3 :
+				setNoteMovement(DOWN);
+				setCameraRelativeToMotion(true);
+				displayPiano(false);
+				break;
+			case 4 :
+				setNoteMovement(DOWN);
+				setCameraRelativeToMotion(false);
+				displayPiano(false);
+				break;
+			case 5 :
+				setNoteMovement(DOWN);
 				setCameraRelativeToMotion(false);
 				displayPiano(true);
 				break;
