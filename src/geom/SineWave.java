@@ -2,10 +2,22 @@ package geom;
 
 import processing.core.PApplet;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 public class SineWave extends Wave {
 	private float x1, x2, width, ycen, amplitude;
 	private float startAngle;
 	
+	/**
+	 * 
+	 * @param x1 The leftmost coordinate on the x-axis
+	 * @param x2 The rightmost coordinate on the x-axis
+	 * @param ycen The center y-coordinate of the sine wave
+	 * @param amplitude The amplitude of the sine wave
+	 */
 	public SineWave(float x1, float x2, float ycen, float amplitude) {
 		this.x1 = x1;
 		this.x2 = x2;
@@ -14,6 +26,10 @@ public class SineWave extends Wave {
 		this.amplitude = amplitude;
 	}
 	
+	/**
+	 * Copy constructor
+	 * @param sw The sine wave to copy
+	 */
 	public SineWave(SineWave sw) {
 		this.x1 = sw.x1;
 		this.x2 = sw.x2;

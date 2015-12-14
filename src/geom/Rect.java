@@ -2,9 +2,18 @@ package geom;
 
 import processing.core.PApplet;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 public class Rect {
     private float x1, y1, width, height;
     
+    /**
+     * Copy constructor
+     * @param rect The rect to copy
+     */
     public Rect(Rect rect) {
     	this.x1 = rect.x1;
     	this.y1 = rect.y1;
@@ -12,6 +21,21 @@ public class Rect {
     	this.height = rect.height;
     }
     
+    /**
+     * The following Java code...
+     * Rect r = new Rect(a, b, c, d, rectMode);
+     * r.display(pa);
+     * 
+     * ...is behaviorally equivalent to the Processing code:
+     * rectMode(rectMode);
+     * rect(a, b, c, d);
+     * 
+     * @param a
+     * @param b
+     * @param c
+     * @param d
+     * @param rectMode
+     */
     public Rect(float a, float b, float c, float d, int rectMode) {
         if (rectMode == PApplet.CENTER) {
         	this.width = c;
@@ -41,11 +65,21 @@ public class Rect {
         }
     }
     
+    /**
+     * Displays the rect.
+     * @param pa The PApplet to draw to
+     */
     public void display(PApplet pa) {
         pa.rectMode(pa.CORNER);
         pa.rect(x1, y1, width, height);
     }
     
+    /**
+     * Displays the rect, wrapping it to the specified x-range if it is partially within the x-range.
+     * @param pa The PApplet to draw to
+     * @param x1 The minimum x-coordinate of the range
+     * @param x2 The minimum x-coordinate of the range
+     */
     public void displayHorizontallyWrapped(PApplet pa, float x1, float x2) {
     	pa.rectMode(pa.CORNER);
     	if (this.x1 < x1 && this.getX2() > x1) {
@@ -63,6 +97,12 @@ public class Rect {
     	}
     }
     
+    /**
+     * Displays the rect, wrapping it to the specified y-range if it is partially within the y-range.
+     * @param pa The PApplet to draw to
+     * @param y1 The minimum y-coordinate of the range
+     * @param y2 The minimum y-coordinate of the range
+     */
     public void displayVerticallyWrapped(PApplet pa, float y1, float y2) {
     	pa.rectMode(pa.CORNER);
     	if (this.y1 < y1 && this.getY2() > y1) {
@@ -80,64 +120,127 @@ public class Rect {
     	}
     }
     
+    /**
+     *
+     * @param x The x-coordinate of the point
+     * @param y The y-coordinate of the point
+     * @return True if the point (x, y) intersects the rect, false otherwise
+     */
     public boolean intersects(float x, float y) {
         return (x1 <= x && x <= x1 + width &&
                 y1 <= y && y <= y1 + height);
     }
     
+    /**
+     * 
+     * @return the leftmost x-coordinate of the rect
+     */
     public float getX1() {
         return x1;
     }
     
+    /**
+     * 
+     * @return the uppermost y-coordinate of the rect
+     */
     public float getY1() {
         return y1;
     }
     
+    /**
+     * 
+     * @return the rightmost x-coordinate of the rect
+     */
     public float getX2() {
         return x1 + width;
     }
     
+    /**
+     * 
+     * @return the bottommost y-coordinate of the rect
+     */
     public float getY2() {
         return y1 + height;
     }
 
+    /**
+     * 
+     * @return the center x-coordinate of the rect
+     */
 	public float getCenx() {
 		return x1 + width/2f;
 	}
 
+	/**
+	 * 
+	 * @param x1 the new rightmost x-coordinate for the rect
+	 */
 	public void setX1(float x1) {
 		this.x1 = x1;
 	}
 
+	/**
+	 * 
+	 * @return the center y-coordinate of the rect
+	 */
 	public float getCeny() {
 		return y1 + height/2f;
 	}
 
+	/**
+	 * 
+	 * @param y1 the new uppermost y-coordinate for the rect
+	 */
 	public void setY1(float y1) {
 		this.y1 = y1;
 	}
 
+	/**
+	 * 
+	 * @return the width of the rect
+	 */
 	public float getWidth() {
 		return width;
 	}
 
+	/**
+	 * 
+	 * @param the new width for the rect
+	 */
 	public void setWidth(float width) {
 		this.width = width;
 	}
 
+	/**
+	 * 
+	 * @return the height of the rect
+	 */
 	public float getHeight() {
 		return height;
 	}
 
+	/**
+	 * 
+	 * @param height the new height for the rect
+	 */
 	public void setHeight(float height) {
 		this.height = height;
 	}
 	
+	/**
+	 * Shifts the rect by (dx, dy)
+	 * @param dx How much to shift the x-coordinate of the rect, in pixels
+	 * @param dy How much to shift the y-coordinate of the rect, in pixels
+	 */
 	public void translate(float dx, float dy) {
 		x1 += dx;
 		y1 += dy;
 	}
 	
+	/**
+	 * Moves every element in the array leftward.
+	 * @param xs The array to left-shift.
+	 */
 	public static void leftShift(Rect[] xs) {
 	    if (xs.length > 0) {
 	        int i = xs.length-1;
@@ -153,6 +256,10 @@ public class Rect {
 	    }
 	}
 
+	/**
+	 * Moves every element in the array rightward.
+	 * @param xs The array to left-shift.
+	 */
 	public static void rightShift(Rect[] xs) {
 	    if (xs.length > 0) {
 	        int i=0;

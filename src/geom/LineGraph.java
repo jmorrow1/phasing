@@ -3,17 +3,35 @@ package geom;
 import phases.Phrase;
 import processing.core.PApplet;
 
-public class LinearPlot extends Wave {
+/**
+ * 
+ * @author James Morrow
+ *
+ */
+public class LineGraph extends Wave {
 	private Point leftEdgePoint, rightEdgePoint;
 	private Point[] pts;
 	private float x1, x2, dx, width;
 	private boolean drawVertices;
 	
-	public LinearPlot(float[] ys, float x1, float x2) {
+	/**
+	 * 
+	 * @param ys The y-values of the graph
+	 * @param x1 The leftmost coordinate on the x-axis
+	 * @param x2 The rightmost coordinate on the x-axis
+	 */
+	public LineGraph(float[] ys, float x1, float x2) {
 		this(ys, x1, x2, true);
 	}
 	
-	public LinearPlot(float[] ys, float x1, float x2, boolean drawVertices) {
+	/**
+	 * 
+	 * @param ys The y-values of the graph
+	 * @param x1 The leftmost coordinate on the x-axis
+	 * @param x2 The rightmost coordinate on the x-axis
+	 * @param drawVertices Whether or not to draw the vertices as dots
+	 */
+	public LineGraph(float[] ys, float x1, float x2, boolean drawVertices) {
 		pts = new Point[ys.length];
 		float x = x1;
 		float dx = (x2-x1) / ys.length;
@@ -32,7 +50,11 @@ public class LinearPlot extends Wave {
 		this.drawVertices = drawVertices;
 	}
 	
-	public LinearPlot(LinearPlot lp) {
+	/**
+	 * Copy constructor
+	 * @param lp The LineGraph to copy
+	 */
+	public LineGraph(LineGraph lp) {
 		pts = new Point[lp.pts.length];
 		for (int i=0; i<pts.length; i++) {
 			pts[i] = new Point(lp.pts[i]);
@@ -47,27 +69,37 @@ public class LinearPlot extends Wave {
 		this.dx = lp.dx;
 		this.drawVertices = lp.drawVertices;
 	}
-
+	
 	public void display(PApplet pa, int color, int opacity) {
-		//draw lines
-		pa.noFill();
 		pa.stroke(color, opacity);
+		pa.noFill();
+		drawLines(pa);
+		pa.noStroke();
+		pa.fill(color, opacity);
+		drawVertices(pa);
+	}
+	
+	/**
+	 * Draws the line segments of the graph
+	 * @param pa The PApplet to draw on
+	 */
+	private void drawLines(PApplet pa) {
 		pa.beginShape();
-		pa.vertex(leftEdgePoint.x, leftEdgePoint.y);
-		for (int i=0; i<pts.length; i++) {
-			pa.vertex(pts[i].x, pts[i].y);
-		}
-		pa.vertex(rightEdgePoint.x, rightEdgePoint.y);
-		pa.endShape();
-		
-		if (drawVertices) {
-			//draw vertices
-			pa.noStroke();
-			pa.fill(color, opacity);
-			pa.ellipseMode(pa.CENTER);
+			pa.vertex(leftEdgePoint.x, leftEdgePoint.y);
 			for (int i=0; i<pts.length; i++) {
-				pa.ellipse(pts[i].x, pts[i].y, 10, 10);
+				pa.vertex(pts[i].x, pts[i].y);
 			}
+			pa.vertex(rightEdgePoint.x, rightEdgePoint.y);
+		pa.endShape();
+	}
+	
+	/**
+	 * Draws the vertices of the graph as dots
+	 * @param pa The PApplet to draw on
+	 */
+	private void drawVertices(PApplet pa) {
+		for (int i=0; i<pts.length; i++) {
+			pa.ellipse(pts[i].x, pts[i].y, 10, 10);
 		}
 	}
 	
@@ -81,7 +113,7 @@ public class LinearPlot extends Wave {
 		if (dx < 0) {
 			while (pts[0].x < x1) {
 				pts[0].x += width;
-				leftShift(pts);
+				Point.leftShift(pts);
 			}
 			float lerpAmt = (pts[0].x - x1) / this.dx;
 			leftEdgePoint.y = PApplet.lerp(pts[0].y, pts[pts.length-1].y, lerpAmt);
@@ -90,7 +122,7 @@ public class LinearPlot extends Wave {
 		else if (dx > 0) {
 			while (pts[pts.length-1].x > x2) {
 				pts[pts.length-1].x -= width;
-				rightShift(pts);
+				Point.rightShift(pts);
 			}
 			float lerpAmt = (pts[0].x - x1) / this.dx;
 			leftEdgePoint.y = PApplet.lerp(pts[0].y, pts[pts.length-1].y, lerpAmt);
@@ -98,37 +130,12 @@ public class LinearPlot extends Wave {
 		}
 	}
 	
+	/**
+	 * If true, sets the vertices to be drawn as dots.
+	 * If false, sets the vertices not to be drawn.
+	 * @param value Whether or not to draw the vertices as dots
+	 */
 	public void drawVertices(boolean value) {
 		drawVertices = value;
-	}
-	
-	private static void leftShift(Point[] xs) {
-	    if (xs.length > 0) {
-	        int i = xs.length-1;
-	        Point next = xs[i];
-	        xs[i] = xs[0];
-	        i--;
-	        while (i >= 0) {
-	            Point temp = xs[i];
-	            xs[i] = next;
-	            next = temp;
-	            i--;
-	        }
-	    }
-	}
-
-	private static void rightShift(Point[] xs) {
-	    if (xs.length > 0) {
-	        int i=0;
-	        Point prev = xs[i];
-	        xs[i] = xs[xs.length-1];
-	        i++;
-	        while (i < xs.length) {
-	        	Point temp = xs[i];
-	            xs[i] = prev;
-	            prev = temp;
-	            i++;
-	        }
-	    }
 	}
 }
