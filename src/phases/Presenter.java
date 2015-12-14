@@ -24,9 +24,7 @@ public class Presenter extends Screen {
 	
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
-	}
-	
-	public void setup() {
+		
 		viewFrames = new Rect[] {
 				new Rect(0, 0, pa.width/2f, pa.height/2f, PApplet.CORNER),
 				new Rect(pa.width/2f, 0, pa.width/2f, pa.height/2f, PApplet.CORNER),
@@ -73,6 +71,10 @@ public class Presenter extends Screen {
 		else {
 			sign = 0;
 		}
+	}
+	
+	public void onEnter() {
+		
 	}
 	
 	public void draw() {

@@ -15,6 +15,6 @@ public abstract class Screen {
 	public void keyPressed() {}
 	public void keyReleased() {}
 	
-	public abstract void setup();
+	public abstract void onEnter();
 	public abstract void draw();
 }

@@ -86,7 +86,7 @@ public class Piano extends Rect {
 				}
 				else {
 					if (allKeysEqualSize) {
-						x1 += whiteKeyWidth;
+						y1 += whiteKeyHeight;
 						blackKeys[k++] = new Rect(x1, y1, whiteKeyWidth, whiteKeyHeight, PApplet.CORNER);
 					}
 					else {
@@ -149,6 +149,26 @@ public class Piano extends Rect {
 	
 	public int getNumOctaves() {
 		return numOctaves;
+	}
+	
+	public int numKeys() {
+		return keys.length;
+	}
+	
+	public float getWhiteKeyWidth() {
+		return whiteKeys[0].getWidth();
+	}
+	
+	public float getWhiteKeyHeight() {
+		return whiteKeys[0].getHeight();
+	}
+	
+	public float getBlackKeyWidth() {
+		return blackKeys[0].getWidth();
+	}
+	
+	public float getBlackKeyHeight() {
+		return blackKeys[0].getHeight();
 	}
 	
 	public void setNumOctaves(int numOctaves) {

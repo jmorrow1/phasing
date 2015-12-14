@@ -15,6 +15,8 @@ public class PhasesPApplet extends PApplet {
 	public int bpm2 = 80;
 	public float bpms2 = bpm2 / 60000f;
 	
+	private Presenter presenter;
+	private Editor editor;
 	private Screen currentScreen;
 	
 	public void settings() {
@@ -23,11 +25,13 @@ public class PhasesPApplet extends PApplet {
 	
 	public void setup() {
 		phrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
-	            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
-	            new float[] {0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f});
+				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
+				            new float[] {0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f});
 		
-		currentScreen = new Presenter(this);
-		currentScreen.setup();
+		presenter = new Presenter(this);
+		editor = new Editor(this);
+		currentScreen = editor;
+		currentScreen.onEnter();
 	}
 	
 	public void draw() {
