@@ -53,8 +53,6 @@ public class Presenter extends Screen {
 		player2.repeat(-1);
 		player1.tempo(pa.bpm1);
 		player2.tempo(pa.bpm2);
-		player1.play();
-		player2.play();
 		
 		playing = true;
 		
@@ -73,10 +71,19 @@ public class Presenter extends Screen {
 		}
 	}
 	
+	@Override
 	public void onEnter() {
-		
+		player1.play();
+		player2.play();
 	}
 	
+	@Override
+	public void onExit() {
+		player1.stop();
+		player2.stop();
+	}
+	
+	@Override
 	public void draw() {
 		//time
 		float notept1 = PApplet.map(player1.getTickPosition(),

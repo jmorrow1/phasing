@@ -54,7 +54,7 @@ public class Phrase {
 	}
 	
 	public void setPitch(int i, float pitch) {
-		if (i <= 0 && i < pitches.length) {
+		if (0 <= i && i < pitches.length) {
 			pitches[i] = pitch;
 		}
 		else {
@@ -63,7 +63,7 @@ public class Phrase {
 	}
 	
 	public void setDynamic(int i, float dynamic) {
-		if (i <= 0 && i < dynamics.length) {
+		if (0 <= i && i < dynamics.length) {
 			dynamics[i] = dynamic;
 		}
 		else {
@@ -72,7 +72,7 @@ public class Phrase {
 	}
 	
 	public void setDuration(int i, float duration) {
-		if (i <= 0 && i < durations.length) {
+		if (0 <= i && i < durations.length) {
 			durations[i] = duration;
 			totalDuration = NOT_INITIALIZED;
 		}

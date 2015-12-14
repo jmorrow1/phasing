@@ -11,10 +11,12 @@ public abstract class Screen {
 	}
 	public void mousePressed() {}
 	public void mouseReleased() {}
+	public void mouseDragged() {}
 	public void mouseMoved() {}
 	public void keyPressed() {}
 	public void keyReleased() {}
 	
 	public abstract void onEnter();
+	public abstract void onExit();
 	public abstract void draw();
 }

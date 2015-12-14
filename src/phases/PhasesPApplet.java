@@ -46,6 +46,10 @@ public class PhasesPApplet extends PApplet {
 		currentScreen.mouseReleased();
 	}
 	
+	public void mouseDragged() {
+		currentScreen.mouseDragged();
+	}
+	
 	public void mouseMoved() {
 		currentScreen.mouseMoved();
 	}
