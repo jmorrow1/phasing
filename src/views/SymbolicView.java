@@ -207,19 +207,11 @@ public class SymbolicView extends View {
 	}
 	
 	public int numPresets() {
-		return 2;
+		return 1;
 	}
 
 	@Override
 	public void loadPreset(int preset) {
-		
-		switch(preset) {
-			case 0 :
-				setCameraRelativeToMotion(true);
-				break;
-			case 1 :
-				setCameraRelativeToMotion(false);
-				break;
-		}
+		setCameraRelativeToMotion(true);
 	}
 }

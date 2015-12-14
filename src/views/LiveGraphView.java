@@ -6,9 +6,9 @@ import java.util.Queue;
 
 import geom.Rect;
 import phases.ColoredDot;
-import phases.PhasesPApplet;
 import phases.Phrase;
 import phases.PhraseReader;
+import phases.Presenter;
 import processing.core.PApplet;
 
 public class LiveGraphView extends View {
@@ -139,20 +139,20 @@ public class LiveGraphView extends View {
 			case 0 :
 				drawLines(true);
 				drawDots(true);
-				setColor1(PhasesPApplet.color1);
-				setColor2(PhasesPApplet.color2);
+				setColor1(Presenter.color1);
+				setColor2(Presenter.color2);
 				break;
 			case 1 :
 				drawLines(true);
 				drawDots(false);
-				setColor1(PhasesPApplet.color1);
-				setColor2(PhasesPApplet.color2);
+				setColor1(Presenter.color1);
+				setColor2(Presenter.color2);
 				break;
 			case 2 :
 				drawLines(false);
 				drawDots(true);
-				setColor1(PhasesPApplet.color1);
-				setColor2(PhasesPApplet.color2);
+				setColor1(Presenter.color1);
+				setColor2(Presenter.color2);
 				break;
 			case 3 :
 				drawLines(true);

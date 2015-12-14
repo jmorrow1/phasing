@@ -33,14 +33,14 @@ public class KeyboardsView extends View {
 	private void initPianos() {
 		if (superimposeKeyboards) {
 			keyboardAB = new Piano(2, new Rect(this.getCenx(), this.getCeny(),
-					0.75f*this.getWidth(), PIANO_SIZE, PApplet.CENTER), true, pa.color(255));
+					0.75f*this.getWidth(), PIANO_SIZE, PApplet.CENTER), true, false, pa.color(255));
 		}
 		else {
 			keyboardA = new Piano(2, new Rect(this.getCenx(), this.getCeny() - PIANO_SIZE,
-							0.75f*this.getWidth(), PIANO_SIZE, PApplet.CENTER), true, pa.color(255));
+							0.75f*this.getWidth(), PIANO_SIZE, PApplet.CENTER), true, false, pa.color(255));
 			
 			keyboardB = new Piano(2, new Rect(this.getCenx(), this.getCeny() + PIANO_SIZE,
-							0.75f*this.getWidth(), PIANO_SIZE, PApplet.CENTER), true, pa.color(255));
+							0.75f*this.getWidth(), PIANO_SIZE, PApplet.CENTER), true, false, pa.color(255));
 		}
 	}
 	

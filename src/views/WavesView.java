@@ -1,6 +1,6 @@
 package views;
 
-import geom.LinearPlot;
+import geom.LineGraph;
 import geom.Point;
 import geom.Rect;
 import geom.SineWave;
@@ -26,7 +26,7 @@ public class WavesView extends View {
 		switch(waveType) {
 			case LINEAR_PLOT: 
 				a = makePlot(phrase, amp1);
-				b = new LinearPlot((LinearPlot)a);
+				b = new LineGraph((LineGraph)a);
 				//c = makePlot(phrase, amp2);
 				//d = new LinearPlot((LinearPlot)c);
 				break;
@@ -76,7 +76,7 @@ public class WavesView extends View {
 		w.display(pa, color, opacity);
 	}
 	
-	private LinearPlot makePlot(Phrase phrase, float amp) {
+	private LineGraph makePlot(Phrase phrase, float amp) {
 		//determine min and max pitch values of phrase
 		float minPitch = phrase.minPitch();
 		float maxPitch = phrase.maxPitch();
@@ -88,7 +88,7 @@ public class WavesView extends View {
 			ys[i] = PApplet.map(phrase.getPitch(i), minPitch, maxPitch, ycen + amp, ycen - amp);
 		}
 		
-		return new LinearPlot(ys, this.getX1(), this.getX2());
+		return new LineGraph(ys, this.getX1(), this.getX2());
 	}
 	
 	/*Settings*/
@@ -98,18 +98,11 @@ public class WavesView extends View {
 	}
 	
 	public int numPresets() {
-		return 2;
+		return 1;
 	}
 
 	@Override
 	public void loadPreset(int preset) {
-		switch(preset) {
-			case 0 :
-				setCameraRelativeToMovement(true);
-				break;
-			case 1 :
-				setCameraRelativeToMovement(false);
-				break;
-		}
+		setCameraRelativeToMovement(true);
 	}
 }

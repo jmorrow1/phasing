@@ -4,23 +4,30 @@ import geom.Point;
 import geom.Rect;
 import processing.core.PApplet;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 public class Piano extends Rect {
 	//independent parameters
 	private int numOctaves;
 	private boolean facePositive;
+	private boolean allKeysEqualSize;
 	//keys
 	private Rect[] whiteKeys, blackKeys, keys;
 	private int blackKeyColor;
 	
 	public Piano(int numOctaves, Rect rect, boolean facePositive) {
-		this(numOctaves, rect, facePositive, 0);
+		this(numOctaves, rect, facePositive, false, 0);
 	}
 
-	public Piano(int numOctaves, Rect rect, boolean facePositive, int blackKeyColor) {
+	public Piano(int numOctaves, Rect rect, boolean facePositive, boolean allKeysEqualSize, int blackKeyColor) {
 		super(rect);
 		
 		this.numOctaves = numOctaves;
 		this.facePositive = facePositive;
+		this.allKeysEqualSize = allKeysEqualSize;
 		
 		if (numOctaves >= 0) {
 			initArrays();
@@ -44,10 +51,11 @@ public class Piano extends Rect {
 	private void initRects() {
 		//dependent parameters
 		int numKeys = numOctaves * 12;
-		float whiteKeyWidth = (getWidth() > getHeight()) ? (getWidth()-1) / (numOctaves*7f) : 
+		float divisor = (allKeysEqualSize) ? numKeys : numOctaves*7f;
+		float whiteKeyWidth = (getWidth() > getHeight()) ? (getWidth()-1) / divisor : 
 			                                                getWidth();
 		
-		float whiteKeyHeight = (getHeight() > getWidth()) ? (getHeight()-1) / (numOctaves*7f) :
+		float whiteKeyHeight = (getHeight() > getWidth()) ? (getHeight()-1) / divisor :
 			                                                 getHeight();
 		float blackKeyWidth = whiteKeyWidth * 0.625f;
 		float blackKeyHeight = whiteKeyHeight * 0.625f;
@@ -64,17 +72,29 @@ public class Piano extends Rect {
 			//init black keys
 			if (i % 12 != 4 && i % 12 != 11) {
 				if (getWidth() > getHeight()) {
-					blackKeys[k++] = new Rect(x1 + whiteKeyWidth - blackKeyWidth/2f, y1, 
-							                  blackKeyWidth, blackKeyHeight, PApplet.CORNER);	
-					if (!facePositive) {
-						blackKeys[k-1].translate(0, whiteKeyHeight-blackKeyHeight);
+					if (allKeysEqualSize) {
+						x1 += whiteKeyWidth;
+						blackKeys[k++] = new Rect(x1, y1, whiteKeyWidth, whiteKeyHeight, PApplet.CORNER);
+					}
+					else {
+						blackKeys[k++] = new Rect(x1 + whiteKeyWidth - blackKeyWidth/2f, y1, 
+								                  blackKeyWidth, blackKeyHeight, PApplet.CORNER);	
+						if (!facePositive) {
+							blackKeys[k-1].translate(0, whiteKeyHeight-blackKeyHeight);
+						}
 					}
 				}
 				else {
-					blackKeys[k++] = new Rect(x1, y1 + whiteKeyHeight - blackKeyHeight/2f, 
-			                                  blackKeyWidth, blackKeyHeight, PApplet.CORNER);
-					if (!facePositive) {
-						blackKeys[k-1].translate(whiteKeyWidth-blackKeyWidth, 0);
+					if (allKeysEqualSize) {
+						x1 += whiteKeyWidth;
+						blackKeys[k++] = new Rect(x1, y1, whiteKeyWidth, whiteKeyHeight, PApplet.CORNER);
+					}
+					else {
+						blackKeys[k++] = new Rect(x1, y1 + whiteKeyHeight - blackKeyHeight/2f, 
+				                                  blackKeyWidth, blackKeyHeight, PApplet.CORNER);
+						if (!facePositive) {
+							blackKeys[k-1].translate(whiteKeyWidth-blackKeyWidth, 0);
+						}
 					}
 				}
 				i++;
@@ -216,11 +236,21 @@ public class Piano extends Rect {
 		}
 	}
 	
-	public static boolean isWhiteKey(int i) {
-		i %= 12;
-		return !isBlackKey(i);
+	/**
+	 *
+	 * @param midiPitch The midi pitch value
+	 * @return True if the given midi pitch value cooresponds to a white piano key, false otherwise.
+	 */
+	public static boolean isWhiteKey(int midiPitch) {
+		midiPitch %= 12;
+		return !isBlackKey(midiPitch);
 	}
 	
+	/**
+	 * 
+	 * @param midiPitch The midi pitch value
+	 * @return True if the given midi pitch value cooresponds to a black piano key, false otherwise.
+	 */
 	public static boolean isBlackKey(int i) {
 		i %= 12;
 		return i == 1 || i == 3 || i == 6 || i == 8 || i == 10;
