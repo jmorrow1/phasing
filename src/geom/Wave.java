@@ -2,6 +2,11 @@ package geom;
 
 import processing.core.PApplet;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 public abstract class Wave {
 	/**
 	 * Displays the wave with the specified color and opacity

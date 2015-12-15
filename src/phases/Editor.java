@@ -2,6 +2,11 @@ package phases;
 
 import geom.Rect;
 
+/**
+ * Provides an editor in which the user can create and edit musical phrases for the Presenter screen.
+ * @author James Morrow
+ *
+ */
 public class Editor extends Screen {
 	//piano
 	private int minPitch = 60;
@@ -19,6 +24,10 @@ public class Editor extends Screen {
 	private int startIndexOfUserDrawnNote = -1;
 	private int indexMousePressed=-1, pitchMousePressed=-1;
 	
+	/**
+	 * 
+	 * @param pa The PApplet to draw to
+	 */
 	public Editor(PhasesPApplet pa) {
 		super(pa);
 		
@@ -36,11 +45,12 @@ public class Editor extends Screen {
 	public void onExit() {}
 	
 	public void mousePressed() {
+		//for drawing a note to the grid:
 		if (mouseIntersectsGrid()) {
 			indexMousePressed = mouseToIndex();
 			pitchMousePressed = mouseToPitch();
 			startIndexOfUserDrawnNote = indexMousePressed;
-			boolean success = pa.phrase.setNote(indexMousePressed, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
+			boolean success = pa.phrase.setCell(indexMousePressed, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
 			if (indexMousePressed+1 < pa.phrase.getGridRowSize() && pa.phrase.getNoteType(indexMousePressed+1) == Phrase.NOTE_SUSTAIN) {
 				pa.phrase.setNoteType(indexMousePressed+1, Phrase.NOTE_START);
 			}
@@ -52,30 +62,31 @@ public class Editor extends Screen {
 	}
 	
 	public void mouseReleased() {
+		//for resetting the Editor's state w/r/t the grid:
 		userIsDrawingNote = false;
 		startIndexOfUserDrawnNote = -1;
 	}
 	
 	public void mouseDragged() {
+		//for continuing to draw notes to the grid:
 		if (userIsDrawingNote && mouseIntersectsGrid()) {
 			int newIndex = mouseToIndex();
 			int newPitch = mouseToPitch();
 			if (newPitch == pitchMousePressed) {
-				//System.out.println("newIndex = " + newIndex + ", indexMousePressed = " + indexMousePressed + ", startIndexOfUserDrawnNote = " + startIndexOfUserDrawnNote);
 				if (newIndex > indexMousePressed) {
 					if (newIndex+1 < pa.phrase.getGridRowSize() &&
 							(pa.phrase.getNoteType(newIndex) == Phrase.NOTE_SUSTAIN ||
-							pa.phrase.getNoteType(newIndex) == Phrase.NOTE_START) ) {
+							 pa.phrase.getNoteType(newIndex) == Phrase.NOTE_START)) {
 						pa.phrase.setNoteType(newIndex+1, Phrase.NOTE_START);
 						indexMousePressed++;
 					}
-					pa.phrase.setNote(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_SUSTAIN);
+					pa.phrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_SUSTAIN);
 					redraw();
 				}
 				else if (newIndex < indexMousePressed && newIndex < startIndexOfUserDrawnNote) {
-					pa.phrase.setNote(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
+					pa.phrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
 					if (newIndex+1 < pa.phrase.getGridRowSize()) {
-						pa.phrase.setNote(newIndex+1, pitchMousePressed, defaultDynamic(), Phrase.NOTE_SUSTAIN);
+						pa.phrase.setCell(newIndex+1, pitchMousePressed, defaultDynamic(), Phrase.NOTE_SUSTAIN);
 						indexMousePressed++;
 					}
 					startIndexOfUserDrawnNote = newIndex;
@@ -86,22 +97,34 @@ public class Editor extends Screen {
 				mousePressed();
 			}
 		}
-		else {
+		/*else {
 			userIsDrawingNote = false;
-		}
+		}*/
 		redraw();
 	}
 	
+	/**
+	 * 
+	 * @return True, if the mouse intersects the grid (but not the piano-shaped y-axis), false otherwise
+	 */
 	private boolean mouseIntersectsGrid() {
 		return (gridFrame.intersects(pa.mouseX, pa.mouseY) && gridFrame.getX1() + cellWidth < pa.mouseX);
 	}
 	
+	/**
+	 * Looks at the variable pa.mouseX and its position in relation to the grid, mapping that to the index of a note in the phrase.
+	 * @return The index of the note to which pa.mouseX cooresponds
+	 */
 	private int mouseToIndex() {
 		return (int)pa.map(pa.mouseX, 
 			               gridFrame.getX1() + cellWidth, gridFrame.getX2(),
 			               0, rowSize);
 	}
 	
+	/**
+	 * Looks at the variable pa.mouseY and its position in relation to the grid, mapping that to a pitch in the phrase.
+	 * @return The pitch of the note to which pa.mouseY cooresponds
+	 */
 	private int mouseToPitch() {
 		return (int)pa.map(pa.mouseY,
 			               gridFrame.getY2(), gridFrame.getY1(),
@@ -111,6 +134,10 @@ public class Editor extends Screen {
 	@Override
 	public void draw() {}
 	
+	
+	/**
+	 * Redraws every visible thing onto the screen.
+	 */
 	private void redraw() {
 		pa.background(255);
 		
@@ -118,6 +145,9 @@ public class Editor extends Screen {
 		drawPhrase();
 	}
 	
+	/**
+	 * Interprets the Phrase data and draws it to the grid.
+	 */
 	private void drawPhrase() {
 		pa.strokeWeight(1.5f);
 		pa.stroke(0);
@@ -134,6 +164,9 @@ public class Editor extends Screen {
 		pa.strokeWeight(1);
 	}
 	
+	/**
+	 * Draws the grid.
+	 */
 	private void drawGrid() {
 		float y = gridFrame.getY2();
 		pa.rectMode(pa.CORNER);
@@ -162,6 +195,10 @@ public class Editor extends Screen {
 		pa.line(x, gridFrame.getY1(), x, gridFrame.getY2());
 	}
 	
+	/**
+	 * 
+	 * @return The default dynamic for notes created in the Editor
+	 */
 	private float defaultDynamic() {
 		return 50 + pa.random(-5, 5);
 	}
