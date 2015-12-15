@@ -89,6 +89,11 @@ public class Phrase {
 		if (0 <= i && i < getNumElements()) {
 			switch(noteType) {
 				case NOTE_START:
+					noteTypes[i] = noteType;
+					if (i+1 < this.getNumElements() && noteTypes[i+1] == NOTE_SUSTAIN) {
+						noteTypes[i+1] = NOTE_START;
+					}
+					break;
 				case REST:
 					noteTypes[i] = noteType;
 					break;

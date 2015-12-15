@@ -15,7 +15,8 @@ public class Editor extends Screen {
 	private int columnSize = numKeys;
 	private float cellWidth, cellHeight;
 	//interaction
-	private boolean pressStartedWithMouseTouchingGrid;
+	private boolean userIsDrawingNote = false;
+	private int indexMousePressed=-1, pitchMousePressed=-1;
 	
 	public Editor(PhasesPApplet pa) {
 		super(pa);
@@ -35,18 +36,36 @@ public class Editor extends Screen {
 	
 	public void mousePressed() {
 		if (mouseIntersectsGrid()) {
-			pressStartedWithMouseTouchingGrid = true;
-			drawPitch();
+			indexMousePressed = mouseToIndex();
+			pitchMousePressed = mouseToPitch();
+			boolean success = pa.phrase.setNote(indexMousePressed, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
+			if (success) {
+				userIsDrawingNote = true;
+				redraw();
+			}
 		}
 	}
 	
 	public void mouseReleased() {
-		pressStartedWithMouseTouchingGrid = false;
+		userIsDrawingNote = false;
 	}
 	
 	public void mouseDragged() {
-		if (pressStartedWithMouseTouchingGrid && mouseIntersectsGrid()) {
-			drawPitch();
+		if (userIsDrawingNote && mouseIntersectsGrid()) {
+			int newIndex = mouseToIndex();
+			int newPitch = mouseToPitch();
+			if (newIndex < indexMousePressed || newPitch != pitchMousePressed) {
+				userIsDrawingNote = false;
+			}
+			else if (newIndex > indexMousePressed && newPitch == pitchMousePressed) {
+				for (int i=indexMousePressed+1; i<=newIndex; i++) {
+					pa.phrase.setNote(i, newPitch, defaultDynamic(), Phrase.NOTE_SUSTAIN);
+				}
+				redraw();
+			}
+		}
+		else {
+			userIsDrawingNote = false;
 		}
 	}
 	
@@ -54,15 +73,16 @@ public class Editor extends Screen {
 		return (gridFrame.intersects(pa.mouseX, pa.mouseY) && gridFrame.getX1() + cellWidth < pa.mouseX);
 	}
 	
-	private void drawPitch() {
-		int index = (int)pa.map(pa.mouseX, 
-				                gridFrame.getX1() + cellWidth, gridFrame.getX2(),
-				                0, rowSize);
-		int pitch = (int)pa.map(pa.mouseY,
-				                gridFrame.getY2(), gridFrame.getY1(),
-				                minPitch, maxPitch);
-		pa.phrase.setPitch(index, pitch);
-		redraw();	
+	private int mouseToIndex() {
+		return (int)pa.map(pa.mouseX, 
+			               gridFrame.getX1() + cellWidth, gridFrame.getX2(),
+			               0, rowSize);
+	}
+	
+	private int mouseToPitch() {
+		return (int)pa.map(pa.mouseY,
+			               gridFrame.getY2(), gridFrame.getY1(),
+			               minPitch, maxPitch);
 	}
 	
 	@Override
@@ -76,16 +96,19 @@ public class Editor extends Screen {
 	}
 	
 	private void drawPhrase() {
-		pa.noStroke();
+		pa.strokeWeight(1.5f);
+		pa.stroke(0);
 		pa.fill(Presenter.color1);
 		pa.rectMode(pa.CORNER);
 		float x = gridFrame.getX1() + cellWidth;
 		for (int i=0; i<pa.phrase.getNumNotes(); i++) {
 			int pitch = pa.phrase.getPitch(i);
 			float y = pa.map(pitch+1, minPitch, maxPitch, gridFrame.getY2(), gridFrame.getY1());
-			pa.rect(x, y, cellWidth, cellHeight);
-			x += cellWidth;
+			float numCellsWide = pa.phrase.getDuration(i) / pa.phrase.getUnitDuration();
+			pa.rect(x, y, cellWidth*numCellsWide, cellHeight);
+			x += (cellWidth*numCellsWide);
 		}
+		pa.strokeWeight(1);
 	}
 	
 	private void drawGrid() {
@@ -114,5 +137,9 @@ public class Editor extends Screen {
 			x += cellWidth;
 		}
 		pa.line(x, gridFrame.getY1(), x, gridFrame.getY2());
+	}
+	
+	private float defaultDynamic() {
+		return 50 + pa.random(-5, 5);
 	}
 }

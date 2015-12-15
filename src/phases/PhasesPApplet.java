@@ -24,9 +24,10 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	public void setup() {
+		int n = Phrase.NOTE_START;
 		phrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
 				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
-				            new float[] {0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f, 0.25f});
+				            new int[] {n, n, n, n, n, n, n, n, n, n, n, n});
 		
 		presenter = new Presenter(this);
 		editor = new Editor(this);
