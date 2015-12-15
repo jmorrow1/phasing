@@ -86,33 +86,10 @@ public class Phrase {
 	}
 	
 	public boolean setNote(int i, float pitch, float dynamic, int noteType, float art, float pan) {
-		if (0 <= i && i < getNumElements()) {
-			switch(noteType) {
-				case NOTE_START:
-					noteTypes[i] = noteType;
-					if (i+1 < this.getNumElements() && noteTypes[i+1] == NOTE_SUSTAIN) {
-						noteTypes[i+1] = NOTE_START;
-					}
-					break;
-				case REST:
-					noteTypes[i] = noteType;
-					break;
-				case NOTE_SUSTAIN:
-					if (i == 0) {
-						System.err.println("Can't put a note sustain at the beginning of a phrase.");
-						return false;
-					}
-					else if (noteTypes[i-1] == REST) {
-						System.err.println("Can't put a note sustain after a rest.");
-						return false;
-					}
-					else {
-						noteTypes[i] = NOTE_SUSTAIN;
-						break;
-					}
-				default:
-					System.err.println("Invalid noteType code given to Phrase.setNoteType()");
-					return false;
+		if (0 <= i && i < getGridRowSize()) {
+			boolean success = setNoteType(i, noteType);
+			if (!success) {
+				return false;
 			}
 			gridPitches[i] = pitch;
 			gridDynamics[i] = dynamic;
@@ -196,8 +173,8 @@ public class Phrase {
 	public float minPitch() {
 		float minPitch = Float.MAX_VALUE;
 		for (int i=0; i<this.getNumNotes(); i++) {
-			if (this.getPitch(i) < minPitch) {
-				minPitch = this.getPitch(i);
+			if (this.getSCPitch(i) < minPitch) {
+				minPitch = this.getSCPitch(i);
 			}
 		}
 		return minPitch;
@@ -205,15 +182,15 @@ public class Phrase {
 	
 	public float maxPitch() {
 		float maxPitch = Float.MIN_VALUE;
-		for (int i=0; i<this.getNumElements(); i++) {
-			if (this.getPitch(i) > maxPitch) {
-				maxPitch = this.getPitch(i);
+		for (int i=0; i<this.getGridRowSize(); i++) {
+			if (this.getSCPitch(i) > maxPitch) {
+				maxPitch = this.getSCPitch(i);
 			}
 		}
 		return maxPitch;
 	}
 	
-	private int getNumElements() {
+	public int getGridRowSize() {
 		return gridPitches.length;
 	}
 	
@@ -222,33 +199,102 @@ public class Phrase {
 		return scPitches.length;
 	}
 	
-	public int getPitch(int i) {
+	public int getSCPitch(int i) {
 		if (!scArraysUpToDate) initSCValues();
 		return (int)scPitches[i];
 	}
 	
-	public float getDuration(int i) {
+	public float getSCDuration(int i) {
 		if (!scArraysUpToDate) initSCValues();
 		return scDurations[i];
 	}
 	
-	public float getDynamic(int i) {
+	public float getSCDynamic(int i) {
 		if (!scArraysUpToDate) initSCValues();
 		return scDynamics[i];
 	}
 	
-	public float getArticulation(int i) {
+	public float getSCArticulation(int i) {
 		if (!scArraysUpToDate) initSCValues();
 		return scArts[i];
 	}
 	
-	public float getPan(int i) {
+	public float getSCPan(int i) {
 		if (!scArraysUpToDate) initSCValues();
 		return scPans[i];
 	}
 	
+	public void setGridPitch(int i, float pitch) {
+		gridPitches[i] = pitch;
+		scArraysUpToDate = false;
+	}
+	
+	public float getGridPitch(int i) {
+		return gridPitches[i];
+	}
+	
+	public void setGridDynamic(int i, float dynamic) {
+		gridDynamics[i] = dynamic;
+		scArraysUpToDate = false;
+	}
+	
+	public float getGridDynamic(int i) {
+		return gridDynamics[i];
+	}
+	
+	public int getNoteType(int i) {
+		return noteTypes[i];
+	}
+	
+	public boolean setNoteType(int i, int noteType) {
+		switch(noteType) {
+			case NOTE_START:
+				noteTypes[i] = noteType;					
+				break;
+			case REST:
+				noteTypes[i] = noteType;
+				break;
+			case NOTE_SUSTAIN:
+				if (i == 0) {
+					System.err.println("Can't put a note sustain at the beginning of a phrase.");
+					return false;
+				}
+				else if (noteTypes[i-1] == REST) {
+					System.err.println("Can't put a note sustain after a rest.");
+					return false;
+				}
+				else {
+					noteTypes[i] = NOTE_SUSTAIN;
+					break;
+				}
+			default:
+				System.err.println("Invalid noteType code given to Phrase.setNoteType()");
+				return false;
+		}
+		scArraysUpToDate = false;
+		return true;
+	}
+	
+	public float getGridPan(int i) {
+		return gridPans[i];
+	}
+	
+	public void setGridPan(int i, float pan) {
+		gridPans[i] = pan;
+		scArraysUpToDate = false;
+	}
+	
+	public float getGridArt(int i) {
+		return gridArts[i];
+	}
+	
+	public void setGridArt(int i, float art) {
+		gridArts[i] = art;
+		scArraysUpToDate = false;
+	}
+	
 	public float getTotalDuration() {
-		return getNumElements() * unitDuration;
+		return getGridRowSize() * unitDuration;
 	}
 	
 	public float getUnitDuration() {

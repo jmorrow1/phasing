@@ -32,9 +32,9 @@ public class SymbolicView extends View {
 		float x = x1;
 		float y = rect.getY1() + rect.getHeight()/2f;
 		for (int i=0; i<phrase.getNumNotes(); i++) {
-			notesA[i] = new NoteGraphic(phrase.convertPitch(phrase.getPitch(i), true), x, y - 15);
-			notesB[i] = new NoteGraphic(phrase.convertPitch(phrase.getPitch(i), true), x, y + 15);
-			x += pixelsPerWholeNote * phrase.getDuration(i);
+			notesA[i] = new NoteGraphic(phrase.convertPitch(phrase.getSCPitch(i), true), x, y - 15);
+			notesB[i] = new NoteGraphic(phrase.convertPitch(phrase.getSCPitch(i), true), x, y + 15);
+			x += pixelsPerWholeNote * phrase.getSCDuration(i);
 		}
 		
 		a = new PhraseGraphic(notesA, color1, opacity);

@@ -38,7 +38,7 @@ public class LiveGraphView extends View {
 		float minPitch = phrase.minPitch();
 		float maxPitch = phrase.maxPitch();
 		for (int i=0; i<ys.length; i++) {
-			ys[i] = PApplet.map(phrase.getPitch(i), minPitch, maxPitch, y2, y1);
+			ys[i] = PApplet.map(phrase.getSCPitch(i), minPitch, maxPitch, y2, y1);
 		}
 		
 		try {

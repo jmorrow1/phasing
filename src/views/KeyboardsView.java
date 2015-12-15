@@ -105,7 +105,7 @@ public class KeyboardsView extends View {
 			this.color = color;
 			keyCopies = new Rect[phrase.getNumNotes()];
 			for (int i=0; i<keyCopies.length; i++) {
-				keyCopies[i] = piano.getKeyCopy(phrase.getPitch(i) - firstPitchOfPiano);
+				keyCopies[i] = piano.getKeyCopy(phrase.getSCPitch(i) - firstPitchOfPiano);
 			}
 			
 			this.phrase = phrase;
@@ -128,7 +128,7 @@ public class KeyboardsView extends View {
 		//callback:
 		public void setActiveKey(PhraseReader reader) {
 			activeKey = keyCopies[reader.getNoteIndex()];
-			keyIsWhite = Piano.isWhiteKey(phrase.getPitch(reader.getNoteIndex()));
+			keyIsWhite = Piano.isWhiteKey(phrase.getSCPitch(reader.getNoteIndex()));
 		}
 	}
 	

@@ -167,15 +167,15 @@ public class GHView extends View {
 	}
 	
 	private Rect noteToRect(int noteIndex) {
-		Rect rect = piano.getKeyCopy(phrase.getPitch(noteIndex) - firstPitchOfPiano);
+		Rect rect = piano.getKeyCopy(phrase.getSCPitch(noteIndex) - firstPitchOfPiano);
 		
 		switch(noteMovement) {
 			case RIGHT:
-				rect.setWidth(pixelsPerWholeNote * phrase.getDuration(noteIndex));
+				rect.setWidth(pixelsPerWholeNote * phrase.getSCDuration(noteIndex));
 				rect.setX1(getX1());
 				break;
 			case DOWN:
-				rect.setHeight(pixelsPerWholeNote * phrase.getDuration(noteIndex));
+				rect.setHeight(pixelsPerWholeNote * phrase.getSCDuration(noteIndex));
 				rect.setY1(getY1());
 				break;
 		}

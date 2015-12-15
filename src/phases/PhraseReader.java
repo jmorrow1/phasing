@@ -19,7 +19,7 @@ public class PhraseReader {
 		this.id = id;
 		
 		noteIndex = 0;
-		noteTimeTillNextNote = phrase.getDuration(noteIndex);
+		noteTimeTillNextNote = phrase.getSCDuration(noteIndex);
 		
 		this.callee = callee;
 		this.callback = callback;
@@ -37,7 +37,7 @@ public class PhraseReader {
 		
 		if (noteTimeTillNextNote <= 0) {
 			noteIndex = (noteIndex+1) % phrase.getNumNotes();
-			noteTimeTillNextNote = noteTimeTillNextNote + phrase.getDuration(noteIndex);
+			noteTimeTillNextNote = noteTimeTillNextNote + phrase.getSCDuration(noteIndex);
 			try {
 				callback.invoke(callee, this);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {

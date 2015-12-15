@@ -85,7 +85,7 @@ public class WavesView extends View {
 		float ycen = this.getCeny();
 		float[] ys = new float[phrase.getNumNotes()];
 		for (int i=0; i<ys.length; i++) {
-			ys[i] = PApplet.map(phrase.getPitch(i), minPitch, maxPitch, ycen + amp, ycen - amp);
+			ys[i] = PApplet.map(phrase.getSCPitch(i), minPitch, maxPitch, ycen + amp, ycen - amp);
 		}
 		
 		return new LineGraph(ys, this.getX1(), this.getX2());
