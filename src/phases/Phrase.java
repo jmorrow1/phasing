@@ -81,12 +81,12 @@ public class Phrase {
 		scArraysUpToDate = false;
 	}
 	
-	public boolean setNoteType(int i, float pitch, float dynamic, int noteType) {
-		return setNoteType(i, pitch, dynamic, noteType, defaultArt, defaultPan);
+	public boolean setNote(int i, float pitch, float dynamic, int noteType) {
+		return setNote(i, pitch, dynamic, noteType, defaultArt, defaultPan);
 	}
 	
-	public boolean setNoteType(int i, float pitch, float dynamic, int noteType, float art, float pan) {
-		if (0 <= i && i < getNumNotes()) {
+	public boolean setNote(int i, float pitch, float dynamic, int noteType, float art, float pan) {
+		if (0 <= i && i < getNumElements()) {
 			switch(noteType) {
 				case NOTE_START:
 				case REST:
@@ -117,7 +117,7 @@ public class Phrase {
 			return true;
 		}
 		else {
-			System.err.println("Index out of bounds in method setDuration(" + i + ") in Phrase");
+			System.err.println("Index out of bounds in method setNote(" + i + ") in Phrase");
 			return false;
 		}
 	}
@@ -146,6 +146,7 @@ public class Phrase {
 				n++;
 			}
 		}
+		
 		//init soundcipher arrays
 		scPitches = new float[n];
 		scDynamics = new float[n];
@@ -242,7 +243,11 @@ public class Phrase {
 	}
 	
 	public float getTotalDuration() {
-		return getNumNotes() * unitDuration;
+		return getNumElements() * unitDuration;
+	}
+	
+	public float getUnitDuration() {
+		return unitDuration;
 	}
 	
 	public String toString() {
