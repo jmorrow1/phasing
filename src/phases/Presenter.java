@@ -10,7 +10,6 @@ import views.View;
 
 public class Presenter extends Screen {
 	//time
-	private long prev_t;
 	private float prev_notept1, prev_notept2;
 	//playback
 	private boolean playing;
@@ -46,19 +45,19 @@ public class Presenter extends Screen {
 		views[2] = new KeyboardsView(viewFrames[2], pa.phrase, color1, color2, 100, pa);
 		
 		//views[3] = new SymbolicView(viewFrames[3], pa.phrase, color1, color2, 175, pa);
-
+	}
+	
+	@Override
+	public void onEnter() {
 		pa.phrase.addToScore(player1, 0, 0, 0);
 		pa.phrase.addToScore(player2, 0, 0, 0);
 		player1.repeat(-1);
 		player2.repeat(-1);
 		player1.tempo(pa.bpm1);
 		player2.tempo(pa.bpm2);
-		
+		player1.play();
+		player2.play();
 		playing = true;
-		
-		prev_t = System.currentTimeMillis();
-		prev_notept1 = 0;
-		prev_notept2 = 0;
 		
 		if (pa.bpm1 < pa.bpm2) {
 			sign = 1;
@@ -69,12 +68,9 @@ public class Presenter extends Screen {
 		else {
 			sign = 0;
 		}
-	}
-	
-	@Override
-	public void onEnter() {
-		player1.play();
-		player2.play();
+		
+		prev_notept1 = 0;
+		prev_notept2 = 0;
 	}
 	
 	@Override

@@ -1,95 +1,190 @@
 package phases;
 
+import java.util.ArrayList;
+
 import arb.soundcipher.SCScore;
 import processing.core.PApplet;
 
 public class Phrase {
+	//note types (for grid notation version of phrase data)
+	public static final int NOTE_START = 0, NOTE_SUSTAIN = 1, REST = 2;
+	
+	//parameters
+	private float unitDuration = 0.25f;
 	private float defaultArt, defaultPan;
-	private float[] pitches, dynamics, durations, arts, pans;
 	
-	private final float NOT_INITIALIZED = -1;
-	private float totalDuration = NOT_INITIALIZED;
+	//for managing state relatively efficiently
+	private boolean scArraysUpToDate = true;
 	
-	public Phrase() {}
+	//phrase data, in grid notation
+	private float[] gridPitches, gridDynamics, gridArts, gridPans;
+	private int[] noteTypes;
 	
-	public Phrase(float[] pitches, float[] dynamics, float[] durations) {
-		this(pitches, dynamics, durations, 0.5f, 63);
+	//phrase data, in soundcipher notation
+	private float[] scPitches, scDynamics, scDurations, scArts, scPans;	
+	
+	public Phrase() {
+		gridPitches = new float[] {};
+		gridDynamics = new float[] {};
+		gridArts = new float[] {};
+		gridPans = new float[] {};
+		noteTypes = new int[] {};
+		scArraysUpToDate = false;
 	}
 	
-	public Phrase(float[] pitches, float[] dynamics, float[] durations, float defaultArt, float defaultPan) {
-		if (pitches.length == dynamics.length && dynamics.length == durations.length) {
-			this.pitches = pitches;
-			this.dynamics = dynamics;
-			this.durations = durations;
+	public Phrase(float[] pitches, float[] dynamics, int[] sustains) {
+		this(pitches, dynamics, sustains, 0.5f, 63);
+	}
+	
+	public Phrase(float[] pitches, float[] dynamics, int[] noteTypes, float defaultArt, float defaultPan) {
+		if (pitches.length == dynamics.length && dynamics.length == noteTypes.length) {
+			this.gridPitches = pitches;
+			this.gridDynamics = dynamics;
+			this.noteTypes = noteTypes;
 			this.defaultArt = defaultArt;
 			this.defaultPan = defaultPan;
 			int n = pitches.length;
-			arts = new float[n];
-			pans = new float[n];
+			gridArts = new float[n];
+			gridPans = new float[n];
 			for (int i=0; i<n; i++) {
-				arts[i] = defaultArt;
-				pans[i] = defaultPan;
+				gridArts[i] = defaultArt;
+				gridPans[i] = defaultPan;
 			}
-		}
-	}
-	
-	public Phrase(float[] pitches, float[] dynamics, float[] durations, float[] arts, float[] pans) {
-		if (pitches.length == dynamics.length && dynamics.length == durations.length &&
-				durations.length == arts.length && arts.length == pans.length) {
-			this.pitches = pitches;
-			this.dynamics = dynamics;
-			this.durations = durations;
-			this.arts = arts;
-			this.pans = pans;
-		}
-	}
-	
-	public void addNote(float pitch, float dynamic, float duration) {
-		pitches = PApplet.append(pitches, pitch);
-		dynamics = PApplet.append(dynamics, dynamic);
-		durations = PApplet.append(durations, duration);
-		arts = PApplet.append(arts, defaultArt);
-		pans = PApplet.append(pans, defaultPan);
-		totalDuration = NOT_INITIALIZED;
-	}
-	
-	public void setPitch(int i, float pitch) {
-		if (0 <= i && i < pitches.length) {
-			pitches[i] = pitch;
+			scArraysUpToDate = false;
 		}
 		else {
-			System.err.println("Index out of bounds in method setPitch(" + i + ") in Phrase");
+			System.err.println("Cannot construct phrase.");
 		}
 	}
 	
-	public void setDynamic(int i, float dynamic) {
-		if (0 <= i && i < dynamics.length) {
-			dynamics[i] = dynamic;
+	public Phrase(float[] pitches, float[] dynamics, int[] noteTypes, float[] arts, float[] pans) {
+		if (pitches.length == dynamics.length && dynamics.length == noteTypes.length &&
+				noteTypes.length == arts.length && arts.length == pans.length) {
+			this.gridPitches = pitches;
+			this.gridDynamics = dynamics;
+			this.noteTypes = noteTypes;
+			this.gridArts = arts;
+			this.gridPans = pans;
+			scArraysUpToDate = false;
 		}
 		else {
-			System.err.println("Index out of bounds in method setDynamic(" + i + ") in Phrase");
+			System.err.println("Cannot construct phrase.");
 		}
 	}
 	
-	public void setDuration(int i, float duration) {
-		if (0 <= i && i < durations.length) {
-			durations[i] = duration;
-			totalDuration = NOT_INITIALIZED;
+	public void addNote() {
+		gridPitches = PApplet.append(gridPitches, 0);
+		gridDynamics = PApplet.append(gridDynamics, 0);
+		noteTypes = PApplet.append(noteTypes, REST);
+		gridArts = PApplet.append(gridArts, defaultArt);
+		gridPans = PApplet.append(gridPans, defaultPan);
+		scArraysUpToDate = false;
+	}
+	
+	public boolean setNoteType(int i, float pitch, float dynamic, int noteType) {
+		return setNoteType(i, pitch, dynamic, noteType, defaultArt, defaultPan);
+	}
+	
+	public boolean setNoteType(int i, float pitch, float dynamic, int noteType, float art, float pan) {
+		if (0 <= i && i < getNumNotes()) {
+			switch(noteType) {
+				case NOTE_START:
+				case REST:
+					noteTypes[i] = noteType;
+					break;
+				case NOTE_SUSTAIN:
+					if (i == 0) {
+						System.err.println("Can't put a note sustain at the beginning of a phrase.");
+						return false;
+					}
+					else if (noteTypes[i-1] == REST) {
+						System.err.println("Can't put a note sustain after a rest.");
+						return false;
+					}
+					else {
+						noteTypes[i] = NOTE_SUSTAIN;
+						break;
+					}
+				default:
+					System.err.println("Invalid noteType code given to Phrase.setNoteType()");
+					return false;
+			}
+			gridPitches[i] = pitch;
+			gridDynamics[i] = dynamic;
+			gridArts[i] = art;
+			gridPans[i] = pan;
+			scArraysUpToDate = false;
+			return true;
 		}
 		else {
 			System.err.println("Index out of bounds in method setDuration(" + i + ") in Phrase");
+			return false;
 		}
 	}
 	
 	public void panPhrase(float pan) {
 		defaultPan = pan;
-		for (int i=0; i<pans.length; i++) {
-			pans[i] = pan;
+		for (int i=0; i<gridPans.length; i++) {
+			gridPans[i] = pan;
 		}
+		scArraysUpToDate = false;
 	}
 	
 	public void addToScore(SCScore score, float startBeat, float channel, float instrument) {
-		score.addPhrase(startBeat, channel, instrument, pitches, dynamics, durations, arts, pans);
+		initSCValues();
+		score.addPhrase(startBeat, channel, instrument, scPitches, scDynamics, scDurations, scArts, scPans);
+	}
+	
+	private void initSCValues() {
+		//count the number of notes
+		int n=0;
+		for (int i=0; i<noteTypes.length; i++) {
+			if (noteTypes[i] == NOTE_START) {
+				n++;
+			}
+			else if (noteTypes[i] == REST && (i == 0 || noteTypes[i-1] != REST)) {
+				n++;
+			}
+		}
+		//init soundcipher arrays
+		scPitches = new float[n];
+		scDynamics = new float[n];
+		scDurations = new float[n];
+		scArts = new float[n];
+		scPans = new float[n];
+		int i=0; //loops through soundcipher arrays
+		int j=0; //loops through grid-notation arrays
+		while (i < noteTypes.length) {
+			//if new note
+			if (noteTypes[i] == NOTE_START) {
+				if (i != 0) j++;
+				scPitches[j] = this.gridPitches[i];
+				scDynamics[j] = this.gridDynamics[i];
+				scDurations[j] = unitDuration;
+				scArts[j] = this.gridArts[i];
+				scPans[j] = this.gridPans[i];
+			}
+			//if continued note
+			else if (noteTypes[i] == NOTE_SUSTAIN) {
+				scDurations[j] += unitDuration;
+			}
+			//if rest
+			else if (noteTypes[i] == REST) {
+				//if new rest
+				if (i == 0 || noteTypes[i-1] != REST) {
+					if (i != 0) j++;
+					scDynamics[j] = 0;
+					scDurations[j] = unitDuration;
+				}
+				//if continued rest
+				else if (i != 0 && noteTypes[i-1] == REST) {
+					scDurations[j] += unitDuration;
+				}
+			}
+			i++;
+		}
+		
+		scArraysUpToDate = true;
 	}
 	
 	public float minPitch() {
@@ -104,7 +199,7 @@ public class Phrase {
 	
 	public float maxPitch() {
 		float maxPitch = Float.MIN_VALUE;
-		for (int i=0; i<this.getNumNotes(); i++) {
+		for (int i=0; i<this.getNumElements(); i++) {
 			if (this.getPitch(i) > maxPitch) {
 				maxPitch = this.getPitch(i);
 			}
@@ -112,44 +207,47 @@ public class Phrase {
 		return maxPitch;
 	}
 	
+	private int getNumElements() {
+		return gridPitches.length;
+	}
+	
 	public int getNumNotes() {
-		return pitches.length;
+		if (!scArraysUpToDate) initSCValues();
+		return scPitches.length;
 	}
 	
 	public int getPitch(int i) {
-		return (int)pitches[i];
+		if (!scArraysUpToDate) initSCValues();
+		return (int)scPitches[i];
 	}
 	
 	public float getDuration(int i) {
-		return durations[i];
+		if (!scArraysUpToDate) initSCValues();
+		return scDurations[i];
 	}
 	
 	public float getDynamic(int i) {
-		return dynamics[i];
+		if (!scArraysUpToDate) initSCValues();
+		return scDynamics[i];
 	}
 	
 	public float getArticulation(int i) {
-		return arts[i];
+		if (!scArraysUpToDate) initSCValues();
+		return scArts[i];
 	}
 	
 	public float getPan(int i) {
-		return pans[i];
+		if (!scArraysUpToDate) initSCValues();
+		return scPans[i];
 	}
 	
 	public float getTotalDuration() {
-		if (totalDuration == NOT_INITIALIZED) {
-			float sum = 0;
-			for (int i=0; i<durations.length; i++) {
-				sum += durations[i];
-			}
-			totalDuration = sum;
-		}
-		return totalDuration;
+		return getNumNotes() * unitDuration;
 	}
 	
 	public String toString() {
-		return "{pitches: " + pitches.toString() + ", dynamics: " + dynamics.toString()
-		+ ", durations: " + durations.toString() + ", pan: " + defaultPan + "}";
+		return "{pitches: " + scPitches.toString() + ", dynamics: " + scDynamics.toString()
+			+ ", durations: " + scDurations.toString();
 	}
 	
 	public static String convertPitch(float code, boolean useSharps) {
