@@ -196,6 +196,7 @@ public class Phrase {
 	 */
 	public void addToScore(SCScore score, float startBeat, float channel, float instrument) {
 		updateSCValues();
+		score.empty();
 		score.addPhrase(startBeat, channel, instrument, scPitches, scDynamics, scDurations, scArts, scPans);
 	}
 	

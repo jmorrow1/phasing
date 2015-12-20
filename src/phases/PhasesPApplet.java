@@ -15,6 +15,9 @@ import views.WavesView;
  */
 public class PhasesPApplet extends PApplet {
 	public Phrase phrase;
+	public SCScorePlus player1 = new SCScorePlus();
+	public SCScorePlus player2 = new SCScorePlus();
+	
 	public int bpm1 = 90;
 	public float bpms1 = bpm1 / 60000f;
 	public int bpm2 = 80;
@@ -41,6 +44,14 @@ public class PhasesPApplet extends PApplet {
 		phrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
 				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
 				            new int[] {n, n, n, n, n, n, n, n, n, n, n, n});
+		
+		phrase.addToScore(player1, 0, 0, 0);
+		phrase.addToScore(player2, 0, 0, 0);
+		player1.tempo(bpm1);
+		player2.tempo(bpm2);
+		player1.repeat(-1);
+		player2.repeat(-1);
+		
 		
 		presenter = new Presenter(this);
 		editor = new Editor(this);

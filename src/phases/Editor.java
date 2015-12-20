@@ -1,6 +1,12 @@
 package phases;
 
+import controlP5.ControlEvent;
+import controlP5.ControlP5;
+import controlP5.ControllerView;
+import controlP5.Toggle;
 import geom.Rect;
+import processing.core.PApplet;
+import processing.core.PGraphics;
 
 /**
  * Provides an editor in which the user can create and edit musical phrases for the Presenter screen.
@@ -19,10 +25,13 @@ public class Editor extends Screen {
 	private int rowSize = 12;
 	private int columnSize = numKeys;
 	private float cellWidth, cellHeight;
-	//interaction
+	//interaction w/ grid
 	private boolean userIsDrawingNote = false;
 	private int startIndexOfUserDrawnNote = -1;
 	private int indexMousePressed=-1, pitchMousePressed=-1;
+	//controllers
+	private ControlP5 cp5;
+	private Toggle playStop;
 	
 	/**
 	 * 
@@ -34,11 +43,60 @@ public class Editor extends Screen {
 		gridFrame = new Rect(25, 50, pa.width - 25, pa.height - 50, pa.CORNERS);
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
 		cellHeight = gridFrame.getHeight() / columnSize;
+		
+		cp5 = new ControlP5(pa);
+		cp5.addToggle("play")
+	       .setPosition(35, 10)
+		   .setSize(35, 35)
+		   .plugTo(this)
+		   .setView(new ControllerView<Toggle>() {
+
+				@Override
+				public void display(PGraphics pg, Toggle t) {
+					if (t.isMouseOver()) {
+						pg.stroke(0);
+						pg.fill(Presenter.color1);
+					}
+					else {
+						pg.stroke(0, 150);
+						pg.fill(Presenter.color1, 150);
+					}
+					
+					if (t.getValue() == 0) {
+						//draw play button
+						pg.triangle(0, 0, 0, t.getHeight(), t.getWidth(), t.getHeight()/2f);
+					}
+					else {
+						//draw pause button
+						pg.rectMode(pg.CORNER);
+						pg.rect(0, 0, t.getWidth(), t.getHeight());
+					}
+				}
+				   
+		   })
+		   ;
+	}
+	
+	/**
+	 * Callback for ControlP5
+	 * @param e
+	 */
+	public void play(ControlEvent e) {
+		if (e.getValue() == 0) {
+			pa.player1.stop();
+			pa.player2.stop();
+		}
+		else {
+			pa.phrase.addToScore(pa.player1, 0, 0, 0);
+			pa.phrase.addToScore(pa.player2, 0, 0, 0);
+			pa.player1.play();
+			pa.player2.play();
+		}
 	}
 
 	@Override
 	public void onEnter() {
-		redraw();
+		//redraw();
 	}
 	
 	@Override
@@ -56,7 +114,7 @@ public class Editor extends Screen {
 			}
 			if (success) {
 				userIsDrawingNote = true;
-				redraw();
+				//redraw();
 			}
 		}
 	}
@@ -81,7 +139,7 @@ public class Editor extends Screen {
 						indexMousePressed++;
 					}
 					pa.phrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_SUSTAIN);
-					redraw();
+					//redraw();
 				}
 				else if (newIndex < indexMousePressed && newIndex < startIndexOfUserDrawnNote) {
 					pa.phrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
@@ -90,7 +148,7 @@ public class Editor extends Screen {
 						indexMousePressed++;
 					}
 					startIndexOfUserDrawnNote = newIndex;
-					redraw();
+					//redraw();
 				}
 			}
 			else {
@@ -100,7 +158,6 @@ public class Editor extends Screen {
 		/*else {
 			userIsDrawingNote = false;
 		}*/
-		redraw();
 	}
 	
 	/**
@@ -132,7 +189,9 @@ public class Editor extends Screen {
 	}
 	
 	@Override
-	public void draw() {}
+	public void draw() {
+		redraw();
+	}
 	
 	
 	/**
@@ -143,6 +202,7 @@ public class Editor extends Screen {
 		
 		drawGrid();
 		drawPhrase();
+		
 	}
 	
 	/**
