@@ -14,6 +14,8 @@ import processing.core.PGraphics;
  *
  */
 public class Editor extends Screen {
+	//playback
+	private SCScorePlus player;
 	//piano
 	private int minPitch = 60;
 	private int numKeys = 24;
@@ -39,6 +41,8 @@ public class Editor extends Screen {
 	 */
 	public Editor(PhasesPApplet pa) {
 		super(pa);
+		
+		player = new SCScorePlus();
 		
 		gridFrame = new Rect(25, 50, pa.width - 25, pa.height - 50, pa.CORNERS);
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
@@ -83,14 +87,13 @@ public class Editor extends Screen {
 	 */
 	public void play(ControlEvent e) {
 		if (e.getValue() == 0) {
-			pa.player1.stop();
-			pa.player2.stop();
+			player.stop();
 		}
 		else {
-			pa.phrase.addToScore(pa.player1, 0, 0, 0);
-			pa.phrase.addToScore(pa.player2, 0, 0, 0);
-			pa.player1.play();
-			pa.player2.play();
+			pa.phrase.addToScore(player, 0, 0, 0);
+			player.tempo(pa.bpm1);
+			player.repeat(-1);
+			player.play();
 		}
 	}
 

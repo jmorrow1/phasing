@@ -15,12 +15,10 @@ import views.WavesView;
  */
 public class PhasesPApplet extends PApplet {
 	public Phrase phrase;
-	public SCScorePlus player1 = new SCScorePlus();
-	public SCScorePlus player2 = new SCScorePlus();
 	
-	public int bpm1 = 90;
+	public int bpm1 = 40;
 	public float bpms1 = bpm1 / 60000f;
-	public int bpm2 = 80;
+	public int bpm2 = 45;
 	public float bpms2 = bpm2 / 60000f;
 	
 	private Presenter presenter;
@@ -44,14 +42,6 @@ public class PhasesPApplet extends PApplet {
 		phrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
 				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
 				            new int[] {n, n, n, n, n, n, n, n, n, n, n, n});
-		
-		phrase.addToScore(player1, 0, 0, 0);
-		phrase.addToScore(player2, 0, 0, 0);
-		player1.tempo(bpm1);
-		player2.tempo(bpm2);
-		player1.repeat(-1);
-		player2.repeat(-1);
-		
 		
 		presenter = new Presenter(this);
 		editor = new Editor(this);
@@ -115,6 +105,18 @@ public class PhasesPApplet extends PApplet {
 	 * @return The remainder of num / denom
 	 */
 	public static int remainder(int num, int denom) {
+		if (0 <= num && num < denom) return num;
+		else if (num > 0) return num % denom;
+		else return denom - ((-num) % denom);
+	}
+	
+	/**
+	 * Calculates the remainder of num / denom.
+	 * @param num The numerator
+	 * @param denom The denominator
+	 * @return The remainder of num / denom
+	 */
+	public static float remainder(float num, float denom) {
 		if (0 <= num && num < denom) return num;
 		else if (num > 0) return num % denom;
 		else return denom - ((-num) % denom);

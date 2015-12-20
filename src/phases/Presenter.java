@@ -8,13 +8,14 @@ import views.LiveGraphView;
 import views.RhythmView;
 import views.View;
 
-public class Presenter extends Screen {
+public class Presenter extends Screen {	
 	//time
 	private float prev_notept1, prev_notept2;
 	//playback
+	private SCScorePlus player1 = new SCScorePlus();
+	private SCScorePlus player2 = new SCScorePlus();
 	private boolean playing;
 	private int sign;
-	
 	//views
 	public static int color1, color2;
 	private Rect[] viewFrames;
@@ -48,8 +49,15 @@ public class Presenter extends Screen {
 	
 	@Override
 	public void onEnter() {
-		pa.player1.play();
-		pa.player2.play();
+		pa.phrase.addToScore(player1, 0, 0, 0);
+		pa.phrase.addToScore(player2, 0, 0, 0);
+		player1.tempo(pa.bpm1);
+		player2.tempo(pa.bpm2);
+		player1.repeat(-1);
+		player2.repeat(-1);
+		player1.play();
+		player2.play();
+		
 		playing = true;
 		
 		if (pa.bpm1 < pa.bpm2) {
@@ -68,18 +76,18 @@ public class Presenter extends Screen {
 	
 	@Override
 	public void onExit() {
-		pa.player1.stop();
-		pa.player2.stop();
+		player1.stop();
+		player2.stop();
 	}
 	
 	@Override
 	public void draw() {
 		//time
-		float notept1 = PApplet.map(pa.player1.getTickPosition(),
-				                    0, pa.player1.getTickLength(),
+		float notept1 = PApplet.map(player1.getTickPosition(),
+				                    0, player1.getTickLength(),
 				                    0, pa.phrase.getTotalDuration());
-		float notept2 = PApplet.map(pa.player2.getTickPosition(),
-				                    0, pa.player2.getTickLength(),
+		float notept2 = PApplet.map(player2.getTickPosition(),
+				                    0, player2.getTickLength(),
 				                    0, pa.phrase.getTotalDuration());
 		
 		float dNotept1 = notept1 - prev_notept1;

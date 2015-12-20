@@ -27,7 +27,6 @@ public class PhraseReader {
 		try {
 			callback.invoke(callee, this);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
