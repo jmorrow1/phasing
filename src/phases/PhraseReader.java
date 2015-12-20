@@ -18,23 +18,19 @@ public class PhraseReader {
 		this.phrase = phrase;
 		this.id = id;
 		
-		noteIndex = 0;
-		noteTimeTillNextNote = phrase.getSCDuration(noteIndex);
-		
 		this.callee = callee;
 		this.callback = callback;
 		
-		try {
-			callback.invoke(callee, this);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
-		}
+		noteIndex = -1;
+		noteTimeTillNextNote = 0;
+		
 	}
 	
 	public void update(float dNotept) {
 		noteTimeTillNextNote -= dNotept;
 		
 		if (noteTimeTillNextNote <= 0) {
+			System.out.println("noteIndex = " + noteIndex);
 			noteIndex = (noteIndex+1) % phrase.getNumNotes();
 			noteTimeTillNextNote = noteTimeTillNextNote + phrase.getSCDuration(noteIndex);
 			try {

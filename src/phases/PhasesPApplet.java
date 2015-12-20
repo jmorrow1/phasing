@@ -45,7 +45,7 @@ public class PhasesPApplet extends PApplet {
 		
 		presenter = new Presenter(this);
 		editor = new Editor(this);
-		currentScreen = presenter;
+		currentScreen = editor;
 		currentScreen.onEnter();
 	}
 	

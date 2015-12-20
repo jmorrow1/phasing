@@ -15,7 +15,7 @@ import processing.core.PGraphics;
  */
 public class Editor extends Screen {
 	//playback
-	private SCScorePlus player;
+	private SoundCipherPlus player;
 	//piano
 	private int minPitch = 60;
 	private int numKeys = 24;
@@ -42,43 +42,43 @@ public class Editor extends Screen {
 	public Editor(PhasesPApplet pa) {
 		super(pa);
 		
-		player = new SCScorePlus();
+		player = new SoundCipherPlus(pa, pa.phrase);
 		
 		gridFrame = new Rect(25, 50, pa.width - 25, pa.height - 50, pa.CORNERS);
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
 		cellHeight = gridFrame.getHeight() / columnSize;
 		
 		cp5 = new ControlP5(pa);
-		cp5.addToggle("play")
-	       .setPosition(35, 10)
-		   .setSize(35, 35)
-		   .plugTo(this)
-		   .setView(new ControllerView<Toggle>() {
-
-				@Override
-				public void display(PGraphics pg, Toggle t) {
-					if (t.isMouseOver()) {
-						pg.stroke(0);
-						pg.fill(Presenter.color1);
-					}
-					else {
-						pg.stroke(0, 150);
-						pg.fill(Presenter.color1, 150);
-					}
-					
-					if (t.getValue() == 0) {
-						//draw play button
-						pg.triangle(0, 0, 0, t.getHeight(), t.getWidth(), t.getHeight()/2f);
-					}
-					else {
-						//draw pause button
-						pg.rectMode(pg.CORNER);
-						pg.rect(0, 0, t.getWidth(), t.getHeight());
-					}
-				}
-				   
-		   })
-		   ;
+		playStop = cp5.addToggle("play")
+				      .setPosition(35, 10)
+					  .setSize(35, 35)
+					  .plugTo(this)
+					  .setView(new ControllerView<Toggle>() {
+			
+						    @Override
+							public void display(PGraphics pg, Toggle t) {
+								if (t.isMouseOver()) {
+									pg.stroke(0);
+									pg.fill(Presenter.color1);
+								}
+								else {
+									pg.stroke(0, 150);
+									pg.fill(Presenter.color1, 150);
+								}
+								
+								if (t.getValue() == 0) {
+									//draw play button
+									pg.triangle(0, 0, 0, t.getHeight(), t.getWidth(), t.getHeight()/2f);
+								}
+								else {
+									//draw pause button
+									pg.rectMode(pg.CORNER);
+									pg.rect(0, 0, t.getWidth(), t.getHeight());
+								}
+							}
+							   
+					   })
+					   ;
 		
 		cp5.hide();
 	}
@@ -92,10 +92,9 @@ public class Editor extends Screen {
 			player.stop();
 		}
 		else {
-			pa.phrase.addToScore(player, 0, 0, 0);
+			//pa.phrase.addToScore(player, 0, 0, 0);
 			player.tempo(pa.bpm1);
-			player.repeat(-1);
-			player.play();
+			//player.play();
 		}
 	}
 
@@ -199,6 +198,9 @@ public class Editor extends Screen {
 	@Override
 	public void draw() {
 		redraw();
+		if (playStop.getValue() != 0) {
+			player.update(pa.phrase, 0.01f);
+		}
 	}
 	
 	
