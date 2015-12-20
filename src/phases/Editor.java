@@ -79,6 +79,8 @@ public class Editor extends Screen {
 				   
 		   })
 		   ;
+		
+		cp5.hide();
 	}
 	
 	/**
@@ -99,11 +101,14 @@ public class Editor extends Screen {
 
 	@Override
 	public void onEnter() {
+		cp5.show();
 		//redraw();
 	}
 	
 	@Override
-	public void onExit() {}
+	public void onExit() {
+		cp5.hide();
+	}
 	
 	public void mousePressed() {
 		//for drawing a note to the grid:

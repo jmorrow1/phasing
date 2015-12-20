@@ -9,8 +9,8 @@ public class Arc {
 	public Arc(float cenx, float ceny, float startAngle, float endAngle, float radius) {
 		this.cenx = cenx;
 		this.ceny = ceny;
-		this.startAngle = PhasesPApplet.remainder(startAngle, PApplet.TWO_PI);
-		this.endAngle = PhasesPApplet.remainder(endAngle, PApplet.TWO_PI);
+		this.startAngle = startAngle;
+		this.endAngle = endAngle;
 		this.radius = radius;
 	}
 	

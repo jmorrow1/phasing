@@ -2,7 +2,7 @@ package phases;
 
 import geom.Rect;
 import processing.core.PApplet;
-import views.GHView;
+import views.CircularView;
 import views.KeyboardsView;
 import views.LiveGraphView;
 import views.RhythmView;
@@ -34,7 +34,9 @@ public class Presenter extends Screen {
 		color1 = pa.color(255, 100, 100);
 		color2 = pa.color(100, 100, 255);
 		
-		views[0] = new GHView(viewFrames[0], pa.phrase, color1, color2, 100, pa);
+		//views[0] = new GHView(viewFrames[0], pa.phrase, color1, color2, 100, pa);
+		
+		views[0] = new CircularView(viewFrames[0], pa.phrase, color1, color2, 100, pa, 50, 75);
 		
 		views[3] = new LiveGraphView(viewFrames[3], pa.phrase, color1, color2, 175, pa);
 		
