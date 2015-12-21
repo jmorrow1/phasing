@@ -8,6 +8,12 @@ import views.LiveGraphView;
 import views.RhythmView;
 import views.View;
 
+/**
+ * The screen that displays views, ways of visualizing the music.
+ * 
+ * @author James Morrow
+ *
+ */
 public class Presenter extends Screen {	
 	//time
 	private float prev_notept1, prev_notept2;
@@ -20,6 +26,10 @@ public class Presenter extends Screen {
 	private Rect[] viewFrames;
 	private View[] views = new View[4];
 	
+	/**
+	 * 
+	 * @param pa The PhasesPApplet on which to draw views
+	 */
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
 		

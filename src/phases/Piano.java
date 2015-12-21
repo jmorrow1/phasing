@@ -5,6 +5,7 @@ import geom.Rect;
 import processing.core.PApplet;
 
 /**
+ * A graphical representation of a piano.
  * 
  * @author James Morrow
  *

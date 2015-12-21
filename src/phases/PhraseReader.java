@@ -3,6 +3,16 @@ package phases;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * Reads a phrase at the rate that its update method is invoked.
+ * Invokes the given callback whenever it reads a new note, 
+ * passing itself as an argument to the callback.
+ * 
+ * Should be able to cope and continue to read the phrase even while the phrase changes state.
+ * 
+ * @author James Morrow
+ *
+ */
 public class PhraseReader {
 	//data
 	private int id;
@@ -14,6 +24,13 @@ public class PhraseReader {
 	private Object callee;
 	private Method callback;
 	
+	/**
+	 * 
+	 * @param phrase The phrase to read
+	 * @param id An integer identifying the phrase reader
+	 * @param callee The object on which to invoke the callback method
+	 * @param callback The callback method
+	 */
 	public PhraseReader(Phrase phrase, int id, Object callee, Method callback) {
 		this.phrase = phrase;
 		this.id = id;
@@ -26,6 +43,12 @@ public class PhraseReader {
 		
 	}
 	
+	/**
+	 * Reads some more of the phrase. How much is read is determined by the dNotept argument.
+	 * Calls the callback if it reads a new note.
+	 * 
+	 * @param dNotept The amount to read, in terms of musical time.
+	 */
 	public void update(float dNotept) {
 		noteTimeTillNextNote -= dNotept;
 		
@@ -40,10 +63,18 @@ public class PhraseReader {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return The integer identifier of this PhraseReader.
+	 */
 	public int getId() {
 		return id;
 	}
 	
+	/**
+	 * 
+	 * @return The index of the note the phrase reader is currently reading
+	 */
 	public int getNoteIndex() {
 		return noteIndex;
 	}

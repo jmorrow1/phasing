@@ -247,7 +247,7 @@ public class Editor extends Screen {
 		if (playStop.getValue() != 0) {
 			long dt = System.currentTimeMillis() - prev_t;
 			prev_t = System.currentTimeMillis();
-			livePlayer.update(pa.phrase, dt * pa.getBPMS1());
+			livePlayer.update(dt * pa.getBPMS1());
 		}
 		redraw();
 	}
