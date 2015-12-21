@@ -17,7 +17,6 @@ public class Presenter extends Screen {
 	private boolean playing;
 	private int sign;
 	//views
-	public static int color1, color2;
 	private Rect[] viewFrames;
 	private View[] views = new View[4];
 	
@@ -31,22 +30,19 @@ public class Presenter extends Screen {
 				new Rect(pa.width/2f, pa.height/2f, pa.width/2f, pa.height/2f, PApplet.CORNER)
 		};
 		
-		color1 = pa.color(255, 100, 100);
-		color2 = pa.color(100, 100, 255);
+		//views[0] = new GHView(viewFrames[0], pa.phrase, pa.getColor1(), pa.getColor2(), 100, pa);
 		
-		//views[0] = new GHView(viewFrames[0], pa.phrase, color1, color2, 100, pa);
+		views[0] = new CircularView(viewFrames[0], pa.phrase, pa.getColor1(), pa.getColor2(), 100, pa, 50, 75);
 		
-		views[0] = new CircularView(viewFrames[0], pa.phrase, color1, color2, 100, pa, 50, 75);
+		views[3] = new LiveGraphView(viewFrames[3], pa.phrase, pa.getColor1(), pa.getColor2(), 175, pa);
 		
-		views[3] = new LiveGraphView(viewFrames[3], pa.phrase, color1, color2, 175, pa);
+		views[1] = new RhythmView(viewFrames[1], pa.phrase, pa.getColor1(), pa.getColor2(), 175, pa);
 		
-		views[1] = new RhythmView(viewFrames[1], pa.phrase, color1, color2, 175, pa);
+		//views[1] = new WavesView(viewFrames[1], pa.phrase, pa.getColor1(), pa.getColor2(), 150, pa);
 		
-		//views[1] = new WavesView(viewFrames[1], pa.phrase, color1, color2, 150, pa);
+		views[2] = new KeyboardsView(viewFrames[2], pa.phrase, pa.getColor1(), pa.getColor2(), 100, pa);
 		
-		views[2] = new KeyboardsView(viewFrames[2], pa.phrase, color1, color2, 100, pa);
-		
-		//views[3] = new SymbolicView(viewFrames[3], pa.phrase, color1, color2, 175, pa);
+		//views[3] = new SymbolicView(viewFrames[3], pa.phrase, pa.getColor1(), pa.getColor2(), 175, pa);
 	}
 	
 	@Override

@@ -20,6 +20,8 @@ public class PhasesPApplet extends PApplet {
 	private Editor editor;
 	private Screen currentScreen;
 	
+	private static int color1, color2;
+	
 	/**
 	 * Sets up the size of the canvas/window
 	 */
@@ -34,6 +36,10 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void setup() {
 		int n = Phrase.NOTE_START;
+		
+		color1 = color(255, 100, 100);
+		color2 = color(100, 100, 255);
+		
 		phrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
 				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
 				            new int[] {n, n, n, n, n, n, n, n, n, n, n, n});
@@ -93,27 +99,67 @@ public class PhasesPApplet extends PApplet {
 		currentScreen.keyReleased();
 	}
 	
+	/**
+	 * 
+	 * @return color 1 of the program-wide color scheme
+	 */
+	public static int getColor1() {
+		return color1;
+	}
+	
+	/**
+	 * 
+	 * @return color2 of the program-wide color scheme
+	 */
+	public static int getColor2() {
+		return color2;
+	}
+	
+	/**
+	 * 
+	 * @return The beats per minute of the first piano player
+	 */
 	public float getBPM1() {
 		return bpm1;
 	}
 	
+	/**
+	 * 
+	 * @return The beats per millisecond of the first piano player
+	 */
 	public float getBPMS1() {
 		return bpms1;
 	}
 	
+	/**
+	 * 
+	 * @return The beats per minute of the second piano player
+	 */
 	public float getBPM2() {
 		return bpm2;
 	}
 	
+	/**
+	 * 
+	 * @return The beats per millisecond of the second piano player
+	 */
 	public float getBPMS2() {
 		return bpms2;
 	}
 	
+	/**
+	 * Sets the beats per minute of the first piano player
+	 * @param bpm1
+	 */
 	public void setBPM1(float bpm1) {
 		this.bpm1 = bpm1;
 		this.bpms1 = bpm1 / 60000f;
 	}
 	
+	/**
+	 * Sets the beats per minute of the second piano player
+	 * @param bpm2
+	 */
 	public void setBPM2(float bpm2) {
 		this.bpm2 = bpm2;
 		this.bpms2 = bpm2 / 60000f;

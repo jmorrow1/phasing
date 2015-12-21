@@ -22,7 +22,7 @@ public class Editor extends Screen {
 	private int minPitch = 60;
 	private int numKeys = 24;
 	private int maxPitch = minPitch + numKeys;
-	private final static int W=0xfffffff, B=Presenter.color2;
+	private final static int W=0xfffffff, B=PhasesPApplet.getColor2();
 	private final static int[] keyColors = new int[] {W, B, W, B, W, W, B, W, B, W, B, W};
 	//grid
 	private Rect gridFrame;
@@ -62,11 +62,11 @@ public class Editor extends Screen {
 							public void display(PGraphics pg, Toggle t) {
 								if (t.isMouseOver()) {
 									pg.stroke(0);
-									pg.fill(Presenter.color1);
+									pg.fill(PhasesPApplet.getColor1());
 								}
 								else {
 									pg.stroke(0, 150);
-									pg.fill(Presenter.color1, 150);
+									pg.fill(PhasesPApplet.getColor1(), 150);
 								}
 								
 								if (t.getValue() == 0) {
@@ -86,9 +86,9 @@ public class Editor extends Screen {
 		CColor cc = new CColor();
 		cc.setCaptionLabel(0);
 		cc.setValueLabel(0);
-		cc.setBackground(pa.color(Presenter.color1, 150));
-		cc.setActive(pa.color(Presenter.color1));
-		cc.setForeground(pa.color(Presenter.color1));
+		cc.setBackground(pa.color(PhasesPApplet.getColor1(), 150));
+		cc.setActive(pa.color(PhasesPApplet.getColor1()));
+		cc.setForeground(pa.color(PhasesPApplet.getColor1()));
 		
 		cp5.addSlider("bpm 1")
 		   .setId(BPM_1)
@@ -270,7 +270,7 @@ public class Editor extends Screen {
 	private void drawPhrase() {
 		pa.strokeWeight(1.5f);
 		pa.stroke(0);
-		pa.fill(Presenter.color1);
+		pa.fill(PhasesPApplet.getColor1());
 		pa.rectMode(pa.CORNER);
 		float x = gridFrame.getX1() + cellWidth;
 		for (int i=0; i<pa.phrase.getNumNotes(); i++) {
@@ -289,7 +289,7 @@ public class Editor extends Screen {
 	private void drawGrid() {
 		float y = gridFrame.getY2();
 		pa.rectMode(pa.CORNER);
-		pa.stroke(Presenter.color2);
+		pa.stroke(PhasesPApplet.getColor2());
 		pa.line(gridFrame.getX1() + cellWidth, y, gridFrame.getX2(), y);
 		y -= cellHeight;
 		for (int i=0; i<numKeys; i++) {
