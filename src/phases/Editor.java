@@ -1,9 +1,13 @@
 package phases;
 
-import controlP5.CColor;
+import java.lang.reflect.Method;
+
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
+import controlP5.Controller;
 import controlP5.ControllerView;
+import controlP5.DropdownList;
+import controlP5.Slider;
 import controlP5.Toggle;
 import geom.Rect;
 import processing.core.PGraphics;
@@ -18,6 +22,9 @@ public class Editor extends Screen {
 	private SoundCipherPlus livePlayer;
 	private long prev_t;
 	private float notept = 0;
+	//animation
+	private final int NOT_APPLICABLE = -1;
+	private int activeNoteIndex = NOT_APPLICABLE;
 	//piano
 	private int minPitch = 60;
 	private int numKeys = 24;
@@ -44,8 +51,13 @@ public class Editor extends Screen {
 	 */
 	public Editor(PhasesPApplet pa) {
 		super(pa);
-		
-		livePlayer = new SoundCipherPlus(pa, pa.phrase);
+
+		try {
+			Method callback = Editor.class.getMethod("animate", SoundCipherPlus.class);
+			livePlayer = new SoundCipherPlus(pa, pa.phrase, this, callback);
+		} catch (NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
 		
 		gridFrame = new Rect(25, 50, pa.width - 25, pa.height - 50, pa.CORNERS);
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
@@ -83,36 +95,55 @@ public class Editor extends Screen {
 					   })
 					   ;
 		
-		CColor cc = new CColor();
-		cc.setCaptionLabel(0);
-		cc.setValueLabel(0);
-		cc.setBackground(pa.color(PhasesPApplet.getColor1(), 150));
-		cc.setActive(pa.color(PhasesPApplet.getColor1()));
-		cc.setForeground(pa.color(PhasesPApplet.getColor1()));
+		addBPMSlider(BPM_1);
+		addBPMSlider(BPM_2);
 		
-		cp5.addSlider("bpm 1")
-		   .setId(BPM_1)
-		   .setRange(10, 140)
-		   .setNumberOfTickMarks(131)
-		   .setPosition(100, 5)
-		   .setSize(600, 15)
-		   .setColor(cc)
-		   .setValue(pa.getBPM1())
-		   .plugTo(this)
-		   ;
-		
-		cp5.addSlider("bpm 2")
-		   .setId(BPM_2)
-		   .setRange(10, 140)
-		   .setNumberOfTickMarks(131)
-		   .setPosition(100, 25)
-		   .setSize(600, 15)
-		   .setColor(cc)
-		   .setValue(pa.getBPM2())
-		   .plugTo(this)
-		   ;
+		DropdownList rootMenu = cp5.addDropdownList("Root")
+								   .setPosition(10, pa.height - 40)
+								   .setSize(45, 100)
+								   ;
+		colorController(rootMenu);
+		DropdownList scaleMenu = cp5.addDropdownList("Scale")
+								    .setPosition(60, pa.height - 40)
+								    .setSize(45, 100)
+								    ;
+		colorController(scaleMenu);
 		
 		cp5.hide();
+	}
+	
+	private void colorController(Controller c) {
+		c.setColorCaptionLabel(0);
+		c.setColorValueLabel(0);
+		c.setColorBackground(pa.color(PhasesPApplet.getColor1(), 150));
+		c.setColorActive(pa.color(PhasesPApplet.getColor1()));
+		c.setColorForeground(pa.color(PhasesPApplet.getColor1()));
+	}
+	
+	private Slider addBPMSlider(int id) {
+		switch(id) {
+			case BPM_1 :
+				return addBPMSlider("bpm 1", id, 100, 5, pa.getBPM1());
+			case BPM_2 :
+				return addBPMSlider("bpm 2", id, 100, 25, pa.getBPM2());
+			default :
+				return null;
+		}
+	}
+	
+	private Slider addBPMSlider(String name, int id, int x, int y, float bpm) {
+		Slider s = cp5.addSlider(name)
+			          .setId(id)
+					  .setDecimalPrecision(1)
+					  .setRange(10, 140)
+					  .setNumberOfTickMarks(261)
+					  .setPosition(x, y)
+					  .setSize(600, 15)
+					  .setValue(bpm)
+					  .plugTo(this)
+					  ;
+		colorController(s);
+		return s;
 	}
 	
 	/**
@@ -126,11 +157,12 @@ public class Editor extends Screen {
 		else {
 			prev_t = System.currentTimeMillis();
 			livePlayer.tempo(pa.getBPM1());
+			activeNoteIndex = NOT_APPLICABLE;
 		}
 	}
 	
 	/**
-	 * ControlP5 callback
+	 * Callback for ControlP5
 	 * @param e
 	 */
 	public void controlEvent(ControlEvent e) {
@@ -143,6 +175,14 @@ public class Editor extends Screen {
 				pa.setBPM2(e.getValue());
 				break;
 		}
+	}
+	
+	/**
+	 * Callback from livePlayer
+	 * @param livePlayer
+	 */
+	public void animate(SoundCipherPlus livePlayer) {
+		activeNoteIndex = livePlayer.getNoteIndex();
 	}
 
 	@Override
@@ -259,9 +299,9 @@ public class Editor extends Screen {
 	private void redraw() {
 		pa.background(255);
 		
+		drawPiano();
 		drawGrid();
-		drawPhrase();
-		
+		drawPhrase();	
 	}
 	
 	/**
@@ -270,10 +310,17 @@ public class Editor extends Screen {
 	private void drawPhrase() {
 		pa.strokeWeight(1.5f);
 		pa.stroke(0);
-		pa.fill(PhasesPApplet.getColor1());
 		pa.rectMode(pa.CORNER);
 		float x = gridFrame.getX1() + cellWidth;
 		for (int i=0; i<pa.phrase.getNumNotes(); i++) {
+			
+			if (i == activeNoteIndex) {
+				pa.fill(PhasesPApplet.getColor2());
+			}
+			else {
+				pa.fill(PhasesPApplet.getColor1());
+			}
+			
 			int pitch = pa.phrase.getSCPitch(i);
 			float y = pa.map(pitch+1, minPitch, maxPitch, gridFrame.getY2(), gridFrame.getY1());
 			float numCellsWide = pa.phrase.getSCDuration(i) / pa.phrase.getUnitDuration();
@@ -287,19 +334,14 @@ public class Editor extends Screen {
 	 * Draws the grid.
 	 */
 	private void drawGrid() {
-		float y = gridFrame.getY2();
-		pa.rectMode(pa.CORNER);
+		//line color
 		pa.stroke(PhasesPApplet.getColor2());
+		
+		//horizontal lines
+		float y = gridFrame.getY2();
 		pa.line(gridFrame.getX1() + cellWidth, y, gridFrame.getX2(), y);
 		y -= cellHeight;
 		for (int i=0; i<numKeys; i++) {
-			
-			//y-axis (piano)
-			pa.fill(keyColors[i % 12]);
-			pa.rect(gridFrame.getX1(), y, cellWidth, cellHeight);
-			
-			//horizontal lines
-			pa.fill(keyColors[i % 12], 50);
 			pa.line(gridFrame.getX1() + cellWidth, y, gridFrame.getX2(), y);
 			
 			y -= cellHeight;
@@ -312,6 +354,21 @@ public class Editor extends Screen {
 			x += cellWidth;
 		}
 		pa.line(x, gridFrame.getY1(), x, gridFrame.getY2());
+	}
+	
+	/**
+	 * Draws the piano, which serves as the y-axis of the grid.
+	 */
+	private void drawPiano() {
+		pa.rectMode(pa.CORNER);
+		pa.stroke(PhasesPApplet.getColor2());
+		float y = gridFrame.getY1();
+		for (int i=0; i<numKeys; i++) {
+			pa.fill(keyColors[i % 12]);		
+			pa.rect(gridFrame.getX1(), y, cellWidth, cellHeight);
+			
+			y += cellHeight;
+		}
 	}
 	
 	/**

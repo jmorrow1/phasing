@@ -11,9 +11,9 @@ import processing.core.PApplet;
 public class PhasesPApplet extends PApplet {
 	public Phrase phrase;
 
-	private float bpm1 = 40;
+	private float bpm1 = 60;
 	private float bpms1 = bpm1 / 60000f;
-	private float bpm2 = 45;
+	private float bpm2 = 62;
 	private float bpms2 = bpm2 / 60000f;
 	
 	private Presenter presenter;

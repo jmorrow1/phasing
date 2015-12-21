@@ -33,7 +33,6 @@ public class CircularView extends View {
 
 	@Override
 	public void update(float dNotept1, float dNotept2, int sign) {
-		//rotate sectors
 		rotate(sectors2, radiansPerNoteTime * (dNotept2 - dNotept1));
 		
 		//display sectors
