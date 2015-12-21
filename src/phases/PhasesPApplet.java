@@ -1,12 +1,7 @@
 package phases;
 
-import geom.Rect;
+import controlP5.ControlEvent;
 import processing.core.PApplet;
-import views.GHView;
-import views.KeyboardsView;
-import views.SymbolicView;
-import views.View;
-import views.WavesView;
 
 /**
  * 
@@ -15,11 +10,11 @@ import views.WavesView;
  */
 public class PhasesPApplet extends PApplet {
 	public Phrase phrase;
-	
-	public int bpm1 = 40;
-	public float bpms1 = bpm1 / 60000f;
-	public int bpm2 = 45;
-	public float bpms2 = bpm2 / 60000f;
+
+	private float bpm1 = 40;
+	private float bpms1 = bpm1 / 60000f;
+	private float bpm2 = 45;
+	private float bpms2 = bpm2 / 60000f;
 	
 	private Presenter presenter;
 	private Editor editor;
@@ -96,6 +91,32 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void keyReleased() {
 		currentScreen.keyReleased();
+	}
+	
+	public float getBPM1() {
+		return bpm1;
+	}
+	
+	public float getBPMS1() {
+		return bpms1;
+	}
+	
+	public float getBPM2() {
+		return bpm2;
+	}
+	
+	public float getBPMS2() {
+		return bpms2;
+	}
+	
+	public void setBPM1(float bpm1) {
+		this.bpm1 = bpm1;
+		this.bpms1 = bpm1 / 60000f;
+	}
+	
+	public void setBPM2(float bpm2) {
+		this.bpm2 = bpm2;
+		this.bpms2 = bpm2 / 60000f;
 	}
 	
 	/**

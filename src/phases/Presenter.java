@@ -53,8 +53,8 @@ public class Presenter extends Screen {
 	public void onEnter() {
 		pa.phrase.addToScore(player1, 0, 0, 0);
 		pa.phrase.addToScore(player2, 0, 0, 0);
-		player1.tempo(pa.bpm1);
-		player2.tempo(pa.bpm2);
+		player1.tempo(pa.getBPM1());
+		player2.tempo(pa.getBPM2());
 		player1.repeat(-1);
 		player2.repeat(-1);
 		player1.play();
@@ -62,10 +62,10 @@ public class Presenter extends Screen {
 		
 		playing = true;
 		
-		if (pa.bpm1 < pa.bpm2) {
+		if (pa.getBPM1() < pa.getBPM2()) {
 			sign = 1;
 		}
-		else if (pa.bpm1 > pa.bpm2) {
+		else if (pa.getBPM1() > pa.getBPM2()) {
 			sign = -1;
 		}
 		else {

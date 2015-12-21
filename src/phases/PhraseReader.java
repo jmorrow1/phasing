@@ -30,7 +30,6 @@ public class PhraseReader {
 		noteTimeTillNextNote -= dNotept;
 		
 		if (noteTimeTillNextNote <= 0) {
-			System.out.println("noteIndex = " + noteIndex);
 			noteIndex = (noteIndex+1) % phrase.getNumNotes();
 			noteTimeTillNextNote = noteTimeTillNextNote + phrase.getSCDuration(noteIndex);
 			try {

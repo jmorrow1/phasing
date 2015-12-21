@@ -1,11 +1,11 @@
 package phases;
 
+import controlP5.CColor;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlP5.ControllerView;
 import controlP5.Toggle;
 import geom.Rect;
-import processing.core.PApplet;
 import processing.core.PGraphics;
 
 /**
@@ -15,7 +15,9 @@ import processing.core.PGraphics;
  */
 public class Editor extends Screen {
 	//playback
-	private SoundCipherPlus player;
+	private SoundCipherPlus livePlayer;
+	private long prev_t;
+	private float notept = 0;
 	//piano
 	private int minPitch = 60;
 	private int numKeys = 24;
@@ -32,6 +34,7 @@ public class Editor extends Screen {
 	private int startIndexOfUserDrawnNote = -1;
 	private int indexMousePressed=-1, pitchMousePressed=-1;
 	//controllers
+	private final static int BPM_1 = 1, BPM_2 = 2;
 	private ControlP5 cp5;
 	private Toggle playStop;
 	
@@ -42,7 +45,7 @@ public class Editor extends Screen {
 	public Editor(PhasesPApplet pa) {
 		super(pa);
 		
-		player = new SoundCipherPlus(pa, pa.phrase);
+		livePlayer = new SoundCipherPlus(pa, pa.phrase);
 		
 		gridFrame = new Rect(25, 50, pa.width - 25, pa.height - 50, pa.CORNERS);
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
@@ -80,6 +83,35 @@ public class Editor extends Screen {
 					   })
 					   ;
 		
+		CColor cc = new CColor();
+		cc.setCaptionLabel(0);
+		cc.setValueLabel(0);
+		cc.setBackground(pa.color(Presenter.color1, 150));
+		cc.setActive(pa.color(Presenter.color1));
+		cc.setForeground(pa.color(Presenter.color1));
+		
+		cp5.addSlider("bpm 1")
+		   .setId(BPM_1)
+		   .setRange(10, 140)
+		   .setNumberOfTickMarks(131)
+		   .setPosition(100, 5)
+		   .setSize(600, 15)
+		   .setColor(cc)
+		   .setValue(pa.getBPM1())
+		   .plugTo(this)
+		   ;
+		
+		cp5.addSlider("bpm 2")
+		   .setId(BPM_2)
+		   .setRange(10, 140)
+		   .setNumberOfTickMarks(131)
+		   .setPosition(100, 25)
+		   .setSize(600, 15)
+		   .setColor(cc)
+		   .setValue(pa.getBPM2())
+		   .plugTo(this)
+		   ;
+		
 		cp5.hide();
 	}
 	
@@ -89,12 +121,27 @@ public class Editor extends Screen {
 	 */
 	public void play(ControlEvent e) {
 		if (e.getValue() == 0) {
-			player.stop();
+			livePlayer.stop();
 		}
 		else {
-			//pa.phrase.addToScore(player, 0, 0, 0);
-			player.tempo(pa.bpm1);
-			//player.play();
+			prev_t = System.currentTimeMillis();
+			livePlayer.tempo(pa.getBPM1());
+		}
+	}
+	
+	/**
+	 * ControlP5 callback
+	 * @param e
+	 */
+	public void controlEvent(ControlEvent e) {
+		switch (e.getId()) {
+			case BPM_1 :
+				pa.setBPM1(e.getValue());
+				livePlayer.tempo(pa.getBPM1());
+				break;
+			case BPM_2 :
+				pa.setBPM2(e.getValue());
+				break;
 		}
 	}
 
@@ -197,10 +244,12 @@ public class Editor extends Screen {
 	
 	@Override
 	public void draw() {
-		redraw();
 		if (playStop.getValue() != 0) {
-			player.update(pa.phrase, 0.01f);
+			long dt = System.currentTimeMillis() - prev_t;
+			prev_t = System.currentTimeMillis();
+			livePlayer.update(pa.phrase, dt * pa.getBPMS1());
 		}
+		redraw();
 	}
 	
 	
