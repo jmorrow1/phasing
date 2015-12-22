@@ -1,12 +1,8 @@
 package phases;
 
+import generic_views.One;
 import geom.Rect;
 import processing.core.PApplet;
-import views.GHView;
-import views.KeyboardsView;
-import views.RhythmView;
-import views.SymbolicView;
-import views.View;
 
 /**
  * The screen that displays views, ways of visualizing the music.
@@ -23,8 +19,9 @@ public class Presenter extends Screen {
 	private boolean playing;
 	private int sign;
 	//views
-	private Rect[] viewFrames;
-	private View[] views = new View[4];
+	//private Rect[] viewFrames;
+	//private View[] views = new View[4];
+	One view;
 	
 	/**
 	 * 
@@ -33,7 +30,9 @@ public class Presenter extends Screen {
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
 		
-		viewFrames = new Rect[] {
+		view = new One(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		
+		/*viewFrames = new Rect[] {
 				new Rect(0, 0, pa.width/2f, pa.height/2f, PApplet.CORNER),
 				new Rect(pa.width/2f, 0, pa.width/2f, pa.height/2f, PApplet.CORNER),
 				new Rect(0, pa.height/2f, pa.width/2f, pa.height/2f, PApplet.CORNER),
@@ -52,7 +51,7 @@ public class Presenter extends Screen {
 		
 		views[2] = new KeyboardsView(viewFrames[2], pa.phrase, pa.getColor1(), pa.getColor2(), 100, pa);
 		
-		views[3] = new SymbolicView(viewFrames[3], pa.phrase, pa.getColor1(), pa.getColor2(), 175, pa);
+		views[3] = new SymbolicView(viewFrames[3], pa.phrase, pa.getColor1(), pa.getColor2(), 175, pa);*/
 	}
 	
 	@Override
@@ -115,11 +114,13 @@ public class Presenter extends Screen {
 		//drawing
 		pa.background(255);
 
-		for (int i=0; i<views.length; i++) {
+		view.update(dNotept1, dNotept2, sign);
+		
+		/*for (int i=0; i<views.length; i++) {
 			if (views[i] != null) {
 				views[i].update(dNotept1, dNotept2, sign);
 			}
-		}
+		}*/
 		
 		pa.strokeWeight(2);
 		pa.stroke(0);
@@ -129,13 +130,13 @@ public class Presenter extends Screen {
 	
 	@Override
 	public void mousePressed() {
-		for (View v : views) {
+		/*for (View v : views) {
 			if (v != null) {
 				if (v.intersects(pa.mouseX, pa.mouseY)) {
 					v.mousePressedInArea();
 					break;
 				}
 			}
-		}
+		}*/
 	}
 }
