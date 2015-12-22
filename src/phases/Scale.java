@@ -27,7 +27,11 @@ public class Scale {
 	public String getName() {
 		return name;
 	}
-
+	
+	public String getNoteName(int i) {
+		return noteNames[i];
+	}
+	
 	public String[] getNoteNames() {
 		return noteNames;
 	}

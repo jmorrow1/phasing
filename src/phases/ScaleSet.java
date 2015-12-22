@@ -18,6 +18,10 @@ public class ScaleSet {
 		}
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
 	public int getNumScales() {
 		return scales.length;
 	}

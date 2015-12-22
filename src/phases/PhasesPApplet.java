@@ -15,6 +15,7 @@ import processing.data.JSONObject;
  */
 public class PhasesPApplet extends PApplet {
 	private static ArrayList<ScaleSet> scaleSets = new ArrayList<ScaleSet>();
+	public static ScaleSet chromaticScales;
 	
 	public Phrase phrase;
 
@@ -51,6 +52,9 @@ public class PhasesPApplet extends PApplet {
 					JSONObject json = loadJSONObject(filePath.toString());
 					ScaleSet ss = new ScaleSet(json);
 					scaleSets.add(ss);
+					if (ss.getName().equals("Chromatic")) {
+						chromaticScales = ss;
+					}
 				}
 			});
 		} catch (IOException e) {

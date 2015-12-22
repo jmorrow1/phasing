@@ -31,7 +31,7 @@ public class Editor extends Screen {
 	private int minPitch = 60;
 	private int numKeys = 24;
 	private int maxPitch = minPitch + numKeys;
-	private final static int W=0xfffffff, B=PhasesPApplet.getColor2();
+	private final static int W=0xffffffff, B=PhasesPApplet.getColor2();
 	private final static int[] keyColors = new int[] {W, B, W, B, W, W, B, W, B, W, B, W};
 	//grid
 	private Rect gridFrame;
@@ -53,6 +53,8 @@ public class Editor extends Screen {
 	 */
 	public Editor(PhasesPApplet pa) {
 		super(pa);
+		
+		currentScale = pa.chromaticScales.getScale(0);
 
 		try {
 			Method callback = Editor.class.getMethod("animate", SoundCipherPlus.class);
@@ -364,16 +366,24 @@ public class Editor extends Screen {
 	private void drawPiano() {
 		pa.rectMode(pa.CORNER);
 		pa.stroke(PhasesPApplet.getColor2());
-		float y = gridFrame.getY1();
+		float y = gridFrame.getY2() - cellHeight;
+		
+		pa.textAlign(pa.CENTER, pa.CENTER);
+		
 		for (int i=0; i<numKeys; i++) {
-			pa.fill(keyColors[i % 12]);		
+			int keyColor = keyColors[i % 12];
+			pa.fill(keyColor);		
 			pa.rect(gridFrame.getX1(), y, cellWidth, cellHeight);
 			
 			if (labelPianoKeys) {
+				String noteName = currentScale.getNoteName(i % 12);
+				int inverseKeyColor = (keyColor == W) ? B : W;
 				
+				pa.fill(inverseKeyColor);
+				pa.text(noteName, gridFrame.getX1(), y, cellWidth, cellHeight);
 			}
 			
-			y += cellHeight;
+			y -= cellHeight;
 		}
 	}
 	
