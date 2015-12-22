@@ -75,7 +75,7 @@ public class PhasesPApplet extends PApplet {
 		editor = new Editor(this);
 		
 		//setup current screen
-		currentScreen = editor;
+		currentScreen = presenter;
 		currentScreen.onEnter();
 	}
 	

@@ -2,10 +2,10 @@ package phases;
 
 import geom.Rect;
 import processing.core.PApplet;
-import views.CircularView;
+import views.GHView;
 import views.KeyboardsView;
-import views.LiveGraphView;
 import views.RhythmView;
+import views.SymbolicView;
 import views.View;
 
 /**
@@ -40,11 +40,11 @@ public class Presenter extends Screen {
 				new Rect(pa.width/2f, pa.height/2f, pa.width/2f, pa.height/2f, PApplet.CORNER)
 		};
 		
-		//views[0] = new GHView(viewFrames[0], pa.phrase, pa.getColor1(), pa.getColor2(), 100, pa);
+		views[0] = new GHView(viewFrames[0], pa.phrase, pa.getColor1(), pa.getColor2(), 100, pa);
 		
-		views[0] = new CircularView(viewFrames[0], pa.phrase, pa.getColor1(), pa.getColor2(), 100, pa, 50, 75);
+		//views[0] = new CircularView(viewFrames[0], pa.phrase, pa.getColor1(), pa.getColor2(), 100, pa, 50, 75);
 		
-		views[3] = new LiveGraphView(viewFrames[3], pa.phrase, pa.getColor1(), pa.getColor2(), 175, pa);
+		//views[3] = new LiveGraphView(viewFrames[3], pa.phrase, pa.getColor1(), pa.getColor2(), 175, pa);
 		
 		views[1] = new RhythmView(viewFrames[1], pa.phrase, pa.getColor1(), pa.getColor2(), 175, pa);
 		
@@ -52,7 +52,7 @@ public class Presenter extends Screen {
 		
 		views[2] = new KeyboardsView(viewFrames[2], pa.phrase, pa.getColor1(), pa.getColor2(), 100, pa);
 		
-		//views[3] = new SymbolicView(viewFrames[3], pa.phrase, pa.getColor1(), pa.getColor2(), 175, pa);
+		views[3] = new SymbolicView(viewFrames[3], pa.phrase, pa.getColor1(), pa.getColor2(), 175, pa);
 	}
 	
 	@Override

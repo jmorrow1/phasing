@@ -5,11 +5,21 @@ import java.util.Arrays;
 import processing.data.JSONArray;
 import processing.data.JSONObject;
 
+/**
+ * Data container for a musical scale.
+ * 
+ * @author James Morrow
+ *
+ */
 public class Scale {
 	private String name;
 	private String[] noteNames;
 	private int[] noteValues;
 	
+	/**
+	 * Constructs a Scale from a JSONObject containing a name, an array of note names, and an array of note values.
+	 * @param json The JSONObject
+	 */
 	public Scale(JSONObject json) {
 		name = json.getString("name");
 		JSONArray jNoteNames = json.getJSONArray("noteNames");
@@ -23,21 +33,39 @@ public class Scale {
 			noteValues[i] = jNoteValues.getInt(i);
 		}
 	}
+	
+	/**
+	 * 
+	 * @return The number of notes in the scale
+	 */
+	public int getSize() {
+		return noteNames.length;
+	}
 
+	/**
+	 * 
+	 * @return The name of the scale
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * 
+	 * @param i The note index
+	 * @return The name of the ith note in the scale
+	 */
 	public String getNoteName(int i) {
 		return noteNames[i];
 	}
 	
-	public String[] getNoteNames() {
-		return noteNames;
-	}
-
-	public int[] getNoteValues() {
-		return noteValues;
+	/**
+	 * 
+	 * @param i The note index
+	 * @return The MIDI pitch value of the ith note in the scale
+	 */
+	public int getNoteValue(int i) {
+		return noteValues[i];
 	}
 
 	@Override

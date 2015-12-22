@@ -371,14 +371,15 @@ public class Editor extends Screen {
 		pa.textAlign(pa.CENTER, pa.CENTER);
 		
 		for (int i=0; i<numKeys; i++) {
-			int keyColor = keyColors[i % 12];
+			int iModScaleSize = i % currentScale.getSize();
+			
+			int keyColor = keyColors[currentScale.getNoteValue(iModScaleSize)];
 			pa.fill(keyColor);		
 			pa.rect(gridFrame.getX1(), y, cellWidth, cellHeight);
 			
 			if (labelPianoKeys) {
-				String noteName = currentScale.getNoteName(i % 12);
+				String noteName = currentScale.getNoteName(iModScaleSize);
 				int inverseKeyColor = (keyColor == W) ? B : W;
-				
 				pa.fill(inverseKeyColor);
 				pa.text(noteName, gridFrame.getX1(), y, cellWidth, cellHeight);
 			}
