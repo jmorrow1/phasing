@@ -1,5 +1,9 @@
 package phases;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import controlP5.ControlEvent;
 import processing.core.PApplet;
 
@@ -30,22 +34,37 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
+	 * Loads JSON scale data
 	 * Creates a default phrase.
 	 * Creates an instance of an Editor screen and an instance of a Presenter screen.
 	 * Sets the current screen.
 	 */
 	public void setup() {
-		int n = Phrase.NOTE_START;
+		//load scales
+		try {
+			Files.walk(Paths.get("src/data/scales")).forEach(filePath -> {
+				if (filePath.toString().endsWith(".json")) {
+					ScaleSet ss = new ScaleSet(loadJSONObject(filePath.toString()));
+				}
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		color1 = color(255, 100, 100);
 		color2 = color(100, 100, 255);
 		
+		//create default phrase
+		int n = Phrase.NOTE_START;
 		phrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
 				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
 				            new int[] {n, n, n, n, n, n, n, n, n, n, n, n});
 		
+		//create screens
 		presenter = new Presenter(this);
 		editor = new Editor(this);
+		
+		//setup current screen
 		currentScreen = editor;
 		currentScreen.onEnter();
 	}

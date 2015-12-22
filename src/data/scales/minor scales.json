@@ -1,0 +1,257 @@
+{
+	"name": "Minor",
+	"scales": [
+	  {
+		"noteValues": [
+		  9,
+		  11,
+		  12,
+		  14,
+		  16,
+		  17,
+		  19
+		],
+		"name": "A Natural Minor",
+		"noteNames": [
+		  "A",
+		  "B",
+		  "C",
+		  "D",
+		  "E",
+		  "F",
+		  "G"
+		]
+	  },
+	  {
+		"noteValues": [
+		  4,
+		  6,
+		  7,
+		  9,
+		  11,
+		  12,
+		  14
+		],
+		"name": "E Natural Minor",
+		"noteNames": [
+		  "E",
+		  "F#",
+		  "G",
+		  "A",
+		  "B",
+		  "C",
+		  "D"
+		]
+	  },
+	  {
+		"noteValues": [
+		  11,
+		  13,
+		  14,
+		  16,
+		  18,
+		  19,
+		  21
+		],
+		"name": "B Natural Minor",
+		"noteNames": [
+		  "B",
+		  "C#",
+		  "D",
+		  "E",
+		  "F#",
+		  "G",
+		  "A"
+		]
+	  },
+	  {
+		"noteValues": [
+		  6,
+		  8,
+		  9,
+		  11,
+		  13,
+		  14,
+		  16
+		],
+		"name": "F# Natural Minor",
+		"noteNames": [
+		  "F#",
+		  "G#",
+		  "A",
+		  "B",
+		  "C#",
+		  "D",
+		  "E"
+		]
+	  },
+	  {
+		"noteValues": [
+		  1,
+		  3,
+		  4,
+		  6,
+		  8,
+		  9,
+		  11
+		],
+		"name": "C# Natural Minor",
+		"noteNames": [
+		  "C#",
+		  "D#",
+		  "E",
+		  "F#",
+		  "G#",
+		  "A",
+		  "B"
+		]
+	  },
+	  {
+		"noteValues": [
+		  8,
+		  10,
+		  11,
+		  13,
+		  15,
+		  16,
+		  18
+		],
+		"name": "G# Natural Minor",
+		"noteNames": [
+		  "G#",
+		  "A#",
+		  "B",
+		  "C#",
+		  "D#",
+		  "E",
+		  "F#"
+		]
+	  },
+	  {
+		"noteValues": [
+		  3,
+		  5,
+		  6,
+		  8,
+		  10,
+		  11,
+		  13
+		],
+		"name": "D# Natural Minor",
+		"noteNames": [
+		  "D#",
+		  "E#",
+		  "F#",
+		  "G#",
+		  "A#",
+		  "B",
+		  "C#"
+		]
+	  },
+	  {
+		"noteValues": [
+		  10,
+		  12,
+		  13,
+		  15,
+		  17,
+		  18,
+		  20
+		],
+		"name": "Bb Natural Minor",
+		"noteNames": [
+		  "Bb",
+		  "C",
+		  "Db",
+		  "Eb",
+		  "F",
+		  "Gb",
+		  "Ab"
+		]
+	  },
+	  {
+		"noteValues": [
+		  5,
+		  7,
+		  8,
+		  10,
+		  12,
+		  13,
+		  15
+		],
+		"name": "F Natural Minor",
+		"noteNames": [
+		  "F",
+		  "G",
+		  "Ab",
+		  "Bb",
+		  "C",
+		  "Db",
+		  "Eb"
+		]
+	  },
+	  {
+		"noteValues": [
+		  0,
+		  2,
+		  3,
+		  5,
+		  7,
+		  8,
+		  10
+		],
+		"name": "C Natural Minor",
+		"noteNames": [
+		  "C",
+		  "D",
+		  "Eb",
+		  "F",
+		  "G",
+		  "Ab",
+		  "Bb"
+		]
+	  },
+	  {
+		"noteValues": [
+		  7,
+		  9,
+		  10,
+		  12,
+		  14,
+		  15,
+		  17
+		],
+		"name": "G Natural Minor",
+		"noteNames": [
+		  "G",
+		  "A",
+		  "Bb",
+		  "C",
+		  "D",
+		  "Eb",
+		  "F"
+		]
+	  },
+	  {
+		"noteValues": [
+		  2,
+		  4,
+		  5,
+		  7,
+		  9,
+		  10,
+		  12
+		],
+		"name": "D Natural Minor",
+		"noteNames": [
+		  "D",
+		  "E",
+		  "F",
+		  "G",
+		  "A",
+		  "Bb",
+		  "C"
+		]
+	  }
+	]
+}

@@ -1,0 +1,257 @@
+{
+	"name": "Major",
+	"scales": [
+	  {
+		"noteValues": [
+		  0,
+		  2,
+		  4,
+		  5,
+		  7,
+		  9,
+		  11
+		],
+		"name": "C Major",
+		"noteNames": [
+		  "C",
+		  "D",
+		  "E",
+		  "F",
+		  "G",
+		  "A",
+		  "B"
+		]
+	  },
+	  {
+		"noteValues": [
+		  7,
+		  9,
+		  11,
+		  12,
+		  14,
+		  16,
+		  18
+		],
+		"name": "G Major",
+		"noteNames": [
+		  "G",
+		  "A",
+		  "B",
+		  "C",
+		  "D",
+		  "E",
+		  "F#"
+		]
+	  },
+	  {
+		"noteValues": [
+		  2,
+		  4,
+		  6,
+		  7,
+		  9,
+		  11,
+		  13
+		],
+		"name": "D Major",
+		"noteNames": [
+		  "D",
+		  "E",
+		  "F#",
+		  "G",
+		  "A",
+		  "B",
+		  "C#"
+		]
+	  },
+	  {
+		"noteValues": [
+		  9,
+		  11,
+		  13,
+		  14,
+		  16,
+		  18,
+		  20
+		],
+		"name": "A Major",
+		"noteNames": [
+		  "A",
+		  "B",
+		  "C#",
+		  "D",
+		  "E",
+		  "F#",
+		  "G#"
+		]
+	  },
+	  {
+		"noteValues": [
+		  4,
+		  6,
+		  8,
+		  9,
+		  11,
+		  13,
+		  15
+		],
+		"name": "E Major",
+		"noteNames": [
+		  "E",
+		  "F#",
+		  "G#",
+		  "A",
+		  "B",
+		  "C#",
+		  "D#"
+		]
+	  },
+	  {
+		"noteValues": [
+		  11,
+		  13,
+		  15,
+		  16,
+		  18,
+		  20,
+		  22
+		],
+		"name": "B Major",
+		"noteNames": [
+		  "B",
+		  "C#",
+		  "D#",
+		  "E",
+		  "F#",
+		  "G#",
+		  "A#"
+		]
+	  },
+	  {
+		"noteValues": [
+		  6,
+		  8,
+		  10,
+		  11,
+		  13,
+		  15,
+		  17
+		],
+		"name": "F# Major",
+		"noteNames": [
+		  "F#",
+		  "G#",
+		  "A#",
+		  "B",
+		  "C#",
+		  "D#",
+		  "E#"
+		]
+	  },
+	  {
+		"noteValues": [
+		  1,
+		  3,
+		  5,
+		  6,
+		  8,
+		  10,
+		  12
+		],
+		"name": "Db Major",
+		"noteNames": [
+		  "Db",
+		  "Eb",
+		  "F",
+		  "Gb",
+		  "Ab",
+		  "Bb",
+		  "C"
+		]
+	  },
+	  {
+		"noteValues": [
+		  8,
+		  10,
+		  12,
+		  13,
+		  15,
+		  17,
+		  19
+		],
+		"name": "Ab Major",
+		"noteNames": [
+		  "Ab",
+		  "Bb",
+		  "C",
+		  "Db",
+		  "Eb",
+		  "F",
+		  "G"
+		]
+	  },
+	  {
+		"noteValues": [
+		  3,
+		  5,
+		  7,
+		  8,
+		  10,
+		  12,
+		  14
+		],
+		"name": "Eb Major",
+		"noteNames": [
+		  "Eb",
+		  "F",
+		  "G",
+		  "Ab",
+		  "Bb",
+		  "C",
+		  "D"
+		]
+	  },
+	  {
+		"noteValues": [
+		  10,
+		  12,
+		  14,
+		  15,
+		  17,
+		  19,
+		  21
+		],
+		"name": "Bb Major",
+		"noteNames": [
+		  "Bb",
+		  "C",
+		  "D",
+		  "Eb",
+		  "F",
+		  "G",
+		  "A"
+		]
+	  },
+	  {
+		"noteValues": [
+		  5,
+		  7,
+		  9,
+		  10,
+		  12,
+		  14,
+		  16
+		],
+		"name": "F Major",
+		"noteNames": [
+		  "F",
+		  "G",
+		  "A",
+		  "Bb",
+		  "C",
+		  "D",
+		  "E"
+		]
+	  }
+	]
+}
