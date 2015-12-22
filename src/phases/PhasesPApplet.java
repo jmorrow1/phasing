@@ -3,9 +3,10 @@ package phases;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
-import controlP5.ControlEvent;
 import processing.core.PApplet;
+import processing.data.JSONObject;
 
 /**
  * 
@@ -13,6 +14,8 @@ import processing.core.PApplet;
  *
  */
 public class PhasesPApplet extends PApplet {
+	private static ArrayList<ScaleSet> scaleSets = new ArrayList<ScaleSet>();
+	
 	public Phrase phrase;
 
 	private float bpm1 = 60;
@@ -42,9 +45,12 @@ public class PhasesPApplet extends PApplet {
 	public void setup() {
 		//load scales
 		try {
+			int i=0;
 			Files.walk(Paths.get("src/data/scales")).forEach(filePath -> {
 				if (filePath.toString().endsWith(".json")) {
-					ScaleSet ss = new ScaleSet(loadJSONObject(filePath.toString()));
+					JSONObject json = loadJSONObject(filePath.toString());
+					ScaleSet ss = new ScaleSet(json);
+					scaleSets.add(ss);
 				}
 			});
 		} catch (IOException e) {
@@ -182,6 +188,21 @@ public class PhasesPApplet extends PApplet {
 	public void setBPM2(float bpm2) {
 		this.bpm2 = bpm2;
 		this.bpms2 = bpm2 / 60000f;
+	}
+	
+	public static int getNumScaleSets() {
+		return scaleSets.size();
+	}
+	
+	public static ScaleSet getScaleSet(int i) {
+		if (0 <= i && i < scaleSets.size()) {
+			return scaleSets.get(i);
+		}
+		return null;
+	}
+	
+	public static ScaleSet[] getScaleSets() {
+		return scaleSets.toArray(new ScaleSet[] {});
 	}
 	
 	/**

@@ -7,14 +7,19 @@ import processing.data.JSONObject;
 
 public class ScaleSet {
 	private String name;
-	private Scale[] scales = new Scale[12];
+	private Scale[] scales;
 	
 	public ScaleSet(JSONObject json) {
 		this.name = json.getString("name");
 		JSONArray jscales = json.getJSONArray("scales");
+		scales = new Scale[jscales.size()];
 		for (int i=0; i<jscales.size(); i++) {
 			scales[i] = new Scale(jscales.getJSONObject(i));
 		}
+	}
+	
+	public int getNumScales() {
+		return scales.length;
 	}
 	
 	public Scale getScale(int i) {

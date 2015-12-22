@@ -26,6 +26,8 @@ public class Editor extends Screen {
 	private final int NOT_APPLICABLE = -1;
 	private int activeNoteIndex = NOT_APPLICABLE;
 	//piano
+	private Scale currentScale;
+	private boolean labelPianoKeys = true;
 	private int minPitch = 60;
 	private int numKeys = 24;
 	private int maxPitch = minPitch + numKeys;
@@ -366,6 +368,10 @@ public class Editor extends Screen {
 		for (int i=0; i<numKeys; i++) {
 			pa.fill(keyColors[i % 12]);		
 			pa.rect(gridFrame.getX1(), y, cellWidth, cellHeight);
+			
+			if (labelPianoKeys) {
+				
+			}
 			
 			y += cellHeight;
 		}
