@@ -22,17 +22,17 @@ public class One extends Rect {
 	
 	//options:
 	private final int SCROLLS=0, ROTATES=1;
-	private int movementType = SCROLLS;
+	private int movementType = ROTATES;
 	
 	private final int RELATIVE=0, FIXED=1;
 	private int cameraType = RELATIVE;
 	
 	private final int SYMBOLS=0, DOTS=1, CONNECTED_DOTS=2, RECTS_OR_SECTORS=3, SINE_WAVE=4;
-	private int phraseGraphicType = RECTS_OR_SECTORS;
+	private int phraseGraphicType = SYMBOLS;
 	
 	private boolean doPlotPitch = true;
 	
-	private final int MONOCHROME=0, DIACHROME=1;
+	private final int MONOCHROMATIC=0, DIACHROMATIC=1;
 	private int colorSchemeType;
 
 	public One(Rect rect, int opacity, PhasesPApplet pa) {
@@ -78,7 +78,7 @@ public class One extends Rect {
 		pa.pushMatrix();
 			movementAcc1 += changeInMovement(dNotept1);
 			transform(movementAcc1);
-			styleNoteGraphics(pa.getColor1());
+			styleNoteGraphics((this.colorSchemeType == DIACHROMATIC) ? pa.getColor2() : 0);
 			drawPhraseGraphic(pa.getBPM1());
 		pa.popMatrix();
 		
@@ -86,7 +86,7 @@ public class One extends Rect {
 		pa.pushMatrix();
 			movementAcc2 += changeInMovement(dNotept2);
 			transform(movementAcc2);
-			styleNoteGraphics(pa.getColor2());
+			styleNoteGraphics((this.colorSchemeType == DIACHROMATIC) ? pa.getColor2() : 0);
 			drawPhraseGraphic(pa.getBPM2());
 		pa.popMatrix();
 	}
