@@ -18,6 +18,7 @@ public class PhasesPApplet extends PApplet {
 	public static ScaleSet chromaticScales;
 	
 	public Phrase phrase;
+	public Scale scale;
 
 	private float bpm1 = 60;
 	private float bpms1 = bpm1 / 60000f;
@@ -69,6 +70,8 @@ public class PhasesPApplet extends PApplet {
 		phrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
 				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
 				            new int[] {n, n, n, n, n, n, n, n, n, n, n, n});
+		
+		scale = chromaticScales.getScale(0); //default scale
 		
 		//create screens
 		presenter = new Presenter(this);
