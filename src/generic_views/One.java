@@ -28,12 +28,12 @@ public class One extends Rect {
 	private int cameraType = RELATIVE;
 	
 	private final int SYMBOLS=0, DOTS=1, CONNECTED_DOTS=2, RECTS_OR_SECTORS=3, SINE_WAVE=4;
-	private int phraseGraphicType = SYMBOLS;
+	private int phraseGraphicType = CONNECTED_DOTS;
 	
 	private boolean doPlotPitch = true;
 	
 	private final int MONOCHROMATIC=0, DIACHROMATIC=1;
-	private int colorSchemeType;
+	private int colorSchemeType = DIACHROMATIC;
 
 	public One(Rect rect, int opacity, PhasesPApplet pa) {
 		super(rect);
@@ -78,7 +78,7 @@ public class One extends Rect {
 		pa.pushMatrix();
 			movementAcc1 += changeInMovement(dNotept1);
 			transform(movementAcc1);
-			styleNoteGraphics((this.colorSchemeType == DIACHROMATIC) ? pa.getColor2() : 0);
+			styleNoteGraphics((this.colorSchemeType == DIACHROMATIC) ? pa.getColor1() : 0);
 			drawPhraseGraphic(pa.getBPM1());
 		pa.popMatrix();
 		
@@ -135,6 +135,7 @@ public class One extends Rect {
 	}
 	
 	private float mapPitch(int i, float newMin, float newMax) {
+		i %= 12;
 		if (doPlotPitch) {
 			return PApplet.map(pa.phrase.getSCPitch(i),
                                pa.phrase.minPitch(), pa.phrase.maxPitch(),
@@ -154,24 +155,26 @@ public class One extends Rect {
 	private void drawNoteGraphic(int noteIndex) {
 		if (movementType == SCROLLS) {
 			float x1 = PApplet.map(noteIndex, 0, pa.phrase.getNumNotes(), -halfWidth, halfWidth);
-			float y = mapPitch(noteIndex, halfHeight, -halfHeight);
+			float y1 = mapPitch(noteIndex, halfHeight, -halfHeight);
 			float x2 = PApplet.map(noteIndex+1, 0, pa.phrase.getNumNotes(), -halfWidth, halfWidth);
+			float y2 = mapPitch(noteIndex+1, halfHeight, -halfHeight);
 			
-			drawNoteGraphic(noteIndex, x1, y, x2);
+			drawNoteGraphic(noteIndex, x1, y1, x2, y2);
 		}
 		else if (movementType == ROTATES) {
 			float alpha = pa.map(noteIndex, 0, pa.phrase.getNumNotes(), 0, pa.TWO_PI) - pa.HALF_PI;
 			float beta = alpha + pa.TWO_PI/pa.phrase.getNumNotes();
 			
 			float x1 = PApplet.cos(alpha)*mapPitch(noteIndex, minRadius, maxRadius);
-			float y = PApplet.sin(alpha)*mapPitch(noteIndex, minRadius, maxRadius);
-			float x2 = PApplet.cos(beta)*mapPitch(noteIndex, minRadius, maxRadius);
+			float y1 = PApplet.sin(alpha)*mapPitch(noteIndex, minRadius, maxRadius);
+			float x2 = PApplet.cos(beta)*mapPitch(noteIndex+1, minRadius, maxRadius);
+			float y2 = PApplet.sin(beta)*mapPitch(noteIndex+1, minRadius, maxRadius);
 			
-			drawNoteGraphic(noteIndex, x1, y, x2);
+			drawNoteGraphic(noteIndex, x1, y1, x2, y2);
 		}
 	}
 	
-	private void drawNoteGraphic(int index, float x1, float y1, float x2) {
+	private void drawNoteGraphic(int index, float x1, float y1, float x2, float y2) {
 		switch (phraseGraphicType) {
 			case SYMBOLS:
 				pa.pushMatrix();
@@ -188,6 +191,8 @@ public class One extends Rect {
 				pa.ellipse(x1, y1, 20, 20);
 				break;
 			case CONNECTED_DOTS:
+				pa.ellipse(x1, y1, 20, 20);
+				pa.line(x1, y1, x2, y2);
 				break;
 			case RECTS_OR_SECTORS:
 				if (movementType == SCROLLS) {
