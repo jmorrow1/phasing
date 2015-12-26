@@ -6,15 +6,15 @@ import phases.PhasesPApplet;
 import phases.Phrase;
 import processing.core.PApplet;
 
-public class One extends Rect {
+public class PhaseShifter extends View {
 	private PhasesPApplet pa;
+	
+	//starting pitch:
+	private int startingPitch=0;
 	
 	//bounds:
 	private float width, height, halfWidth, halfHeight;
 	private float minRadius, maxRadius;
-	
-	//color data:
-	private int opacity;
 	
 	//scrolling or rotating movement:
 	private float movementAcc1=0, movementAcc2=0, dNoteptAcc=0;
@@ -35,9 +35,8 @@ public class One extends Rect {
 	private final int MONOCHROMATIC=0, DIACHROMATIC=1;
 	private int colorSchemeType = DIACHROMATIC;
 
-	public One(Rect rect, int opacity, PhasesPApplet pa) {
-		super(rect);
-		this.opacity = opacity;
+	public PhaseShifter(Rect rect, int opacity, PhasesPApplet pa) {
+		super(rect, opacity);
 		this.pa = pa;
 		
 		width = this.getWidth()*0.9f;
@@ -58,6 +57,7 @@ public class One extends Rect {
 		pa.textSize(42);
 	}
 
+	@Override
 	public void update(float dNotept1, float dNotept2, int sign) {
 		if (cameraType == RELATIVE) {
 			dNotept2 = (dNotept2 - dNotept1) + dNoteptAcc;
@@ -182,7 +182,7 @@ public class One extends Rect {
 					float theta = pa.map(index, 0, pa.phrase.getGridRowSize(), 0, pa.TWO_PI);
 					pa.rotate(theta);
 					int pitch = (int) (pa.phrase.getGridPitch(index) % 12);
-					String symbol = pa.scale.getNoteName(pitch);
+					String symbol = pa.chromaticScales.getScale(startingPitch).getNoteName(pitch);
 					pa.text(symbol, 0, 0);
 				pa.popMatrix();
 				

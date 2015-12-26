@@ -1,6 +1,6 @@
 package phases;
 
-import generic_views.One;
+import generic_views.PhaseShifter;
 import geom.Rect;
 import processing.core.PApplet;
 
@@ -21,7 +21,7 @@ public class Presenter extends Screen {
 	//views
 	//private Rect[] viewFrames;
 	//private View[] views = new View[4];
-	One view;
+	PhaseShifter view;
 	
 	/**
 	 * 
@@ -30,7 +30,7 @@ public class Presenter extends Screen {
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
 		
-		view = new One(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		
 		/*viewFrames = new Rect[] {
 				new Rect(0, 0, pa.width/2f, pa.height/2f, PApplet.CORNER),
