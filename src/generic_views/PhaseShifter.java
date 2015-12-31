@@ -28,7 +28,7 @@ public class PhaseShifter extends View {
 	private int cameraType = RELATIVE;
 	
 	private final int SYMBOLS=0, DOTS=1, CONNECTED_DOTS=2, RECTS_OR_SECTORS=3, SINE_WAVE=4;
-	private int phraseGraphicType = CONNECTED_DOTS;
+	private int phraseGraphicType = SINE_WAVE;
 	
 	private boolean doPlotPitch = true;
 	
@@ -130,7 +130,10 @@ public class PhaseShifter extends View {
 					pa.noFill();
 				}
 				break;
-			
+			case SINE_WAVE:
+				pa.noFill();
+				pa.stroke(color);
+				break;
 		}
 	}
 	
@@ -147,71 +150,92 @@ public class PhaseShifter extends View {
 	}
 	
 	private void drawPhraseGraphic(float bpm) {
-		for (int i=0; i<pa.phrase.getNumNotes(); i++) {
-			drawNoteGraphic(i);
+		if (phraseGraphicType == SINE_WAVE) {
+			if (movementType == SCROLLS) {
+				drawSineWave();
+			}
+			else if (movementType == ROTATES) {	
+				int radius = (int)pa.map(bpm, pa.MIN_BPM, pa.MAX_BPM, 0, halfWidth);
+				pa.ellipseMode(pa.RADIUS);
+				pa.ellipse(0, 0, radius, radius);
+			}
+		}
+		else {
+			for (int i=0; i<pa.phrase.getNumNotes(); i++) {
+				drawNoteGraphic(i);
+			}
 		}
 	}
 	
-	private void drawNoteGraphic(int noteIndex) {
+	private void drawSineWave() {
+		pa.beginShape();
+			float x = -halfWidth;
+			float dx = 2;
+			float angle = 0;
+			float dAngle = pa.TWO_PI / (width / dx);
+			while (x < halfWidth) {
+				pa.vertex(x, halfHeight * PApplet.sin(angle));
+				x += dx;
+				angle += dAngle;
+			}
+			pa.vertex(x, halfHeight * PApplet.sin(pa.TWO_PI));
+		
+		pa.endShape();
+	}
+	
+	private Point getNoteGraphicPoint(int noteIndex) {
 		if (movementType == SCROLLS) {
-			float x1 = PApplet.map(noteIndex, 0, pa.phrase.getNumNotes(), -halfWidth, halfWidth);
-			float y1 = mapPitch(noteIndex, halfHeight, -halfHeight);
-			float x2 = PApplet.map(noteIndex+1, 0, pa.phrase.getNumNotes(), -halfWidth, halfWidth);
-			float y2 = mapPitch(noteIndex+1, halfHeight, -halfHeight);
-			
-			drawNoteGraphic(noteIndex, x1, y1, x2, y2);
+			return new Point(PApplet.map(noteIndex, 0, pa.phrase.getNumNotes(), -halfWidth, halfWidth),
+					         mapPitch(noteIndex, halfHeight, -halfHeight));
 		}
-		else if (movementType == ROTATES) {
-			float alpha = pa.map(noteIndex, 0, pa.phrase.getNumNotes(), 0, pa.TWO_PI) - pa.HALF_PI;
-			float beta = alpha + pa.TWO_PI/pa.phrase.getNumNotes();
-			
-			float x1 = PApplet.cos(alpha)*mapPitch(noteIndex, minRadius, maxRadius);
-			float y1 = PApplet.sin(alpha)*mapPitch(noteIndex, minRadius, maxRadius);
-			float x2 = PApplet.cos(beta)*mapPitch(noteIndex+1, minRadius, maxRadius);
-			float y2 = PApplet.sin(beta)*mapPitch(noteIndex+1, minRadius, maxRadius);
-			
-			drawNoteGraphic(noteIndex, x1, y1, x2, y2);
+		else {
+			float theta = pa.map(noteIndex, 0, pa.phrase.getNumNotes(), 0, pa.TWO_PI) - pa.HALF_PI;
+			return new Point(PApplet.cos(theta)*mapPitch(noteIndex, minRadius, maxRadius),
+					         PApplet.sin(theta)*mapPitch(noteIndex, minRadius, maxRadius));
 		}
 	}
 	
-	private void drawNoteGraphic(int index, float x1, float y1, float x2, float y2) {
-		switch (phraseGraphicType) {
-			case SYMBOLS:
-				pa.pushMatrix();
-					pa.translate(x1, y1);
-					float theta = pa.map(index, 0, pa.phrase.getGridRowSize(), 0, pa.TWO_PI);
-					pa.rotate(theta);
-					int pitch = (int) (pa.phrase.getGridPitch(index) % 12);
-					String symbol = pa.chromaticScales.getScale(startingPitch).getNoteName(pitch);
-					pa.text(symbol, 0, 0);
-				pa.popMatrix();
-				
-				break;
-			case DOTS:
-				pa.ellipse(x1, y1, 20, 20);
-				break;
-			case CONNECTED_DOTS:
-				pa.ellipse(x1, y1, 20, 20);
-				pa.line(x1, y1, x2, y2);
-				break;
-			case RECTS_OR_SECTORS:
-				if (movementType == SCROLLS) {
-					pa.rectMode(pa.CORNERS);
-					pa.rect(x1, y1, x2, y1 + 20);
-				}
-				else {
-					float alpha = pa.map(index, 0, pa.phrase.getGridRowSize(), 0, pa.TWO_PI);
-					float beta = pa.map(index+1, 0, pa.phrase.getGridRowSize(), 0, pa.TWO_PI);
-					float radius = mapPitch(index, minRadius, maxRadius);
-					pa.ellipseMode(pa.RADIUS);
-					pa.arc(0, 0, radius-10, radius-10, alpha, beta);
-					pa.line(pa.cos(alpha)*(radius-10), pa.sin(alpha)*(radius-10),
-							pa.cos(alpha)*(radius+10), pa.sin(alpha)*(radius+10));
-					pa.line(pa.cos(beta)*(radius-10), pa.sin(beta)*(radius-10),
-							pa.cos(beta)*(radius+10), pa.sin(beta)*(radius+10));
-					pa.arc(0, 0, radius+10, radius+10, alpha, beta);
-				}
-				break;
+	private void drawNoteGraphic(int index) {
+		if (phraseGraphicType == SYMBOLS) {
+			Point a = getNoteGraphicPoint(index);
+			pa.pushMatrix();
+				pa.translate(a.x, a.y);
+				float theta = pa.map(index, 0, pa.phrase.getGridRowSize(), 0, pa.TWO_PI);
+				pa.rotate(theta);
+				int pitch = (int) (pa.phrase.getGridPitch(index) % 12);
+				String symbol = pa.chromaticScales.getScale(startingPitch).getNoteName(pitch);
+				pa.text(symbol, 0, 0);
+			pa.popMatrix();
+		}
+		else if (phraseGraphicType == DOTS) {
+			Point a = getNoteGraphicPoint(index);
+			pa.ellipse(a.x, a.y, 20, 20);
+		}
+		else if (phraseGraphicType == CONNECTED_DOTS) {
+			Point a = getNoteGraphicPoint(index);
+			Point b = getNoteGraphicPoint(index+1);
+			pa.ellipse(a.x, a.y, 20, 20);
+			pa.line(a.x, a.y, b.x, b.y);
+		}
+		else if (phraseGraphicType == RECTS_OR_SECTORS) {
+			if (movementType == SCROLLS) {
+				Point a = getNoteGraphicPoint(index);
+				Point b = getNoteGraphicPoint(index+1);
+				pa.rectMode(pa.CORNERS);
+				pa.rect(a.x, a.y, b.x, a.y + 20);
+			}
+			else {
+				float alpha = pa.map(index, 0, pa.phrase.getGridRowSize(), 0, pa.TWO_PI);
+				float beta = pa.map(index+1, 0, pa.phrase.getGridRowSize(), 0, pa.TWO_PI);
+				float radius = mapPitch(index, minRadius, maxRadius);
+				pa.ellipseMode(pa.RADIUS);
+				pa.arc(0, 0, radius-10, radius-10, alpha, beta);
+				pa.line(pa.cos(alpha)*(radius-10), pa.sin(alpha)*(radius-10),
+						pa.cos(alpha)*(radius+10), pa.sin(alpha)*(radius+10));
+				pa.line(pa.cos(beta)*(radius-10), pa.sin(beta)*(radius-10),
+						pa.cos(beta)*(radius+10), pa.sin(beta)*(radius+10));
+				pa.arc(0, 0, radius+10, radius+10, alpha, beta);
+			}
 		}
 	}
 }
