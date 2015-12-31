@@ -1,6 +1,9 @@
 package phases;
 
+import java.util.ArrayList;
+
 import generic_views.PhaseShifter;
+import geom.Circle;
 import geom.Rect;
 import processing.core.PApplet;
 
@@ -19,9 +22,11 @@ public class Presenter extends Screen {
 	private boolean playing;
 	private int sign;
 	//views
-	//private Rect[] viewFrames;
-	//private View[] views = new View[4];
 	PhaseShifter view;
+	//view graph
+	private float nodeRadius;
+	private Circle planet;
+	private ArrayList<Circle> satellites = new ArrayList<Circle>();
 	
 	/**
 	 * 
@@ -32,26 +37,34 @@ public class Presenter extends Screen {
 		
 		view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		
-		/*viewFrames = new Rect[] {
-				new Rect(0, 0, pa.width/2f, pa.height/2f, PApplet.CORNER),
-				new Rect(pa.width/2f, 0, pa.width/2f, pa.height/2f, PApplet.CORNER),
-				new Rect(0, pa.height/2f, pa.width/2f, pa.height/2f, PApplet.CORNER),
-				new Rect(pa.width/2f, pa.height/2f, pa.width/2f, pa.height/2f, PApplet.CORNER)
-		};
 		
-		views[0] = new GHView(viewFrames[0], pa.phrase, pa.getColor1(), pa.getColor2(), 100, pa);
+	}
+	
+	private void setupViewGraph(float cenx, float ceny, float maxDist, int numSatellites) {
+		planet = new Circle(cenx, ceny, nodeRadius);
 		
-		//views[0] = new CircularView(viewFrames[0], pa.phrase, pa.getColor1(), pa.getColor2(), 100, pa, 50, 75);
+		float theta = 0;
+		float dTheta = PApplet.TWO_PI / numSatellites;
+		for (int i=0; i<numSatellites; i++) {
+			float dist = (float)Math.random() * maxDist;
+			float angle = theta + PApplet.map((float)Math.random(), -1, 1, -dTheta*0.125f, dTheta*0.125f);
+			satellites.add(new Circle(cenx + dist*PApplet.cos(angle),
+					                  ceny + dist*PApplet.sin(angle), nodeRadius));
+			theta += dTheta;
+		}
+	}
+	
+	private void drawViewGraph() {
+		pa.stroke(0);
+		for (Circle c : satellites) {
+			pa.line(c.getX(), c.getY(), planet.getX(), planet.getY());
+		}
 		
-		//views[3] = new LiveGraphView(viewFrames[3], pa.phrase, pa.getColor1(), pa.getColor2(), 175, pa);
-		
-		views[1] = new RhythmView(viewFrames[1], pa.phrase, pa.getColor1(), pa.getColor2(), 175, pa);
-		
-		//views[1] = new WavesView(viewFrames[1], pa.phrase, pa.getColor1(), pa.getColor2(), 150, pa);
-		
-		views[2] = new KeyboardsView(viewFrames[2], pa.phrase, pa.getColor1(), pa.getColor2(), 100, pa);
-		
-		views[3] = new SymbolicView(viewFrames[3], pa.phrase, pa.getColor1(), pa.getColor2(), 175, pa);*/
+		pa.fill(255);
+		planet.display(pa);
+		for (Circle c : satellites) {
+			c.display(pa);
+		}
 	}
 	
 	@Override
@@ -116,12 +129,6 @@ public class Presenter extends Screen {
 
 		view.update(dNotept1, dNotept2, sign);
 		
-		/*for (int i=0; i<views.length; i++) {
-			if (views[i] != null) {
-				views[i].update(dNotept1, dNotept2, sign);
-			}
-		}*/
-		
 		pa.strokeWeight(2);
 		pa.stroke(0);
 		pa.line(pa.width/2f, 0, pa.width/2f, pa.height);
@@ -130,13 +137,5 @@ public class Presenter extends Screen {
 	
 	@Override
 	public void mousePressed() {
-		/*for (View v : views) {
-			if (v != null) {
-				if (v.intersects(pa.mouseX, pa.mouseY)) {
-					v.mousePressedInArea();
-					break;
-				}
-			}
-		}*/
 	}
 }
