@@ -3,7 +3,7 @@ package geom;
 import phases.PhasesPApplet;
 import processing.core.PApplet;
 
-public class Arc {
+public class Arc extends Shape {
 	private float cenx, ceny, startAngle, endAngle, radius;
 	
 	public Arc(float cenx, float ceny, float startAngle, float endAngle, float radius) {

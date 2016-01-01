@@ -56,7 +56,6 @@ public class KeyboardsView extends View {
 	}
 	
 	private void initPhraseReaders() {
-		//init phrase readers
 		try {
 			readerA = new PhraseReader(phrase, -1, pianoPlayerA,
 					PianoPlayer.class.getMethod("setActiveKey", PhraseReader.class));

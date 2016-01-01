@@ -7,7 +7,7 @@ import processing.core.PApplet;
  * @author James Morrow
  *
  */
-public class Rect {
+public class Rect extends Shape {
     private float x1, y1, width, height;
     
     /**

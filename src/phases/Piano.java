@@ -10,7 +10,7 @@ import processing.core.PApplet;
  * @author James Morrow
  *
  */
-public class Piano extends Rect {
+public class Piano extends Rect implements Instrument {
 	//independent parameters
 	private int numOctaves;
 	private boolean facePositive;

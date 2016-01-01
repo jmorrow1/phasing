@@ -8,7 +8,7 @@ import processing.core.PApplet;
  * @author James Morrow
  *
  */
-public class Sector {
+public class Sector extends Shape {
 	private Arc arc1, arc2;
 	
 	/**

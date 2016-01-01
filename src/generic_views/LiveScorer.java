@@ -1,6 +1,7 @@
 package generic_views;
 
 import geom.Rect;
+import phases.PhasesPApplet;
 
 public class LiveScorer extends View {
 	
@@ -16,8 +17,8 @@ public class LiveScorer extends View {
 	private final int MONOCHROME=0, DIACHROME=1;
 	private int colorSchemeType=0;
 	
-	public LiveScorer(Rect rect, int opacity) {
-		super(rect, opacity);
+	public LiveScorer(Rect rect, int opacity, PhasesPApplet pa) {
+		super(rect, opacity, pa);
 	}
 	
 	@Override

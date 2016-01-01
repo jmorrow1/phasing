@@ -7,8 +7,6 @@ import phases.Phrase;
 import processing.core.PApplet;
 
 public class PhaseShifter extends View {
-	private PhasesPApplet pa;
-	
 	//starting pitch:
 	private int startingPitch=0;
 	
@@ -36,7 +34,7 @@ public class PhaseShifter extends View {
 	private int colorSchemeType = DIACHROMATIC;
 
 	public PhaseShifter(Rect rect, int opacity, PhasesPApplet pa) {
-		super(rect, opacity);
+		super(rect, opacity, pa);
 		this.pa = pa;
 		
 		width = this.getWidth()*0.9f;

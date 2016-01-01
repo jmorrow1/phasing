@@ -2,7 +2,7 @@ package geom;
 
 import processing.core.PApplet;
 
-public class Circle {
+public class Circle extends Shape {
 	private float x, y, radius, sqRadius;
 	
 	public Circle(float x, float y, float radius) {
@@ -20,7 +20,12 @@ public class Circle {
 		pa.ellipseMode(pa.RADIUS);
 		pa.ellipse(x, y, radius, radius);
 	}
-
+	
+	public void translate(float dx, float dy) {
+		x += dx;
+		y += dy;
+	}
+	
 	public float getX() {
 		return x;
 	}
