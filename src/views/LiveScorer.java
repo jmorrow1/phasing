@@ -1,15 +1,12 @@
-package generic_views;
+package views;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
-import geom.Point;
 import geom.Rect;
 import phases.PhasesPApplet;
 import phases.PhraseReader;
 import processing.core.PApplet;
-import views.LiveGraphView;
 
 public class LiveScorer extends View {
 	//phrase readers:

@@ -1,4 +1,4 @@
-package generic_views;
+package views;
 
 import geom.Shape;
 import phases.Instrument;

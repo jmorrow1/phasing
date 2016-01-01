@@ -2,13 +2,13 @@ package phases;
 
 import java.util.ArrayList;
 
-import generic_views.Musician;
-import generic_views.LiveScorer;
-import generic_views.PhaseShifter;
-import generic_views.View;
 import geom.Circle;
 import geom.Rect;
 import processing.core.PApplet;
+import views.LiveScorer;
+import views.Musician;
+import views.PhaseShifter;
+import views.View;
 
 /**
  * The screen that displays views, ways of visualizing the music.
