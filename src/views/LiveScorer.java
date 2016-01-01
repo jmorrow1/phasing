@@ -12,8 +12,9 @@ public class LiveScorer extends View {
 	//phrase readers:
 	private PhraseReader readerA, readerB;
 	
-	//x-value of where to spawn new points:
+	//where to spawn new points
 	private float x;
+	private float y;
 	
 	//labels of plot's y-axis:
 	private float[] ys;
