@@ -26,7 +26,7 @@ public class PhaseShifter extends View {
 	private int cameraType = RELATIVE;
 	
 	private final int SYMBOLS=0, DOTS=1, CONNECTED_DOTS=2, RECTS_OR_SECTORS=3, SINE_WAVE=4;
-	private int phraseGraphicType = SINE_WAVE;
+	private int phraseGraphicType = SYMBOLS;
 	
 	private boolean doPlotPitch = true;
 	
@@ -198,8 +198,10 @@ public class PhaseShifter extends View {
 			Point a = getNoteGraphicPoint(index);
 			pa.pushMatrix();
 				pa.translate(a.x, a.y);
-				float theta = pa.map(index, 0, pa.phrase.getGridRowSize(), 0, pa.TWO_PI);
-				pa.rotate(theta);
+				if (movementType == ROTATES) {
+					float theta = pa.map(index, 0, pa.phrase.getGridRowSize(), 0, pa.TWO_PI);
+					pa.rotate(theta);
+				}
 				int pitch = (int) (pa.phrase.getGridPitch(index) % 12);
 				String symbol = pa.chromaticScales.getScale(startingPitch).getNoteName(pitch);
 				pa.text(symbol, 0, 0);

@@ -8,7 +8,7 @@ import phases.Piano;
 import processing.core.PApplet;
 
 public class Musician extends View {
-	//music:
+	//phrase readers:
 	private PhraseReader readerA, readerB;
 	
 	//instruments:

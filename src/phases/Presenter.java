@@ -3,10 +3,12 @@ package phases;
 import java.util.ArrayList;
 
 import generic_views.Musician;
+import generic_views.LiveScorer;
+import generic_views.PhaseShifter;
+import generic_views.View;
 import geom.Circle;
 import geom.Rect;
 import processing.core.PApplet;
-import generic_views.View;
 
 /**
  * The screen that displays views, ways of visualizing the music.
@@ -37,7 +39,8 @@ public class Presenter extends Screen {
 		super(pa);
 		
 		//view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		view = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		//view = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		
 	}
 	
