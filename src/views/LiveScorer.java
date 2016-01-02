@@ -18,7 +18,8 @@ public class LiveScorer extends View {
 	
 	//labels of plot's y-axis:
 	private float[] ys;
-	private float minY, maxY;
+	private float halfHeight;
+	private float halfWidth;
 	
 	//plot data container:
 	private ArrayList<DataPoint> dataPts1 = new ArrayList<DataPoint>();
@@ -38,7 +39,7 @@ public class LiveScorer extends View {
 	private int scrollsOrFades=SCROLLS;
 	
 	private final int DOTS=0, SYMBOLS=1, CONNECTED_DOTS=2, RECTS=3;
-	private int noteType = DOTS;
+	private int noteType = RECTS;
 	
 	private final int MONOCHROME=0, DIACHROME=1;
 	private int colorSchemeType = DIACHROME;
@@ -60,13 +61,13 @@ public class LiveScorer extends View {
 		y = this.getCeny();
 		
 		//labels of y-axis
-		ys = new float[pa.phrase.getNumNotes()];	
-		minY = this.getY1() + this.getHeight()/3f;
-		maxY = this.getY2() - this.getHeight()/3f;
+		ys = new float[pa.phrase.getNumNotes()];
+		halfWidth = this.getWidth() * 0.5f;
+		halfHeight = this.getHeight() * 0.3f;
 		float minPitch = pa.phrase.minPitch();
 		float maxPitch = pa.phrase.maxPitch();
 		for (int i=0; i<ys.length; i++) {
-			ys[i] = PApplet.map(pa.phrase.getSCPitch(i), minPitch, maxPitch, minY, maxY);
+			ys[i] = PApplet.map(pa.phrase.getSCPitch(i), minPitch, maxPitch, halfHeight, -halfHeight);
 		}
 		
 		//pixels to musical time conversion
@@ -83,6 +84,8 @@ public class LiveScorer extends View {
 	
 	@Override
 	public void update(float dNotept1, float dNotept2, int sign) {
+		pa.translate(x, y);
+		
 		readerA.update(dNotept1);
 		readerB.update(dNotept2);
 		
@@ -114,7 +117,7 @@ public class LiveScorer extends View {
 		}
 		
 		//get rid of any data points that are out of bounds
-		while (dataPts.size() > 0 && dataPts.get(0).startX < this.getX1()) {
+		while (dataPts.size() > 0 && dataPts.get(0).startX < -halfWidth) {
 			dataPts.remove(0);
 		}
 	}
@@ -143,16 +146,16 @@ public class LiveScorer extends View {
 			float angle2 = PApplet.map(durationAcc+pa.phrase.getSCDuration(noteIndex),
 					0, pa.phrase.getTotalDuration(), 0, PApplet.TWO_PI);
 			
-			y1 = y + PApplet.sin(angle1)*200;
-			y2 = y + PApplet.sin(angle2)*200;
+			y1 = PApplet.sin(angle1)*halfHeight;
+			y2 = PApplet.sin(angle2)*halfHeight;
 		}
 		else {
 			y1 = ys[noteIndex];
 			y2 = ys[(noteIndex+1) % ys.length];
 		}
 		
-		dataPts.add(new DataPoint(x, y1,
-                x + pixelsPerWholeNote*pa.phrase.getSCDuration(noteIndex), y2,
+		dataPts.add(new DataPoint(0, y1,
+                pixelsPerWholeNote*pa.phrase.getSCDuration(noteIndex), y2,
                 noteIndex));
 	}
 	

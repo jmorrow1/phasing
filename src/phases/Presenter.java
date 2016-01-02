@@ -38,9 +38,9 @@ public class Presenter extends Screen {
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
 		
-		//view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		//view = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		//view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		
 	}
 	
