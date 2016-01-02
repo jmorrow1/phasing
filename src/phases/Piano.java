@@ -17,6 +17,11 @@ public class Piano extends Rect implements Instrument {
 	private boolean allKeysEqualSize;
 	//keys
 	private Rect[] whiteKeys, blackKeys, keys;
+	/*
+	private Polygon[] whiteKeys;
+	private Rect[] blackKeys;
+	private Shape[] keys;
+	 */
 	private int blackKeyColor;
 	
 	public Piano(int numOctaves, Rect rect, boolean facePositive) {
@@ -34,7 +39,7 @@ public class Piano extends Rect implements Instrument {
 			initArrays();
 		}
 		if (numOctaves > 0) {
-			initRects();
+			initKeys();
 		}
 		
 		this.blackKeyColor = blackKeyColor;
@@ -49,7 +54,7 @@ public class Piano extends Rect implements Instrument {
 		blackKeys = new Rect[numBlackKeys];
 	}
 	
-	private void initRects() {
+	private void initKeys() {
 		//dependent parameters
 		int numKeys = numOctaves * 12;
 		float divisor = (allKeysEqualSize) ? numKeys : numOctaves*7f;
@@ -116,7 +121,7 @@ public class Piano extends Rect implements Instrument {
 		drawBlackKeys(pa);
 	}
 	
-	public void drawWhiteKeys(PApplet pa) {
+	private void drawWhiteKeys(PApplet pa) {
 		pa.strokeWeight(1);
 		pa.stroke(100);
 		pa.fill(255);
@@ -125,7 +130,7 @@ public class Piano extends Rect implements Instrument {
 		}
 	}
 	
-	public void drawBlackKeys(PApplet pa) {
+	private void drawBlackKeys(PApplet pa) {
 		pa.strokeWeight(1);
 		pa.stroke(100);
 		pa.fill(blackKeyColor);
@@ -137,14 +142,14 @@ public class Piano extends Rect implements Instrument {
 	public void setWidth(float width) {
 		super.setWidth(width);
 		if (numOctaves > 0) {
-			initRects();
+			initKeys();
 		}
 	}
 	
 	public void setHeight(float height) {
 		super.setHeight(height);
 		if (numOctaves > 0) {
-			initRects();
+			initKeys();
 		}
 	}
 	
@@ -178,7 +183,7 @@ public class Piano extends Rect implements Instrument {
 			initArrays();
 		}
 		if (numOctaves > 0) {
-			initRects();
+			initKeys();
 		}
 	}
 	
@@ -189,7 +194,7 @@ public class Piano extends Rect implements Instrument {
 	public void setFacePositive(boolean value) {
 		if (facePositive != value) {
 			facePositive = value;
-			initRects();
+			initKeys();
 		}
 	}
 	
