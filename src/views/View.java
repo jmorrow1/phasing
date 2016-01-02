@@ -2,6 +2,7 @@ package views;
 
 import geom.Rect;
 import phases.PhasesPApplet;
+import phases.PhraseReader;
 
 public abstract class View extends Rect {
 	protected PhasesPApplet pa;

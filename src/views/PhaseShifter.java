@@ -1,9 +1,11 @@
 package views;
 
+import java.lang.reflect.Method;
+
 import geom.Point;
 import geom.Rect;
 import phases.PhasesPApplet;
-import phases.Phrase;
+import phases.PhraseReader;
 import processing.core.PApplet;
 
 public class PhaseShifter extends View {
@@ -18,15 +20,24 @@ public class PhaseShifter extends View {
 	private float movementAcc1=0, movementAcc2=0, dNoteptAcc=0;
 	private float pixelsPerNoteTime, radiansPerNoteTime;
 	
+	//phrase readers:
+	PhraseReader readerA, readerB;
+	private final int ONE_ID = 1, TWO_ID = 2;
+	
+	//active note:
+	int activeNote1, activeNote2;
+	
 	//options:
+	private boolean showActiveNote=true;
+	
 	private final int SCROLLS=0, ROTATES=1;
-	private int movementType = SCROLLS;
+	private int movementType = ROTATES;
 	
 	private final int RELATIVE=0, FIXED=1;
 	private int cameraType = RELATIVE;
 	
 	private final int SYMBOLS=0, DOTS=1, CONNECTED_DOTS=2, RECTS_OR_SECTORS=3, SINE_WAVE=4;
-	private int phraseGraphicType = RECTS_OR_SECTORS;
+	private int phraseGraphicType = DOTS;
 	
 	private boolean doPlotPitch = true;
 	
@@ -47,16 +58,42 @@ public class PhaseShifter extends View {
 		pixelsPerNoteTime = this.getWidth() / pa.phrase.getTotalDuration();
 		radiansPerNoteTime = PApplet.TWO_PI / pa.phrase.getTotalDuration();
 		
+		initPhraseReaders();
+		
 		onEnter();
+	}
+	
+	private void initPhraseReaders() {
+		try {
+			Method callback = PhaseShifter.class.getMethod("changeActiveNote", PhraseReader.class);
+			readerA = new PhraseReader(pa.phrase, ONE_ID, this, callback);
+			readerB = new PhraseReader(pa.phrase, TWO_ID, this, callback);
+
+		} catch (NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void onEnter() {
 		pa.textAlign(pa.CENTER, pa.CENTER);
 		pa.textSize(42);
 	}
+	
+	//callback:
+	public void changeActiveNote(PhraseReader reader) {
+		if (reader.getId() == ONE_ID) {
+			activeNote1 = reader.getNoteIndex();
+		}
+		else if (reader.getId() == TWO_ID) {
+			activeNote2 = reader.getNoteIndex();
+		}
+	}
 
 	@Override
 	public void update(float dNotept1, float dNotept2, int sign) {
+		readerA.update(dNotept1);
+		readerB.update(dNotept2);
+		
 		if (cameraType == RELATIVE) {
 			dNotept2 = (dNotept2 - dNotept1) + dNoteptAcc;
 			dNotept1 = 0;
@@ -76,16 +113,14 @@ public class PhaseShifter extends View {
 		pa.pushMatrix();
 			movementAcc1 = incrementMovement(movementAcc1, dNotept1);
 			transform(movementAcc1);
-			styleNoteGraphics((this.colorSchemeType == DIACHROMATIC) ? pa.getColor1() : 0);
-			drawPhraseGraphic(pa.getBPM1());
+			drawPhraseGraphic(activeNote1, (this.colorSchemeType == DIACHROMATIC) ? pa.getColor1() : 0, pa.getBPM1());
 		pa.popMatrix();
 		
 		//draw graphics for player 2
 		pa.pushMatrix();
 			movementAcc2 = incrementMovement(movementAcc2, dNotept2);
 			transform(movementAcc2);
-			styleNoteGraphics((this.colorSchemeType == DIACHROMATIC) ? pa.getColor2() : 0);
-			drawPhraseGraphic(pa.getBPM2());
+			drawPhraseGraphic(activeNote2, (this.colorSchemeType == DIACHROMATIC) ? pa.getColor2() : 0, pa.getBPM2());
 		pa.popMatrix();
 	}
 	
@@ -104,29 +139,57 @@ public class PhaseShifter extends View {
 		}
 	}
 	
-	private void styleNoteGraphics(int color) {
+	private void styleNoteGraphics(int color, boolean activeStyle) {
 		switch (phraseGraphicType) {
 			case SYMBOLS:
 				pa.noStroke();
-				pa.fill(color, opacity);
+				if (activeStyle) {
+					pa.fill(color);
+				}
+				else {
+					pa.fill(color, opacity);
+				}
 				break;
 			case DOTS:
 				pa.noStroke();
-				pa.fill(color, opacity);
+				if (activeStyle) {
+					pa.fill(color);
+				}
+				else {
+					pa.fill(color, opacity);
+				}
 				break;
 			case CONNECTED_DOTS:
-				pa.stroke(color, opacity);
-				pa.fill(color, opacity);
+				if (activeStyle) {
+					pa.fill(color);
+					pa.stroke(color);
+				}
+				else {
+					pa.fill(color, opacity);
+					pa.stroke(color, opacity);
+				}
 				break;
 			case RECTS_OR_SECTORS:
 				if (movementType == SCROLLS) {
-					pa.stroke(0, opacity);
-					pa.fill(color, opacity);
+					if (activeStyle) {
+						pa.stroke(0);
+						pa.fill(color);
+					}
+					else {
+						pa.stroke(0, opacity);
+						pa.fill(color, opacity);
+					}
 				}
 				else if (movementType == ROTATES) {
-					pa.stroke(color, opacity);
+					if (activeStyle) {
+						pa.stroke(color);
+					}
+					else {
+						pa.stroke(color, opacity);
+					}
 					pa.noFill();
 				}
+				
 				break;
 			case SINE_WAVE:
 				pa.noFill();
@@ -147,7 +210,7 @@ public class PhaseShifter extends View {
 		}
 	}
 	
-	private void drawPhraseGraphic(float bpm) {
+	private void drawPhraseGraphic(int activeNote, int color, float bpm) {
 		if (phraseGraphicType == SINE_WAVE) {
 			if (movementType == SCROLLS) {
 				drawSineWave();
@@ -159,8 +222,17 @@ public class PhaseShifter extends View {
 			}
 		}
 		else {
+			styleNoteGraphics(color, false);
 			for (int i=0; i<pa.phrase.getNumNotes(); i++) {
-				drawNoteGraphic(i);
+				if (i == activeNote) {
+					styleNoteGraphics(color, true);
+					drawNoteGraphic(i);
+					styleNoteGraphics(color, false);
+				}
+				else {
+					drawNoteGraphic(i);
+				}
+				
 			}
 		}
 	}
