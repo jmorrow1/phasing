@@ -39,7 +39,7 @@ public class LiveScorer extends View {
 	private int scrollsOrFades=SCROLLS;
 	
 	private final int DOTS=0, SYMBOLS=1, CONNECTED_DOTS=2, RECTS=3;
-	private int noteType = RECTS;
+	private int noteType = SYMBOLS;
 	
 	private final int MONOCHROME=0, DIACHROME=1;
 	private int colorSchemeType = DIACHROME;
@@ -182,7 +182,7 @@ public class LiveScorer extends View {
 			pa.fill(color, opacity);
 			if (noteType == SYMBOLS) {
 				int pitch = (int) (pa.phrase.getSCPitch(noteIndex) % 12);
-				String symbol = pa.chromaticScales.getScale(startingPitch).getNoteName(pitch);
+				String symbol = pa.scale.getNoteName(pitch);
 				pa.text(symbol, startX, startY);
 			}
 			else if (noteType == DOTS) {

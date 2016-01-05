@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import processing.core.PApplet;
 import processing.data.JSONObject;
@@ -14,22 +16,30 @@ import processing.data.JSONObject;
  *
  */
 public class PhasesPApplet extends PApplet {
-	private static ArrayList<ScaleSet> scaleSets = new ArrayList<ScaleSet>();
-	public static ScaleSet chromaticScales;
+	//music parameters
+	public static final float MIN_BPM = 1, MAX_BPM = 100;
+	public final static String[] roots = new String[] {"A", "A#/Bb", "B", "C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab"};
+
+	//all music variables
+	public static ArrayList<String> scaleTypes = new ArrayList<String>();
+	private static Map<String, ScaleSet> scaleSets = new HashMap<String, ScaleSet>();
 	
+	//active music variables
 	public Phrase phrase;
 	public Scale scale;
-
-	public static final float MIN_BPM = 20, MAX_BPM = 160;
 	private float bpm1 = 60;
 	private float bpms1 = bpm1 / 60000f;
 	private float bpm2 = 65;
 	private float bpms2 = bpm2 / 60000f;
 	
+	//all screens
 	private Presenter presenter;
 	private Editor editor;
+	
+	//active screen
 	private Screen currentScreen;
 	
+	//visual variables
 	private static int color1, color2;
 	
 	/**
@@ -53,10 +63,8 @@ public class PhasesPApplet extends PApplet {
 				if (filePath.toString().endsWith(".json")) {
 					JSONObject json = loadJSONObject(filePath.toString());
 					ScaleSet ss = new ScaleSet(json);
-					scaleSets.add(ss);
-					if (ss.getName().equals("Chromatic")) {
-						chromaticScales = ss;
-					}
+					scaleSets.put(ss.getName(), ss);
+					scaleTypes.add(ss.getName());
 				}
 			});
 		} catch (IOException e) {
@@ -72,14 +80,14 @@ public class PhasesPApplet extends PApplet {
 				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
 				            new int[] {n, n, n, n, n, n, n, n, n, n, n, n});
 		
-		scale = chromaticScales.getScale(0); //default scale
+		scale = this.getScale("C", "Chromatic"); //default scale
 		
 		//create screens
 		presenter = new Presenter(this);
 		editor = new Editor(this);
 		
 		//setup current screen
-		currentScreen = presenter;
+		currentScreen = editor;
 		currentScreen.onEnter();
 	}
 	
@@ -130,6 +138,21 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void keyReleased() {
 		currentScreen.keyReleased();
+	}
+	
+	public Scale getScale(String root, String scaleName) {
+		for (String name : scaleTypes) {
+			if (name.equals(scaleName)) {
+				ScaleSet ss = scaleSets.get(name);
+				for (int i=0; i<ss.numScales(); i++) {
+					if (root.equals(ss.getScaleName(i))) {
+						return ss.getScale(i);
+					}
+				}
+				break;
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -196,21 +219,6 @@ public class PhasesPApplet extends PApplet {
 	public void setBPM2(float bpm2) {
 		this.bpm2 = bpm2;
 		this.bpms2 = bpm2 / 60000f;
-	}
-	
-	public static int getNumScaleSets() {
-		return scaleSets.size();
-	}
-	
-	public static ScaleSet getScaleSet(int i) {
-		if (0 <= i && i < scaleSets.size()) {
-			return scaleSets.get(i);
-		}
-		return null;
-	}
-	
-	public static ScaleSet[] getScaleSets() {
-		return scaleSets.toArray(new ScaleSet[] {});
 	}
 	
 	/**

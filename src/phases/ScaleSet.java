@@ -22,7 +22,7 @@ public class ScaleSet {
 		return name;
 	}
 	
-	public int getNumScales() {
+	public int numScales() {
 		return scales.length;
 	}
 	

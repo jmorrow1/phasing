@@ -38,7 +38,7 @@ public class Scale {
 	 * 
 	 * @return The number of notes in the scale
 	 */
-	public int getSize() {
+	public int size() {
 		return noteNames.length;
 	}
 

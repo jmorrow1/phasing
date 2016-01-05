@@ -276,7 +276,7 @@ public class PhaseShifter extends View {
 					pa.rotate(theta);
 				}
 				int pitch = (int) (pa.phrase.getGridPitch(index) % 12);
-				String symbol = pa.chromaticScales.getScale(startingPitch).getNoteName(pitch);
+				String symbol = pa.scale.getNoteName(pitch);
 				pa.text(symbol, 0, 0);
 				if (movementType == SCROLLS) {
 					pa.text(symbol, width, 0);

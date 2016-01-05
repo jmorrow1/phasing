@@ -54,7 +54,7 @@ public class Editor extends Screen {
 	public Editor(PhasesPApplet pa) {
 		super(pa);
 		
-		currentScale = pa.chromaticScales.getScale(0);
+		currentScale = pa.getScale("C", "Chromatic");
 
 		try {
 			Method callback = Editor.class.getMethod("animate", SoundCipherPlus.class);
@@ -68,7 +68,7 @@ public class Editor extends Screen {
 		cellHeight = gridFrame.getHeight() / columnSize;
 		
 		cp5 = new ControlP5(pa);
-		playStop = cp5.addToggle("play")
+		/*playStop = cp5.addToggle("play")
 				      .setPosition(35, 10)
 					  .setSize(35, 35)
 					  .plugTo(this)
@@ -97,19 +97,23 @@ public class Editor extends Screen {
 							}
 							   
 					   })
-					   ;
+					   ;*/
 		
-		addBPMSlider(BPM_1);
-		addBPMSlider(BPM_2);
+		//addBPMSlider(BPM_1);
+		//addBPMSlider(BPM_2);
 		
 		DropdownList rootMenu = cp5.addDropdownList("Root")
-								   .setPosition(10, pa.height - 40)
-								   .setSize(45, 100)
+								   .setPosition(10, 20)
+								   .setSize(45, 120)
+								   .addItems(PhasesPApplet.roots)
+								   .close()
 								   ;
 		colorController(rootMenu);
 		DropdownList scaleMenu = cp5.addDropdownList("Scale")
-								    .setPosition(60, pa.height - 40)
-								    .setSize(45, 100)
+								    .setPosition(60, 20)
+								    .setSize(45, 120)
+								    .addItems(PhasesPApplet.scaleTypes)
+								    .close()
 								    ;
 		colorController(scaleMenu);
 		
@@ -139,8 +143,8 @@ public class Editor extends Screen {
 		Slider s = cp5.addSlider(name)
 			          .setId(id)
 					  .setDecimalPrecision(1)
-					  .setRange(10, 140)
-					  .setNumberOfTickMarks(261)
+					  .setRange(pa.MIN_BPM, pa.MAX_BPM)
+					  .setNumberOfTickMarks(2*(int)(pa.MAX_BPM - pa.MIN_BPM) + 1)
 					  .setPosition(x, y)
 					  .setSize(600, 15)
 					  .setValue(bpm)
@@ -288,11 +292,11 @@ public class Editor extends Screen {
 	
 	@Override
 	public void draw() {
-		if (playStop.getValue() != 0) {
+		/*if (playStop.getValue() != 0) {
 			long dt = System.currentTimeMillis() - prev_t;
 			prev_t = System.currentTimeMillis();
 			livePlayer.update(dt * pa.getBPMS1());
-		}
+		}*/
 		redraw();
 	}
 	
@@ -371,7 +375,7 @@ public class Editor extends Screen {
 		pa.textAlign(pa.CENTER, pa.CENTER);
 		
 		for (int i=0; i<numKeys; i++) {
-			int iModScaleSize = i % currentScale.getSize();
+			int iModScaleSize = i % currentScale.size();
 			
 			int keyColor = keyColors[currentScale.getNoteValue(iModScaleSize)];
 			pa.fill(keyColor);		
