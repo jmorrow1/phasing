@@ -1,16 +1,16 @@
 package phases;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
+import controlP5.ControlElement;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlP5.Controller;
-import controlP5.ControllerView;
 import controlP5.DropdownList;
 import controlP5.Slider;
 import controlP5.Toggle;
 import geom.Rect;
-import processing.core.PGraphics;
 
 /**
  * Provides an editor in which the user can create and edit musical phrases for the Presenter screen.
@@ -63,7 +63,7 @@ public class Editor extends Screen {
 			e.printStackTrace();
 		}
 		
-		gridFrame = new Rect(25, 50, pa.width - 25, pa.height - 50, pa.CORNERS);
+		gridFrame = new Rect(150, 50, 775, 575, pa.CORNERS);
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
 		cellHeight = gridFrame.getHeight() / columnSize;
 		
@@ -102,30 +102,37 @@ public class Editor extends Screen {
 		//addBPMSlider(BPM_1);
 		//addBPMSlider(BPM_2);
 		
-		DropdownList rootMenu = cp5.addDropdownList("Root")
-								   .setPosition(10, 20)
-								   .setSize(45, 120)
+		DropdownList rootMenu = cp5.addDropdownList("ROOT")
+								   .setPosition(5, 20)
+								   .setWidth(45)
 								   .addItems(PhasesPApplet.roots)
-								   .close()
+								   .setHeight(60)
+								   //.close()
 								   ;
+		
+		rootMenu.getCaptionLabel().toUpperCase(false);
+		rootMenu.getValueLabel().toUpperCase(false);
+		
 		colorController(rootMenu);
 		DropdownList scaleMenu = cp5.addDropdownList("Scale")
-								    .setPosition(60, 20)
-								    .setSize(45, 120)
+								    .setPosition(55, 20)
+								    .setWidth(90)
 								    .addItems(PhasesPApplet.scaleTypes)
-								    .close()
+								    .setHeight(60)
+								    //.close()
 								    ;
+		
 		colorController(scaleMenu);
 		
 		cp5.hide();
 	}
 	
 	private void colorController(Controller c) {
-		c.setColorCaptionLabel(0);
-		c.setColorValueLabel(0);
-		c.setColorBackground(pa.color(PhasesPApplet.getColor1(), 150));
-		c.setColorActive(pa.color(PhasesPApplet.getColor1()));
-		c.setColorForeground(pa.color(PhasesPApplet.getColor1()));
+		c.setColorCaptionLabel(pa.color(255));
+		c.setColorValueLabel(pa.color(255));
+		c.setColorBackground(pa.color(PhasesPApplet.getColor1()));
+		c.setColorActive(pa.getColor2());
+		c.setColorForeground(pa.getColor2());
 	}
 	
 	private Slider addBPMSlider(int id) {
