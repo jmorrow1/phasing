@@ -28,7 +28,7 @@ public class PhaseShifter extends View {
 	int activeNote1, activeNote2;
 	
 	//options:
-	private boolean showActiveNote=true;
+	private boolean showActiveNote = true;
 	
 	private final int SCROLLS=0, ROTATES=1;
 	private int movementType = ROTATES;
@@ -55,7 +55,7 @@ public class PhaseShifter extends View {
 		minRadius = 100;
 		maxRadius = 200;
 	
-		pixelsPerNoteTime = this.getWidth() / pa.phrase.getTotalDuration();
+		pixelsPerNoteTime = width / pa.phrase.getTotalDuration();
 		radiansPerNoteTime = PApplet.TWO_PI / pa.phrase.getTotalDuration();
 		
 		initPhraseReaders();
@@ -95,10 +95,10 @@ public class PhaseShifter extends View {
 		readerB.update(dNotept2);
 		
 		if (cameraType == RELATIVE) {
-			dNotept2 = (dNotept2 - dNotept1) + dNoteptAcc;
+			dNotept2 = (dNotept1 - dNotept2) + dNoteptAcc;
 			dNotept1 = 0;
 			
-			if ( (dNotept2 < 0 && sign > 0) || (dNotept2 > 0 && sign < 0) ) {
+			if ( (dNotept2 < 0 && sign < 0) || (dNotept2 > 0 && sign > 0) ) {
 				dNoteptAcc = dNotept2;
 				dNotept2 = 0;
 			}
@@ -224,7 +224,7 @@ public class PhaseShifter extends View {
 		else {
 			styleNoteGraphics(color, false);
 			for (int i=0; i<pa.phrase.getNumNotes(); i++) {
-				if (i == activeNote) {
+				if (showActiveNote && i == activeNote) {
 					styleNoteGraphics(color, true);
 					drawNoteGraphic(i);
 					styleNoteGraphics(color, false);

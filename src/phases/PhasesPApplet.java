@@ -23,7 +23,7 @@ public class PhasesPApplet extends PApplet {
 	public static final float MIN_BPM = 20, MAX_BPM = 160;
 	private float bpm1 = 60;
 	private float bpms1 = bpm1 / 60000f;
-	private float bpm2 = 40;
+	private float bpm2 = 65;
 	private float bpms2 = bpm2 / 60000f;
 	
 	private Presenter presenter;
