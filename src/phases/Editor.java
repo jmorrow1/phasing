@@ -1,9 +1,7 @@
 package phases;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
-import controlP5.ControlElement;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlP5.Controller;
@@ -102,26 +100,22 @@ public class Editor extends Screen {
 		//addBPMSlider(BPM_1);
 		//addBPMSlider(BPM_2);
 		
-		DropdownList rootMenu = cp5.addDropdownList("ROOT")
-								   .setPosition(5, 20)
-								   .setWidth(45)
-								   .addItems(PhasesPApplet.roots)
-								   .setHeight(60)
-								   //.close()
-								   ;
-		
+		DropdownListPlus rootMenu = new DropdownListPlus(cp5, "ROOT");
+		rootMenu.setPosition(5, 20)
+			    .setWidth(45)
+			    .addItems(PhasesPApplet.roots)
+			    //.close()
+			    ;
 		rootMenu.getCaptionLabel().toUpperCase(false);
 		rootMenu.getValueLabel().toUpperCase(false);
-		
 		colorController(rootMenu);
-		DropdownList scaleMenu = cp5.addDropdownList("Scale")
-								    .setPosition(55, 20)
-								    .setWidth(90)
-								    .addItems(PhasesPApplet.scaleTypes)
-								    .setHeight(60)
-								    //.close()
-								    ;
 		
+		DropdownListPlus scaleMenu = new DropdownListPlus(cp5, "Scale");
+		scaleMenu.setPosition(55, 20)
+				 .setWidth(90)
+				 .addItems(PhasesPApplet.scaleTypes)
+				 //.close()
+				 ;
 		colorController(scaleMenu);
 		
 		cp5.hide();
