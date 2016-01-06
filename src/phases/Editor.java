@@ -60,6 +60,8 @@ public class Editor extends Screen {
 		
 		pfont = pa.loadFont("DejaVuSans-18.vlw");
 		
+		pa.textFont(pfont);
+		
 		try {
 			Method callback = Editor.class.getMethod("animate", SoundCipherPlus.class);
 			livePlayer = new SoundCipherPlus(pa, pa.phrase, this, callback);
@@ -415,11 +417,11 @@ public class Editor extends Screen {
 		float y = gridFrame.getY2() - cellHeight;
 		
 		pa.textAlign(pa.CENTER, pa.CENTER);
-		
+		pa.textSize(16);
 		for (int i=0; i<numKeys; i++) {
 			int iModScaleSize = i % pa.scale.size();
 			int noteValueMod12 = pa.scale.getNoteValue(iModScaleSize) % 12;
-			int keyColor = keyColors[pa.scale.getNoteValue(iModScaleSize)];
+			int keyColor = keyColors[noteValueMod12];
 			pa.fill(keyColor);		
 			pa.rect(gridFrame.getX1(), y, cellWidth, cellHeight);
 			
