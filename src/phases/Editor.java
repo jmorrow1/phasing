@@ -27,7 +27,6 @@ public class Editor extends Screen {
 	private final int NOT_APPLICABLE = -1;
 	private int activeNoteIndex = NOT_APPLICABLE;
 	//piano
-	private Scale currentScale;
 	private boolean labelPianoKeys = true;
 	private int minPitch = 60;
 	private int numKeys = 24;
@@ -44,9 +43,12 @@ public class Editor extends Screen {
 	private int startIndexOfUserDrawnNote = -1;
 	private int indexMousePressed=-1, pitchMousePressed=-1;
 	//controllers
-	private final static int BPM_1 = 1, BPM_2 = 2;
+	private final static int BPM_1 = 1, PHASE_DIFFERENCE = 2;
 	private ControlP5 cp5;
 	private Toggle playStop;
+	private Slider phaseDifferenceSlider;
+	private DropdownList rootMenu, scaleMenu;
+	private String rootLabel, scaleLabel;
 	private PFont pfont;
 	
 	/**
@@ -58,8 +60,6 @@ public class Editor extends Screen {
 		
 		pfont = pa.loadFont("DejaVuSans-18.vlw");
 		
-		currentScale = pa.getScale("C", "Chromatic");
-
 		try {
 			Method callback = Editor.class.getMethod("animate", SoundCipherPlus.class);
 			livePlayer = new SoundCipherPlus(pa, pa.phrase, this, callback);
@@ -104,9 +104,9 @@ public class Editor extends Screen {
 					   ;
 		
 		addBPMSlider(BPM_1);
-		addBPMSlider(BPM_2);
+		phaseDifferenceSlider = addBPMSlider(PHASE_DIFFERENCE);
 		
-		DropdownListPlus rootMenu = new DropdownListPlus(cp5, "Root");
+		rootMenu = new DropdownListPlus(cp5, "Root");
 		rootMenu.setPosition(150, 5)
 			    .setSize(130, 300)
 			    .addItems(PhasesPApplet.roots)
@@ -114,10 +114,12 @@ public class Editor extends Screen {
 			    .setBarHeight(22)
 			    .close()
 			    ;
+		rootMenu.setLabel("C");
 		colorController(rootMenu);
 		formatLabel(rootMenu);
+		rootLabel = rootMenu.getLabel();
 		
-		DropdownListPlus scaleMenu = new DropdownListPlus(cp5, "Scale");
+		scaleMenu = new DropdownListPlus(cp5, "Scale");
 		scaleMenu.setPosition(300, 5)
 				 .setSize(130, 145)
 				 .addItems(PhasesPApplet.scaleTypes)
@@ -125,8 +127,10 @@ public class Editor extends Screen {
 				 .setBarHeight(22)
 				 .close()
 				 ;
+		scaleMenu.setLabel("Chromatic");
 		colorController(scaleMenu);
 		formatLabel(scaleMenu);
+		scaleLabel = scaleMenu.getLabel();
 	
 		cp5.hide();
 	}
@@ -159,8 +163,8 @@ public class Editor extends Screen {
 		switch(id) {
 			case BPM_1 :
 				return addBPMSlider("Beats Per Minute", id, 460, 5, pa.getBPM1(), 1, 100, 1);
-			case BPM_2 :
-				return addBPMSlider("Phase difference", id, 620, 5, pa.getBPM2(), -10, 10, 4);
+			case PHASE_DIFFERENCE :
+				return addBPMSlider("Phase difference", id, 620, 5, pa.getBPM2() - pa.getBPM1(), -10, 10, 4);
 			default :
 				return null;
 		}
@@ -185,6 +189,7 @@ public class Editor extends Screen {
 	
 	/**
 	 * Callback for ControlP5
+	 * When playStop controller is toggled
 	 * @param e
 	 */
 	public void play(ControlEvent e) {
@@ -198,6 +203,7 @@ public class Editor extends Screen {
 		}
 	}
 	
+	
 	/**
 	 * Callback for ControlP5
 	 * @param e
@@ -207,9 +213,10 @@ public class Editor extends Screen {
 			case BPM_1 :
 				pa.setBPM1(e.getValue());
 				livePlayer.tempo(pa.getBPM1());
+				pa.setBPM2(e.getValue() + phaseDifferenceSlider.getValue());
 				break;
-			case BPM_2 :
-				pa.setBPM2(e.getValue());
+			case PHASE_DIFFERENCE :
+				pa.setBPM2(pa.getBPM1() + e.getValue());
 				break;
 		}
 	}
@@ -338,7 +345,13 @@ public class Editor extends Screen {
 		
 		drawPiano();
 		drawGrid();
-		drawPhrase();	
+		drawPhrase();
+		
+		if (rootLabel != rootMenu.getLabel() || scaleLabel != scaleMenu.getLabel()) {
+			rootLabel = rootMenu.getLabel();
+			scaleLabel = scaleMenu.getLabel();
+			pa.scale = pa.getScale(rootLabel, scaleLabel);
+		}
 	}
 	
 	/**
@@ -404,14 +417,14 @@ public class Editor extends Screen {
 		pa.textAlign(pa.CENTER, pa.CENTER);
 		
 		for (int i=0; i<numKeys; i++) {
-			int iModScaleSize = i % currentScale.size();
-			
-			int keyColor = keyColors[currentScale.getNoteValue(iModScaleSize)];
+			int iModScaleSize = i % pa.scale.size();
+			int noteValueMod12 = pa.scale.getNoteValue(iModScaleSize) % 12;
+			int keyColor = keyColors[pa.scale.getNoteValue(iModScaleSize)];
 			pa.fill(keyColor);		
 			pa.rect(gridFrame.getX1(), y, cellWidth, cellHeight);
 			
 			if (labelPianoKeys) {
-				String noteName = currentScale.getNoteName(iModScaleSize);
+				String noteName = pa.scale.getNoteName(iModScaleSize);
 				int inverseKeyColor = (keyColor == W) ? B : W;
 				pa.fill(inverseKeyColor);
 				pa.text(noteName, gridFrame.getX1(), y, cellWidth, cellHeight);

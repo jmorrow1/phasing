@@ -18,9 +18,9 @@ import processing.data.JSONObject;
 public class PhasesPApplet extends PApplet {
 	//music parameters
 	public static final float MIN_BPM = 1, MAX_BPM = 100;
-	public final static String[] roots = new String[] {"A", "A#/Bb", "B", "C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab"};
-
+	
 	//all music variables
+	public final static String[] roots = new String[] {"A", "A#/Bb", "B", "C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab"};
 	public static ArrayList<String> scaleTypes = new ArrayList<String>();
 	private static Map<String, ScaleSet> scaleSets = new HashMap<String, ScaleSet>();
 	
@@ -91,6 +91,17 @@ public class PhasesPApplet extends PApplet {
 		currentScreen.onEnter();
 	}
 	
+	private void testGetScale() {
+		for (int i=0; i<roots.length; i++) {
+			for (int j=0; j<scaleTypes.size(); j++) {
+				Scale s = getScale(roots[i], scaleTypes.get(j));
+				if (s == null) {
+					println("error: scale is null");
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Lets the current screen draw itself.
 	 */
@@ -145,7 +156,9 @@ public class PhasesPApplet extends PApplet {
 			if (name.equals(scaleName)) {
 				ScaleSet ss = scaleSets.get(name);
 				for (int i=0; i<ss.numScales(); i++) {
-					if (root.equals(ss.getScaleName(i))) {
+					String scaleRootName = ss.getScale(i).getNoteName(0);
+					
+					if (noteNamesAreEquivalent(root, scaleRootName)) {
 						return ss.getScale(i);
 					}
 				}
@@ -153,6 +166,10 @@ public class PhasesPApplet extends PApplet {
 			}
 		}
 		return null;
+	}
+	
+	private boolean noteNamesAreEquivalent(String root, String scaleRootName) {
+		return (scaleRootName.length() > 1 && root.contains(scaleRootName)) || root.equals(scaleRootName);
 	}
 	
 	/**
@@ -208,6 +225,7 @@ public class PhasesPApplet extends PApplet {
 	 * @param bpm1
 	 */
 	public void setBPM1(float bpm1) {
+		bpm1 = constrain(bpm1, MIN_BPM, MAX_BPM);
 		this.bpm1 = bpm1;
 		this.bpms1 = bpm1 / 60000f;
 	}
@@ -217,6 +235,7 @@ public class PhasesPApplet extends PApplet {
 	 * @param bpm2
 	 */
 	public void setBPM2(float bpm2) {
+		bpm2 = constrain(bpm2, MIN_BPM, MAX_BPM);
 		this.bpm2 = bpm2;
 		this.bpms2 = bpm2 / 60000f;
 	}
