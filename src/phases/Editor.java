@@ -5,11 +5,13 @@ import java.lang.reflect.Method;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlP5.Controller;
+import controlP5.ControllerView;
 import controlP5.DropdownList;
 import controlP5.Slider;
 import controlP5.Toggle;
 import geom.Rect;
 import processing.core.PFont;
+import processing.core.PGraphics;
 
 /**
  * Provides an editor in which the user can create and edit musical phrases for the Presenter screen.
@@ -65,12 +67,12 @@ public class Editor extends Screen {
 			e.printStackTrace();
 		}
 		
-		gridFrame = new Rect(150, 25, 775, 575, pa.CORNERS);
+		gridFrame = new Rect(25, 50, 775, 575, pa.CORNERS);
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
 		cellHeight = gridFrame.getHeight() / columnSize;
 		
 		cp5 = new ControlP5(pa);
-		/*playStop = cp5.addToggle("play")
+		playStop = cp5.addToggle("play")
 				      .setPosition(35, 10)
 					  .setSize(35, 35)
 					  .plugTo(this)
@@ -99,27 +101,29 @@ public class Editor extends Screen {
 							}
 							   
 					   })
-					   ;*/
+					   ;
 		
-		//addBPMSlider(BPM_1);
-		//addBPMSlider(BPM_2);
+		addBPMSlider(BPM_1);
+		addBPMSlider(BPM_2);
 		
 		DropdownListPlus rootMenu = new DropdownListPlus(cp5, "Root");
-		rootMenu.setPosition(10, 25)
-			    .setSize(130, 280)
+		rootMenu.setPosition(150, 5)
+			    .setSize(130, 300)
 			    .addItems(PhasesPApplet.roots)
-			    .setItemHeight(20)
-			    .setBarHeight(20)
+			    .setItemHeight(22)
+			    .setBarHeight(22)
+			    .close()
 			    ;
 		colorController(rootMenu);
 		formatLabel(rootMenu);
 		
 		DropdownListPlus scaleMenu = new DropdownListPlus(cp5, "Scale");
-		scaleMenu.setPosition(10, 295)
-				 .setSize(130, 120)
+		scaleMenu.setPosition(300, 5)
+				 .setSize(130, 145)
 				 .addItems(PhasesPApplet.scaleTypes)
-				 .setItemHeight(20)
-				 .setBarHeight(20)
+				 .setItemHeight(22)
+				 .setBarHeight(22)
+				 .close()
 				 ;
 		colorController(scaleMenu);
 		formatLabel(scaleMenu);
@@ -138,34 +142,43 @@ public class Editor extends Screen {
 	
 	private void colorController(Controller c) {
 		c.setColorCaptionLabel(pa.color(255));
-		c.setColorValueLabel(pa.color(255));
-		c.setColorBackground(pa.color(PhasesPApplet.getColor1()));
-		c.setColorActive(pa.getColor2());
-		c.setColorForeground(pa.getColor2());
+	    c.setColorValueLabel(pa.color(255));
+		if (c instanceof DropdownList) {
+			c.setColorBackground(pa.color(PhasesPApplet.getColor1()));
+			c.setColorActive(pa.getColor2());
+			c.setColorForeground(pa.getColor2());
+		}
+		else if (c instanceof Slider) {		
+		    c.setColorBackground(pa.color(pa.getColor1(), 150));
+		    c.setColorActive(pa.getColor1());
+		    c.setColorForeground(pa.getColor1());
+		}
 	}
 	
 	private Slider addBPMSlider(int id) {
 		switch(id) {
 			case BPM_1 :
-				return addBPMSlider("bpm 1", id, 100, 5, pa.getBPM1());
+				return addBPMSlider("Beats Per Minute", id, 460, 5, pa.getBPM1(), 1, 100, 1);
 			case BPM_2 :
-				return addBPMSlider("bpm 2", id, 100, 25, pa.getBPM2());
+				return addBPMSlider("Phase difference", id, 620, 5, pa.getBPM2(), -10, 10, 4);
 			default :
 				return null;
 		}
 	}
 	
-	private Slider addBPMSlider(String name, int id, int x, int y, float bpm) {
+	private Slider addBPMSlider(String name, int id, int x, int y, 
+		float bpm, int minValue, int maxValue, int ticksPerWholeNumber) {
 		Slider s = cp5.addSlider(name)
 			          .setId(id)
-					  .setDecimalPrecision(1)
-					  .setRange(pa.MIN_BPM, pa.MAX_BPM)
-					  .setNumberOfTickMarks(2*(int)(pa.MAX_BPM - pa.MIN_BPM) + 1)
-					  .setPosition(x, y)
-					  .setSize(600, 15)
-					  .setValue(bpm)
-					  .plugTo(this)
-					  ;
+			          .setDecimalPrecision(0)
+			          .setRange(minValue, maxValue)
+			          .setPosition(x, y)
+			          .setSize(150, 30)
+			          .setValue(bpm)
+			          .setLabelVisible(false)
+			          .setNumberOfTickMarks((maxValue-minValue) * ticksPerWholeNumber + 1)
+			          .plugTo(this)
+			          ;
 		colorController(s);
 		return s;
 	}
@@ -308,11 +321,11 @@ public class Editor extends Screen {
 	
 	@Override
 	public void draw() {
-		/*if (playStop.getValue() != 0) {
+		if (playStop.getValue() != 0) {
 			long dt = System.currentTimeMillis() - prev_t;
 			prev_t = System.currentTimeMillis();
 			livePlayer.update(dt * pa.getBPMS1());
-		}*/
+		}
 		redraw();
 	}
 	
