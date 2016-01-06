@@ -9,6 +9,7 @@ import controlP5.DropdownList;
 import controlP5.Slider;
 import controlP5.Toggle;
 import geom.Rect;
+import processing.core.PFont;
 
 /**
  * Provides an editor in which the user can create and edit musical phrases for the Presenter screen.
@@ -44,6 +45,7 @@ public class Editor extends Screen {
 	private final static int BPM_1 = 1, BPM_2 = 2;
 	private ControlP5 cp5;
 	private Toggle playStop;
+	private PFont pfont;
 	
 	/**
 	 * 
@@ -51,6 +53,8 @@ public class Editor extends Screen {
 	 */
 	public Editor(PhasesPApplet pa) {
 		super(pa);
+		
+		pfont = pa.loadFont("DejaVuSans-18.vlw");
 		
 		currentScale = pa.getScale("C", "Chromatic");
 
@@ -61,7 +65,7 @@ public class Editor extends Screen {
 			e.printStackTrace();
 		}
 		
-		gridFrame = new Rect(150, 50, 775, 575, pa.CORNERS);
+		gridFrame = new Rect(150, 25, 775, 575, pa.CORNERS);
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
 		cellHeight = gridFrame.getHeight() / columnSize;
 		
@@ -100,25 +104,36 @@ public class Editor extends Screen {
 		//addBPMSlider(BPM_1);
 		//addBPMSlider(BPM_2);
 		
-		DropdownListPlus rootMenu = new DropdownListPlus(cp5, "ROOT");
-		rootMenu.setPosition(5, 20)
-			    .setWidth(45)
+		DropdownListPlus rootMenu = new DropdownListPlus(cp5, "Root");
+		rootMenu.setPosition(10, 25)
+			    .setSize(130, 280)
 			    .addItems(PhasesPApplet.roots)
-			    //.close()
+			    .setItemHeight(20)
+			    .setBarHeight(20)
 			    ;
-		rootMenu.getCaptionLabel().toUpperCase(false);
-		rootMenu.getValueLabel().toUpperCase(false);
 		colorController(rootMenu);
+		formatLabel(rootMenu);
 		
 		DropdownListPlus scaleMenu = new DropdownListPlus(cp5, "Scale");
-		scaleMenu.setPosition(55, 20)
-				 .setWidth(90)
+		scaleMenu.setPosition(10, 295)
+				 .setSize(130, 120)
 				 .addItems(PhasesPApplet.scaleTypes)
-				 //.close()
+				 .setItemHeight(20)
+				 .setBarHeight(20)
 				 ;
 		colorController(scaleMenu);
-		
+		formatLabel(scaleMenu);
+	
 		cp5.hide();
+	}
+	
+	private void formatLabel(DropdownList x) {
+		x.getCaptionLabel().toUpperCase(false);
+		x.getValueLabel().toUpperCase(false);
+		x.getCaptionLabel().setFont(pfont);
+		x.getValueLabel().setFont(pfont);
+		x.getCaptionLabel().getStyle().paddingTop += 5;
+		x.getValueLabel().getStyle().paddingTop += 5;
 	}
 	
 	private void colorController(Controller c) {
