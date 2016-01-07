@@ -323,13 +323,13 @@ public class Editor extends Screen {
 	 * @return The pitch of the note to which pa.mouseY cooresponds
 	 */
 	private int mouseToPitch() {
-		return yToPitch(pa.mouseY) + 1;
+		int pitchIndex = (int)pa.map(pa.mouseY, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys) + 1;
+		return pa.scale.getNoteValue(pitchIndex) + minPitch;
 	}
 
 	private int yToPitch(int y) {
 		int pitchIndex = (int)pa.map(y, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys);
-		int output =  pa.scale.getNoteValue(pitchIndex) + minPitch;
-		return output;
+		return pa.scale.getNoteValue(pitchIndex) + minPitch;
 	}
 	
 	private float pitchToY(int pitch) {
