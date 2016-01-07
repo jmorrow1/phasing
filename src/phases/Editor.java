@@ -323,11 +323,11 @@ public class Editor extends Screen {
 	 * @return The pitch of the note to which pa.mouseY cooresponds
 	 */
 	private int mouseToPitch() {
-		return yToPitch(pa.mouseY);
+		return yToPitch(pa.mouseY) + 1;
 	}
 
 	private int yToPitch(int y) {
-		int pitchIndex = (int)pa.map(y, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys) + 1;
+		int pitchIndex = (int)pa.map(y, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys);
 		int output =  pa.scale.getNoteValue(pitchIndex) + minPitch;
 		return output;
 	}
@@ -367,7 +367,8 @@ public class Editor extends Screen {
 		if (rootLabel != rootMenu.getLabel() || scaleLabel != scaleMenu.getLabel()) {
 			rootLabel = rootMenu.getLabel();
 			scaleLabel = scaleMenu.getLabel();
-			pa.scale = pa.getScale(rootLabel, scaleLabel);
+			Scale newScale = pa.getScale(rootLabel, scaleLabel);
+			updateGrid(newScale);
 		}
 	}
 	
@@ -395,6 +396,21 @@ public class Editor extends Screen {
 			x += (cellWidth*numCellsWide);
 		}
 		pa.strokeWeight(1);
+	}
+	
+	private void updateGrid(Scale newScale) {
+		int[] ys = new int[pa.phrase.getGridRowSize()];
+		for (int i=0; i<pa.phrase.getGridRowSize(); i++) {
+			int pitch = (int)pa.phrase.getGridPitch(i);
+			ys[i] = (int)pitchToY(pitch);
+		}
+		
+		pa.scale = newScale;
+		
+		for (int i=0; i<pa.phrase.getGridRowSize(); i++) {
+			int pitch = yToPitch(ys[i]);
+			pa.phrase.setGridPitch(i, pitch);
+		}
 	}
 	
 	/**
