@@ -51,7 +51,7 @@ public class Editor extends Screen {
 	private Slider bpmSlider, phaseDifferenceSlider;
 	private DropdownList rootMenu, scaleMenu;
 	private String rootLabel, scaleLabel;
-	private PFont pfont12, pfont18;
+	
 	
 	/**
 	 * 
@@ -60,10 +60,6 @@ public class Editor extends Screen {
 	public Editor(PhasesPApplet pa) {
 		super(pa);
 		
-		//init font variables
-		pfont12 = pa.loadFont("DejaVuSans-12.vlw");
-		pfont18 = pa.loadFont("DejaVuSans-18.vlw");
-
 		//init playback variables
 		try {
 			Method callback = Editor.class.getMethod("animate", SoundCipherPlus.class);
@@ -73,7 +69,7 @@ public class Editor extends Screen {
 		}
 		
 		//init grid variables
-		gridFrame = new Rect(25, 50, 775, 575, pa.CORNERS);
+		gridFrame = new Rect(10, 50, pa.width-10, pa.height-25, pa.CORNERS);
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
 		cellHeight = gridFrame.getHeight() / columnSize;
 		
@@ -83,7 +79,7 @@ public class Editor extends Screen {
 		
 		//play stop toggle
 		playStop = cp5.addToggle("play")
-				      .setPosition(740, 5)
+				      .setPosition(750, 5)
 					  .setSize(35, 35)
 					  .plugTo(this)
 					  .setView(new ControllerView<Toggle>() {
@@ -143,15 +139,6 @@ public class Editor extends Screen {
 		colorController(scaleMenu);
 		formatLabel(scaleMenu);
 		scaleLabel = scaleMenu.getLabel();
-		
-		//init change screen button
-		Button changeScreenButton = cp5.addButton("Perform")
-									   .setPosition(27, 5)
-									   .setSize(115, 40)
-									   ;
-		changeScreenButton.getCaptionLabel().toUpperCase(false);
-		changeScreenButton.getCaptionLabel().setFont(pfont18);
-		colorController(changeScreenButton);
 	
 		//hide cp5
 		cp5.hide();
@@ -160,8 +147,8 @@ public class Editor extends Screen {
 	private void formatLabel(DropdownList x) {
 		x.getCaptionLabel().toUpperCase(false);
 		x.getValueLabel().toUpperCase(false);
-		x.getCaptionLabel().setFont(pfont18);
-		x.getValueLabel().setFont(pfont18);
+		x.getCaptionLabel().setFont(pa.pfont18);
+		x.getValueLabel().setFont(pa.pfont18);
 		x.getCaptionLabel().getStyle().paddingTop += 5;
 		x.getValueLabel().getStyle().paddingTop += 5;
 	}
@@ -184,20 +171,21 @@ public class Editor extends Screen {
 	private Slider addBPMSlider(int id) {
 		switch(id) {
 			case BPM_1 :
-				return addBPMSlider("Beats Per Minute", id, 405, 18, pa.getBPM1(), 1, 100, 1,
+				return addBPMSlider("beatsPerMinute", "Beats Per Minute", id, 405, 18, pa.getBPM1(), 1, 100, 1,
 						(x) -> "" + PApplet.round(x));
 			case PHASE_DIFFERENCE :
-				return addBPMSlider("Phase difference", id, 575, 18, pa.getBPM2() - pa.getBPM1(), -10, 10, 4,
+				return addBPMSlider("phaseDifference", "Phase difference", id, 575, 18, pa.getBPM2() - pa.getBPM1(), -10, 10, 4,
 						(x) -> String.format("%.2f", x));
 			default :
 				return null;
 		}
 	}
 	
-	private Slider addBPMSlider(String name, int id, int x, int y, 
+	private Slider addBPMSlider(String name, String label, int id, int x, int y, 
 		float bpm, int minValue, int maxValue, int ticksPerWholeNumber, FloatFormatter f) {
-		Slider s = new SliderPlus(cp5, name, pfont12, pfont18, f);
+		Slider s = new SliderPlus(cp5, name, pa.pfont12, pa.pfont18, f);
         s.setId(id);
+        s.setCaptionLabel(label);
         s.setDecimalPrecision(0);
         s.setRange(minValue, maxValue);
         s.setPosition(x, y);
@@ -208,6 +196,16 @@ public class Editor extends Screen {
         s.plugTo(this);
 		colorController(s);
 		return s;
+	}
+	
+	public void beatsPerMinute(ControlEvent e) {
+		pa.setBPM1(e.getValue());
+		livePlayer.tempo(pa.getBPM1());
+		pa.setBPM2(e.getValue() + phaseDifferenceSlider.getValue());
+	}
+	
+	public void phaseDifference(ControlEvent e) {
+		pa.setBPM2(pa.getBPM1() + e.getValue());
 	}
 	
 	/**
@@ -223,24 +221,6 @@ public class Editor extends Screen {
 			prev_t = System.currentTimeMillis();
 			livePlayer.tempo(pa.getBPM1());
 			activeNoteIndex = NOT_APPLICABLE;
-		}
-	}
-	
-	
-	/**
-	 * Callback for ControlP5
-	 * @param e
-	 */
-	public void controlEvent(ControlEvent e) {
-		switch (e.getId()) {
-			case BPM_1 :
-				pa.setBPM1(e.getValue());
-				livePlayer.tempo(pa.getBPM1());
-				pa.setBPM2(e.getValue() + phaseDifferenceSlider.getValue());
-				break;
-			case PHASE_DIFFERENCE :
-				pa.setBPM2(pa.getBPM1() + e.getValue());
-				break;
 		}
 	}
 	

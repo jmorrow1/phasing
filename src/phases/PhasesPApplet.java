@@ -7,7 +7,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import controlP5.Button;
+import controlP5.ControlEvent;
+import controlP5.ControlP5;
+import controlP5.Controller;
 import processing.core.PApplet;
+import processing.core.PFont;
 import processing.data.JSONObject;
 
 /**
@@ -41,6 +46,11 @@ public class PhasesPApplet extends PApplet {
 	
 	//visual variables
 	private static int color1, color2;
+	public static PFont pfont12, pfont18;
+	
+	//gui
+	private ControlP5 cp5;
+	private Button changeScreenButton;
 	
 	/**
 	 * Sets up the size of the canvas/window
@@ -56,6 +66,26 @@ public class PhasesPApplet extends PApplet {
 	 * Sets the current screen.
 	 */
 	public void setup() {
+		//init colors
+		color1 = color(255, 100, 100);
+		color2 = color(100, 100, 255);
+		
+		//init font variables
+		pfont12 = loadFont("DejaVuSans-12.vlw");
+		pfont18 = loadFont("DejaVuSans-18.vlw");
+		
+		//init controlp5
+	    cp5 = new ControlP5(this);
+		
+		//init change screen button
+		changeScreenButton = cp5.addButton("changeScreen")
+							    .setPosition(10, 5)
+							    .setSize(125, 40)
+							    ;
+		changeScreenButton.getCaptionLabel().toUpperCase(false);
+		changeScreenButton.getCaptionLabel().setFont(pfont18);
+		colorController(changeScreenButton);
+		
 		//load scales
 		try {
 			int i=0;
@@ -70,9 +100,6 @@ public class PhasesPApplet extends PApplet {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		color1 = color(255, 100, 100);
-		color2 = color(100, 100, 255);
 		
 		//create default phrase
 		int n = Phrase.NOTE_START;
@@ -89,6 +116,21 @@ public class PhasesPApplet extends PApplet {
 		//setup current screen
 		currentScreen = editor;
 		currentScreen.onEnter();
+		
+		if (currentScreen == editor) {
+			changeScreenButton.setCaptionLabel("Perform");
+		}
+		else if (currentScreen == presenter) {
+			changeScreenButton.setCaptionLabel("Compose");
+		}
+	}
+	
+	private void colorController(Controller c) {
+		c.setColorCaptionLabel(color(255));
+	    c.setColorValueLabel(color(255));
+		c.setColorBackground(color(PhasesPApplet.getColor1()));
+		c.setColorActive(getColor2());
+		c.setColorForeground(0);
 	}
 	
 	private void testGetScale() {
@@ -99,6 +141,22 @@ public class PhasesPApplet extends PApplet {
 					println("error: scale is null");
 				}
 			}
+		}
+	}
+	
+	/**
+	 * Callback from ControlP5
+	 * Controls changing the screen from Presentation screen to Editor screen and vice versa
+	 * @param e
+	 */
+	public void changeScreen(ControlEvent e) {
+		if (currentScreen == editor) {
+			currentScreen = presenter;
+			changeScreenButton.setCaptionLabel("Compose");
+		}
+		else if (currentScreen == presenter) {
+			currentScreen = editor;
+			changeScreenButton.setCaptionLabel("Perform");
 		}
 	}
 	

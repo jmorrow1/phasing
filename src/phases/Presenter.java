@@ -2,11 +2,11 @@ package phases;
 
 import java.util.ArrayList;
 
+import controlP5.Button;
+import controlP5.ControlP5;
 import geom.Circle;
 import geom.Rect;
 import processing.core.PApplet;
-import views.LiveScorer;
-import views.Musician;
 import views.PhaseShifter;
 import views.View;
 
@@ -41,8 +41,9 @@ public class Presenter extends Screen {
 		view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		//view = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		//view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		
 	}
+	
+	
 	
 	private void setupViewGraph(float cenx, float ceny, float maxDist, int numSatellites) {
 		planet = new Circle(cenx, ceny, nodeRadius);

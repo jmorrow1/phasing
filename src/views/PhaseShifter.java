@@ -107,6 +107,8 @@ public class PhaseShifter extends View {
 			}
 		}
 		
+		pa.pushMatrix();
+		
 		pa.translate(this.getCenx(), this.getCeny());
 		
 		//draw graphics for player 1
@@ -121,6 +123,8 @@ public class PhaseShifter extends View {
 			movementAcc2 = incrementMovement(movementAcc2, dNotept2);
 			transform(movementAcc2);
 			drawPhraseGraphic(activeNote2, (this.colorSchemeType == DIACHROMATIC) ? pa.getColor2() : 0, pa.getBPM2());
+		pa.popMatrix();
+		
 		pa.popMatrix();
 	}
 	
