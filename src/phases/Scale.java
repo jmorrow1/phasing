@@ -65,7 +65,33 @@ public class Scale {
 	 * @return The MIDI pitch value of the ith note in the scale
 	 */
 	public int getNoteValue(int i) {
-		return noteValues[i];
+		if (0 <= i && i < noteValues.length) {
+			return noteValues[i];
+		}
+		else {
+			return noteValues[i % noteValues.length] + (i / noteValues.length) * 12;
+		}
+	}
+	
+	/**
+	 * Does the opposite of getNoteValue(i).
+	 * Where that method takes an index and returns the pitch at that index in the scale,
+	 * this method takes a pitch and returns the index where that pitch is located in the scale
+	 * @param midiPitchValue
+	 * @return
+	 */
+	public int getIndexOfNoteValue(int midiPitchValue) {
+		int minPitch = noteValues[0];
+		int maxPitch = minPitch + 12;
+		int value = PhasesPApplet.remainder(midiPitchValue, minPitch, maxPitch);
+		
+		for (int i=0; i<noteValues.length; i++) {
+			if (value == noteValues[i]) {
+				return i + ( (midiPitchValue - minPitch) / 12) * noteValues.length;
+			}
+		}
+		
+		return -1;
 	}
 
 	@Override

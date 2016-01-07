@@ -150,6 +150,7 @@ public class PhasesPApplet extends PApplet {
 	 * @param e
 	 */
 	public void changeScreen(ControlEvent e) {
+		currentScreen.onExit();
 		if (currentScreen == editor) {
 			currentScreen = presenter;
 			changeScreenButton.setCaptionLabel("Compose");
@@ -158,6 +159,7 @@ public class PhasesPApplet extends PApplet {
 			currentScreen = editor;
 			changeScreenButton.setCaptionLabel("Perform");
 		}
+		currentScreen.onEnter();
 	}
 	
 	/**
@@ -296,6 +298,19 @@ public class PhasesPApplet extends PApplet {
 		bpm2 = constrain(bpm2, MIN_BPM, MAX_BPM);
 		this.bpm2 = bpm2;
 		this.bpms2 = bpm2 / 60000f;
+	}
+	
+	/**
+	 * A generalization of the other remainder function.
+	 * In normal modulo arithmetic, the upper number is constrained.
+	 * This is a generalization of that where the lower number can also be constrained.
+	 * @param num
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	public static int remainder(int num, int min, int max) {
+		return remainder(num - min, max-min) + min;
 	}
 	
 	/**

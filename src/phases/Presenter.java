@@ -37,13 +37,7 @@ public class Presenter extends Screen {
 	 */
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
-		
-		view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		//view = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		//view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 	}
-	
-	
 	
 	private void setupViewGraph(float cenx, float ceny, float maxDist, int numSatellites) {
 		planet = new Circle(cenx, ceny, nodeRadius);
@@ -74,6 +68,10 @@ public class Presenter extends Screen {
 	
 	@Override
 	public void onEnter() {
+		view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		//view = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		//view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		
 		pa.phrase.addToScore(player1, 0, 0, 0);
 		pa.phrase.addToScore(player2, 0, 0, 0);
 		player1.tempo(pa.getBPM1());

@@ -32,7 +32,6 @@ public class Editor extends Screen {
 	private boolean labelPianoKeys = true;
 	private int minPitch = 60;
 	private int numKeys = 24;
-	private int maxPitch = minPitch + numKeys;
 	private final static int W=0xffffffff, B=PhasesPApplet.getColor2();
 	private final static int[] keyColors = new int[] {W, B, W, B, W, W, B, W, B, W, B, W};
 	//grid
@@ -324,9 +323,18 @@ public class Editor extends Screen {
 	 * @return The pitch of the note to which pa.mouseY cooresponds
 	 */
 	private int mouseToPitch() {
-		return (int)pa.map(pa.mouseY,
-			               gridFrame.getY2(), gridFrame.getY1(),
-			               minPitch, maxPitch);
+		return yToPitch(pa.mouseY);
+	}
+
+	private int yToPitch(int y) {
+		int pitchIndex = (int)pa.map(y, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys) + 1;
+		int output =  pa.scale.getNoteValue(pitchIndex) + minPitch;
+		return output;
+	}
+	
+	private float pitchToY(int pitch) {
+		int pitchIndex = pa.scale.getIndexOfNoteValue(pitch - minPitch);
+		return pa.map(pitchIndex, 0, numKeys, gridFrame.getY2(), gridFrame.getY1());
 	}
 	
 	@Override
@@ -381,7 +389,7 @@ public class Editor extends Screen {
 			}
 			
 			int pitch = pa.phrase.getSCPitch(i);
-			float y = pa.map(pitch+1, minPitch, maxPitch, gridFrame.getY2(), gridFrame.getY1());
+			float y = pitchToY(pitch);
 			float numCellsWide = pa.phrase.getSCDuration(i) / pa.phrase.getUnitDuration();
 			pa.rect(x, y, cellWidth*numCellsWide, cellHeight);
 			x += (cellWidth*numCellsWide);
@@ -390,7 +398,7 @@ public class Editor extends Screen {
 	}
 	
 	/**
-	 * Draws the grid.
+	 * Draws the empty grid.
 	 */
 	private void drawGrid() {
 		//line color
