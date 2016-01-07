@@ -2,6 +2,7 @@ package phases;
 
 import java.lang.reflect.Method;
 
+import controlP5.Button;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlP5.Controller;
@@ -10,6 +11,7 @@ import controlP5.DropdownList;
 import controlP5.Slider;
 import controlP5.Toggle;
 import geom.Rect;
+import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
 
@@ -46,10 +48,10 @@ public class Editor extends Screen {
 	private final static int BPM_1 = 1, PHASE_DIFFERENCE = 2;
 	private ControlP5 cp5;
 	private Toggle playStop;
-	private Slider phaseDifferenceSlider;
+	private Slider bpmSlider, phaseDifferenceSlider;
 	private DropdownList rootMenu, scaleMenu;
 	private String rootLabel, scaleLabel;
-	private PFont pfont;
+	private PFont pfont12, pfont18;
 	
 	/**
 	 * 
@@ -58,10 +60,11 @@ public class Editor extends Screen {
 	public Editor(PhasesPApplet pa) {
 		super(pa);
 		
-		pfont = pa.loadFont("DejaVuSans-18.vlw");
-		
-		pa.textFont(pfont);
-		
+		//init font variables
+		pfont12 = pa.loadFont("DejaVuSans-12.vlw");
+		pfont18 = pa.loadFont("DejaVuSans-18.vlw");
+
+		//init playback variables
 		try {
 			Method callback = Editor.class.getMethod("animate", SoundCipherPlus.class);
 			livePlayer = new SoundCipherPlus(pa, pa.phrase, this, callback);
@@ -69,13 +72,18 @@ public class Editor extends Screen {
 			e.printStackTrace();
 		}
 		
+		//init grid variables
 		gridFrame = new Rect(25, 50, 775, 575, pa.CORNERS);
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
 		cellHeight = gridFrame.getHeight() / columnSize;
 		
+		//init cp5
 		cp5 = new ControlP5(pa);
+		cp5.setAutoDraw(false);
+		
+		//play stop toggle
 		playStop = cp5.addToggle("play")
-				      .setPosition(35, 10)
+				      .setPosition(740, 5)
 					  .setSize(35, 35)
 					  .plugTo(this)
 					  .setView(new ControllerView<Toggle>() {
@@ -88,7 +96,7 @@ public class Editor extends Screen {
 								}
 								else {
 									pg.stroke(0, 150);
-									pg.fill(PhasesPApplet.getColor1(), 150);
+									pg.fill(PhasesPApplet.getColor1(), 175);
 								}
 								
 								if (t.getValue() == 0) {
@@ -105,12 +113,14 @@ public class Editor extends Screen {
 					   })
 					   ;
 		
-		addBPMSlider(BPM_1);
+		//bpm sliders
+		bpmSlider = addBPMSlider(BPM_1);
 		phaseDifferenceSlider = addBPMSlider(PHASE_DIFFERENCE);
 		
+		//scale menus
 		rootMenu = new DropdownListPlus(cp5, "Root");
-		rootMenu.setPosition(150, 5)
-			    .setSize(130, 300)
+		rootMenu.setPosition(155, 19)
+			    .setSize(90, 22*(PhasesPApplet.roots.length+1))
 			    .addItems(PhasesPApplet.roots)
 			    .setItemHeight(22)
 			    .setBarHeight(22)
@@ -122,8 +132,8 @@ public class Editor extends Screen {
 		rootLabel = rootMenu.getLabel();
 		
 		scaleMenu = new DropdownListPlus(cp5, "Scale");
-		scaleMenu.setPosition(300, 5)
-				 .setSize(130, 145)
+		scaleMenu.setPosition(260, 19)
+		         .setSize(130, 22*(PhasesPApplet.scaleTypes.size()+1))
 				 .addItems(PhasesPApplet.scaleTypes)
 				 .setItemHeight(22)
 				 .setBarHeight(22)
@@ -133,15 +143,25 @@ public class Editor extends Screen {
 		colorController(scaleMenu);
 		formatLabel(scaleMenu);
 		scaleLabel = scaleMenu.getLabel();
+		
+		//init change screen button
+		Button changeScreenButton = cp5.addButton("Perform")
+									   .setPosition(27, 5)
+									   .setSize(115, 40)
+									   ;
+		changeScreenButton.getCaptionLabel().toUpperCase(false);
+		changeScreenButton.getCaptionLabel().setFont(pfont18);
+		colorController(changeScreenButton);
 	
+		//hide cp5
 		cp5.hide();
 	}
 	
 	private void formatLabel(DropdownList x) {
 		x.getCaptionLabel().toUpperCase(false);
 		x.getValueLabel().toUpperCase(false);
-		x.getCaptionLabel().setFont(pfont);
-		x.getValueLabel().setFont(pfont);
+		x.getCaptionLabel().setFont(pfont18);
+		x.getValueLabel().setFont(pfont18);
 		x.getCaptionLabel().getStyle().paddingTop += 5;
 		x.getValueLabel().getStyle().paddingTop += 5;
 	}
@@ -149,13 +169,13 @@ public class Editor extends Screen {
 	private void colorController(Controller c) {
 		c.setColorCaptionLabel(pa.color(255));
 	    c.setColorValueLabel(pa.color(255));
-		if (c instanceof DropdownList) {
+		if (c instanceof DropdownList || c instanceof Button) {
 			c.setColorBackground(pa.color(PhasesPApplet.getColor1()));
 			c.setColorActive(pa.getColor2());
-			c.setColorForeground(pa.getColor2());
+			c.setColorForeground(0);
 		}
 		else if (c instanceof Slider) {		
-		    c.setColorBackground(pa.color(pa.getColor1(), 150));
+		    c.setColorBackground(pa.color(pa.getColor1(), 175));
 		    c.setColorActive(pa.getColor1());
 		    c.setColorForeground(pa.getColor1());
 		}
@@ -164,27 +184,28 @@ public class Editor extends Screen {
 	private Slider addBPMSlider(int id) {
 		switch(id) {
 			case BPM_1 :
-				return addBPMSlider("Beats Per Minute", id, 460, 5, pa.getBPM1(), 1, 100, 1);
+				return addBPMSlider("Beats Per Minute", id, 405, 18, pa.getBPM1(), 1, 100, 1,
+						(x) -> "" + PApplet.round(x));
 			case PHASE_DIFFERENCE :
-				return addBPMSlider("Phase difference", id, 620, 5, pa.getBPM2() - pa.getBPM1(), -10, 10, 4);
+				return addBPMSlider("Phase difference", id, 575, 18, pa.getBPM2() - pa.getBPM1(), -10, 10, 4,
+						(x) -> String.format("%.2f", x));
 			default :
 				return null;
 		}
 	}
 	
 	private Slider addBPMSlider(String name, int id, int x, int y, 
-		float bpm, int minValue, int maxValue, int ticksPerWholeNumber) {
-		Slider s = cp5.addSlider(name)
-			          .setId(id)
-			          .setDecimalPrecision(0)
-			          .setRange(minValue, maxValue)
-			          .setPosition(x, y)
-			          .setSize(150, 30)
-			          .setValue(bpm)
-			          .setLabelVisible(false)
-			          .setNumberOfTickMarks((maxValue-minValue) * ticksPerWholeNumber + 1)
-			          .plugTo(this)
-			          ;
+		float bpm, int minValue, int maxValue, int ticksPerWholeNumber, FloatFormatter f) {
+		Slider s = new SliderPlus(cp5, name, pfont12, pfont18, f);
+        s.setId(id);
+        s.setDecimalPrecision(0);
+        s.setRange(minValue, maxValue);
+        s.setPosition(x, y);
+        s.setSize(150, 23);
+        s.setValue(bpm);
+        s.setLabelVisible(false);
+        s.setNumberOfTickMarks((maxValue-minValue) * ticksPerWholeNumber + 1);
+        s.plugTo(this);
 		colorController(s);
 		return s;
 	}
@@ -349,6 +370,12 @@ public class Editor extends Screen {
 		drawGrid();
 		drawPhrase();
 		
+		cp5.draw();
+
+		updateMenus();
+	}
+	
+	private void updateMenus() {
 		if (rootLabel != rootMenu.getLabel() || scaleLabel != scaleMenu.getLabel()) {
 			rootLabel = rootMenu.getLabel();
 			scaleLabel = scaleMenu.getLabel();
@@ -394,8 +421,7 @@ public class Editor extends Screen {
 		pa.line(gridFrame.getX1() + cellWidth, y, gridFrame.getX2(), y);
 		y -= cellHeight;
 		for (int i=0; i<numKeys; i++) {
-			pa.line(gridFrame.getX1() + cellWidth, y, gridFrame.getX2(), y);
-			
+			pa.line(gridFrame.getX1() + cellWidth, y, gridFrame.getX2(), y);		
 			y -= cellHeight;
 		}
 		
