@@ -46,10 +46,11 @@ public class Editor extends Screen {
 	private int startIndexOfUserDrawnNote = -1;
 	private int indexMousePressed=-1, pitchMousePressed=-1;
 	//controllers
-	private final static int BPM_1 = 1, PHASE_DIFFERENCE = 2;
+	private final static int BPM_1 = 1, BPM_DIFFERENCE = 2;
+	private int maxPhaseDifferenceAmplitude = 10;
 	private ControlP5 cp5;
 	private Toggle playStop;
-	private Slider bpmSlider, phaseDifferenceSlider;
+	private Slider bpmSlider, bpmDifferenceSlider;
 	private DropdownList rootMenu, scaleMenu;
 	private String rootLabel, scaleLabel;
 	private boolean rootMenuOpen, scaleMenuOpen;
@@ -120,7 +121,7 @@ public class Editor extends Screen {
 		
 		//bpm sliders
 		bpmSlider = addBPMSlider(BPM_1);
-		phaseDifferenceSlider = addBPMSlider(PHASE_DIFFERENCE);
+		bpmDifferenceSlider = addBPMSlider(BPM_DIFFERENCE);
 		
 		//scale menus
 		rootMenu = new DropdownListPlus(cp5, "root");
@@ -192,8 +193,9 @@ public class Editor extends Screen {
 			case BPM_1 :
 				return addBPMSlider("beatsPerMinute", "Beats Per Minute", id, 405, 18, pa.getBPM1(), 1, 100, 1,
 						(x) -> "" + PApplet.round(x));
-			case PHASE_DIFFERENCE :
-				return addBPMSlider("phaseDifference", "Phase difference", id, 575, 18, pa.getBPM2() - pa.getBPM1(), -10, 10, 4,
+			case BPM_DIFFERENCE :
+				return addBPMSlider("bpmDifference", "Difference", id, 575, 18, pa.getBPM2() - pa.getBPM1(),
+						-maxPhaseDifferenceAmplitude, maxPhaseDifferenceAmplitude, 4,
 						(x) -> String.format("%.2f", x));
 			default :
 				return null;
@@ -220,11 +222,11 @@ public class Editor extends Screen {
 	public void beatsPerMinute(ControlEvent e) {
 		pa.setBPM1(e.getValue());
 		livePlayer.tempo(pa.getBPM1());
-		pa.setBPM2(e.getValue() + phaseDifferenceSlider.getValue());
+		pa.setBPM2(e.getValue() + bpmDifferenceSlider.getValue());
 		drawBody();
 	}
 	
-	public void phaseDifference(ControlEvent e) {
+	public void bpmDifference(ControlEvent e) {
 		pa.setBPM2(pa.getBPM1() + e.getValue());
 		drawBody();
 	}
@@ -395,10 +397,11 @@ public class Editor extends Screen {
 		drawGrid();
 		drawPhrase();
 		
-		phase(0, 50, (int)(phaseDifferenceSlider.getValue() * 10), pa.color(225));
+		phase(0, 50, (int)(bpmDifferenceSlider.getValue() * cellWidth / 10),
+				pa.lerpColor(pa.getColor2(), pa.color(255), 0.8f), false);
 	}
 	
-	private void phase(int startX, int startY, int numPixels, int color) {
+	private void phase(int startX, int startY, int numPixels, int color, boolean wrap) {
 		pa.loadPixels();
 	    
 	    int i=startX + startY*pa.width; //loops through pixels
@@ -407,7 +410,12 @@ public class Editor extends Screen {
 	    while (y < pa.height) {
 	        while (x < pa.width) {
 	            if (pa.pixels[i] != 0xffffffff) {
-	                pixelsBuffer[ (x + numPixels) % pa.width + pa.width*y ] = color;
+	            	if (wrap) {
+	            		pixelsBuffer[ (x + numPixels) % pa.width + pa.width*y ] = color;
+	            	}
+	            	else if (0 <= x + numPixels && x + numPixels < pa.width) {
+	            		pixelsBuffer[i + numPixels] = color;
+	            	}
 	            }
 	            i++;
 	            x++;
