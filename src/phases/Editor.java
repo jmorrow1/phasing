@@ -179,7 +179,7 @@ public class Editor extends Screen {
 		if (c instanceof DropdownList || c instanceof Button) {
 			c.setColorBackground(pa.color(PhasesPApplet.getColor1()));
 			c.setColorActive(pa.getColor2());
-			c.setColorForeground(0);
+			c.setColorForeground(pa.getColor2());
 		}
 		else if (c instanceof Slider) {
 			c.setColorBackground(pa.lerpColor(pa.getColor1(), pa.color(255), 0.3f));
@@ -273,14 +273,27 @@ public class Editor extends Screen {
 			indexMousePressed = mouseToIndex();
 			pitchMousePressed = mouseToPitch();
 			startIndexOfUserDrawnNote = indexMousePressed;
-			boolean success = pa.phrase.setCell(indexMousePressed, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
-			if (indexMousePressed+1 < pa.phrase.getGridRowSize() && pa.phrase.getNoteType(indexMousePressed+1) == Phrase.NOTE_SUSTAIN) {
-				pa.phrase.setNoteType(indexMousePressed+1, Phrase.NOTE_START);
+			if (!rootMenu.isInside() && !scaleMenu.isInside()) {
+				boolean success = pa.phrase.setCell(indexMousePressed, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
+				if (success && 
+						indexMousePressed+1 < pa.phrase.getGridRowSize() &&
+						pa.phrase.getNoteType(indexMousePressed+1) == Phrase.NOTE_SUSTAIN) {
+					pa.phrase.setNoteType(indexMousePressed+1, Phrase.NOTE_START);
+				}
+				if (success) {
+					userIsDrawingNote = true;
+					drawBody();
+				}
 			}
-			if (success) {
-				userIsDrawingNote = true;
-				drawBody();
-			}
+		}
+		
+		//close a menu when a mouse click occurs outside it:
+		if (!rootMenu.isInside()) {
+			rootMenu.close();
+		}
+		
+		if (!scaleMenu.isInside()) {
+			scaleMenu.close();
 		}
 	}
 	

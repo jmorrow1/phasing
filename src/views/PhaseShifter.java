@@ -31,7 +31,7 @@ public class PhaseShifter extends View {
 	private boolean showActiveNote = true;
 	
 	private final int SCROLLS=0, ROTATES=1;
-	private int movementType = ROTATES;
+	private int movementType = SCROLLS;
 	
 	private final int RELATIVE=0, FIXED=1;
 	private int cameraType = RELATIVE;

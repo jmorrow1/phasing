@@ -114,7 +114,7 @@ public class PhasesPApplet extends PApplet {
 		editor = new Editor(this);
 		
 		//setup current screen
-		currentScreen = editor;
+		currentScreen = presenter;
 		currentScreen.onEnter();
 		
 		if (currentScreen == editor) {
@@ -130,7 +130,7 @@ public class PhasesPApplet extends PApplet {
 	    c.setColorValueLabel(color(255));
 		c.setColorBackground(color(PhasesPApplet.getColor1()));
 		c.setColorActive(getColor2());
-		c.setColorForeground(0);
+		c.setColorForeground(getColor2());
 	}
 	
 	private void testGetScale() {

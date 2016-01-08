@@ -416,7 +416,7 @@ public class Phrase {
 	public boolean setNoteType(int i, int cellType) {
 		switch(cellType) {
 			case NOTE_START:
-				cellTypes[i] = cellType;					
+				cellTypes[i] = cellType;
 				break;
 			case REST:
 				cellTypes[i] = cellType;
