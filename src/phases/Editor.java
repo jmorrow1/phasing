@@ -393,47 +393,16 @@ public class Editor extends Screen {
 		pa.rectMode(pa.CORNERS);
 		pa.rect(0, 50, pa.width, pa.height);
 		
-		drawPiano();
-		drawGrid();
-		drawPhrase();
+		//draw ghost image of grid
+		float ghostCellWidth = cellWidth * pa.getBPM2() / pa.getBPM1();
+		drawGrid(pa.lerpColor(PhasesPApplet.getColor2(), pa.color(255), 0.8f), ghostCellWidth);
+		drawPhrase(pa.lerpColor(PhasesPApplet.getColor1(), pa.color(255), 0.8f),
+				pa.lerpColor(PhasesPApplet.getColor2(), pa.color(255), 0.8f), pa.color(255), ghostCellWidth);
 		
-		phase(0, 50, (int)(bpmDifferenceSlider.getValue() * cellWidth / 10),
-				pa.lerpColor(pa.getColor2(), pa.color(255), 0.8f), false);
-	}
-	
-	private void phase(int startX, int startY, int numPixels, int color, boolean wrap) {
-		pa.loadPixels();
-	    
-	    int i=startX + startY*pa.width; //loops through pixels
-	    int x=startX;
-	    int y=startY;
-	    while (y < pa.height) {
-	        while (x < pa.width) {
-	            if (pa.pixels[i] != 0xffffffff) {
-	            	if (wrap) {
-	            		pixelsBuffer[ (x + numPixels) % pa.width + pa.width*y ] = color;
-	            	}
-	            	else if (0 <= x + numPixels && x + numPixels < pa.width) {
-	            		pixelsBuffer[i + numPixels] = color;
-	            	}
-	            }
-	            i++;
-	            x++;
-	        }
-	        x = 0;
-	        y++;
-	    }
-	    
-	    i=0;
-	    while (i < pa.pixels.length) {
-	        if (pa.pixels[i] == 0xffffffff) {
-	            pa.pixels[i] = pixelsBuffer[i];
-	        }
-	        pixelsBuffer[i] = 0xffffffff;
-	        i++;
-	    }
-	    
-	    pa.updatePixels();
+		//draw main image of grid
+		drawPiano();
+		drawGrid(PhasesPApplet.getColor2(), cellWidth);
+		drawPhrase(PhasesPApplet.getColor1(), PhasesPApplet.getColor2(), 0, cellWidth);
 	}
 	
 	private void updateMenus() {
@@ -454,18 +423,18 @@ public class Editor extends Screen {
 	/**
 	 * Interprets the Phrase data and draws it to the grid.
 	 */
-	private void drawPhrase() {
+	private void drawPhrase(int inactiveColor, int activeColor, int strokeColor, float cellWidth) {
 		pa.strokeWeight(1.5f);
-		pa.stroke(0);
+		pa.stroke(strokeColor);
 		pa.rectMode(pa.CORNER);
 		float x = gridFrame.getX1() + cellWidth;
 		for (int i=0; i<pa.phrase.getNumNotes(); i++) {
 			
 			if (i == activeNoteIndex) {
-				pa.fill(PhasesPApplet.getColor2());
+				pa.fill(activeColor);
 			}
 			else {
-				pa.fill(PhasesPApplet.getColor1());
+				pa.fill(inactiveColor);
 			}
 			
 			int pitch = pa.phrase.getSCPitch(i);
@@ -477,27 +446,13 @@ public class Editor extends Screen {
 		pa.strokeWeight(1);
 	}
 	
-	private void updateGrid(Scale newScale) {
-		int[] ys = new int[pa.phrase.getGridRowSize()];
-		for (int i=0; i<pa.phrase.getGridRowSize(); i++) {
-			int pitch = (int)pa.phrase.getGridPitch(i);
-			ys[i] = (int)pitchToY(pitch);
-		}
-		
-		pa.scale = newScale;
-		
-		for (int i=0; i<pa.phrase.getGridRowSize(); i++) {
-			int pitch = yToPitch(ys[i]);
-			pa.phrase.setGridPitch(i, pitch);
-		}
-	}
-	
 	/**
 	 * Draws the empty grid.
+	 * @param color
 	 */
-	private void drawGrid() {
+	private void drawGrid(int color, float cellWidth) {
 		//line color
-		pa.stroke(PhasesPApplet.getColor2());
+		pa.stroke(color);
 		
 		//horizontal lines
 		float y = gridFrame.getY2();
@@ -515,6 +470,21 @@ public class Editor extends Screen {
 			x += cellWidth;
 		}
 		pa.line(x, gridFrame.getY1(), x, gridFrame.getY2());
+	}
+	
+	private void updateGrid(Scale newScale) {
+		int[] ys = new int[pa.phrase.getGridRowSize()];
+		for (int i=0; i<pa.phrase.getGridRowSize(); i++) {
+			int pitch = (int)pa.phrase.getGridPitch(i);
+			ys[i] = (int)pitchToY(pitch);
+		}
+		
+		pa.scale = newScale;
+		
+		for (int i=0; i<pa.phrase.getGridRowSize(); i++) {
+			int pitch = yToPitch(ys[i]);
+			pa.phrase.setGridPitch(i, pitch);
+		}
 	}
 	
 	/**
