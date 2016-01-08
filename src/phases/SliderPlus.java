@@ -28,6 +28,12 @@ public class SliderPlus extends Slider {
 		pg.translate(x(position) , y(position));
 		_myControllerView.display(pg , this);
 
+		//draw white rect under caption label
+		pg.fill(255);
+		pg.noStroke();
+		pg.rectMode(pg.CORNERS);
+		pg.rect(0, -20, getWidth(), 0);
+		
 		//draw caption label
 		pg.textFont(smallFont);
 		pg.fill(0);

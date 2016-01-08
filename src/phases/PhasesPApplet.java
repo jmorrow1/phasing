@@ -118,7 +118,7 @@ public class PhasesPApplet extends PApplet {
 		currentScreen.onEnter();
 		
 		if (currentScreen == editor) {
-			changeScreenButton.setCaptionLabel("Perform");
+			changeScreenButton.setCaptionLabel("Rehearse");
 		}
 		else if (currentScreen == presenter) {
 			changeScreenButton.setCaptionLabel("Compose");
@@ -157,7 +157,7 @@ public class PhasesPApplet extends PApplet {
 		}
 		else if (currentScreen == presenter) {
 			currentScreen = editor;
-			changeScreenButton.setCaptionLabel("Perform");
+			changeScreenButton.setCaptionLabel("Rehearse");
 		}
 		currentScreen.onEnter();
 	}

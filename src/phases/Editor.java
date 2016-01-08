@@ -28,6 +28,8 @@ public class Editor extends Screen {
 	//animation
 	private final int NOT_APPLICABLE = -1;
 	private int activeNoteIndex = NOT_APPLICABLE;
+	//phasing screen graphics
+	private int[] pixelsBuffer;
 	//piano
 	private boolean labelPianoKeys = true;
 	private int minPitch = 60;
@@ -50,7 +52,7 @@ public class Editor extends Screen {
 	private Slider bpmSlider, phaseDifferenceSlider;
 	private DropdownList rootMenu, scaleMenu;
 	private String rootLabel, scaleLabel;
-	
+	private boolean rootMenuOpen, scaleMenuOpen;
 	
 	/**
 	 * 
@@ -85,6 +87,14 @@ public class Editor extends Screen {
 			
 						    @Override
 							public void display(PGraphics pg, Toggle t) {
+						    	if (t.getValue() == 0) {
+						    		//draw white rect under play button
+									pg.rectMode(pg.CORNER);
+									pg.fill(255);
+									pg.stroke(255);
+									pg.rect(0, 0, t.getWidth(), t.getHeight());
+						    	}
+						    	
 								if (t.isMouseOver()) {
 									pg.stroke(0);
 									pg.fill(PhasesPApplet.getColor1());
@@ -113,7 +123,7 @@ public class Editor extends Screen {
 		phaseDifferenceSlider = addBPMSlider(PHASE_DIFFERENCE);
 		
 		//scale menus
-		rootMenu = new DropdownListPlus(cp5, "Root");
+		rootMenu = new DropdownListPlus(cp5, "root");
 		rootMenu.setPosition(155, 19)
 			    .setSize(90, 22*(PhasesPApplet.roots.length+1))
 			    .addItems(PhasesPApplet.roots)
@@ -141,6 +151,16 @@ public class Editor extends Screen {
 	
 		//hide cp5
 		cp5.hide();
+		
+		//init pixels buffer
+		pixelsBuffer = new int[pa.width * pa.height];
+		clearBuffer();
+	}
+	
+	private void clearBuffer() {
+	    for (int i=0; i<pixelsBuffer.length; i++) {
+	        pixelsBuffer[i] = 0xffffffff;
+	    }
 	}
 	
 	private void formatLabel(DropdownList x) {
@@ -160,8 +180,8 @@ public class Editor extends Screen {
 			c.setColorActive(pa.getColor2());
 			c.setColorForeground(0);
 		}
-		else if (c instanceof Slider) {		
-		    c.setColorBackground(pa.color(pa.getColor1(), 175));
+		else if (c instanceof Slider) {
+			c.setColorBackground(pa.lerpColor(pa.getColor1(), pa.color(255), 0.3f));
 		    c.setColorActive(pa.getColor1());
 		    c.setColorForeground(pa.getColor1());
 		}
@@ -201,10 +221,12 @@ public class Editor extends Screen {
 		pa.setBPM1(e.getValue());
 		livePlayer.tempo(pa.getBPM1());
 		pa.setBPM2(e.getValue() + phaseDifferenceSlider.getValue());
+		drawBody();
 	}
 	
 	public void phaseDifference(ControlEvent e) {
 		pa.setBPM2(pa.getBPM1() + e.getValue());
+		drawBody();
 	}
 	
 	/**
@@ -234,7 +256,8 @@ public class Editor extends Screen {
 	@Override
 	public void onEnter() {
 		cp5.show();
-		//redraw();
+		drawToolbar();
+		drawBody();
 	}
 	
 	@Override
@@ -254,7 +277,7 @@ public class Editor extends Screen {
 			}
 			if (success) {
 				userIsDrawingNote = true;
-				//redraw();
+				drawBody();
 			}
 		}
 	}
@@ -279,7 +302,7 @@ public class Editor extends Screen {
 						indexMousePressed++;
 					}
 					pa.phrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_SUSTAIN);
-					//redraw();
+					drawBody();
 				}
 				else if (newIndex < indexMousePressed && newIndex < startIndexOfUserDrawnNote) {
 					pa.phrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
@@ -288,7 +311,7 @@ public class Editor extends Screen {
 						indexMousePressed++;
 					}
 					startIndexOfUserDrawnNote = newIndex;
-					//redraw();
+					drawBody();
 				}
 			}
 			else {
@@ -343,24 +366,66 @@ public class Editor extends Screen {
 			long dt = System.currentTimeMillis() - prev_t;
 			prev_t = System.currentTimeMillis();
 			livePlayer.update(dt * pa.getBPMS1());
+			drawBody();
 		}
-		redraw();
+		
+		drawToolbar();
 	}
 	
+	private void drawToolbarBackground() {
+		pa.noStroke();
+		pa.fill(255);
+		pa.rectMode(pa.CORNER);
+		pa.rect(0, 0, pa.width, 50);
+	}
 	
-	/**
-	 * Redraws every visible thing onto the screen.
-	 */
-	private void redraw() {
-		pa.background(255);
+	private void drawToolbar() {
+		drawToolbarBackground();
+		cp5.draw();
+		updateMenus();
+	}
+	
+	private void drawBody() {
+		pa.noStroke();
+		pa.fill(255);
+		pa.rectMode(pa.CORNERS);
+		pa.rect(0, 50, pa.width, pa.height);
 		
 		drawPiano();
 		drawGrid();
 		drawPhrase();
 		
-		cp5.draw();
-
-		updateMenus();
+		phase(0, 50, (int)(phaseDifferenceSlider.getValue() * 10), pa.color(225));
+	}
+	
+	private void phase(int startX, int startY, int numPixels, int color) {
+		pa.loadPixels();
+	    
+	    int i=startX + startY*pa.width; //loops through pixels
+	    int x=startX;
+	    int y=startY;
+	    while (y < pa.height) {
+	        while (x < pa.width) {
+	            if (pa.pixels[i] != 0xffffffff) {
+	                pixelsBuffer[ (x + numPixels) % pa.width + pa.width*y ] = color;
+	            }
+	            i++;
+	            x++;
+	        }
+	        x = 0;
+	        y++;
+	    }
+	    
+	    i=0;
+	    while (i < pa.pixels.length) {
+	        if (pa.pixels[i] == 0xffffffff) {
+	            pa.pixels[i] = pixelsBuffer[i];
+	        }
+	        pixelsBuffer[i] = 0xffffffff;
+	        i++;
+	    }
+	    
+	    pa.updatePixels();
 	}
 	
 	private void updateMenus() {
@@ -369,6 +434,12 @@ public class Editor extends Screen {
 			scaleLabel = scaleMenu.getLabel();
 			Scale newScale = pa.getScale(rootLabel, scaleLabel);
 			updateGrid(newScale);
+			drawBody();
+		}
+		else if (rootMenu.isOpen() != rootMenuOpen || scaleMenu.isOpen() != scaleMenuOpen) {
+			rootMenuOpen = rootMenu.isOpen();
+			scaleMenuOpen = scaleMenu.isOpen();
+			drawBody();
 		}
 	}
 	
