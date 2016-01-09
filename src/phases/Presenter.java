@@ -24,11 +24,14 @@ public class Presenter extends Screen {
 	private boolean playing;
 	private int sign;
 	//views
-	View view;
+	PhaseShifter view;
 	//view graph
 	private Circle planet;
 	private ArrayList<Line> edges = new ArrayList<Line>();
 	private ArrayList<Circle> satellites = new ArrayList<Circle>();
+	//user interaction with view graph
+	private Circle hoveredSatellite;
+	private boolean blockHoverEffects;
 	
 	/**
 	 * 
@@ -36,29 +39,6 @@ public class Presenter extends Screen {
 	 */
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
-	}
-	
-	private void setupViewGraph(float cenx, float ceny, float minDist, float maxDist, int numSatellites, float nodeRadius) {
-		planet = new Circle(cenx, ceny, nodeRadius);
-		
-		float theta = 0;
-		float dTheta = PApplet.TWO_PI / numSatellites;
-		for (int i=0; i<numSatellites; i++) {
-			float dist = pa.random(minDist, maxDist);
-			float angle = theta + PApplet.map((float)Math.random(), -1, 1, -dTheta*0.125f, dTheta*0.125f);
-			
-			Circle sat = new Circle(cenx + dist*PApplet.cos(angle),
-	                  		ceny + dist*PApplet.sin(angle), nodeRadius);
-			
-			satellites.add(sat);
-			
-			float a1 = pa.atan2(planet.getY() - sat.getY(), planet.getX() - sat.getX());
-			float a2 = a1 + pa.PI;
-			edges.add(new Line(sat.getX() + pa.cos(a1) * sat.getRadius(), sat.getY() + pa.sin(a1) * sat.getRadius(),
-						planet.getX() + pa.cos(a2) * planet.getRadius(), planet.getY() + pa.sin(a2) * planet.getRadius()));
-			
-			theta += dTheta;
-		}
 	}
 	
 	@Override
@@ -91,7 +71,7 @@ public class Presenter extends Screen {
 		prev_notept1 = 0;
 		prev_notept2 = 0;
 		
-		setupViewGraph(pa.width - 85, pa.height - 85, 50, 70, 5, 14);
+		setupViewGraph();
 	}
 	
 	@Override
@@ -132,6 +112,37 @@ public class Presenter extends Screen {
 		drawViewGraph();
 	}
 	
+	private void setupViewGraph() {
+		setupViewGraph(pa.width - 100, pa.height - 80, 75, 50, 85, 60, view.numOptions(), 16);
+	}
+	
+	private void setupViewGraph(float cenx, float ceny, float w1, float h1, float w2, float h2,
+			int numSatellites, float nodeRadius) {
+		planet = new Circle(cenx, ceny, nodeRadius);
+		
+		satellites.clear();
+		edges.clear();
+		
+		float theta = 0;
+		float dTheta = PApplet.TWO_PI / numSatellites;
+		for (int i=0; i<numSatellites; i++) {
+			float angle = theta + PApplet.map((float)Math.random(), -1, 1, -dTheta*0.125f, dTheta*0.125f);
+			
+			float lerpAmt = (float)Math.random();
+			Circle sat = new Circle(cenx + pa.cos(angle) * pa.lerp(w1, w2, lerpAmt),
+					                ceny + pa.sin(angle) * pa.lerp(h1, h2, lerpAmt), nodeRadius);
+			
+			satellites.add(sat);
+			
+			float a1 = pa.atan2(planet.getY() - sat.getY(), planet.getX() - sat.getX());
+			float a2 = a1 + pa.PI;
+			edges.add(new Line(sat.getX() + pa.cos(a1) * sat.getRadius(), sat.getY() + pa.sin(a1) * sat.getRadius(),
+						planet.getX() + pa.cos(a2) * planet.getRadius(), planet.getY() + pa.sin(a2) * planet.getRadius()));
+			
+			theta += dTheta;
+		}
+	}
+	
 	private void drawViewGraph() {
 		pa.strokeWeight(2);
 		pa.stroke(0, 150);
@@ -148,5 +159,35 @@ public class Presenter extends Screen {
 	
 	@Override
 	public void mousePressed() {
+		if (hoveredSatellite != null) {
+			blockHoverEffects = true;
+			setupViewGraph();
+		}
+	}
+	
+	@Override
+	public void mouseMoved() {
+		boolean mouseHoveredOverSatellite = false;
+		
+		for (int i=0; i<satellites.size(); i++) {
+			Circle sat = satellites.get(i);
+			if (sat.intersects(pa.mouseX, pa.mouseY)) {
+				if (!blockHoverEffects && hoveredSatellite != sat) {
+					view.incrementOption(i);
+					hoveredSatellite = sat;
+				}
+				mouseHoveredOverSatellite = true;
+				break;
+			}
+		}
+		
+		if (!mouseHoveredOverSatellite && blockHoverEffects) {
+			blockHoverEffects = false;
+			hoveredSatellite = null;
+		}
+		else if (hoveredSatellite != null && !mouseHoveredOverSatellite) {
+			view.decrementOption(satellites.indexOf(hoveredSatellite));
+			hoveredSatellite = null;
+		}
 	}
 }

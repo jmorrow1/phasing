@@ -17,7 +17,7 @@ public class PhaseShifter extends View {
 	private float minRadius, maxRadius;
 	
 	//scrolling or rotating movement:
-	private float movementAcc1=0, movementAcc2=0, dNoteptAcc=0;
+	private float translateAcc1, translateAcc2, rotateAcc1, rotateAcc2, dNoteptAcc=0;
 	private float pixelsPerNoteTime, radiansPerNoteTime;
 	
 	//phrase readers:
@@ -36,6 +36,7 @@ public class PhaseShifter extends View {
 	private final int RELATIVE=0, FIXED=1;
 	private int cameraType = RELATIVE;
 	
+	private final int numPhraseGraphicTypes = 5;
 	private final int SYMBOLS=0, DOTS=1, CONNECTED_DOTS=2, RECTS_OR_SECTORS=3, SINE_WAVE=4;
 	private int phraseGraphicType = DOTS;
 	
@@ -43,12 +44,97 @@ public class PhaseShifter extends View {
 	
 	private final int MONOCHROMATIC=0, DIACHROMATIC=1;
 	private int colorSchemeType = DIACHROMATIC;
+	
+	public String showCurrentSettings() {
+		String s = "[";
+		for (int i=0; i<numOptions(); i++) {
+			s += showSetting(i);
+			if (i != numOptions()-1) {
+				s += ", ";
+			}
+		}
+		s += "]";
+		return s;
+	}
+	
+	public String showSetting(int index) {
+		String s = "";
+		switch (index) {
+			case 0: return "show active note? " + showActiveNote;
+			case 1: return "movement type: " + ((movementType == SCROLLS) ? "SCROLLS" : "ROTATES");
+			case 2: return "camera type: " + ((cameraType == RELATIVE) ? "RELATIVE" : "FIXED");
+			case 3: 
+				s += "phrase graphic type: ";
+				switch (phraseGraphicType) {
+					case SYMBOLS: s += "SYMBOLS"; break;
+					case DOTS: s += "DOTS"; break;
+					case CONNECTED_DOTS: s += "CONNECTED_DOTS"; break;
+					case RECTS_OR_SECTORS: s += "RECTS_OR_SECTORS"; break;
+					case SINE_WAVE: s += "SINE_WAVE"; break;
+					default: s += phraseGraphicType; break;
+				}
+				return s;
+			case 4: return "do plot pitch? " + doPlotPitch;
+			case 5: return "color scheme type: " + ((colorSchemeType == MONOCHROMATIC) ? "MONOCHROMATIC" : "DIACHROMATIC");
+			default: return s;
+		}
+	}
+	
+	public int numOptions() {
+		return 6;
+	}
+	
+	public void incrementOption(int index) {
+		switch (index) {
+			case 0:
+				showActiveNote = !showActiveNote;
+				break;
+			case 1:
+				movementType = (movementType == SCROLLS) ? ROTATES : SCROLLS;
+				break;
+			case 2:
+				cameraType = (cameraType == RELATIVE) ? FIXED : RELATIVE;
+				break;
+			case 3:
+				phraseGraphicType = (phraseGraphicType + 1) % numPhraseGraphicTypes;
+				break;
+			case 4:
+				doPlotPitch = !doPlotPitch;
+				break;
+			case 5:
+				colorSchemeType = (colorSchemeType == MONOCHROMATIC) ? DIACHROMATIC : MONOCHROMATIC;
+				break;
+		}
+	}
+	
+	public void decrementOption(int index) {
+		switch (index) {
+			case 0:
+				showActiveNote = !showActiveNote;
+				break;
+			case 1:
+				movementType = (movementType == SCROLLS) ? ROTATES : SCROLLS;
+				break;
+			case 2:
+				cameraType = (cameraType == RELATIVE) ? FIXED : RELATIVE;
+				break;
+			case 3:
+				phraseGraphicType = PhasesPApplet.remainder(phraseGraphicType - 1, numPhraseGraphicTypes);
+				break;
+			case 4:
+				doPlotPitch = !doPlotPitch;
+				break;
+			case 5:
+				colorSchemeType = (colorSchemeType == MONOCHROMATIC) ? DIACHROMATIC : MONOCHROMATIC;
+				break;
+		}
+	}
 
 	public PhaseShifter(Rect rect, int opacity, PhasesPApplet pa) {
 		super(rect, opacity, pa);
 		this.pa = pa;
 		
-		width = this.getWidth()*0.9f;
+		width = this.getWidth();
 		height = this.getHeight()*0.5f;
 		halfWidth = width*0.5f;
 		halfHeight = height*0.5f;
@@ -111,35 +197,44 @@ public class PhaseShifter extends View {
 		
 		pa.translate(this.getCenx(), this.getCeny());
 		
+		incrementTransformAccumulators(dNotept1, dNotept2);
+		
 		//draw graphics for player 1
 		pa.pushMatrix();
-			movementAcc1 = incrementMovement(movementAcc1, dNotept1);
-			transform(movementAcc1);
+			transform(1);
 			drawPhraseGraphic(activeNote1, (this.colorSchemeType == DIACHROMATIC) ? pa.getColor1() : 0, pa.getBPM1());
 		pa.popMatrix();
 		
 		//draw graphics for player 2
 		pa.pushMatrix();
-			movementAcc2 = incrementMovement(movementAcc2, dNotept2);
-			transform(movementAcc2);
+			transform(2);
 			drawPhraseGraphic(activeNote2, (this.colorSchemeType == DIACHROMATIC) ? pa.getColor2() : 0, pa.getBPM2());
 		pa.popMatrix();
 		
 		pa.popMatrix();
 	}
 	
-	private float incrementMovement(float movementAcc, float dNotept) {
-		switch(movementType) {
-			case SCROLLS: return PhasesPApplet.remainder(movementAcc + pixelsPerNoteTime * dNotept, width);
-			case ROTATES: return movementAcc + radiansPerNoteTime * dNotept;
-			default: return -1;
-		}
+	private void incrementTransformAccumulators(float dNotept1, float dNotept2) {
+		translateAcc1 = PhasesPApplet.remainder(translateAcc1 + pixelsPerNoteTime * dNotept1, width);
+		translateAcc2 = PhasesPApplet.remainder(translateAcc2 + pixelsPerNoteTime * dNotept2, width);
+		rotateAcc1 = rotateAcc1 + radiansPerNoteTime * dNotept1;
+		rotateAcc2 = rotateAcc2 + radiansPerNoteTime * dNotept2;
+			
 	}
 
-	private void transform(float movementAcc) {
+	private void transform(int playerNum) {
+		if (playerNum == 1) {
+			transform(translateAcc1, rotateAcc1);
+		}
+		else if (playerNum == 2) {
+			transform(translateAcc2, rotateAcc2);
+		}
+	}
+	
+	private void transform(float translateAmt, float rotateAmt) {
 		switch(movementType) {
-			case SCROLLS: pa.translate(movementAcc, 0); break;
-			case ROTATES: pa.rotate(movementAcc); break;
+			case SCROLLS: pa.translate(translateAmt, 0); break;
+			case ROTATES: pa.rotate(rotateAmt); break;
 		}
 	}
 	
@@ -196,8 +291,6 @@ public class PhaseShifter extends View {
 				
 				break;
 			case SINE_WAVE:
-				pa.noFill();
-				pa.stroke(color);
 				break;
 		}
 	}
@@ -210,12 +303,14 @@ public class PhaseShifter extends View {
                                newMin, newMax);
 		}
 		else {
-			return 1;
+			return (int)pa.lerp(pa.phrase.minPitch(), pa.phrase.maxPitch(), 0.5f);
 		}
 	}
 	
 	private void drawPhraseGraphic(int activeNote, int color, float bpm) {
 		if (phraseGraphicType == SINE_WAVE) {
+			pa.noFill();
+			pa.stroke(color);
 			if (movementType == SCROLLS) {
 				drawSineWave();
 			}

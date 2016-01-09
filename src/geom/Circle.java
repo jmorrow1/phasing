@@ -13,7 +13,7 @@ public class Circle extends Shape {
 	}
 	
 	public boolean intersects(float x, float y) {
-		return (x-this.x)*(x-this.x) + (y-this.y)*(y-this.y) < radius;
+		return (x-this.x)*(x-this.x) + (y-this.y)*(y-this.y) < sqRadius;
 	}
 	
 	public void display(PApplet pa) {
