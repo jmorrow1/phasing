@@ -2,9 +2,8 @@ package phases;
 
 import java.util.ArrayList;
 
-import controlP5.Button;
-import controlP5.ControlP5;
 import geom.Circle;
+import geom.Line;
 import geom.Rect;
 import processing.core.PApplet;
 import views.PhaseShifter;
@@ -27,8 +26,8 @@ public class Presenter extends Screen {
 	//views
 	View view;
 	//view graph
-	private float nodeRadius;
 	private Circle planet;
+	private ArrayList<Line> edges = new ArrayList<Line>();
 	private ArrayList<Circle> satellites = new ArrayList<Circle>();
 	
 	/**
@@ -39,30 +38,26 @@ public class Presenter extends Screen {
 		super(pa);
 	}
 	
-	private void setupViewGraph(float cenx, float ceny, float maxDist, int numSatellites) {
+	private void setupViewGraph(float cenx, float ceny, float minDist, float maxDist, int numSatellites, float nodeRadius) {
 		planet = new Circle(cenx, ceny, nodeRadius);
 		
 		float theta = 0;
 		float dTheta = PApplet.TWO_PI / numSatellites;
 		for (int i=0; i<numSatellites; i++) {
-			float dist = (float)Math.random() * maxDist;
+			float dist = pa.random(minDist, maxDist);
 			float angle = theta + PApplet.map((float)Math.random(), -1, 1, -dTheta*0.125f, dTheta*0.125f);
-			satellites.add(new Circle(cenx + dist*PApplet.cos(angle),
-					                  ceny + dist*PApplet.sin(angle), nodeRadius));
+			
+			Circle sat = new Circle(cenx + dist*PApplet.cos(angle),
+	                  		ceny + dist*PApplet.sin(angle), nodeRadius);
+			
+			satellites.add(sat);
+			
+			float a1 = pa.atan2(planet.getY() - sat.getY(), planet.getX() - sat.getX());
+			float a2 = a1 + pa.PI;
+			edges.add(new Line(sat.getX() + pa.cos(a1) * sat.getRadius(), sat.getY() + pa.sin(a1) * sat.getRadius(),
+						planet.getX() + pa.cos(a2) * planet.getRadius(), planet.getY() + pa.sin(a2) * planet.getRadius()));
+			
 			theta += dTheta;
-		}
-	}
-	
-	private void drawViewGraph() {
-		pa.stroke(0);
-		for (Circle c : satellites) {
-			pa.line(c.getX(), c.getY(), planet.getX(), planet.getY());
-		}
-		
-		pa.fill(255);
-		planet.display(pa);
-		for (Circle c : satellites) {
-			c.display(pa);
 		}
 	}
 	
@@ -95,6 +90,8 @@ public class Presenter extends Screen {
 		
 		prev_notept1 = 0;
 		prev_notept2 = 0;
+		
+		setupViewGraph(pa.width - 85, pa.height - 85, 50, 70, 5, 14);
 	}
 	
 	@Override
@@ -131,6 +128,22 @@ public class Presenter extends Screen {
 		pa.background(255);
 
 		view.update(dNotept1, dNotept2, sign);
+		
+		drawViewGraph();
+	}
+	
+	private void drawViewGraph() {
+		pa.strokeWeight(2);
+		pa.stroke(0, 150);
+		pa.noFill();
+		planet.display(pa);
+		for (Circle c : satellites) {
+			c.display(pa);
+		}
+
+		for (Line e : edges) {
+			e.display(pa);
+		}
 	}
 	
 	@Override

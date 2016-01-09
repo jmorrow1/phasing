@@ -130,9 +130,9 @@ public class PhaseShifter extends View {
 	
 	private float incrementMovement(float movementAcc, float dNotept) {
 		switch(movementType) {
-		case SCROLLS: return PhasesPApplet.remainder(movementAcc + pixelsPerNoteTime * dNotept, width);
-		case ROTATES: return movementAcc + radiansPerNoteTime * dNotept;
-		default: return -1;
+			case SCROLLS: return PhasesPApplet.remainder(movementAcc + pixelsPerNoteTime * dNotept, width);
+			case ROTATES: return movementAcc + radiansPerNoteTime * dNotept;
+			default: return -1;
 		}
 	}
 
@@ -290,6 +290,7 @@ public class PhaseShifter extends View {
 		}
 		else if (phraseGraphicType == DOTS) {
 			Point a = getNoteGraphicPoint(index);
+			pa.ellipseMode(pa.CENTER);
 			pa.ellipse(a.x, a.y, 20, 20);
 			if (movementType == SCROLLS) {
 				pa.ellipse(a.x - width, a.y, 20, 20);
@@ -299,6 +300,7 @@ public class PhaseShifter extends View {
 		else if (phraseGraphicType == CONNECTED_DOTS) {
 			Point a = getNoteGraphicPoint(index);
 			Point b = getNoteGraphicPoint(index+1);
+			pa.ellipseMode(pa.CENTER);
 			pa.ellipse(a.x, a.y, 20, 20);
 			pa.line(a.x, a.y, b.x, b.y);
 			if (movementType == SCROLLS) {

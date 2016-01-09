@@ -186,9 +186,11 @@ public class LiveScorer extends View {
 				pa.text(symbol, startX, startY);
 			}
 			else if (noteType == DOTS) {
+				pa.ellipseMode(pa.CENTER);
 				pa.ellipse(startX, startY, 20, 20);
 			}
 			else if (noteType == CONNECTED_DOTS) {
+				pa.ellipseMode(pa.CENTER);
 				pa.ellipse(startX, startY, 20, 20);
 				if (!rightmostPoint) {
 					pa.line(startX, startY, endX, endY);
