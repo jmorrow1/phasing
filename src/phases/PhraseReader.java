@@ -63,6 +63,19 @@ public class PhraseReader {
 		}
 	}
 	
+	public void setCallback(Object callee, Method callback) {
+		this.callee = callee;
+		this.callback = callback;
+	}
+	
+	public void setCallee(Object callee) {
+		this.callee = callee;
+	}
+	
+	public void setCallback(Method callback) {
+		this.callback = callback;
+	}
+	
 	/**
 	 * 
 	 * @return The integer identifier of this PhraseReader.

@@ -22,37 +22,65 @@ public class Musician extends View {
 	private int firstPitch = 48;
 	
 	//options:
-	private final int SUPERIMPOSED=0, SEPARATE=1;
+	private final int SUPERIMPOSED=0, SEPARATED=1;
 	private int superimposedOrSeparated = SUPERIMPOSED;
 	
 	private final int MONOCHROME=0, DIACHROME=1;
 	private int colorSchemeType = MONOCHROME;
 	
+	private final int numInstruments = 1;
 	private final int PIANO=0;
 	private int instrument = PIANO;
 	
 	@Override
 	public int numOptions() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 3;
 	}
 
 	@Override
 	public void incrementOption(int index) {
-		// TODO Auto-generated method stub
-		
+		switch (index) {
+			case 0: superimposedOrSeparated = (superimposedOrSeparated == SEPARATED) ? SUPERIMPOSED : SEPARATED; break;
+			case 1: colorSchemeType = (colorSchemeType == MONOCHROME) ? DIACHROME : MONOCHROME; break;
+			case 2: instrument = (instrument+1) % numInstruments; break;
+		}
+		updateState();
 	}
 
 	@Override
 	public void decrementOption(int index) {
-		// TODO Auto-generated method stub
-		
+		switch (index) {
+			case 0: superimposedOrSeparated = (superimposedOrSeparated == SEPARATED) ? SUPERIMPOSED : SEPARATED; break;
+			case 1: colorSchemeType = (colorSchemeType == MONOCHROME) ? DIACHROME : MONOCHROME; break;
+			case 2: instrument = PhasesPApplet.remainder(instrument-1, numInstruments); break;
+		}
+		updateState();
+	}
+	
+	private void updateState() {
+		initInstrumentPlayers();
+		readerA.setCallee(playerA);
+		readerB.setCallee(playerB);
 	}
 
 	@Override
 	public String showOption(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		String s = "";
+		switch (index) {
+			case 0: 
+				return "superimposed or separated? " 
+						+ ((superimposedOrSeparated == SUPERIMPOSED) ? "SUPERIMPOSED" : "SEPARATED");
+			case 1:
+				return "color scheme type: " + ((colorSchemeType == MONOCHROME) ? "MONOCHROME" : "DIACHROME");
+			case 2:
+				s += "instrument: ";
+				switch (instrument) {
+					case PIANO: s += "PIANO"; break;
+					default: s += instrument; break;
+				}
+				return s;
+			default: return s;
+		}
 	}
 	
 	public Musician(Rect rect, int opacity, PhasesPApplet pa) {
@@ -100,20 +128,15 @@ public class Musician extends View {
 	}
 	
 	private void initPianos(int size) {
-		if (superimposedOrSeparated == SUPERIMPOSED) {
-			pianoAB = new Piano(4, new Rect(this.getCenx(), this.getCeny(),
-					            0.75f*this.getWidth(), size, PApplet.CENTER), true, false, pa.color(255));
-		}
-		else {
-			pianoA = new Piano(4, new Rect(this.getCenx(), this.getCeny() - size,
-							   0.75f*this.getWidth(), size, PApplet.CENTER), true, false, pa.color(255));
-			
-			pianoB = new Piano(4, new Rect(this.getCenx(), this.getCeny() + size,
-							   0.75f*this.getWidth(), size, PApplet.CENTER), true, false, pa.color(255));
-		}
+		pianoAB = new Piano(4, new Rect(this.getCenx(), this.getCeny(),
+				            0.75f*this.getWidth(), size, PApplet.CENTER), true, false, pa.color(255));
+		pianoA = new Piano(4, new Rect(this.getCenx(), this.getCeny() - size,
+						   0.75f*this.getWidth(), size, PApplet.CENTER), true, false, pa.color(255));	
+		pianoB = new Piano(4, new Rect(this.getCenx(), this.getCeny() + size,
+						   0.75f*this.getWidth(), size, PApplet.CENTER), true, false, pa.color(255));
 	}
-	
-	private void initInstrumentPlayers() {
+
+	private void initInstrumentPlayers() {	
 		if (superimposedOrSeparated == SUPERIMPOSED) {
 			playerA = new InstrumentPlayer(instrumentAB, pa.phrase, firstPitch);
 			playerB = new InstrumentPlayer(instrumentAB, pa.phrase, firstPitch);
@@ -121,6 +144,17 @@ public class Musician extends View {
 		else {
 			playerA = new InstrumentPlayer(instrumentA, pa.phrase, firstPitch);
 			playerB = new InstrumentPlayer(instrumentB, pa.phrase, firstPitch);
+		}
+	}
+	
+	private void reinitInstrumentPlayers() {
+		if (superimposedOrSeparated == SUPERIMPOSED) {
+			playerA = new InstrumentPlayer(instrumentAB, playerA);
+			playerB = new InstrumentPlayer(instrumentAB, playerB);
+		}
+		else {
+			playerA = new InstrumentPlayer(instrumentA, playerA);
+			playerB = new InstrumentPlayer(instrumentB, playerB);
 		}
 	}
 	
