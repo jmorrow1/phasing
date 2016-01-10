@@ -5,6 +5,13 @@ import processing.core.PApplet;
 public class Circle extends Shape {
 	private float x, y, radius, sqRadius;
 	
+	public Circle(Circle circle) {
+		this.x = circle.x;
+		this.y = circle.y;
+		this.radius = circle.radius;
+		this.sqRadius = circle.sqRadius;
+	}
+	
 	public Circle(float x, float y, float radius) {
 		this.x = x;
 		this.y = y;
@@ -16,14 +23,21 @@ public class Circle extends Shape {
 		return (x-this.x)*(x-this.x) + (y-this.y)*(y-this.y) < sqRadius;
 	}
 	
+	@Override
 	public void display(PApplet pa) {
 		pa.ellipseMode(pa.RADIUS);
 		pa.ellipse(x, y, radius, radius);
 	}
 	
+	@Override
 	public void translate(float dx, float dy) {
 		x += dx;
 		y += dy;
+	}
+	
+	@Override
+	public Point getCenter() {
+		return new Point(x, y);
 	}
 	
 	public float getX() {
@@ -49,5 +63,10 @@ public class Circle extends Shape {
 	public void setRadius(float radius) {
 		this.radius = radius;
 		sqRadius = radius*radius;
+	}
+	
+	@Override
+	public Circle clone() {
+		return new Circle(this);
 	}
 }

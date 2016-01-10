@@ -170,6 +170,14 @@ public class Rect extends Shape {
 	public float getCenx() {
 		return x1 + width/2f;
 	}
+	
+	public Point getCenter() {
+		return new Point(getCenx(), getCeny());
+	}
+	
+	public void setCenter(float x, float y) {
+		translate(x - getCenx(), y - getCeny());
+	}
 
 	/**
 	 * 
@@ -273,5 +281,10 @@ public class Rect extends Shape {
 	            i++;
 	        }
 	    }
+	}
+	
+	@Override
+	public Rect clone() {
+		return new Rect(this);
 	}
 }

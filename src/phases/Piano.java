@@ -1,7 +1,9 @@
 package phases;
 
 import geom.Point;
+import geom.Polygon;
 import geom.Rect;
+import geom.Shape;
 import processing.core.PApplet;
 
 /**
@@ -15,12 +17,10 @@ public class Piano extends Rect implements Instrument {
 	private int numOctaves;
 	private boolean facePositive;
 	//keys
-	private Rect[] whiteKeys, blackKeys, keys;
-	/*
+	//private Rect[] whiteKeys, blackKeys, keys;
 	private Polygon[] whiteKeys;
 	private Rect[] blackKeys;
 	private Shape[] keys;
-	 */
 	private int blackKeyColor;
 	
 	public Piano(int numOctaves, Rect rect, boolean facePositive, int blackKeyColor) {
@@ -43,9 +43,33 @@ public class Piano extends Rect implements Instrument {
 		int numKeys = numOctaves * 12;
 		int numWhiteKeys = numOctaves * 7;
 		int numBlackKeys = numOctaves * 5;
-		keys = new Rect[numKeys];
-		whiteKeys = new Rect[numWhiteKeys];
+		keys = new Shape[numKeys];
+		whiteKeys = new Polygon[numWhiteKeys];
 		blackKeys = new Rect[numBlackKeys];
+	}
+	
+	private Polygon initWhiteKey(int keyIndex, float x1, float y1, float whiteKeyWidth, float whiteKeyHeight, float blackKeyWidth, float blackKeyHeight) {
+		boolean leftNeighborIsBlack = isBlackKey(keyIndex-1);
+		boolean rightNeighborIsBlack = isBlackKey(keyIndex+1);
+		
+		float x2 = x1 + blackKeyWidth/2f;
+		float x3 = x1 + whiteKeyWidth - blackKeyWidth/2f;
+		float x4 = x1 + whiteKeyWidth;
+		float y2 = y1 + blackKeyHeight;
+		float y3 = y1 + whiteKeyHeight;	
+		
+		if (leftNeighborIsBlack && !rightNeighborIsBlack) {
+			return new Polygon(new float[] {x2, y1, x4, y1, x4, y3, x1, y3, x1, y2, x2, y2});
+		}
+		else if (!leftNeighborIsBlack && rightNeighborIsBlack) {
+			return new Polygon(new float[] {x1, y1, x3, y1, x3, y2, x4, y2, x4, y3, x1, y3});	
+		}
+		else if (leftNeighborIsBlack && rightNeighborIsBlack) {
+			return new Polygon(new float[] {x2, y1, x3, y1, x3, y2, x4, y2, x4, y3, x1, y3, x1, y2, x2, y2});
+		}
+		else {
+			return null;
+		}	
 	}
 	
 	private void initKeys() {
@@ -67,7 +91,8 @@ public class Piano extends Rect implements Instrument {
 		int k=0; //looping variable for blackKeys
 		for (int i=0; i<numKeys; i++) { //looping variable for all keys
 			//init white keys
-			whiteKeys[j++] = new Rect(x1, y1, whiteKeyWidth, whiteKeyHeight, PApplet.CORNER);
+			//whiteKeys[j++] = new Rect(x1, y1, whiteKeyWidth, whiteKeyHeight, PApplet.CORNER);
+			whiteKeys[j++] = initWhiteKey(i, x1, y1, whiteKeyWidth, whiteKeyHeight, blackKeyWidth, blackKeyHeight);
 			keys[i] = whiteKeys[j-1];
 			//init black keys
 			if (i % 12 != 4 && i % 12 != 11) {
@@ -185,9 +210,9 @@ public class Piano extends Rect implements Instrument {
 	 * @param i
 	 * @return
 	 */
-	public Rect getKeyCopy(int i) {
+	public Shape getKeyCopy(int i) {
 		if (0 <= i && i < keys.length) {
-			return new Rect(keys[i]);
+			return keys[i].clone();
 		}
 		else {
 			System.err.println("index out of range in call to Piano.getKeyCopy(" + i + ")");
@@ -202,7 +227,7 @@ public class Piano extends Rect implements Instrument {
 	 */
 	public Point getKeyCenter(int i) {
 		if (0 <= i && i < keys.length) {
-			return new Point(keys[i].getCenx(), keys[i].getCeny());
+			return keys[i].getCenter();
 		}
 		else {
 			System.err.println("index out of range in call to Piano.getKeyCenter(" + i + ")");
@@ -212,14 +237,13 @@ public class Piano extends Rect implements Instrument {
 	
 	/**
 	 * Returns a rectangle the same size as the white keys in this piano.
-	 * The rectangle will be positioned with its upper left corner at (0, 0).
+	 * The rectangle will be positioned with its center at (0, 0).
 	 * @return
 	 */
-	public Rect getWhiteKeyCopy() {
+	public Polygon getWhiteKeyCopy() {
 		if (whiteKeys.length > 0) {
-			Rect copy = new Rect(whiteKeys[0]);
-			copy.setX1(0);
-			copy.setY1(0);
+			Polygon copy = new Polygon(whiteKeys[0]);
+			copy.setCenter(0, 0);
 			return copy;
 		}
 		else {
@@ -229,14 +253,13 @@ public class Piano extends Rect implements Instrument {
 	
 	/**
 	 * Returns a rectangle the same size as the black keys in this piano.
-     * The rectangle will be positioned with its upper left corner at (0, 0).
+     * The rectangle will be positioned with its center at (0, 0).
 	 * @return
 	 */
 	public Rect getBlackKeyCopy() {
 		if (blackKeys.length > 0) {
 			Rect copy = new Rect(blackKeys[0]);
-			copy.setX1(0);
-			copy.setY1(0);
+			copy.setCenter(0, 0);
 			return copy;
 		}
 		else {
@@ -250,7 +273,6 @@ public class Piano extends Rect implements Instrument {
 	 * @return True if the given midi pitch value cooresponds to a white piano key, false otherwise.
 	 */
 	public static boolean isWhiteKey(int midiPitch) {
-		midiPitch %= 12;
 		return !isBlackKey(midiPitch);
 	}
 	
@@ -260,7 +282,7 @@ public class Piano extends Rect implements Instrument {
 	 * @return True if the given midi pitch value cooresponds to a black piano key, false otherwise.
 	 */
 	public static boolean isBlackKey(int i) {
-		i %= 12;
+		i = PhasesPApplet.remainder(i, 12);
 		return i == 1 || i == 3 || i == 6 || i == 8 || i == 10;
 	}
 }
