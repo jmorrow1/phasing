@@ -21,11 +21,11 @@ public class PhaseShifter extends View {
 	private float pixelsPerNoteTime, radiansPerNoteTime;
 	
 	//phrase readers:
-	PhraseReader readerA, readerB;
+	private PhraseReader readerA, readerB;
 	private final int ONE_ID = 1, TWO_ID = 2;
 	
 	//active note:
-	int activeNote1, activeNote2;
+	private int activeNote1, activeNote2;
 	
 	//options:
 	private boolean showActiveNote = true;
@@ -181,10 +181,10 @@ public class PhaseShifter extends View {
 		readerB.update(dNotept2);
 		
 		if (cameraType == RELATIVE) {
-			dNotept2 = (dNotept1 - dNotept2) + dNoteptAcc;
+			dNotept2 = (dNotept2 - dNotept1) + dNoteptAcc;
 			dNotept1 = 0;
 			
-			if ( (dNotept2 < 0 && sign < 0) || (dNotept2 > 0 && sign > 0) ) {
+			if ( (dNotept2 < 0 && sign > 0) || (dNotept2 > 0 && sign < 0) ) {
 				dNoteptAcc = dNotept2;
 				dNotept2 = 0;
 			}
@@ -197,7 +197,7 @@ public class PhaseShifter extends View {
 		
 		pa.translate(this.getCenx(), this.getCeny());
 		
-		incrementTransformAccumulators(dNotept1, dNotept2);
+		updateTransformAccumulators(dNotept2, dNotept1);
 		
 		//draw graphics for player 1
 		pa.pushMatrix();
@@ -214,12 +214,11 @@ public class PhaseShifter extends View {
 		pa.popMatrix();
 	}
 	
-	private void incrementTransformAccumulators(float dNotept1, float dNotept2) {
+	private void updateTransformAccumulators(float dNotept1, float dNotept2) {
 		translateAcc1 = PhasesPApplet.remainder(translateAcc1 + pixelsPerNoteTime * dNotept1, width);
 		translateAcc2 = PhasesPApplet.remainder(translateAcc2 + pixelsPerNoteTime * dNotept2, width);
 		rotateAcc1 = rotateAcc1 + radiansPerNoteTime * dNotept1;
 		rotateAcc2 = rotateAcc2 + radiansPerNoteTime * dNotept2;
-			
 	}
 
 	private void transform(int playerNum) {
