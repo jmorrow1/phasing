@@ -14,7 +14,6 @@ public class Piano extends Rect implements Instrument {
 	//independent parameters
 	private int numOctaves;
 	private boolean facePositive;
-	private boolean allKeysEqualSize;
 	//keys
 	private Rect[] whiteKeys, blackKeys, keys;
 	/*
@@ -24,16 +23,11 @@ public class Piano extends Rect implements Instrument {
 	 */
 	private int blackKeyColor;
 	
-	public Piano(int numOctaves, Rect rect, boolean facePositive) {
-		this(numOctaves, rect, facePositive, false, 0);
-	}
-
-	public Piano(int numOctaves, Rect rect, boolean facePositive, boolean allKeysEqualSize, int blackKeyColor) {
+	public Piano(int numOctaves, Rect rect, boolean facePositive, int blackKeyColor) {
 		super(rect);
 		
 		this.numOctaves = numOctaves;
 		this.facePositive = facePositive;
-		this.allKeysEqualSize = allKeysEqualSize;
 		
 		if (numOctaves >= 0) {
 			initArrays();
@@ -57,7 +51,7 @@ public class Piano extends Rect implements Instrument {
 	private void initKeys() {
 		//dependent parameters
 		int numKeys = numOctaves * 12;
-		float divisor = (allKeysEqualSize) ? numKeys : numOctaves*7f;
+		float divisor = numOctaves*7f;
 		float whiteKeyWidth = (getWidth() > getHeight()) ? (getWidth()-1) / divisor : 
 			                                                getWidth();
 		
@@ -78,29 +72,17 @@ public class Piano extends Rect implements Instrument {
 			//init black keys
 			if (i % 12 != 4 && i % 12 != 11) {
 				if (getWidth() > getHeight()) {
-					if (allKeysEqualSize) {
-						x1 += whiteKeyWidth;
-						blackKeys[k++] = new Rect(x1, y1, whiteKeyWidth, whiteKeyHeight, PApplet.CORNER);
-					}
-					else {
-						blackKeys[k++] = new Rect(x1 + whiteKeyWidth - blackKeyWidth/2f, y1, 
-								                  blackKeyWidth, blackKeyHeight, PApplet.CORNER);	
-						if (!facePositive) {
-							blackKeys[k-1].translate(0, whiteKeyHeight-blackKeyHeight);
-						}
+					blackKeys[k++] = new Rect(x1 + whiteKeyWidth - blackKeyWidth/2f, y1, 
+							                  blackKeyWidth, blackKeyHeight, PApplet.CORNER);	
+					if (!facePositive) {
+						blackKeys[k-1].translate(0, whiteKeyHeight-blackKeyHeight);
 					}
 				}
 				else {
-					if (allKeysEqualSize) {
-						y1 += whiteKeyHeight;
-						blackKeys[k++] = new Rect(x1, y1, whiteKeyWidth, whiteKeyHeight, PApplet.CORNER);
-					}
-					else {
-						blackKeys[k++] = new Rect(x1, y1 + whiteKeyHeight - blackKeyHeight/2f, 
-				                                  blackKeyWidth, blackKeyHeight, PApplet.CORNER);
-						if (!facePositive) {
-							blackKeys[k-1].translate(whiteKeyWidth-blackKeyWidth, 0);
-						}
+					blackKeys[k++] = new Rect(x1, y1 + whiteKeyHeight - blackKeyHeight/2f, 
+			                                  blackKeyWidth, blackKeyHeight, PApplet.CORNER);
+					if (!facePositive) {
+						blackKeys[k-1].translate(whiteKeyWidth-blackKeyWidth, 0);
 					}
 				}
 				i++;
