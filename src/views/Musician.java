@@ -31,6 +31,30 @@ public class Musician extends View {
 	private final int PIANO=0;
 	private int instrument = PIANO;
 	
+	@Override
+	public int numOptions() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void incrementOption(int index) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void decrementOption(int index) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String showOption(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	public Musician(Rect rect, int opacity, PhasesPApplet pa) {
 		super(rect, opacity, pa);
 		initInstruments();

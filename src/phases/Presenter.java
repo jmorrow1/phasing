@@ -24,7 +24,7 @@ public class Presenter extends Screen {
 	private boolean playing;
 	private int sign;
 	//views
-	PhaseShifter view;
+	View view;
 	//view graph
 	private Circle planet;
 	private ArrayList<Line> edges = new ArrayList<Line>();

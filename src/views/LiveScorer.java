@@ -44,6 +44,30 @@ public class LiveScorer extends View {
 	private final int MONOCHROME=0, DIACHROME=1;
 	private int colorSchemeType = DIACHROME;
 	
+	@Override
+	public int numOptions() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void incrementOption(int index) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void decrementOption(int index) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String showOption(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	public LiveScorer(Rect rect, int opacity, PhasesPApplet pa) {
 		super(rect, opacity, pa);
 		

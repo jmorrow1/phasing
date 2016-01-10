@@ -45,19 +45,8 @@ public class PhaseShifter extends View {
 	private final int MONOCHROMATIC=0, DIACHROMATIC=1;
 	private int colorSchemeType = DIACHROMATIC;
 	
-	public String showCurrentSettings() {
-		String s = "[";
-		for (int i=0; i<numOptions(); i++) {
-			s += showSetting(i);
-			if (i != numOptions()-1) {
-				s += ", ";
-			}
-		}
-		s += "]";
-		return s;
-	}
-	
-	public String showSetting(int index) {
+	@Override
+	public String showOption(int index) {
 		String s = "";
 		switch (index) {
 			case 0: return "show active note? " + showActiveNote;
@@ -80,10 +69,12 @@ public class PhaseShifter extends View {
 		}
 	}
 	
+	@Override
 	public int numOptions() {
 		return 6;
 	}
 	
+	@Override
 	public void incrementOption(int index) {
 		switch (index) {
 			case 0:
@@ -107,6 +98,7 @@ public class PhaseShifter extends View {
 		}
 	}
 	
+	@Override
 	public void decrementOption(int index) {
 		switch (index) {
 			case 0:
