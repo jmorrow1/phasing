@@ -38,6 +38,7 @@ public class LiveScorer extends View {
 	private final int SCROLLS=0, FADES=1;
 	private int scrollsOrFades=SCROLLS;
 	
+	private final int numNoteTypes = 4;
 	private final int DOTS=0, SYMBOLS=1, CONNECTED_DOTS=2, RECTS=3;
 	private int noteType = SYMBOLS;
 	
@@ -46,26 +47,48 @@ public class LiveScorer extends View {
 	
 	@Override
 	public int numOptions() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 4;
 	}
 
 	@Override
 	public void incrementOption(int index) {
-		// TODO Auto-generated method stub
-		
+		switch (index) {
+			case 0: sineWave = !sineWave; break;
+			case 1: scrollsOrFades = (scrollsOrFades == SCROLLS) ? FADES : SCROLLS; break;
+			case 2: noteType = (noteType+1) % numNoteTypes; break;
+			case 3: colorSchemeType = (colorSchemeType == MONOCHROME) ? DIACHROME : MONOCHROME; break;
+		}
 	}
 
 	@Override
 	public void decrementOption(int index) {
-		// TODO Auto-generated method stub
-		
+			switch (index) {
+			case 0: sineWave = !sineWave; break;
+			case 1: scrollsOrFades = (scrollsOrFades == SCROLLS) ? FADES : SCROLLS; break;
+			case 2: noteType = PhasesPApplet.remainder(noteType-1, numNoteTypes); break;
+			case 3: colorSchemeType = (colorSchemeType == MONOCHROME) ? DIACHROME : MONOCHROME; break;
+		}
 	}
 
 	@Override
 	public String showOption(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		String s = "";
+		switch (index) {
+			case 0: return "is sinewave? " + sineWave;
+			case 1: return "scrolls or fades? " + ((scrollsOrFades == SCROLLS) ? "SCROLLS" : "FADES");
+			case 2: 
+				s += "note type: ";
+				switch (noteType) {
+					case DOTS: s += "DOTS"; break;
+					case SYMBOLS: s += "SYMBOLS"; break;
+					case CONNECTED_DOTS: s += "CONNECTED_DOTS"; break;
+					case RECTS: s += "RECTS"; break;
+					default: s += noteType; break;
+				}
+				return s;
+			case 3: return "color scheme type: " + ((colorSchemeType == MONOCHROME) ? "MONOCHROME" : "DIACHROME");
+			default: return s;
+		}
 	}
 	
 	public LiveScorer(Rect rect, int opacity, PhasesPApplet pa) {
@@ -108,6 +131,8 @@ public class LiveScorer extends View {
 	
 	@Override
 	public void update(float dNotept1, float dNotept2, int sign) {
+		pa.pushMatrix();
+		
 		pa.translate(x, y);
 		
 		readerA.update(dNotept1);
@@ -117,6 +142,8 @@ public class LiveScorer extends View {
 		
 		scroll(dx, dataPts1, (colorSchemeType == MONOCHROME) ? 0 : pa.getColor1());
 		scroll(dx, dataPts2, (colorSchemeType == MONOCHROME) ? 0 : pa.getColor2());
+		
+		pa.popMatrix();
 
 	}
 	

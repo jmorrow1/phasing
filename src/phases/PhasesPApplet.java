@@ -32,9 +32,9 @@ public class PhasesPApplet extends PApplet {
 	//active music variables
 	public Phrase phrase;
 	public Scale scale;
-	private float bpm1 = 20;
+	private float bpm1 = 60;
 	private float bpms1 = bpm1 / 60000f;
-	private float bpm2 = 24;
+	private float bpm2 = 65;
 	private float bpms2 = bpm2 / 60000f;
 	
 	//all screens
