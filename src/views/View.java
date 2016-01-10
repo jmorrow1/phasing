@@ -2,7 +2,6 @@ package views;
 
 import geom.Rect;
 import phases.PhasesPApplet;
-import phases.PhraseReader;
 
 public abstract class View extends Rect {
 	protected PhasesPApplet pa;
@@ -16,6 +15,14 @@ public abstract class View extends Rect {
 	
 	public abstract void update(float dNotept1, float dNotept2, int sign);
 	
+	public abstract String showOptionValue(int index);
+	public String getOptionConfigurationID() {
+		String s = "";
+		for (int i=0; i<numOptions(); i++) {
+			s += showOptionValue(i);
+		}
+		return s;
+	}
 	public abstract int numOptions();
 	public abstract void incrementOption(int index);
 	public abstract void decrementOption(int index);

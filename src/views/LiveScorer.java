@@ -46,6 +46,17 @@ public class LiveScorer extends View {
 	private int colorSchemeType = DIACHROME;
 	
 	@Override
+	public String showOptionValue(int index) {
+		switch(index) {
+			case 0: return "" + sineWave;
+			case 1: return "" + scrollsOrFades;
+			case 2: return "" + noteType;
+			case 3: return "" + colorSchemeType;
+			default: return "_";
+		}
+	}
+	
+	@Override
 	public int numOptions() {
 		return 4;
 	}

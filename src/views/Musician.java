@@ -33,6 +33,16 @@ public class Musician extends View {
 	private int instrument = PIANO;
 	
 	@Override
+	public String showOptionValue(int index) {
+		switch(index) {
+			case 0: return "" + superimposedOrSeparated;
+			case 1: return "" + colorSchemeType;
+			case 2: return "" + instrument;
+			default: return "_";
+		}
+	}
+	
+	@Override
 	public int numOptions() {
 		return 3;
 	}
