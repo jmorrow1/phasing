@@ -45,7 +45,7 @@ public class Presenter extends Screen {
 		view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		
 		minimap = new Minimap(pa.width - 100, pa.height - 80, 75, 50, 85, 60, 16, view);
-		//megamap = new Megamap(pa.width/2f, pa.height/2f, 16, view);
+		megamap = new Megamap(pa.width/2f, pa.height/2f, 16, view, pa);
 		
 		pa.phrase.addToScore(player1, 0, 0, 0);
 		pa.phrase.addToScore(player2, 0, 0, 0);
@@ -53,8 +53,8 @@ public class Presenter extends Screen {
 		player2.tempo(pa.getBPM2());
 		player1.repeat(-1);
 		player2.repeat(-1);
-		player1.play();
-		player2.play();
+		//player1.play();
+		//player2.play();
 		
 		playing = true;
 		
@@ -83,10 +83,10 @@ public class Presenter extends Screen {
 	@Override
 	public void draw() {
 		pa.background(255);
-		animateView();
-		minimap.display(pa);
-		//megamap.update();
-		//megamap.display(pa);
+		//animateView();
+		//minimap.display(pa);
+		megamap.update();
+		megamap.display(pa);
 	}
 	
 	private void animateView() {

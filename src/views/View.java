@@ -14,6 +14,7 @@ public abstract class View extends Rect {
 		super(rect);
 		this.opacity = opacity;
 		this.pa = pa;
+		getAllConfigIds();
 	}
 	
 	public abstract void update(float dNotept1, float dNotept2, int sign);
@@ -83,11 +84,27 @@ public abstract class View extends Rect {
 		for (int i=0; i<configId.length; i++) {
 			for (int j=0; j<numValues(i)-1; j++) {
 				configId[i] = (configId[i]+1) % numValues(i);
-				ids[n++] = Arrays.copyOf(configId, configId.length);
+				ids[n++] = equivalentId(configId);
 			}
 			configId[i] = (configId[i]+1) % numValues(i);
 		}
 		return ids;
+	}
+	
+	private int[] equivalentId(int[] x) {
+		for (int i=0; i<configIds.length; i++) {
+			boolean foundIt = true;
+			for (int j=0; j<configIds[i].length; j++) {
+				if (x[j] != configIds[i][j]) {
+					foundIt = false;
+					break;
+				}
+			}
+			if (foundIt) {
+				return configIds[i];
+			}
+		}
+		return null;
 	}
 	
 	public int[][] getAllNeighborConfigIds() {
