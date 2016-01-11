@@ -34,7 +34,7 @@ public class LiveScorer extends View {
 	private int startingPitch = 0;
 	
 	//options:
-	private boolean sineWave = true;
+	private boolean sineWave = false;
 	
 	private static final int SCROLLS=0, FADES=1;
 	private int scrollsOrFades=SCROLLS;

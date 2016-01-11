@@ -1,16 +1,10 @@
 package phases;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import geom.Circle;
-import geom.Line;
 import geom.Rect;
 import processing.core.PApplet;
-import views.*;
+import views.LiveScorer;
+import views.View;
 
 /**
  * The screen that displays views, ways of visualizing the music.
@@ -21,20 +15,18 @@ import views.*;
 public class Presenter extends Screen {	
 	//time
 	private float prev_notept1, prev_notept2;
+	
 	//playback
 	private SCScorePlus player1 = new SCScorePlus();
 	private SCScorePlus player2 = new SCScorePlus();
 	private boolean playing;
 	private int sign;
-	//views
-	View view;
-	//view graph
-	private Circle planet;
-	private ArrayList<Line> edges = new ArrayList<Line>();
-	private HashMap<int[], Circle> satellites = new HashMap<int[], Circle>();
-	//user interaction with view graph
-	private Circle hoveredSatellite;
-	private boolean blockHoverEffects;
+	
+	//view
+	private View view;
+
+	//minimap
+	private Minimap minimap;
 	
 	/**
 	 * 
@@ -49,6 +41,8 @@ public class Presenter extends Screen {
 		//view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		//view = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		
+		minimap = new Minimap(pa.width - 100, pa.height - 80, 75, 50, 85, 60, 16, view);
 		
 		pa.phrase.addToScore(player1, 0, 0, 0);
 		pa.phrase.addToScore(player2, 0, 0, 0);
@@ -74,7 +68,7 @@ public class Presenter extends Screen {
 		prev_notept1 = 0;
 		prev_notept2 = 0;
 		
-		setupViewGraph();
+		//setupViewGraph();
 	}
 	
 	@Override
@@ -85,100 +79,42 @@ public class Presenter extends Screen {
 	
 	@Override
 	public void draw() {
-		//time
+		pa.background(255);
+		animateView();
+		minimap.display(pa);
+	}
+	
+	private void animateView() {
 		float notept1 = PApplet.map(player1.getTickPosition(),
-				                    0, player1.getTickLength(),
-				                    0, pa.phrase.getTotalDuration());
+					                0, player1.getTickLength(),
+					                0, pa.phrase.getTotalDuration());
+		
 		float notept2 = PApplet.map(player2.getTickPosition(),
-				                    0, player2.getTickLength(),
-				                    0, pa.phrase.getTotalDuration());
+					                0, player2.getTickLength(),
+					                0, pa.phrase.getTotalDuration());
 		
 		float dNotept1 = notept1 - prev_notept1;
 		float dNotept2 = notept2 - prev_notept2;
 		
 		if (dNotept1 < 0) {
-			dNotept1 += pa.phrase.getTotalDuration();
+		dNotept1 += pa.phrase.getTotalDuration();
 		}
 		
 		if (dNotept2 < 0) {
-			dNotept2 += pa.phrase.getTotalDuration();
+		dNotept2 += pa.phrase.getTotalDuration();
 		}
 		
 		prev_notept1 = notept1;
 		prev_notept2 = notept2;
-
-		//drawing
-		pa.background(255);
-
+		
 		view.update(dNotept1, dNotept2, sign);
-		
-		drawViewGraph();
-	}
-	
-	private void setupViewGraph() {
-		setupViewGraph(pa.width - 100, pa.height - 80, 75, 50, 85, 60, view.getAllNeighborConfigIds(), 16);
-	}
-	
-	private void setupViewGraph(float cenx, float ceny, float w1, float h1, float w2, float h2, int[][] satelliteKeys, float nodeRadius) {
-		int numSatellites = satelliteKeys.length;
-		
-		planet = new Circle(cenx, ceny, nodeRadius);
-		
-		satellites.clear();
-		edges.clear();
-		
-		float theta = 0;
-		float dTheta = PApplet.TWO_PI / numSatellites;
-		for (int i=0; i<numSatellites; i++) {
-			float angle = theta + PApplet.map((float)Math.random(), -1, 1, -dTheta*0.125f, dTheta*0.125f);
-			
-			float lerpAmt = (float)Math.random();
-			Circle sat = new Circle(cenx + pa.cos(angle) * pa.lerp(w1, w2, lerpAmt),
-					                ceny + pa.sin(angle) * pa.lerp(h1, h2, lerpAmt), nodeRadius);
-			
-			satellites.put(satelliteKeys[i], sat);
-			
-			float a1 = pa.atan2(planet.getY() - sat.getY(), planet.getX() - sat.getX());
-			float a2 = a1 + pa.PI;
-			edges.add(new Line(sat.getX() + pa.cos(a1) * sat.getRadius(), sat.getY() + pa.sin(a1) * sat.getRadius(),
-						planet.getX() + pa.cos(a2) * planet.getRadius(), planet.getY() + pa.sin(a2) * planet.getRadius()));
-			
-			theta += dTheta;
-		}
-	}
-	
-	private void drawViewGraph() {
-		pa.strokeWeight(2);
-		pa.stroke(0, 150);
-		pa.noFill();
-		planet.display(pa);
-		Set<Map.Entry<int[], Circle>> set = satellites.entrySet();
-		for (Map.Entry<int[], Circle> entry : set) {
-			Circle circle = entry.getValue();
-			circle.display(pa);
-		}
-
-		for (Line e : edges) {
-			e.display(pa);
-		}
 	}
 	
 	@Override
 	public void mousePressed() {
-		boolean viewChanged = false;
-		Set<Map.Entry<int[], Circle>> set = satellites.entrySet();
-		for (Map.Entry<int[], Circle> entry : set) {
-			Circle sat = entry.getValue();
-			if (sat.intersects(pa.mouseX, pa.mouseY)) {
-				view.adoptConfig(entry.getKey());
-				viewChanged = true;
-			}
+		if (minimap.intersects(pa.mouseX, pa.mouseY)) {
+			minimap.mousePressed(pa);
 		}
-		
-		if (viewChanged) {
-			setupViewGraph();
-		}
-		
 	}
 	
 	@Override

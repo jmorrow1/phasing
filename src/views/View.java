@@ -8,6 +8,7 @@ import phases.PhasesPApplet;
 public abstract class View extends Rect {
 	protected PhasesPApplet pa;
 	protected int opacity;
+	private int[][] configIds;
 	
 	public View(Rect rect, int opacity, PhasesPApplet pa) {
 		super(rect);
@@ -49,25 +50,27 @@ public abstract class View extends Rect {
 	}
 	
 	public int[][] getAllConfigIds() {
-		int[][] configIds = new int[numPosConfigs()][numOptions()];
-		
-		int n = 0;
-		int[] id = new int[numOptions()];
-		int digit = id.length-1;
-		
-		while (n < numPosConfigs()) {
-			while (id[digit] >= numValues(digit)) {
-				id[digit] = 0;
-				digit--;
+		if (configIds == null) {
+			configIds = new int[numPosConfigs()][numOptions()];
+			
+			int n = 0;
+			int[] id = new int[numOptions()];
+			int digit = id.length-1;
+			
+			while (n < numPosConfigs()) {
+				while (id[digit] >= numValues(digit)) {
+					id[digit] = 0;
+					digit--;
+					id[digit]++;
+				}
+				
+				digit = id.length-1;
+				
+				configIds[n] = Arrays.copyOf(id, id.length);
+				n++;
+				
 				id[digit]++;
 			}
-			
-			digit = id.length-1;
-			
-			configIds[n] = Arrays.copyOf(id, id.length);
-			n++;
-			
-			id[digit]++;
 		}
 		
 		return configIds;
