@@ -1,5 +1,7 @@
 package phases;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -8,11 +10,20 @@ import geom.Line;
 import processing.core.PApplet;
 import views.View;
 
-public class Minimap extends ViewMap {
+public class Minimap {
+	//view
+	private View view;
+	
+	//geometrical data
+	private Circle planet;
+	private ArrayList<Line> edges = new ArrayList<Line>();
+	private HashMap<int[], Circle> satellites = new HashMap<int[], Circle>();
+	
+	//parameters for constructing geometrical data
 	private float cenx, ceny, halfWidth1, halfHeight1, halfWidth2, halfHeight2, nodeRadius;
 	
 	public Minimap(float cenx, float ceny, float halfWidth1, float halfHeight1, float halfWidth2, float halfHeight2, float nodeRadius, View view) {
-		super(view);
+		this.view = view;
 		this.cenx = cenx;
 		this.ceny = ceny;
 		this.halfWidth1 = halfWidth1;
@@ -50,10 +61,21 @@ public class Minimap extends ViewMap {
 			theta += dTheta;
 		}
 	}
-	
-	public boolean intersects(float x, float y) {
-		float maxRadius = PApplet.max(halfWidth2, halfHeight2) + nodeRadius;
-		return cenx - maxRadius <= x && x <= cenx + maxRadius && ceny - maxRadius <= y && y <= ceny + maxRadius;
+
+	public void display(PApplet pa) {
+		pa.strokeWeight(2);
+		pa.stroke(0, 150);
+		pa.noFill();
+		planet.display(pa);
+		Set<Map.Entry<int[], Circle>> set = satellites.entrySet();
+		for (Map.Entry<int[], Circle> entry : set) {
+			Circle circle = entry.getValue();
+			circle.display(pa);
+		}
+
+		for (Line e : edges) {
+			e.display(pa);
+		}
 	}
 	
 	public void mousePressed(PApplet pa) {
@@ -70,5 +92,10 @@ public class Minimap extends ViewMap {
 		if (viewChanged) {
 			setupViewGraph(view.getAllNeighborConfigIds());
 		}
+	}
+	
+	public boolean intersects(float x, float y) {
+		float maxRadius = PApplet.max(halfWidth2, halfHeight2) + nodeRadius;
+		return cenx - maxRadius <= x && x <= cenx + maxRadius && ceny - maxRadius <= y && y <= ceny + maxRadius;
 	}
 }
