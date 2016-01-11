@@ -1,6 +1,5 @@
 package phases;
 
-import geom.Circle;
 import geom.Rect;
 import processing.core.PApplet;
 import views.LiveScorer;
@@ -28,6 +27,9 @@ public class Presenter extends Screen {
 	//minimap
 	private Minimap minimap;
 	
+	//megamap
+	private Megamap megamap;
+	
 	/**
 	 * 
 	 * @param pa The PhasesPApplet on which to draw views
@@ -43,6 +45,7 @@ public class Presenter extends Screen {
 		view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		
 		minimap = new Minimap(pa.width - 100, pa.height - 80, 75, 50, 85, 60, 16, view);
+		//megamap = new Megamap(pa.width/2f, pa.height/2f, 16, view);
 		
 		pa.phrase.addToScore(player1, 0, 0, 0);
 		pa.phrase.addToScore(player2, 0, 0, 0);
@@ -82,6 +85,8 @@ public class Presenter extends Screen {
 		pa.background(255);
 		animateView();
 		minimap.display(pa);
+		//megamap.update();
+		//megamap.display(pa);
 	}
 	
 	private void animateView() {

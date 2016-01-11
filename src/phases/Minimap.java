@@ -31,10 +31,11 @@ public class Minimap {
 		this.halfWidth2 = halfWidth2;
 		this.halfHeight2 = halfHeight2;
 		this.nodeRadius = nodeRadius;
-		setupViewGraph(view.getAllNeighborConfigIds());
+		setupViewGraph();
 	}
 	
-	private void setupViewGraph(int[][] satelliteKeys) {
+	private void setupViewGraph() {
+		int[][] satelliteKeys = view.getAllNeighborConfigIds();
 		int numSatellites = satelliteKeys.length;
 
 		planet = new Circle(cenx, ceny, nodeRadius);
@@ -90,7 +91,7 @@ public class Minimap {
 		}
 		
 		if (viewChanged) {
-			setupViewGraph(view.getAllNeighborConfigIds());
+			setupViewGraph();
 		}
 	}
 	

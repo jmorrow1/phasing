@@ -19,13 +19,6 @@ public abstract class View extends Rect {
 	public abstract void update(float dNotept1, float dNotept2, int sign);
 	
 	public abstract int getValue(int index);
-	public String getOptionConfigurationId() {
-		String s = "";
-		for (int i=0; i<numOptions(); i++) {
-			s += getValue(i);
-		}
-		return s;
-	}
 	public abstract int numOptions();
 	public abstract String showOption(int index);
 	public String showCurrentSettings() {
@@ -84,18 +77,21 @@ public abstract class View extends Rect {
 		return sum;
 	}
 	
-	public int[][] getAllNeighborConfigIds() {
-		int[] id = getCurrentConfigId();
+	public int[][] getAllNeighborConfigIds(int[] configId) {
 		int[][] ids = new int[numNeighboringConfigs()][];
 		int n = 0;
-		for (int i=0; i<id.length; i++) {
+		for (int i=0; i<configId.length; i++) {
 			for (int j=0; j<numValues(i)-1; j++) {
-				id[i] = (id[i]+1) % numValues(i);
-				ids[n++] = Arrays.copyOf(id, id.length);
+				configId[i] = (configId[i]+1) % numValues(i);
+				ids[n++] = Arrays.copyOf(configId, configId.length);
 			}
-			id[i] = (id[i]+1) % numValues(i);
+			configId[i] = (configId[i]+1) % numValues(i);
 		}
 		return ids;
+	}
+	
+	public int[][] getAllNeighborConfigIds() {
+		return getAllNeighborConfigIds(getCurrentConfigId());
 	}
 	
 	public int[] getCurrentConfigId() {
