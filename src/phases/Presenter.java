@@ -1,6 +1,10 @@
 package phases;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import geom.Circle;
 import geom.Line;
@@ -27,7 +31,7 @@ public class Presenter extends Screen {
 	//view graph
 	private Circle planet;
 	private ArrayList<Line> edges = new ArrayList<Line>();
-	private ArrayList<Circle> satellites = new ArrayList<Circle>();
+	private HashMap<int[], Circle> satellites = new HashMap<int[], Circle>();
 	//user interaction with view graph
 	private Circle hoveredSatellite;
 	private boolean blockHoverEffects;
@@ -43,8 +47,8 @@ public class Presenter extends Screen {
 	@Override
 	public void onEnter() {
 		//view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		view = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		//view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		//view = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		
 		pa.phrase.addToScore(player1, 0, 0, 0);
 		pa.phrase.addToScore(player2, 0, 0, 0);
@@ -112,11 +116,12 @@ public class Presenter extends Screen {
 	}
 	
 	private void setupViewGraph() {
-		setupViewGraph(pa.width - 100, pa.height - 80, 75, 50, 85, 60, view.numNeighboringConfigs(), 16);
+		setupViewGraph(pa.width - 100, pa.height - 80, 75, 50, 85, 60, view.getAllNeighborConfigIds(), 16);
 	}
 	
-	private void setupViewGraph(float cenx, float ceny, float w1, float h1, float w2, float h2,
-			int numSatellites, float nodeRadius) {
+	private void setupViewGraph(float cenx, float ceny, float w1, float h1, float w2, float h2, int[][] satelliteKeys, float nodeRadius) {
+		int numSatellites = satelliteKeys.length;
+		
 		planet = new Circle(cenx, ceny, nodeRadius);
 		
 		satellites.clear();
@@ -131,7 +136,7 @@ public class Presenter extends Screen {
 			Circle sat = new Circle(cenx + pa.cos(angle) * pa.lerp(w1, w2, lerpAmt),
 					                ceny + pa.sin(angle) * pa.lerp(h1, h2, lerpAmt), nodeRadius);
 			
-			satellites.add(sat);
+			satellites.put(satelliteKeys[i], sat);
 			
 			float a1 = pa.atan2(planet.getY() - sat.getY(), planet.getX() - sat.getX());
 			float a2 = a1 + pa.PI;
@@ -147,8 +152,10 @@ public class Presenter extends Screen {
 		pa.stroke(0, 150);
 		pa.noFill();
 		planet.display(pa);
-		for (Circle c : satellites) {
-			c.display(pa);
+		Set<Map.Entry<int[], Circle>> set = satellites.entrySet();
+		for (Map.Entry<int[], Circle> entry : set) {
+			Circle circle = entry.getValue();
+			circle.display(pa);
 		}
 
 		for (Line e : edges) {
@@ -158,36 +165,23 @@ public class Presenter extends Screen {
 	
 	@Override
 	public void mousePressed() {
-		if (hoveredSatellite != null) {
-			blockHoverEffects = true;
-			setupViewGraph();
-			//System.out.println(view.showCurrentSettings());
+		boolean viewChanged = false;
+		Set<Map.Entry<int[], Circle>> set = satellites.entrySet();
+		for (Map.Entry<int[], Circle> entry : set) {
+			Circle sat = entry.getValue();
+			if (sat.intersects(pa.mouseX, pa.mouseY)) {
+				view.adoptConfig(entry.getKey());
+				viewChanged = true;
+			}
 		}
+		
+		if (viewChanged) {
+			setupViewGraph();
+		}
+		
 	}
 	
 	@Override
 	public void mouseMoved() {
-		boolean mouseHoveredOverSatellite = false;
-		
-		for (int i=0; i<satellites.size(); i++) {
-			Circle sat = satellites.get(i);
-			if (sat.intersects(pa.mouseX, pa.mouseY)) {
-				if (!blockHoverEffects && hoveredSatellite != sat) {
-					//view.incrementOption(i);
-					hoveredSatellite = sat;
-				}
-				mouseHoveredOverSatellite = true;
-				break;
-			}
-		}
-		
-		if (!mouseHoveredOverSatellite && blockHoverEffects) {
-			blockHoverEffects = false;
-			hoveredSatellite = null;
-		}
-		else if (hoveredSatellite != null && !mouseHoveredOverSatellite) {
-			//view.decrementOption(satellites.indexOf(hoveredSatellite));
-			hoveredSatellite = null;
-		}
 	}
 }

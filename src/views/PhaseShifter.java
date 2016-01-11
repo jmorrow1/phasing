@@ -46,6 +46,16 @@ public class PhaseShifter extends View {
 	private int colorSchemeType = DIACHROMATIC;
 	
 	@Override
+	public void adoptConfig(int[] id) {
+		showActiveNote = (id[0] == 1) ? true : false;
+		movementType = id[1];
+		cameraType = id[2];
+		phraseGraphicType = id[3];
+		doPlotPitch = (id[4] == 1) ? true : false;
+		colorSchemeType = id[5];
+	}
+	
+	@Override
 	public int getValue(int index) {
 		switch (index) {
 			case 0: return showActiveNote ? 1 : 0;

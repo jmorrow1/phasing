@@ -83,14 +83,12 @@ public abstract class View extends Rect {
 	
 	public int[][] getAllNeighborConfigIds() {
 		int[] id = getCurrentConfigId();
-		System.out.println("Current config id: " + Arrays.toString(id));
 		int[][] ids = new int[numNeighboringConfigs()][];
 		int n = 0;
 		for (int i=0; i<id.length; i++) {
 			for (int j=0; j<numValues(i)-1; j++) {
 				id[i] = (id[i]+1) % numValues(i);
 				ids[n++] = Arrays.copyOf(id, id.length);
-				System.out.println(Arrays.toString(id));
 			}
 			id[i] = (id[i]+1) % numValues(i);
 		}
@@ -104,4 +102,6 @@ public abstract class View extends Rect {
 		}
 		return currentConfigId;
 	}
+	
+	public abstract void adoptConfig(int[] id);
 }
