@@ -33,38 +33,28 @@ public class Musician extends View {
 	private int instrument = PIANO;
 	
 	@Override
-	public String showOptionValue(int index) {
+	public int getValue(int index) {
 		switch(index) {
-			case 0: return "" + superimposedOrSeparated;
-			case 1: return "" + colorSchemeType;
-			case 2: return "" + instrument;
-			default: return "_";
+			case 0: return superimposedOrSeparated;
+			case 1: return colorSchemeType;
+			case 2: return instrument;
+			default: return -1;
+		}
+	}
+	
+	@Override
+	public int numValues(int optionVariableIndex) {
+		switch(optionVariableIndex) {
+			case 0: return 2;
+			case 1: return 2;
+			case 2: return numInstruments;
+			default: return -1;
 		}
 	}
 	
 	@Override
 	public int numOptions() {
 		return 3;
-	}
-
-	@Override
-	public void incrementOption(int index) {
-		switch (index) {
-			case 0: superimposedOrSeparated = (superimposedOrSeparated == SEPARATED) ? SUPERIMPOSED : SEPARATED; break;
-			case 1: colorSchemeType = (colorSchemeType == MONOCHROME) ? DIACHROME : MONOCHROME; break;
-			case 2: instrument = (instrument+1) % numInstruments; break;
-		}
-		updateState();
-	}
-
-	@Override
-	public void decrementOption(int index) {
-		switch (index) {
-			case 0: superimposedOrSeparated = (superimposedOrSeparated == SEPARATED) ? SUPERIMPOSED : SEPARATED; break;
-			case 1: colorSchemeType = (colorSchemeType == MONOCHROME) ? DIACHROME : MONOCHROME; break;
-			case 2: instrument = PhasesPApplet.remainder(instrument-1, numInstruments); break;
-		}
-		updateState();
 	}
 	
 	private void updateState() {
@@ -139,11 +129,11 @@ public class Musician extends View {
 	
 	private void initPianos(int size) {
 		pianoAB = new Piano(4, new Rect(this.getCenx(), this.getCeny(),
-				            0.75f*this.getWidth(), size, PApplet.CENTER), true, false, pa.color(255));
+				            0.75f*this.getWidth(), size, PApplet.CENTER), true, pa.color(255));
 		pianoA = new Piano(4, new Rect(this.getCenx(), this.getCeny() - size,
-						   0.75f*this.getWidth(), size, PApplet.CENTER), true, false, pa.color(255));	
+						   0.75f*this.getWidth(), size, PApplet.CENTER), true, pa.color(255));	
 		pianoB = new Piano(4, new Rect(this.getCenx(), this.getCeny() + size,
-						   0.75f*this.getWidth(), size, PApplet.CENTER), true, false, pa.color(255));
+						   0.75f*this.getWidth(), size, PApplet.CENTER), true, pa.color(255));
 	}
 
 	private void initInstrumentPlayers() {	

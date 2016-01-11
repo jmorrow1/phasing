@@ -2,6 +2,7 @@ package views;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import geom.Rect;
 import phases.PhasesPApplet;
@@ -35,50 +36,41 @@ public class LiveScorer extends View {
 	//options:
 	private boolean sineWave = true;
 	
-	private final int SCROLLS=0, FADES=1;
+	private static final int SCROLLS=0, FADES=1;
 	private int scrollsOrFades=SCROLLS;
 	
-	private final int numNoteTypes = 4;
+	private final int numNoteTypes = 4; 
 	private final int DOTS=0, SYMBOLS=1, CONNECTED_DOTS=2, RECTS=3;
 	private int noteType = SYMBOLS;
 	
-	private final int MONOCHROME=0, DIACHROME=1;
+	private static final int MONOCHROME=0, DIACHROME=1;
 	private int colorSchemeType = DIACHROME;
 	
 	@Override
-	public String showOptionValue(int index) {
-		switch(index) {
-			case 0: return "" + sineWave;
-			case 1: return "" + scrollsOrFades;
-			case 2: return "" + noteType;
-			case 3: return "" + colorSchemeType;
-			default: return "_";
+	public int getValue(int optionVariableIndex) {
+		switch(optionVariableIndex) {
+			case 0: return sineWave ? 1 : 0;
+			case 1: return scrollsOrFades;
+			case 2: return noteType;
+			case 3: return colorSchemeType;
+			default: return -1;
+		}
+	}
+	
+	@Override
+	public int numValues(int optionVariableIndex) {
+		switch(optionVariableIndex) {
+			case 0: return 2;
+			case 1: return 2;
+			case 2: return numNoteTypes;
+			case 3: return 2;
+			default: return -1;
 		}
 	}
 	
 	@Override
 	public int numOptions() {
 		return 4;
-	}
-
-	@Override
-	public void incrementOption(int index) {
-		switch (index) {
-			case 0: sineWave = !sineWave; break;
-			case 1: scrollsOrFades = (scrollsOrFades == SCROLLS) ? FADES : SCROLLS; break;
-			case 2: noteType = (noteType+1) % numNoteTypes; break;
-			case 3: colorSchemeType = (colorSchemeType == MONOCHROME) ? DIACHROME : MONOCHROME; break;
-		}
-	}
-
-	@Override
-	public void decrementOption(int index) {
-			switch (index) {
-			case 0: sineWave = !sineWave; break;
-			case 1: scrollsOrFades = (scrollsOrFades == SCROLLS) ? FADES : SCROLLS; break;
-			case 2: noteType = PhasesPApplet.remainder(noteType-1, numNoteTypes); break;
-			case 3: colorSchemeType = (colorSchemeType == MONOCHROME) ? DIACHROME : MONOCHROME; break;
-		}
 	}
 
 	@Override

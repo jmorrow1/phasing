@@ -43,8 +43,8 @@ public class Presenter extends Screen {
 	@Override
 	public void onEnter() {
 		//view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		//view = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		view = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		//view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		
 		pa.phrase.addToScore(player1, 0, 0, 0);
 		pa.phrase.addToScore(player2, 0, 0, 0);
@@ -112,7 +112,7 @@ public class Presenter extends Screen {
 	}
 	
 	private void setupViewGraph() {
-		setupViewGraph(pa.width - 100, pa.height - 80, 75, 50, 85, 60, view.numOptions(), 16);
+		setupViewGraph(pa.width - 100, pa.height - 80, 75, 50, 85, 60, view.numNeighboringConfigs(), 16);
 	}
 	
 	private void setupViewGraph(float cenx, float ceny, float w1, float h1, float w2, float h2,
@@ -173,7 +173,7 @@ public class Presenter extends Screen {
 			Circle sat = satellites.get(i);
 			if (sat.intersects(pa.mouseX, pa.mouseY)) {
 				if (!blockHoverEffects && hoveredSatellite != sat) {
-					view.incrementOption(i);
+					//view.incrementOption(i);
 					hoveredSatellite = sat;
 				}
 				mouseHoveredOverSatellite = true;
@@ -186,7 +186,7 @@ public class Presenter extends Screen {
 			hoveredSatellite = null;
 		}
 		else if (hoveredSatellite != null && !mouseHoveredOverSatellite) {
-			view.decrementOption(satellites.indexOf(hoveredSatellite));
+			//view.decrementOption(satellites.indexOf(hoveredSatellite));
 			hoveredSatellite = null;
 		}
 	}

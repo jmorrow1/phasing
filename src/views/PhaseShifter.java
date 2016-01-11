@@ -46,15 +46,28 @@ public class PhaseShifter extends View {
 	private int colorSchemeType = DIACHROMATIC;
 	
 	@Override
-	public String showOptionValue(int index) {
+	public int getValue(int index) {
 		switch (index) {
-			case 0: return "" + showActiveNote;
-			case 1: return "" + movementType;
-			case 2: return "" + cameraType;
-			case 3: return "" + phraseGraphicType;
-			case 4: return "" + doPlotPitch;
-			case 5: return "" + colorSchemeType;
-			default: return "_";
+			case 0: return showActiveNote ? 1 : 0;
+			case 1: return movementType;
+			case 2: return cameraType;
+			case 3: return phraseGraphicType;
+			case 4: return doPlotPitch ? 1 : 0;
+			case 5: return colorSchemeType;
+			default: return -1;
+		}
+	}
+	
+	@Override
+	public int numValues(int optionVariableIndex) {
+		switch(optionVariableIndex) {
+			case 0: return 2;
+			case 1: return 2;
+			case 2: return 2;
+			case 3: return numPhraseGraphicTypes;
+			case 4: return 2;
+			case 5: return 2;
+			default: return -1;
 		}
 	}
 	
@@ -85,54 +98,6 @@ public class PhaseShifter extends View {
 	@Override
 	public int numOptions() {
 		return 6;
-	}
-	
-	@Override
-	public void incrementOption(int index) {
-		switch (index) {
-			case 0:
-				showActiveNote = !showActiveNote;
-				break;
-			case 1:
-				movementType = (movementType == SCROLLS) ? ROTATES : SCROLLS;
-				break;
-			case 2:
-				cameraType = (cameraType == RELATIVE) ? FIXED : RELATIVE;
-				break;
-			case 3:
-				phraseGraphicType = (phraseGraphicType + 1) % numPhraseGraphicTypes;
-				break;
-			case 4:
-				doPlotPitch = !doPlotPitch;
-				break;
-			case 5:
-				colorSchemeType = (colorSchemeType == MONOCHROMATIC) ? DIACHROMATIC : MONOCHROMATIC;
-				break;
-		}
-	}
-	
-	@Override
-	public void decrementOption(int index) {
-		switch (index) {
-			case 0:
-				showActiveNote = !showActiveNote;
-				break;
-			case 1:
-				movementType = (movementType == SCROLLS) ? ROTATES : SCROLLS;
-				break;
-			case 2:
-				cameraType = (cameraType == RELATIVE) ? FIXED : RELATIVE;
-				break;
-			case 3:
-				phraseGraphicType = PhasesPApplet.remainder(phraseGraphicType - 1, numPhraseGraphicTypes);
-				break;
-			case 4:
-				doPlotPitch = !doPlotPitch;
-				break;
-			case 5:
-				colorSchemeType = (colorSchemeType == MONOCHROMATIC) ? DIACHROMATIC : MONOCHROMATIC;
-				break;
-		}
 	}
 
 	public PhaseShifter(Rect rect, int opacity, PhasesPApplet pa) {
