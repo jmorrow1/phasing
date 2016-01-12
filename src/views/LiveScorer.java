@@ -47,14 +47,6 @@ public class LiveScorer extends View {
 	private int colorSchemeType = DIACHROME;
 	
 	@Override
-	public void adoptConfig(int[] id) {
-		sineWave = (id[0] == 1) ? true : false;
-		scrollsOrFades = id[1];
-		noteType = id[2];
-		colorSchemeType = id[3];
-	}
-	
-	@Override
 	public int getValue(int optionVariableIndex) {
 		switch(optionVariableIndex) {
 			case 0: return sineWave ? 1 : 0;

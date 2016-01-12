@@ -33,14 +33,6 @@ public class Musician extends View {
 	private int instrument = PIANO;
 	
 	@Override
-	public void adoptConfig(int[] id) {
-		superimposedOrSeparated = id[0];
-		colorSchemeType = id[1];
-		instrument = id[2];
-		updateState();
-	}
-	
-	@Override
 	public int getValue(int index) {
 		switch(index) {
 			case 0: return superimposedOrSeparated;

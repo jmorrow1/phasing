@@ -14,7 +14,6 @@ public abstract class View extends Rect {
 		super(rect);
 		this.opacity = opacity;
 		this.pa = pa;
-		getAllConfigIds();
 	}
 	
 	public abstract void update(float dNotept1, float dNotept2, int sign);
@@ -42,82 +41,4 @@ public abstract class View extends Rect {
 		}
 		return product;
 	}
-	
-	public int[][] getAllConfigIds() {
-		if (configIds == null) {
-			configIds = new int[numPosConfigs()][numOptions()];
-			
-			int n = 0;
-			int[] id = new int[numOptions()];
-			int digit = id.length-1;
-			
-			while (n < numPosConfigs()) {
-				while (id[digit] >= numValues(digit)) {
-					id[digit] = 0;
-					digit--;
-					id[digit]++;
-				}
-				
-				digit = id.length-1;
-				
-				configIds[n] = Arrays.copyOf(id, id.length);
-				n++;
-				
-				id[digit]++;
-			}
-		}
-		
-		return configIds;
-	}
-	
-	public int numNeighboringConfigs() {
-		int sum = 0;
-		for (int i=0; i<numOptions(); i++) {
-			sum += numValues(i)-1;
-		}
-		return sum;
-	}
-	
-	public int[][] getAllNeighborConfigIds(int[] configId) {
-		int[][] ids = new int[numNeighboringConfigs()][];
-		int n = 0;
-		for (int i=0; i<configId.length; i++) {
-			for (int j=0; j<numValues(i)-1; j++) {
-				configId[i] = (configId[i]+1) % numValues(i);
-				ids[n++] = equivalentId(configId);
-			}
-			configId[i] = (configId[i]+1) % numValues(i);
-		}
-		return ids;
-	}
-	
-	private int[] equivalentId(int[] x) {
-		for (int i=0; i<configIds.length; i++) {
-			boolean foundIt = true;
-			for (int j=0; j<configIds[i].length; j++) {
-				if (x[j] != configIds[i][j]) {
-					foundIt = false;
-					break;
-				}
-			}
-			if (foundIt) {
-				return configIds[i];
-			}
-		}
-		return null;
-	}
-	
-	public int[][] getAllNeighborConfigIds() {
-		return getAllNeighborConfigIds(getCurrentConfigId());
-	}
-	
-	public int[] getCurrentConfigId() {
-		int[] currentConfigId = new int[numOptions()];
-		for (int i=0; i<numOptions(); i++) {
-			currentConfigId[i] = getValue(i);
-		}
-		return currentConfigId;
-	}
-	
-	public abstract void adoptConfig(int[] id);
 }
