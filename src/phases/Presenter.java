@@ -2,8 +2,7 @@ package phases;
 
 import geom.Rect;
 import processing.core.PApplet;
-import views.LiveScorer;
-import views.View;
+import views.*;
 
 /**
  * The screen that displays views, ways of visualizing the music.
@@ -24,12 +23,7 @@ public class Presenter extends Screen {
 	//view
 	private View view;
 
-	//minimap
-	private Minimap minimap;
-	
-	//megamap
-	private Megamap megamap;
-	
+
 	/**
 	 * 
 	 * @param pa The PhasesPApplet on which to draw views
@@ -40,21 +34,18 @@ public class Presenter extends Screen {
 	
 	@Override
 	public void onEnter() {
-		//view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		//view = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		
-		minimap = new Minimap(pa.width - 100, pa.height - 80, 75, 50, 85, 60, 16, view);
-		megamap = new Megamap(pa.width/2f, pa.height/2f, 16, view, pa);
-		
+		//view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+	
 		pa.phrase.addToScore(player1, 0, 0, 0);
 		pa.phrase.addToScore(player2, 0, 0, 0);
 		player1.tempo(pa.getBPM1());
 		player2.tempo(pa.getBPM2());
 		player1.repeat(-1);
 		player2.repeat(-1);
-		//player1.play();
-		//player2.play();
+		player1.play();
+		player2.play();
 		
 		playing = true;
 		
@@ -70,8 +61,6 @@ public class Presenter extends Screen {
 		
 		prev_notept1 = 0;
 		prev_notept2 = 0;
-		
-		//setupViewGraph();
 	}
 	
 	@Override
@@ -83,10 +72,7 @@ public class Presenter extends Screen {
 	@Override
 	public void draw() {
 		pa.background(255);
-		//animateView();
-		//minimap.display(pa);
-		megamap.update();
-		megamap.display(pa);
+		animateView();
 	}
 	
 	private void animateView() {
@@ -114,14 +100,7 @@ public class Presenter extends Screen {
 		
 		view.update(dNotept1, dNotept2, sign);
 	}
-	
-	@Override
-	public void mousePressed() {
-		if (minimap.intersects(pa.mouseX, pa.mouseY)) {
-			minimap.mousePressed(pa);
-		}
-	}
-	
+
 	@Override
 	public void mouseMoved() {
 	}
