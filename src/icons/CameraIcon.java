@@ -6,7 +6,7 @@ public class CameraIcon implements Icon {
     final int FIXED=0, RELATIVE_TO_1=1, RELATIVE_TO_2=2;
     private int cameraType;
   
-    CameraIcon(int cameraType) {
+    public CameraIcon(int cameraType) {
         this.cameraType = cameraType;
     }
   
