@@ -17,9 +17,11 @@ public class PhraseReader {
 	//data
 	private int id;
 	private Phrase phrase;
+	
 	//bookkeeping
 	private int noteIndex;
 	private float noteTimeTillNextNote;
+	
 	//callback
 	private Object callee;
 	private Method callback;
@@ -40,7 +42,6 @@ public class PhraseReader {
 		
 		noteIndex = -1;
 		noteTimeTillNextNote = 0;
-		
 	}
 	
 	/**

@@ -361,7 +361,7 @@ public class Editor extends Screen {
 	 * @return The pitch of the note to which pa.mouseY cooresponds
 	 */
 	private int mouseToPitch() {
-		int pitchIndex = (int)pa.map(pa.mouseY, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys) + 1;
+		int pitchIndex = (int)pa.map(pa.mouseY, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys);
 		return pa.scale.getNoteValue(pitchIndex) + minOctave*12;
 	}
 
@@ -514,7 +514,7 @@ public class Editor extends Screen {
 			int iModScaleSize = i % pa.scale.size();
 			int noteValueMod12 = pa.scale.getNoteValue(iModScaleSize) % 12;
 			int keyColor = keyColors[noteValueMod12];
-			pa.fill(keyColor);		
+			pa.fill(keyColor);
 			pa.rect(gridFrame.getX1(), y, cellWidth, cellHeight);
 			
 			if (labelPianoKeys) {

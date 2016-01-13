@@ -47,6 +47,9 @@ public class Phrase {
 	//phrase data, in soundcipher notation
 	private float[] scPitches, scDynamics, scDurations, scArts, scPans;	
 	
+	//other
+	private float[] scIndexToPercentDuration;
+	
 	/**
 	 * Constructs an empty phrase.
 	 */
@@ -226,6 +229,7 @@ public class Phrase {
 		scDurations = new float[n];
 		scArts = new float[n];
 		scPans = new float[n];
+		
 		int i=0; //loops through soundcipher arrays
 		int j=0; //loops through grid-notation arrays
 		while (i < cellTypes.length) {
@@ -237,6 +241,7 @@ public class Phrase {
 				scDurations[j] = unitDuration;
 				scArts[j] = this.gridArts[i];
 				scPans[j] = this.gridPans[i];
+				
 			}
 			//if continued note
 			else if (cellTypes[i] == NOTE_SUSTAIN) {
@@ -258,6 +263,15 @@ public class Phrase {
 			i++;
 		}
 		
+		scIndexToPercentDuration = new float[n];
+		float durationAcc = 0;
+		i=0; //loops through soundcipher arrays
+		while (i < scPitches.length) {
+			scIndexToPercentDuration[i] = durationAcc / getTotalDuration();
+			durationAcc += scDurations[i];
+			i++;
+		}
+			
 		scArraysUpToDate = true;
 	}
 	
@@ -281,7 +295,7 @@ public class Phrase {
 	 */
 	public float maxPitch() {
 		float maxPitch = Float.MIN_VALUE;
-		for (int i=0; i<this.getGridRowSize(); i++) {
+		for (int i=0; i<this.getNumNotes(); i++) {
 			if (this.getSCPitch(i) > maxPitch) {
 				maxPitch = this.getSCPitch(i);
 			}
@@ -354,6 +368,11 @@ public class Phrase {
 	public float getSCPan(int i) {
 		if (!scArraysUpToDate) updateSCValues();
 		return scPans[i];
+	}
+	
+	public float getPercentDurationOfSCIndex(int index) {
+		if (!scArraysUpToDate) updateSCValues();
+		return scIndexToPercentDuration[index];
 	}
 	
 	/**

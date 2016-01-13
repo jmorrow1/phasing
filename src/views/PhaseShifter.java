@@ -31,7 +31,7 @@ public class PhaseShifter extends View {
 	private boolean showActiveNote = false;
 	
 	private final int SCROLLS=0, ROTATES=1;
-	private int movementType = SCROLLS;
+	private int movementType = ROTATES;
 	
 	private final int RELATIVE=0, FIXED=1;
 	private int cameraType = RELATIVE;
@@ -266,13 +266,14 @@ public class PhaseShifter extends View {
 	
 	private float mapPitch(int i, float newMin, float newMax) {
 		i %= 12;
-		if (doPlotPitch) {
+		if (doPlotPitch && pa.phrase.minPitch() != pa.phrase.maxPitch()) {
 			return PApplet.map(pa.phrase.getSCPitch(i),
                                pa.phrase.minPitch(), pa.phrase.maxPitch(),
                                newMin, newMax);
 		}
 		else {
-			return (int)pa.lerp(pa.phrase.minPitch(), pa.phrase.maxPitch(), 0.5f);
+			//TODO: Is this right? :
+			return (int)pa.lerp(newMin, newMax, 0.5f);
 		}
 	}
 	
@@ -323,12 +324,13 @@ public class PhaseShifter extends View {
 	
 	private Point getNoteGraphicPoint(int noteIndex) {
 		if (movementType == SCROLLS) {
-			float x = PApplet.map(noteIndex, 0, pa.phrase.getNumNotes(), -halfWidth, halfWidth);
+			float x = pa.map(pa.phrase.getPercentDurationOfSCIndex(noteIndex),
+						0, 1, -halfWidth, halfWidth);
 			float y = mapPitch(noteIndex, halfHeight, -halfHeight);
 			return new Point(x, y);
 		}
 		else {
-			float theta = pa.map(noteIndex, 0, pa.phrase.getNumNotes(), 0, pa.TWO_PI) - pa.HALF_PI;
+			float theta = pa.phrase.getPercentDurationOfSCIndex(noteIndex) * pa.TWO_PI - pa.HALF_PI;
 			return new Point(PApplet.cos(theta)*mapPitch(noteIndex, minRadius, maxRadius),
 					         PApplet.sin(theta)*mapPitch(noteIndex, minRadius, maxRadius));
 		}
@@ -340,10 +342,10 @@ public class PhaseShifter extends View {
 			pa.pushMatrix();
 				pa.translate(a.x, a.y);
 				if (movementType == ROTATES) {
-					float theta = pa.map(index, 0, pa.phrase.getGridRowSize(), 0, pa.TWO_PI);
+					float theta = pa.phrase.getPercentDurationOfSCIndex(index) * pa.TWO_PI;
 					pa.rotate(theta);
 				}
-				int pitch = (int) (pa.phrase.getGridPitch(index) % 12);
+				int pitch = (int) (pa.phrase.getSCPitch(index) % 12);
 				String symbol = pa.scale.getNoteNameByPitchValue(pitch);
 				pa.text(symbol, 0, 0);
 				if (movementType == SCROLLS) {
