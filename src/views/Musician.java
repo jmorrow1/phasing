@@ -26,35 +26,35 @@ public class Musician extends View {
 	private int superimposedOrSeparated = SUPERIMPOSED;
 	
 	private final int MONOCHROME=0, DIACHROME=1;
-	private int colorSchemeType = MONOCHROME;
+	private int colorScheme = MONOCHROME;
 	
 	private final int numInstruments = 1;
 	private final int PIANO=0;
 	private int instrument = PIANO;
 	
 	@Override
+	public int numOptions() {
+		return 3;
+	}
+	
+	@Override
 	public int getValue(int index) {
 		switch(index) {
 			case 0: return superimposedOrSeparated;
-			case 1: return colorSchemeType;
+			case 1: return colorScheme;
 			case 2: return instrument;
 			default: return -1;
 		}
 	}
 	
 	@Override
-	public int numValues(int optionVariableIndex) {
-		switch(optionVariableIndex) {
+	public int numValues(int index) {
+		switch(index) {
 			case 0: return 2;
 			case 1: return 2;
 			case 2: return numInstruments;
 			default: return -1;
 		}
-	}
-	
-	@Override
-	public int numOptions() {
-		return 3;
 	}
 	
 	private void updateState() {
@@ -71,7 +71,7 @@ public class Musician extends View {
 				return "superimposed or separated? " 
 						+ ((superimposedOrSeparated == SUPERIMPOSED) ? "SUPERIMPOSED" : "SEPARATED");
 			case 1:
-				return "color scheme type: " + ((colorSchemeType == MONOCHROME) ? "MONOCHROME" : "DIACHROME");
+				return "color scheme type: " + ((colorScheme == MONOCHROME) ? "MONOCHROME" : "DIACHROME");
 			case 2:
 				s += "instrument: ";
 				switch (instrument) {
@@ -104,14 +104,14 @@ public class Musician extends View {
 		}
 		
 		pa.noStroke();
-		if (colorSchemeType == DIACHROME) {
+		if (colorScheme == DIACHROME) {
 			pa.fill(pa.getColor1(), opacity);
 		}
 		else {
 			pa.fill(0, opacity);
 		}
 		playerA.display(pa);
-		if (colorSchemeType == DIACHROME) {
+		if (colorScheme == DIACHROME) {
 			pa.fill(pa.getColor2(), opacity);
 		}
 		else {

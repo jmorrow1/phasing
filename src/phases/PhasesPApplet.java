@@ -46,7 +46,7 @@ public class PhasesPApplet extends PApplet {
 	
 	//visual variables
 	private static int color1, color2;
-	public static PFont pfont12, pfont18;
+	public static PFont pfont12, pfont18, musicFont;
 	
 	//gui
 	private ControlP5 cp5;
@@ -73,6 +73,7 @@ public class PhasesPApplet extends PApplet {
 		//init font variables
 		pfont12 = loadFont("DejaVuSans-12.vlw");
 		pfont18 = loadFont("DejaVuSans-18.vlw");
+		musicFont = loadFont("MaestroWide-48.vlw");
 		
 		//init controlp5
 	    cp5 = new ControlP5(this);
@@ -142,6 +143,15 @@ public class PhasesPApplet extends PApplet {
 				}
 			}
 		}
+	}
+	
+	public void quarterNote(float x, float y, int textSize) {
+	    pushStyle();
+	    textFont(musicFont);
+	    textSize(textSize);
+	    textAlign(CENTER, CENTER);
+	    text("q", x, y);
+	    popStyle();
 	}
 	
 	/**
