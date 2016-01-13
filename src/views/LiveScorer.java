@@ -117,7 +117,12 @@ public class LiveScorer extends View {
 		float minPitch = pa.phrase.minPitch();
 		float maxPitch = pa.phrase.maxPitch();
 		for (int i=0; i<ys.length; i++) {
-			ys[i] = PApplet.map(pa.phrase.getSCPitch(i), minPitch, maxPitch, halfHeight, -halfHeight);
+			if (minPitch != maxPitch) {
+				ys[i] = PApplet.map(pa.phrase.getSCPitch(i), minPitch, maxPitch, halfHeight, -halfHeight);
+			}
+			else {
+				ys[i] = PApplet.lerp(minPitch, maxPitch, 0.5f);
+			}
 		}
 		
 		//pixels to musical time conversion
