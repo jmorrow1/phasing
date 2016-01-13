@@ -14,7 +14,7 @@ public class ShowActiveNoteIcon implements Icon {
         int quarterNoteSize = (int)radius;
         
         if (showState == ONLY_SHOW_ACTIVE_NOTE || showState == SHOW_ACTIVE_NOTE) {
-            pa.fill(255, 100, 100);
+            pa.fill(PhasesPApplet.getColor2());
         }
         else {
             pa.fill(0);
@@ -22,7 +22,7 @@ public class ShowActiveNoteIcon implements Icon {
         pa.quarterNote(x, y, quarterNoteSize);
         
         if (showState == ONLY_SHOW_ACTIVE_NOTE) {
-            pa.fill(0, 25);
+            pa.fill(0, 50);
         }
         else {
             pa.fill(0);
@@ -32,7 +32,7 @@ public class ShowActiveNoteIcon implements Icon {
         
         if (showState == SHOW_LINE_AT_NOTE) {
             pa.strokeWeight(4);
-            pa.stroke(255, 100, 100);
+            pa.stroke(PhasesPApplet.getColor2());
             pa.line(x, y - radius/2f, x, y + radius);
         }
     }

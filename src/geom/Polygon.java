@@ -118,6 +118,17 @@ public class Polygon extends Shape {
 		this.cen = new Point((maxX - minX) / 2f, (maxY - minY) / 2f);
 	}
 	
+	public static void drawRegularPolygon(float cenx, float ceny, float half_width, float half_height, int numPoints, float startAngle, PApplet pa) {
+		float theta = startAngle;
+		float dTheta = pa.TWO_PI / numPoints;
+		pa.beginShape();
+		for (int i=0; i<numPoints; i++) {
+			pa.vertex(cenx + half_width*pa.cos(theta), ceny + half_height*pa.sin(theta));
+			theta += dTheta;
+		}
+		pa.endShape(pa.CLOSE);
+	}
+	
 	@Override
 	public void display(PApplet pa) {
 		pa.beginShape();

@@ -11,6 +11,7 @@ import controlP5.Button;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlP5.Controller;
+import geom.Polygon;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.data.JSONObject;
@@ -145,6 +146,11 @@ public class PhasesPApplet extends PApplet {
 		}
 	}
 	
+	public void drawArrowHead(float x, float y, float leng, float headAngle, float deviationAngle) {
+	    line(x, y, x + leng*cos(headAngle + deviationAngle), y + leng*sin(headAngle + deviationAngle));
+	    line(x, y, x + leng*cos(headAngle - deviationAngle), y + leng*sin(headAngle - deviationAngle));
+	}
+	
 	public void quarterNote(float x, float y, int textSize) {
 	    pushStyle();
 	    textFont(musicFont);
@@ -152,6 +158,16 @@ public class PhasesPApplet extends PApplet {
 	    textAlign(CENTER, CENTER);
 	    text("q", x, y);
 	    popStyle();
+	}
+	
+	public void videoCamera(float x, float y, float w, float h) {
+	    noStroke();
+	    fill(0);
+	    rectMode(CORNER);
+	    rect(x - 0.3f*w, y - 0.5f*h, 0.8f*w - 5, h);
+	    noStroke();
+	    fill(0);
+	    Polygon.drawRegularPolygon(x - 0.3f*w - 0.1f*w, y, 0.2f*w, 0.2f*w, 3, 0, this);
 	}
 	
 	/**
