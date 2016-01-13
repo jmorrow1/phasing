@@ -55,7 +55,13 @@ public class Scale {
 	 * @param i The note index
 	 * @return The name of the ith note in the scale
 	 */
-	public String getNoteName(int i) {
+	public String getNoteNameByIndex(int i) {
+		return noteNames[i];
+	}
+	
+	public String getNoteNameByPitchValue(int pitchValue) {
+		int i = this.getIndexOfNoteValue(pitchValue);
+		i %= 12;
 		return noteNames[i];
 	}
 	

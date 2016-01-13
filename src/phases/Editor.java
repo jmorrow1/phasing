@@ -32,7 +32,7 @@ public class Editor extends Screen {
 	private int[] pixelsBuffer;
 	//piano
 	private boolean labelPianoKeys = true;
-	private int minPitch = 60;
+	private int minOctave = 5;
 	private int numKeys = 24;
 	private final static int W=0xffffffff, B=PhasesPApplet.getColor2();
 	private final static int[] keyColors = new int[] {W, B, W, B, W, W, B, W, B, W, B, W};
@@ -362,16 +362,16 @@ public class Editor extends Screen {
 	 */
 	private int mouseToPitch() {
 		int pitchIndex = (int)pa.map(pa.mouseY, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys) + 1;
-		return pa.scale.getNoteValue(pitchIndex) + minPitch;
+		return pa.scale.getNoteValue(pitchIndex) + minOctave*12;
 	}
 
-	private int yToPitch(int y) {
-		int pitchIndex = (int)pa.map(y, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys);
-		return pa.scale.getNoteValue(pitchIndex) + minPitch;
+	private int yToPitch(float y) {
+		int pitchIndex = (int)pa.map(y, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys) - 1;
+		return pa.scale.getNoteValue(pitchIndex) + minOctave*12;
 	}
 	
 	private float pitchToY(int pitch) {
-		int pitchIndex = pa.scale.getIndexOfNoteValue(pitch - minPitch);
+		int pitchIndex = pa.scale.getIndexOfNoteValue(pitch - minOctave*12) + 1;
 		return pa.map(pitchIndex, 0, numKeys, gridFrame.getY2(), gridFrame.getY1());
 	}
 	
@@ -486,12 +486,12 @@ public class Editor extends Screen {
 	}
 	
 	private void updateGrid(Scale newScale) {
-		int[] ys = new int[pa.phrase.getGridRowSize()];
+		float[] ys = new float[pa.phrase.getGridRowSize()];
 		for (int i=0; i<pa.phrase.getGridRowSize(); i++) {
 			int pitch = (int)pa.phrase.getGridPitch(i);
-			ys[i] = (int)pitchToY(pitch);
+			ys[i] = pitchToY(pitch);
 		}
-		
+
 		pa.scale = newScale;
 		
 		for (int i=0; i<pa.phrase.getGridRowSize(); i++) {
@@ -518,7 +518,7 @@ public class Editor extends Screen {
 			pa.rect(gridFrame.getX1(), y, cellWidth, cellHeight);
 			
 			if (labelPianoKeys) {
-				String noteName = pa.scale.getNoteName(iModScaleSize);
+				String noteName = pa.scale.getNoteNameByIndex(iModScaleSize);
 				int inverseKeyColor = (keyColor == W) ? B : W;
 				pa.fill(inverseKeyColor);
 				pa.text(noteName, gridFrame.getX1(), y, cellWidth, cellHeight);

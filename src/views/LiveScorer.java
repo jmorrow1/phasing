@@ -236,7 +236,7 @@ public class LiveScorer extends View {
 			pa.fill(color, opacity);
 			if (noteType == SYMBOLS) {
 				int pitch = (int) (pa.phrase.getSCPitch(noteIndex) % 12);
-				String symbol = pa.scale.getNoteName(pitch);
+				String symbol = pa.scale.getNoteNameByPitchValue(pitch);
 				pa.text(symbol, startX, startY);
 			}
 			else if (noteType == DOTS) {

@@ -116,7 +116,7 @@ public class PhasesPApplet extends PApplet {
 		editor = new Editor(this);
 		
 		//setup current screen
-		currentScreen = presenter;
+		currentScreen = editor;
 		currentScreen.onEnter();
 		
 		if (currentScreen == editor) {
@@ -242,7 +242,7 @@ public class PhasesPApplet extends PApplet {
 			if (name.equals(scaleName)) {
 				ScaleSet ss = scaleSets.get(name);
 				for (int i=0; i<ss.numScales(); i++) {
-					String scaleRootName = ss.getScale(i).getNoteName(0);
+					String scaleRootName = ss.getScale(i).getNoteNameByIndex(0);
 					
 					if (noteNamesAreEquivalent(root, scaleRootName)) {
 						return ss.getScale(i);

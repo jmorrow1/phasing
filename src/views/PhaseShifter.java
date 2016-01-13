@@ -28,7 +28,7 @@ public class PhaseShifter extends View {
 	private int activeNote1, activeNote2;
 	
 	//options:
-	private boolean showActiveNote = true;
+	private boolean showActiveNote = false;
 	
 	private final int SCROLLS=0, ROTATES=1;
 	private int movementType = SCROLLS;
@@ -38,7 +38,7 @@ public class PhaseShifter extends View {
 	
 	private final int numPhraseGraphicTypes = 5;
 	private final int SYMBOLS=0, DOTS=1, CONNECTED_DOTS=2, RECTS_OR_SECTORS=3, SINE_WAVE=4;
-	private int phraseGraphicType = DOTS;
+	private int phraseGraphicType = SYMBOLS;
 	
 	private boolean doPlotPitch = true;
 	
@@ -344,7 +344,7 @@ public class PhaseShifter extends View {
 					pa.rotate(theta);
 				}
 				int pitch = (int) (pa.phrase.getGridPitch(index) % 12);
-				String symbol = pa.scale.getNoteName(pitch);
+				String symbol = pa.scale.getNoteNameByPitchValue(pitch);
 				pa.text(symbol, 0, 0);
 				if (movementType == SCROLLS) {
 					pa.text(symbol, width, 0);
