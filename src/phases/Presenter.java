@@ -1,14 +1,9 @@
 package phases;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
 import geom.Rect;
-import icons.Icon;
 import processing.core.PApplet;
 import soundcipher.SCScorePlus;
-import views.PhaseShifter;
-import views.View;
+import views.*;
 
 /**
  * The screen that displays views, ways of visualizing the music.
@@ -29,8 +24,6 @@ public class Presenter extends Screen {
 	//view
 	private View view;
 
-	ArrayList<OptionValueController> ovcs = new ArrayList<OptionValueController>();
-	OptionValueController active_ovc;
 
 	/**
 	 * 
@@ -69,8 +62,6 @@ public class Presenter extends Screen {
 		
 		prev_notept1 = 0;
 		prev_notept2 = 0;
-		
-		setupIcons();
 	}
 	
 	@Override
@@ -83,43 +74,6 @@ public class Presenter extends Screen {
 	public void draw() {
 		pa.background(255);
 		animateView();
-		drawIcons();
-	}
-	
-	private void setupIcons() {
-		float x = 110;
-		float y = 550;
-		float radius = 50;
-		float dx = radius * 2.1f;
-		
-		Field[] fields = view.getClass().getFields();
-		for (Field f : fields) {
-			if(f.getType().equals(OptionValue.class)) {
-				try {
-					OptionValue value = (OptionValue)f.get(view);
-					ovcs.add(new OptionValueController(x, y, radius, value));
-					x += dx;
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-				
-			}
-		}
-		
-		if (ovcs.size() > 0) {
-			active_ovc = ovcs.get(0);
-		}
-	}
-	
-	private void drawIcons() {
-		for (OptionValueController ovc : ovcs) {
-			ovc.display();
-		}
-		
-		pa.noFill();
-		pa.stroke(PhasesPApplet.getColor1());
-		pa.rectMode(pa.RADIUS);
-		pa.rect(active_ovc.x, active_ovc.y, active_ovc.radius, active_ovc.radius);
 	}
 	
 	private void animateView() {
@@ -150,33 +104,5 @@ public class Presenter extends Screen {
 
 	@Override
 	public void mouseMoved() {
-	}
-	
-	class OptionValueController {
-		float x, y, radius;
-		OptionValue value;
-		Icon icon;
-		
-		OptionValueController(float x, float y, float radius, OptionValue value) {
-			this.x = x;
-			this.y = y;
-			this.radius = radius;
-			this.value = value;
-			this.icon = Icon.init(value);
-		}
-		
-		void display() {
-			icon.draw(x, y, radius, pa);
-		}
-		
-		void prev() {
-			value.set(value.prev());
-			icon.setValue(value.intValue());
-		}
-		
-		void next() {
-			value.set(value.next());
-			icon.setValue(value.intValue());
-		}
 	}
 }

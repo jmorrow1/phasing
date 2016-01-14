@@ -4,16 +4,8 @@ import java.lang.reflect.Method;
 
 import geom.Point;
 import geom.Rect;
-import phases.Option;
-import phases.OptionValue;
 import phases.PhasesPApplet;
 import phases.PhraseReader;
-import phases.Option.ActiveNote;
-import phases.Option.Camera;
-import phases.Option.ColorScheme;
-import phases.Option.NoteGraphic;
-import phases.Option.PlotPitch;
-import phases.Option.Transform;
 import processing.core.PApplet;
 
 public class PhaseShifter extends View {
@@ -35,163 +27,23 @@ public class PhaseShifter extends View {
 	//active note:
 	private int activeNote1, activeNote2;
 	
-	//options
-	public OptionValue<ActiveNote> activeNote = new OptionValue<ActiveNote>(Option.activeNote(), 1);
-	public OptionValue<Transform> transform = new OptionValue(Option.transform(), 0);
-	public OptionValue<Camera> camera = new OptionValue(Option.camera(), 1);
-	public OptionValue<NoteGraphic> noteGraphic = new OptionValue(Option.noteGraphic(), 0);
-	public OptionValue<PlotPitch> plotPitch = new OptionValue(Option.plotPitch(), 0);
-	public OptionValue<ColorScheme> colorScheme = new OptionValue(Option.colorScheme(), 0);
+	//options:
+	private boolean showActiveNote = false;
 	
-	@Override
-	public int getValue(int index) {
-		switch (index) {
-			case 0: return showActiveNote ? 1 : 0;
-			case 1: return movementType;
-			case 2: return cameraType;
-			case 3: return phraseGraphicType;
-			case 4: return doPlotPitch ? 1 : 0;
-			case 5: return colorSchemeType;
-			default: return -1;
-		}
-	}
+	private final int SCROLLS=0, ROTATES=1;
+	private int movementType = ROTATES;
 	
-	@Override
-	public int numValues(int optionVariableIndex) {
-		switch(optionVariableIndex) {
-			case 0: return 2;
-			case 1: return 2;
-			case 2: return 2;
-			case 3: return numPhraseGraphicTypes;
-			case 4: return 2;
-			case 5: return 2;
-			default: return -1;
-		}
-	}
+	private final int RELATIVE=0, FIXED=1;
+	private int cameraType = RELATIVE;
 	
-	@Override
-	public String showOption(int index) {
-		String s = "";
-		switch (index) {
-			case 0: return "show active note? " + showActiveNote;
-			case 1: return "movement type: " + ((movementType == SCROLLS) ? "SCROLLS" : "ROTATES");
-			case 2: return "camera type: " + ((cameraType == RELATIVE) ? "RELATIVE" : "FIXED");
-			case 3: 
-				s += "phrase graphic type: ";
-				switch (phraseGraphicType) {
-					case SYMBOLS: s += "SYMBOLS"; break;
-					case DOTS: s += "DOTS"; break;
-					case CONNECTED_DOTS: s += "CONNECTED_DOTS"; break;
-					case RECTS_OR_SECTORS: s += "RECTS_OR_SECTORS"; break;
-					case SINE_WAVE: s += "SINE_WAVE"; break;
-					default: s += phraseGraphicType; break;
-				}
-				return s;
-			case 4: return "do plot pitch? " + doPlotPitch;
-			case 5: return "color scheme type: " + ((colorSchemeType == MONOCHROMATIC) ? "MONOCHROMATIC" : "DIACHROMATIC");
-			default: return s;
-		}
-	}
+	private final int numPhraseGraphicTypes = 5;
+	private final int SYMBOLS=0, DOTS=1, CONNECTED_DOTS=2, RECTS_OR_SECTORS=3, SINE_WAVE=4;
+	private int phraseGraphicType = SYMBOLS;
 	
-	@Override
-	public int getValue(int index) {
-		switch (index) {
-			case 0: return showActiveNote ? 1 : 0;
-			case 1: return movementType;
-			case 2: return cameraType;
-			case 3: return phraseGraphicType;
-			case 4: return doPlotPitch ? 1 : 0;
-			case 5: return colorSchemeType;
-			default: return -1;
-		}
-	}
+	private boolean doPlotPitch = true;
 	
-	@Override
-	public int numValues(int optionVariableIndex) {
-		switch(optionVariableIndex) {
-			case 0: return 2;
-			case 1: return 2;
-			case 2: return 2;
-			case 3: return numPhraseGraphicTypes;
-			case 4: return 2;
-			case 5: return 2;
-			default: return -1;
-		}
-	}
-	
-	@Override
-	public String showOption(int index) {
-		String s = "";
-		switch (index) {
-			case 0: return "show active note? " + showActiveNote;
-			case 1: return "movement type: " + ((movementType == SCROLLS) ? "SCROLLS" : "ROTATES");
-			case 2: return "camera type: " + ((cameraType == RELATIVE) ? "RELATIVE" : "FIXED");
-			case 3: 
-				s += "phrase graphic type: ";
-				switch (phraseGraphicType) {
-					case SYMBOLS: s += "SYMBOLS"; break;
-					case DOTS: s += "DOTS"; break;
-					case CONNECTED_DOTS: s += "CONNECTED_DOTS"; break;
-					case RECTS_OR_SECTORS: s += "RECTS_OR_SECTORS"; break;
-					case SINE_WAVE: s += "SINE_WAVE"; break;
-					default: s += phraseGraphicType; break;
-				}
-				return s;
-			case 4: return "do plot pitch? " + doPlotPitch;
-			case 5: return "color scheme type: " + ((colorSchemeType == MONOCHROMATIC) ? "MONOCHROMATIC" : "DIACHROMATIC");
-			default: return s;
-		}
-	}
-	
-	@Override
-	public int getValue(int index) {
-		switch (index) {
-			case 0: return showActiveNote ? 1 : 0;
-			case 1: return movementType;
-			case 2: return cameraType;
-			case 3: return phraseGraphicType;
-			case 4: return doPlotPitch ? 1 : 0;
-			case 5: return colorSchemeType;
-			default: return -1;
-		}
-	}
-	
-	@Override
-	public int numValues(int optionVariableIndex) {
-		switch(optionVariableIndex) {
-			case 0: return 2;
-			case 1: return 2;
-			case 2: return 2;
-			case 3: return numPhraseGraphicTypes;
-			case 4: return 2;
-			case 5: return 2;
-			default: return -1;
-		}
-	}
-	
-	@Override
-	public String showOption(int index) {
-		String s = "";
-		switch (index) {
-			case 0: return "show active note? " + showActiveNote;
-			case 1: return "movement type: " + ((movementType == SCROLLS) ? "SCROLLS" : "ROTATES");
-			case 2: return "camera type: " + ((cameraType == RELATIVE) ? "RELATIVE" : "FIXED");
-			case 3: 
-				s += "phrase graphic type: ";
-				switch (phraseGraphicType) {
-					case SYMBOLS: s += "SYMBOLS"; break;
-					case DOTS: s += "DOTS"; break;
-					case CONNECTED_DOTS: s += "CONNECTED_DOTS"; break;
-					case RECTS_OR_SECTORS: s += "RECTS_OR_SECTORS"; break;
-					case SINE_WAVE: s += "SINE_WAVE"; break;
-					default: s += phraseGraphicType; break;
-				}
-				return s;
-			case 4: return "do plot pitch? " + doPlotPitch;
-			case 5: return "color scheme type: " + ((colorSchemeType == MONOCHROMATIC) ? "MONOCHROMATIC" : "DIACHROMATIC");
-			default: return s;
-		}
-	}
+	private final int MONOCHROMATIC=0, DIACHROMATIC=1;
+	private int colorSchemeType = DIACHROMATIC;
 	
 	@Override
 	public int numOptions() {
@@ -248,7 +100,7 @@ public class PhaseShifter extends View {
 		readerA.update(dNotept1);
 		readerB.update(dNotept2);
 		
-		if (camera.equals(Camera.RELATIVE_TO_1) || camera.equals(Camera.RELATIVE_TO_2)) {
+		if (cameraType == RELATIVE) {
 			dNotept2 = (dNotept2 - dNotept1) + dNoteptAcc;
 			dNotept1 = 0;
 			
@@ -270,13 +122,13 @@ public class PhaseShifter extends View {
 		//draw graphics for player 1
 		pa.pushMatrix();
 			transform(1);
-			drawPhraseGraphic(activeNote1, (colorScheme.equals(ColorScheme.DIACHROME)) ? pa.getColor1() : 0, pa.getBPM1());
+			drawPhraseGraphic(activeNote1, (this.colorSchemeType == DIACHROMATIC) ? pa.getColor1() : 0, pa.getBPM1());
 		pa.popMatrix();
 		
 		//draw graphics for player 2
 		pa.pushMatrix();
 			transform(2);
-			drawPhraseGraphic(activeNote2, (colorScheme.equals(ColorScheme.DIACHROME)) ? pa.getColor2() : 0, pa.getBPM2());
+			drawPhraseGraphic(activeNote2, (this.colorSchemeType == DIACHROMATIC) ? pa.getColor2() : 0, pa.getBPM2());
 		pa.popMatrix();
 		
 		pa.popMatrix();
@@ -299,15 +151,15 @@ public class PhaseShifter extends View {
 	}
 	
 	private void transform(float translateAmt, float rotateAmt) {
-		switch(transform.intValue()) {
-			case Transform.TRANSLATE: pa.translate(translateAmt, 0); break;
-			case Transform.ROTATE: pa.rotate(rotateAmt); break;
+		switch(movementType) {
+			case SCROLLS: pa.translate(translateAmt, 0); break;
+			case ROTATES: pa.rotate(rotateAmt); break;
 		}
 	}
 	
 	private void styleNoteGraphics(int color, boolean activeStyle) {
-		switch (noteGraphic.intValue()) {
-			case NoteGraphic.SYMBOLS:
+		switch (phraseGraphicType) {
+			case SYMBOLS:
 				pa.noStroke();
 				if (activeStyle) {
 					pa.fill(color);
@@ -316,7 +168,7 @@ public class PhaseShifter extends View {
 					pa.fill(color, opacity);
 				}
 				break;
-			case NoteGraphic.DOTS:
+			case DOTS:
 				pa.noStroke();
 				if (activeStyle) {
 					pa.fill(color);
@@ -325,7 +177,7 @@ public class PhaseShifter extends View {
 					pa.fill(color, opacity);
 				}
 				break;
-			case NoteGraphic.CONNECTED_DOTS:
+			case CONNECTED_DOTS:
 				if (activeStyle) {
 					pa.fill(color);
 					pa.stroke(color);
@@ -335,8 +187,8 @@ public class PhaseShifter extends View {
 					pa.stroke(color, opacity);
 				}
 				break;
-			case NoteGraphic.RECTS_OR_SECTORS:
-				if (transform.equals(Transform.TRANSLATE)) {
+			case RECTS_OR_SECTORS:
+				if (movementType == SCROLLS) {
 					if (activeStyle) {
 						pa.stroke(0);
 						pa.fill(color);
@@ -346,7 +198,7 @@ public class PhaseShifter extends View {
 						pa.fill(color, opacity);
 					}
 				}
-				else if (transform.equals(Transform.ROTATE)) {
+				else if (movementType == ROTATES) {
 					if (activeStyle) {
 						pa.stroke(color);
 					}
@@ -357,12 +209,14 @@ public class PhaseShifter extends View {
 				}
 				
 				break;
+			case SINE_WAVE:
+				break;
 		}
 	}
 	
 	private float mapPitch(int i, float newMin, float newMax) {
 		i %= 12;
-		if (plotPitch.equals(PlotPitch.PLOT_PITCH) && pa.phrase.minPitch() != pa.phrase.maxPitch()) {
+		if (doPlotPitch && pa.phrase.minPitch() != pa.phrase.maxPitch()) {
 			return PApplet.map(pa.phrase.getSCPitch(i),
                                pa.phrase.minPitch(), pa.phrase.maxPitch(),
                                newMin, newMax);
@@ -373,8 +227,8 @@ public class PhaseShifter extends View {
 		}
 	}
 	
-	private void drawPhraseGraphic(int activeNoteIndex, int color, float bpm) {
-		/*if (phraseGraphicType == SINE_WAVE) {
+	private void drawPhraseGraphic(int activeNote, int color, float bpm) {
+		if (phraseGraphicType == SINE_WAVE) {
 			pa.noFill();
 			pa.stroke(color);
 			if (movementType == SCROLLS) {
@@ -386,10 +240,10 @@ public class PhaseShifter extends View {
 				pa.ellipse(0, 0, radius, radius);
 			}
 		}
-		else {*/
+		else {
 			styleNoteGraphics(color, false);
 			for (int i=0; i<pa.phrase.getNumNotes(); i++) {
-				if (activeNote.equals(ActiveNote.SHOW_ACTIVE_NOTE) && i == activeNoteIndex) {
+				if (showActiveNote && i == activeNote) {
 					styleNoteGraphics(color, true);
 					drawNoteGraphic(i);
 					styleNoteGraphics(color, false);
@@ -399,7 +253,7 @@ public class PhaseShifter extends View {
 				}
 				
 			}
-		//}
+		}
 	}
 	
 	private void drawSineWave() {
@@ -419,7 +273,7 @@ public class PhaseShifter extends View {
 	}
 	
 	private Point getNoteGraphicPoint(int noteIndex) {
-		if (transform.equals(Transform.TRANSLATE)) {
+		if (movementType == SCROLLS) {
 			float x = pa.map(pa.phrase.getPercentDurationOfSCIndex(noteIndex),
 						0, 1, -halfWidth, halfWidth);
 			float y = mapPitch(noteIndex, halfHeight, -halfHeight);
@@ -433,47 +287,47 @@ public class PhaseShifter extends View {
 	}
 	
 	private void drawNoteGraphic(int index) {
-		if (noteGraphic.equals(NoteGraphic.SYMBOLS)) {
+		if (phraseGraphicType == SYMBOLS) {
 			Point a = getNoteGraphicPoint(index);
 			pa.pushMatrix();
 				pa.translate(a.x, a.y);
-				if (transform.equals(Transform.ROTATE)) {
+				if (movementType == ROTATES) {
 					float theta = pa.phrase.getPercentDurationOfSCIndex(index) * pa.TWO_PI;
 					pa.rotate(theta);
 				}
 				int pitch = (int) (pa.phrase.getSCPitch(index) % 12);
 				String symbol = pa.scale.getNoteNameByPitchValue(pitch);
 				pa.text(symbol, 0, 0);
-				if (transform.equals(Transform.TRANSLATE)) {
+				if (movementType == SCROLLS) {
 					pa.text(symbol, width, 0);
 					pa.text(symbol, -width, 0);
 				}
 			pa.popMatrix();
 		}
-		else if (noteGraphic.equals(NoteGraphic.DOTS)) {
+		else if (phraseGraphicType == DOTS) {
 			Point a = getNoteGraphicPoint(index);
 			pa.ellipseMode(pa.CENTER);
 			pa.ellipse(a.x, a.y, 20, 20);
-			if (transform.equals(Transform.TRANSLATE)) {
+			if (movementType == SCROLLS) {
 				pa.ellipse(a.x - width, a.y, 20, 20);
 				pa.ellipse(a.x + width, a.y, 20, 20);
 			}
 		}
-		else if (noteGraphic.equals(NoteGraphic.CONNECTED_DOTS)) {
+		else if (phraseGraphicType == CONNECTED_DOTS) {
 			Point a = getNoteGraphicPoint(index);
 			Point b = getNoteGraphicPoint(index+1);
 			pa.ellipseMode(pa.CENTER);
 			pa.ellipse(a.x, a.y, 20, 20);
 			pa.line(a.x, a.y, b.x, b.y);
-			if (transform.equals(Transform.TRANSLATE)) {
+			if (movementType == SCROLLS) {
 				pa.ellipse(a.x - width, a.y, 20, 20);
 				pa.line(a.x - width, a.y, b.x - width, b.y);
 				pa.ellipse(a.x + width, a.y, 20, 20);
 				pa.line(a.x + width, a.y, b.x + width, b.y);
 			}
 		}
-		else if (noteGraphic.equals(NoteGraphic.RECTS_OR_SECTORS)) {
-			if (transform.equals(Transform.TRANSLATE)) {
+		else if (phraseGraphicType == RECTS_OR_SECTORS) {
+			if (movementType == SCROLLS) {
 				Point a = getNoteGraphicPoint(index);
 				Point b = getNoteGraphicPoint(index+1);
 				pa.rectMode(pa.CORNERS);

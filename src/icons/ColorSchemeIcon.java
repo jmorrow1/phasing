@@ -1,11 +1,12 @@
 package icons;
 
-import phases.Option.ColorScheme;
 import phases.PhasesPApplet;
 
-public class ColorSchemeIcon extends Icon {
-    public ColorSchemeIcon(int value) {
-        super(value);
+public class ColorSchemeIcon implements Icon {
+    private boolean grayscale;
+    
+    public ColorSchemeIcon(boolean grayscale) {
+        this.grayscale = grayscale;
     }
   
     @Override
@@ -13,7 +14,7 @@ public class ColorSchemeIcon extends Icon {
         pa.noStroke();
         pa.ellipseMode(pa.CENTER);
         
-        if (value == ColorScheme.MONOCHROME) {
+        if (grayscale) {
             pa.fill(0, 100);
         }
         else {
@@ -22,7 +23,7 @@ public class ColorSchemeIcon extends Icon {
         
         pa.ellipse(x - radius/3f, y, radius, radius);
        
-        if (value == ColorScheme.DIACHROME) {
+        if (grayscale) {
             pa.fill(0, 100);
         }
         else {

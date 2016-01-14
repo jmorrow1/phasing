@@ -1,15 +1,19 @@
 package icons;
 
 import phases.PhasesPApplet;
-import phases.Option.ActiveNote;
 
-public class ActiveNoteIcon implements Icon {
-	private int value;
+public class ShowActiveNoteIcon implements Icon {
+    final int SHOW_ACTIVE_NOTE=0, ONLY_SHOW_ACTIVE_NOTE=1, DONT_SHOW_ACTIVE_NOTE=2, SHOW_LINE_AT_NOTE=3;
+    private int showState;
+  
+    public ShowActiveNoteIcon(int showState) {
+        this.showState = showState;
+    }
     
     public void draw(float x, float y, float radius, PhasesPApplet pa) { 
         int quarterNoteSize = (int)radius;
         
-        if (value == ActiveNote.ONLY_SHOW_ACTIVE_NOTE || value == ActiveNote.SHOW_ACTIVE_NOTE) {
+        if (showState == ONLY_SHOW_ACTIVE_NOTE || showState == SHOW_ACTIVE_NOTE) {
             pa.fill(PhasesPApplet.getColor2());
         }
         else {
@@ -17,7 +21,7 @@ public class ActiveNoteIcon implements Icon {
         }
         pa.quarterNote(x, y, quarterNoteSize);
         
-        if (value == ActiveNote.ONLY_SHOW_ACTIVE_NOTE) {
+        if (showState == ONLY_SHOW_ACTIVE_NOTE) {
             pa.fill(0, 50);
         }
         else {
@@ -26,7 +30,7 @@ public class ActiveNoteIcon implements Icon {
         pa.quarterNote(x - radius*0.65f, y, quarterNoteSize);
         pa.quarterNote(x + radius*0.65f, y, quarterNoteSize);
         
-        if (value == ActiveNote.SHOW_LINE_AT_ACTIVE_NOTE) {
+        if (showState == SHOW_LINE_AT_NOTE) {
             pa.strokeWeight(4);
             pa.stroke(PhasesPApplet.getColor2());
             pa.line(x, y - radius/2f, x, y + radius);
