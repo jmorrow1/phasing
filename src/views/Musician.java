@@ -22,14 +22,8 @@ public class Musician extends View {
 	private int firstPitch = 48;
 	
 	//options:
-	private final int SUPERIMPOSED=0, SEPARATED=1;
 	private int superimposedOrSeparated = SUPERIMPOSED;
-	
-	private final int MONOCHROME=0, DIACHROME=1;
-	private int colorScheme = MONOCHROME;
-	
-	private final int numInstruments = 1;
-	private final int PIANO=0;
+	private int colorScheme = MONOCHROMATIC;
 	private int instrument = PIANO;
 	
 	@Override
@@ -64,14 +58,14 @@ public class Musician extends View {
 		}
 		
 		pa.noStroke();
-		if (colorScheme == DIACHROME) {
+		if (colorScheme == DIACHROMATIC) {
 			pa.fill(pa.getColor1(), opacity);
 		}
 		else {
 			pa.fill(0, opacity);
 		}
 		playerA.display(pa);
-		if (colorScheme == DIACHROME) {
+		if (colorScheme == DIACHROMATIC) {
 			pa.fill(pa.getColor2(), opacity);
 		}
 		else {

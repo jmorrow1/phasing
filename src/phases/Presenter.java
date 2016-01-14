@@ -1,9 +1,19 @@
 package phases;
 
+import java.lang.reflect.Field;
+
 import geom.Rect;
+import icons.CameraIcon;
+import icons.ColorSchemeIcon;
+import icons.InstrumentIcon;
+import icons.NoteIcon;
+import icons.PlotPitchIcon;
+import icons.SuperimposedOrSeparatedIcon;
+import icons.TransformIcon;
 import processing.core.PApplet;
 import soundcipher.SCScorePlus;
-import views.*;
+import views.PhaseShifter;
+import views.View;
 
 /**
  * The screen that displays views, ways of visualizing the music.
@@ -62,6 +72,8 @@ public class Presenter extends Screen {
 		
 		prev_notept1 = 0;
 		prev_notept2 = 0;
+		
+		setupIcons();
 	}
 	
 	@Override
@@ -74,6 +86,29 @@ public class Presenter extends Screen {
 	public void draw() {
 		pa.background(255);
 		animateView();
+	}
+	
+	public void setupIcons() {
+		Field[] fields = view.getClass().getFields();
+		try {
+			for (Field f : fields) {
+				switch(f.getName()) {
+					//case "showActiveNote": new ShowActiveNoteIcon(f.getBoolean(view)); break;
+					case "transformation": new TransformIcon(f.getInt(view)); break;
+					case "cameraMode": new CameraIcon(f.getInt(view)); break;
+					case "noteGraphic": new NoteIcon(f.getInt(view)); break;
+					case "doPlotPitch": new PlotPitchIcon(f.getBoolean(view)); break;
+					case "colorScheme": new ColorSchemeIcon(f.getInt(view)); break;
+					case "superimposedOrSeparated": new SuperimposedOrSeparatedIcon(f.getInt(view)); break;
+					case "instrument" : new InstrumentIcon(f.getInt(view)); break;
+					case "scoreMode" : break;
+					default: System.out.println("Don't know that view field name"); break;
+				}
+			}
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void animateView() {

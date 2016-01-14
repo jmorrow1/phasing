@@ -18,7 +18,6 @@ public class Piano extends Rect implements Instrument {
 	private int numOctaves;
 	private boolean facePositive;
 	//keys
-	//private Rect[] whiteKeys, blackKeys, keys;
 	private Polygon[] whiteKeys;
 	private Rect[] blackKeys;
 	private Shape[] keys;
@@ -92,7 +91,6 @@ public class Piano extends Rect implements Instrument {
 		int k=0; //looping variable for blackKeys
 		for (int i=0; i<numKeys; i++) { //looping variable for all keys
 			//init white keys
-			//whiteKeys[j++] = new Rect(x1, y1, whiteKeyWidth, whiteKeyHeight, PApplet.CORNER);
 			whiteKeys[j++] = initWhiteKey(i, x1, y1, whiteKeyWidth, whiteKeyHeight, blackKeyWidth, blackKeyHeight);
 			keys[i] = whiteKeys[j-1];
 			//init black keys

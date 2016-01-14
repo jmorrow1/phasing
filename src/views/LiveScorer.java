@@ -35,16 +35,9 @@ public class LiveScorer extends View {
 	
 	//options:
 	private boolean sineWave = false;
-	
-	private static final int SCROLLS=0, FADES=1;
-	private int scrollsOrFades=SCROLLS;
-	
-	private final int numNoteTypes = 4; 
-	private final int DOTS=0, SYMBOLS=1, CONNECTED_DOTS=2, RECTS=3;
+	private int scoreMode=SCROLLS;
 	private int noteType = SYMBOLS;
-	
-	private static final int MONOCHROME=0, DIACHROME=1;
-	private int colorSchemeType = DIACHROME;
+	private int colorSchemeType = DIACHROMATIC;
 	
 	@Override
 	public int numOptions() {
@@ -105,8 +98,8 @@ public class LiveScorer extends View {
 		
 		float dx = -dNotept1 * pixelsPerWholeNote;
 		
-		scroll(dx, dataPts1, (colorSchemeType == MONOCHROME) ? 0 : pa.getColor1());
-		scroll(dx, dataPts2, (colorSchemeType == MONOCHROME) ? 0 : pa.getColor2());
+		scroll(dx, dataPts1, (colorSchemeType == MONOCHROMATIC) ? 0 : pa.getColor1());
+		scroll(dx, dataPts2, (colorSchemeType == MONOCHROMATIC) ? 0 : pa.getColor2());
 		
 		pa.popMatrix();
 
@@ -212,7 +205,7 @@ public class LiveScorer extends View {
 					pa.line(startX, startY, endX, endY);
 				}
 			}
-			else if (noteType == RECTS) {
+			else if (noteType == RECTS_OR_SECTORS) {
 				pa.rectMode(pa.CORNERS);
 				pa.rect(startX, startY, endX, startY + 20);
 			}

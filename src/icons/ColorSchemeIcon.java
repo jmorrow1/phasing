@@ -3,10 +3,10 @@ package icons;
 import phases.PhasesPApplet;
 
 public class ColorSchemeIcon implements Icon {
-    private boolean grayscale;
+    private int colorScheme;
     
-    public ColorSchemeIcon(boolean grayscale) {
-        this.grayscale = grayscale;
+    public ColorSchemeIcon(int colorScheme) {
+        this.colorScheme = colorScheme;
     }
   
     @Override
@@ -14,7 +14,7 @@ public class ColorSchemeIcon implements Icon {
         pa.noStroke();
         pa.ellipseMode(pa.CENTER);
         
-        if (grayscale) {
+        if (colorScheme == MONOCHROMATIC) {
             pa.fill(0, 100);
         }
         else {
@@ -23,7 +23,7 @@ public class ColorSchemeIcon implements Icon {
         
         pa.ellipse(x - radius/3f, y, radius, radius);
        
-        if (grayscale) {
+        if (colorScheme == DIACHROMATIC) {
             pa.fill(0, 100);
         }
         else {
