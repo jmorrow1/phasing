@@ -1,4 +1,4 @@
-package phases;
+package instrument_graphics;
 
 import geom.Shape;
 import processing.core.PApplet;

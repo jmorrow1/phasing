@@ -1,7 +1,7 @@
 package views;
 
 import geom.Shape;
-import phases.Instrument;
+import instrument_graphics.Instrument;
 import phases.Phrase;
 import phases.PhraseReader;
 import processing.core.PApplet;

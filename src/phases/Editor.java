@@ -14,6 +14,7 @@ import geom.Rect;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
+import soundcipher.SoundCipherPlus;
 
 /**
  * Provides an editor in which the user can create and edit musical phrases for the Presenter screen.

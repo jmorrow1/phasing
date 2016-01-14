@@ -1,9 +1,10 @@
-package phases;
+package instrument_graphics;
 
 import geom.Point;
 import geom.Polygon;
 import geom.Rect;
 import geom.Shape;
+import phases.PhasesPApplet;
 import processing.core.PApplet;
 
 /**

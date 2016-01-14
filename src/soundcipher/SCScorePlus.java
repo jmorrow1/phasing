@@ -1,4 +1,4 @@
-package phases;
+package soundcipher;
 
 import arb.soundcipher.SCScore;
 

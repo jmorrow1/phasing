@@ -1,9 +1,11 @@
-package phases;
+package soundcipher;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import arb.soundcipher.SoundCipher;
+import phases.Phrase;
+import phases.PhraseReader;
 import processing.core.PApplet;
 
 /**

@@ -1,10 +1,10 @@
 package views;
 
 import geom.Rect;
-import phases.Instrument;
+import instrument_graphics.Instrument;
+import instrument_graphics.Piano;
 import phases.PhasesPApplet;
 import phases.PhraseReader;
-import phases.Piano;
 import processing.core.PApplet;
 
 public class Musician extends View {

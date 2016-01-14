@@ -2,6 +2,7 @@ package phases;
 
 import geom.Rect;
 import processing.core.PApplet;
+import soundcipher.SCScorePlus;
 import views.*;
 
 /**
@@ -34,9 +35,9 @@ public class Presenter extends Screen {
 	
 	@Override
 	public void onEnter() {
-		//view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		//view = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		//view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 	
 		pa.phrase.addToScore(player1, 0, 0, 0);
 		pa.phrase.addToScore(player2, 0, 0, 0);
