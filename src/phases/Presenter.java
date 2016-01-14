@@ -8,12 +8,14 @@ import icons.ColorSchemeIcon;
 import icons.InstrumentIcon;
 import icons.NoteIcon;
 import icons.PlotPitchIcon;
+import icons.ScoreModeIcon;
 import icons.SuperimposedOrSeparatedIcon;
 import icons.TransformIcon;
 import processing.core.PApplet;
 import soundcipher.SCScorePlus;
 import views.PhaseShifter;
 import views.View;
+import views.ViewVariableInfo;
 
 /**
  * The screen that displays views, ways of visualizing the music.
@@ -21,7 +23,7 @@ import views.View;
  * @author James Morrow
  *
  */
-public class Presenter extends Screen {	
+public class Presenter extends Screen implements ViewVariableInfo{	
 	//time
 	private float prev_notept1, prev_notept2;
 	
@@ -92,17 +94,19 @@ public class Presenter extends Screen {
 		Field[] fields = view.getClass().getFields();
 		try {
 			for (Field f : fields) {
-				if (f.isAccessible()) {
-					switch(f.getName()) {
+				if (f.isAccessible() && f.getType().equals(ModInt.class)) {
+					ModInt x = (ModInt)f.get(view);
+					String name = x.getName();
+					switch(name) {
 						//case "showActiveNote": new ShowActiveNoteIcon(f.getBoolean(view)); break;
-						case "transformation": new TransformIcon(f.getInt(view)); break;
-						case "cameraMode": new CameraIcon(f.getInt(view)); break;
-						case "noteGraphic": new NoteIcon(f.getInt(view)); break;
-						case "doPlotPitch": new PlotPitchIcon(f.getBoolean(view)); break;
-						case "colorScheme": new ColorSchemeIcon(f.getInt(view)); break;
-						case "superimposedOrSeparated": new SuperimposedOrSeparatedIcon(f.getInt(view)); break;
-						case "instrument" : new InstrumentIcon(f.getInt(view)); break;
-						case "scoreMode" : break;
+						case transformationName: new TransformIcon(f.getInt(view)); break;
+						case cameraModeName: new CameraIcon(f.getInt(view)); break;
+						case noteGraphicName: new NoteIcon(f.getInt(view)); break;
+						case plotPitchModeName: new PlotPitchIcon(f.getBoolean(view)); break;
+						case colorSchemeName: new ColorSchemeIcon(f.getInt(view)); break;
+						case superimposedOrSeparatedName: new SuperimposedOrSeparatedIcon(f.getInt(view)); break;
+						case instrumentName : new InstrumentIcon(f.getInt(view)); break;
+						case scoreModeName : new ScoreModeIcon(f.getInt(view)); break;
 						default: System.out.println("Don't know that view field name " + f.getName()); break;
 					}
 				}

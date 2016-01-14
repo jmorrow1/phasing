@@ -21,7 +21,7 @@ public class NoteIcon implements Icon {
             pa.noStroke();
             pa.fill(0);
             pa.ellipseMode(pa.CENTER);
-            pa.ellipse(x, y, radius*0.8f, radius*0.8f);
+            pa.ellipse(x, y, radius*0.5f, radius*0.5f);
         }
         else if (noteType == CONNECTED_DOTS) {
             pa.noStroke();

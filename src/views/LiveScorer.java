@@ -2,9 +2,9 @@ package views;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import geom.Rect;
+import phases.ModInt;
 import phases.PhasesPApplet;
 import phases.PhraseReader;
 import processing.core.PApplet;
@@ -34,10 +34,15 @@ public class LiveScorer extends View {
 	private int startingPitch = 0;
 	
 	//options:
-	private boolean sineWave = false;
-	private int scoreMode=SCROLLS;
-	private int noteType = SYMBOLS;
-	private int colorSchemeType = DIACHROMATIC;
+	//public int sineWave = IS_NOT_SINE_WAVE;
+	//public int scoreMode = SCROLLS;
+	//public int noteType = SYMBOLS;
+	//public int colorSchemeType = DIACHROMATIC;
+	
+	public ModInt sineWave = new ModInt(0, numWaysOfBeingASineWaveOrNot, sineWaveName);
+	public ModInt scoreMode = new ModInt(0, numScoreModes, scoreModeName);
+	public ModInt noteGraphic = new ModInt(0, numNoteGraphics, noteGraphicName);
+	public ModInt colorScheme = new ModInt(0, numColorSchemes, colorSchemeName);
 	
 	@Override
 	public int numOptions() {
@@ -98,8 +103,8 @@ public class LiveScorer extends View {
 		
 		float dx = -dNotept1 * pixelsPerWholeNote;
 		
-		scroll(dx, dataPts1, (colorSchemeType == MONOCHROMATIC) ? 0 : pa.getColor1());
-		scroll(dx, dataPts2, (colorSchemeType == MONOCHROMATIC) ? 0 : pa.getColor2());
+		scroll(dx, dataPts1, (colorScheme.toInt() == MONOCHROMATIC) ? 0 : pa.getColor1());
+		scroll(dx, dataPts2, (colorScheme.toInt() == MONOCHROMATIC) ? 0 : pa.getColor2());
 		
 		pa.popMatrix();
 
@@ -139,7 +144,7 @@ public class LiveScorer extends View {
 		float y1 = 0;
 		float y2 = 0;
 		
-		if (sineWave) {
+		if (sineWave.toInt() == IS_SINE_WAVE) {
 			float durationAcc = 0;
 		
 			if (reader.getId() == ONE_ID) {
@@ -189,23 +194,23 @@ public class LiveScorer extends View {
 			pa.stroke(color, opacity);
 			pa.strokeWeight(2);
 			pa.fill(color, opacity);
-			if (noteType == SYMBOLS) {
+			if (noteGraphic.toInt() == SYMBOLS) {
 				int pitch = (int) (pa.phrase.getSCPitch(noteIndex) % 12);
 				String symbol = pa.scale.getNoteNameByPitchValue(pitch);
 				pa.text(symbol, startX, startY);
 			}
-			else if (noteType == DOTS) {
+			else if (noteGraphic.toInt() == DOTS) {
 				pa.ellipseMode(pa.CENTER);
 				pa.ellipse(startX, startY, 20, 20);
 			}
-			else if (noteType == CONNECTED_DOTS) {
+			else if (noteGraphic.toInt() == CONNECTED_DOTS) {
 				pa.ellipseMode(pa.CENTER);
 				pa.ellipse(startX, startY, 20, 20);
 				if (!rightmostPoint) {
 					pa.line(startX, startY, endX, endY);
 				}
 			}
-			else if (noteType == RECTS_OR_SECTORS) {
+			else if (noteGraphic.toInt() == RECTS_OR_SECTORS) {
 				pa.rectMode(pa.CORNERS);
 				pa.rect(startX, startY, endX, startY + 20);
 			}

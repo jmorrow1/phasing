@@ -5,7 +5,7 @@ import phases.PhasesPApplet;
 public class ScoreModeIcon implements Icon {
     private int mode;
     
-    ScoreModeIcon(int mode) {
+    public ScoreModeIcon(int mode) {
         this.mode = mode;
     }
     

@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import geom.Point;
 import geom.Rect;
+import phases.ModInt;
 import phases.PhasesPApplet;
 import phases.PhraseReader;
 import processing.core.PApplet;
@@ -28,12 +29,12 @@ public class PhaseShifter extends View {
 	private int activeNote1, activeNote2;
 	
 	//options:
-	public boolean showActiveNote = false;
-	public int transformation = ROTATE;
-	public int cameraMode = RELATIVE;
-	public int noteGraphic = SYMBOLS;
-	public boolean doPlotPitch = true;
-	public int colorScheme = DIACHROMATIC;
+	public ModInt activeNoteMode = new ModInt(0, numActiveNoteModes, activeNoteModeName);
+	public ModInt transformation = new ModInt(0, numTransformations, transformationName);
+	public ModInt cameraMode = new ModInt(0, numCameraModes, cameraModeName);
+	public ModInt noteGraphic = new ModInt(0, numNoteGraphics, noteGraphicName);
+	public ModInt plotPitchMode = new ModInt(0, numWaysOfPlottingPitchOrNot, plotPitchModeName);
+	public ModInt colorScheme = new ModInt(0, numColorSchemes, colorSchemeName);
 	
 	@Override
 	public int numOptions() {
@@ -90,7 +91,7 @@ public class PhaseShifter extends View {
 		readerA.update(dNotept1);
 		readerB.update(dNotept2);
 		
-		if (cameraMode == RELATIVE) {
+		if (cameraMode.toInt() == RELATIVE) {
 			dNotept2 = (dNotept2 - dNotept1) + dNoteptAcc;
 			dNotept1 = 0;
 			
@@ -112,13 +113,13 @@ public class PhaseShifter extends View {
 		//draw graphics for player 1
 		pa.pushMatrix();
 			transform(1);
-			drawPhraseGraphic(activeNote1, (this.colorScheme == DIACHROMATIC) ? pa.getColor1() : 0, pa.getBPM1());
+			drawPhraseGraphic(activeNote1, (colorScheme.toInt() == DIACHROMATIC) ? pa.getColor1() : 0, pa.getBPM1());
 		pa.popMatrix();
 		
 		//draw graphics for player 2
 		pa.pushMatrix();
 			transform(2);
-			drawPhraseGraphic(activeNote2, (this.colorScheme == DIACHROMATIC) ? pa.getColor2() : 0, pa.getBPM2());
+			drawPhraseGraphic(activeNote2, (colorScheme.toInt() == DIACHROMATIC) ? pa.getColor2() : 0, pa.getBPM2());
 		pa.popMatrix();
 		
 		pa.popMatrix();
@@ -141,14 +142,14 @@ public class PhaseShifter extends View {
 	}
 	
 	private void transform(float translateAmt, float rotateAmt) {
-		switch(transformation) {
+		switch(transformation.toInt()) {
 			case TRANSLATE: pa.translate(translateAmt, 0); break;
 			case ROTATE: pa.rotate(rotateAmt); break;
 		}
 	}
 	
 	private void styleNoteGraphics(int color, boolean activeStyle) {
-		switch (noteGraphic) {
+		switch (noteGraphic.toInt()) {
 			case SYMBOLS:
 				pa.noStroke();
 				if (activeStyle) {
@@ -178,7 +179,7 @@ public class PhaseShifter extends View {
 				}
 				break;
 			case RECTS_OR_SECTORS:
-				if (transformation == TRANSLATE) {
+				if (transformation.toInt() == TRANSLATE) {
 					if (activeStyle) {
 						pa.stroke(0);
 						pa.fill(color);
@@ -188,7 +189,7 @@ public class PhaseShifter extends View {
 						pa.fill(color, opacity);
 					}
 				}
-				else if (transformation == ROTATE) {
+				else if (transformation.toInt() == ROTATE) {
 					if (activeStyle) {
 						pa.stroke(color);
 					}
@@ -199,14 +200,12 @@ public class PhaseShifter extends View {
 				}
 				
 				break;
-			case SINE_WAVE:
-				break;
 		}
 	}
 	
 	private float mapPitch(int i, float newMin, float newMax) {
 		i %= 12;
-		if (doPlotPitch && pa.phrase.minPitch() != pa.phrase.maxPitch()) {
+		if (plotPitchMode.toInt() == PLOT_PITCH && pa.phrase.minPitch() != pa.phrase.maxPitch()) {
 			return PApplet.map(pa.phrase.getSCPitch(i),
                                pa.phrase.minPitch(), pa.phrase.maxPitch(),
                                newMin, newMax);
@@ -218,13 +217,13 @@ public class PhaseShifter extends View {
 	}
 	
 	private void drawPhraseGraphic(int activeNote, int color, float bpm) {
-		if (noteGraphic == SINE_WAVE) {
+		if (noteGraphic.toInt()== SINE_WAVE) {
 			pa.noFill();
 			pa.stroke(color);
-			if (transformation == TRANSLATE) {
+			if (transformation.toInt() == TRANSLATE) {
 				drawSineWave();
 			}
-			else if (transformation == ROTATE) {	
+			else if (transformation.toInt() == ROTATE) {	
 				int radius = (int)pa.map(bpm, pa.MIN_BPM, pa.MAX_BPM, 0, halfWidth);
 				pa.ellipseMode(pa.RADIUS);
 				pa.ellipse(0, 0, radius, radius);
@@ -233,7 +232,8 @@ public class PhaseShifter extends View {
 		else {
 			styleNoteGraphics(color, false);
 			for (int i=0; i<pa.phrase.getNumNotes(); i++) {
-				if (showActiveNote && i == activeNote) {
+				if ( (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE)
+						&& i == activeNote) {
 					styleNoteGraphics(color, true);
 					drawNoteGraphic(i);
 					styleNoteGraphics(color, false);
@@ -263,7 +263,7 @@ public class PhaseShifter extends View {
 	}
 	
 	private Point getNoteGraphicPoint(int noteIndex) {
-		if (transformation == TRANSLATE) {
+		if (transformation.toInt() == TRANSLATE) {
 			float x = pa.map(pa.phrase.getPercentDurationOfSCIndex(noteIndex),
 						0, 1, -halfWidth, halfWidth);
 			float y = mapPitch(noteIndex, halfHeight, -halfHeight);
@@ -277,47 +277,47 @@ public class PhaseShifter extends View {
 	}
 	
 	private void drawNoteGraphic(int index) {
-		if (noteGraphic == SYMBOLS) {
+		if (noteGraphic.toInt()== SYMBOLS) {
 			Point a = getNoteGraphicPoint(index);
 			pa.pushMatrix();
 				pa.translate(a.x, a.y);
-				if (transformation == ROTATE) {
+				if (transformation.toInt() == ROTATE) {
 					float theta = pa.phrase.getPercentDurationOfSCIndex(index) * pa.TWO_PI;
 					pa.rotate(theta);
 				}
 				int pitch = (int) (pa.phrase.getSCPitch(index) % 12);
 				String symbol = pa.scale.getNoteNameByPitchValue(pitch);
 				pa.text(symbol, 0, 0);
-				if (transformation == TRANSLATE) {
+				if (transformation.toInt() == TRANSLATE) {
 					pa.text(symbol, width, 0);
 					pa.text(symbol, -width, 0);
 				}
 			pa.popMatrix();
 		}
-		else if (noteGraphic == DOTS) {
+		else if (noteGraphic.toInt()== DOTS) {
 			Point a = getNoteGraphicPoint(index);
 			pa.ellipseMode(pa.CENTER);
 			pa.ellipse(a.x, a.y, 20, 20);
-			if (transformation == TRANSLATE) {
+			if (transformation.toInt() == TRANSLATE) {
 				pa.ellipse(a.x - width, a.y, 20, 20);
 				pa.ellipse(a.x + width, a.y, 20, 20);
 			}
 		}
-		else if (noteGraphic == CONNECTED_DOTS) {
+		else if (noteGraphic.toInt()== CONNECTED_DOTS) {
 			Point a = getNoteGraphicPoint(index);
 			Point b = getNoteGraphicPoint(index+1);
 			pa.ellipseMode(pa.CENTER);
 			pa.ellipse(a.x, a.y, 20, 20);
 			pa.line(a.x, a.y, b.x, b.y);
-			if (transformation == TRANSLATE) {
+			if (transformation.toInt() == TRANSLATE) {
 				pa.ellipse(a.x - width, a.y, 20, 20);
 				pa.line(a.x - width, a.y, b.x - width, b.y);
 				pa.ellipse(a.x + width, a.y, 20, 20);
 				pa.line(a.x + width, a.y, b.x + width, b.y);
 			}
 		}
-		else if (noteGraphic == RECTS_OR_SECTORS) {
-			if (transformation == TRANSLATE) {
+		else if (noteGraphic.toInt()== RECTS_OR_SECTORS) {
+			if (transformation.toInt() == TRANSLATE) {
 				Point a = getNoteGraphicPoint(index);
 				Point b = getNoteGraphicPoint(index+1);
 				pa.rectMode(pa.CORNERS);

@@ -3,6 +3,7 @@ package views;
 import geom.Rect;
 import instrument_graphics.Instrument;
 import instrument_graphics.Piano;
+import phases.ModInt;
 import phases.PhasesPApplet;
 import phases.PhraseReader;
 import processing.core.PApplet;
@@ -22,9 +23,9 @@ public class Musician extends View {
 	private int firstPitch = 48;
 	
 	//options:
-	private int superimposedOrSeparated = SUPERIMPOSED;
-	private int colorScheme = MONOCHROMATIC;
-	private int instrument = PIANO;
+	public ModInt superimposedOrSeparated = new ModInt(0, numWaysOfBeingSuperimposedOrSeparated, superimposedOrSeparatedName);
+	public ModInt colorScheme = new ModInt(0, numColorSchemes, colorSchemeName);
+	public ModInt instrument = new ModInt(0, numInstruments, instrumentName);
 	
 	@Override
 	public int numOptions() {
@@ -49,7 +50,7 @@ public class Musician extends View {
 		readerA.update(dNotept1);
 		readerB.update(dNotept2);	
 		
-		if (superimposedOrSeparated == SUPERIMPOSED) {
+		if (superimposedOrSeparated.toInt() == SUPERIMPOSED) {
 			instrumentAB.display(pa);
 		}
 		else {
@@ -58,14 +59,14 @@ public class Musician extends View {
 		}
 		
 		pa.noStroke();
-		if (colorScheme == DIACHROMATIC) {
+		if (colorScheme.toInt() == DIACHROMATIC) {
 			pa.fill(pa.getColor1(), opacity);
 		}
 		else {
 			pa.fill(0, opacity);
 		}
 		playerA.display(pa);
-		if (colorScheme == DIACHROMATIC) {
+		if (colorScheme.toInt() == DIACHROMATIC) {
 			pa.fill(pa.getColor2(), opacity);
 		}
 		else {
@@ -91,7 +92,7 @@ public class Musician extends View {
 	}
 
 	private void initInstrumentPlayers() {	
-		if (superimposedOrSeparated == SUPERIMPOSED) {
+		if (superimposedOrSeparated.toInt() == SUPERIMPOSED) {
 			playerA = new InstrumentPlayer(instrumentAB, pa.phrase, firstPitch);
 			playerB = new InstrumentPlayer(instrumentAB, pa.phrase, firstPitch);
 		}
@@ -102,7 +103,7 @@ public class Musician extends View {
 	}
 	
 	private void reinitInstrumentPlayers() {
-		if (superimposedOrSeparated == SUPERIMPOSED) {
+		if (superimposedOrSeparated.toInt() == SUPERIMPOSED) {
 			playerA = new InstrumentPlayer(instrumentAB, playerA);
 			playerB = new InstrumentPlayer(instrumentAB, playerB);
 		}
