@@ -1,4 +1,4 @@
-package views;
+package phases;
 
 public class Option {
 	public final String optionType;

@@ -1,29 +1,27 @@
 package icons;
 
+import phases.Option.NoteGraphic;
 import phases.PhasesPApplet;
 
 public class NoteIcon extends Icon {
-    final int SYMBOLS=0, DOTS=1, CONNECTED_DOTS=2, RECTS_OR_SECTORS=3;  
-    private int noteType;
-    
-    public NoteIcon(int noteType) {
-        this.noteType = noteType;
+    public NoteIcon(int value) {
+        super(value);
     }
   
     public void draw(float x, float y, float radius, PhasesPApplet pa) {
-        if (noteType == SYMBOLS) {
+        if (value == NoteGraphic.SYMBOLS) {
             pa.fill(0);
             pa.textSize(radius);
             pa.textAlign(pa.CENTER, pa.CENTER);
             pa.text("A", x, y);
         }
-        else if (noteType == DOTS) {
+        else if (value == NoteGraphic.DOTS) {
             pa.noStroke();
             pa.fill(0);
             pa.ellipseMode(pa.CENTER);
             pa.ellipse(x, y, radius*0.8f, radius*0.8f);
         }
-        else if (noteType == CONNECTED_DOTS) {
+        else if (value == NoteGraphic.CONNECTED_DOTS) {
             pa.noStroke();
             pa.fill(0);
             pa.ellipseMode(pa.CENTER);
@@ -33,7 +31,7 @@ public class NoteIcon extends Icon {
             pa.stroke(0);
             pa.line(x - radius*0.5f, y, x + radius*0.5f, y);
         }
-        else if (noteType == RECTS_OR_SECTORS) {
+        else if (value == NoteGraphic.RECTS_OR_SECTORS) {
             pa.fill(0);
             pa.rectMode(pa.CENTER);
             pa.rect(x, y, radius*0.9f, radius*0.35f);

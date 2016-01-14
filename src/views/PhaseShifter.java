@@ -4,15 +4,17 @@ import java.lang.reflect.Method;
 
 import geom.Point;
 import geom.Rect;
+import phases.Option;
+import phases.OptionValue;
 import phases.PhasesPApplet;
 import phases.PhraseReader;
+import phases.Option.ActiveNote;
+import phases.Option.Camera;
+import phases.Option.ColorScheme;
+import phases.Option.NoteGraphic;
+import phases.Option.PlotPitch;
+import phases.Option.Transform;
 import processing.core.PApplet;
-import views.Option.ActiveNote;
-import views.Option.Camera;
-import views.Option.ColorScheme;
-import views.Option.NoteGraphic;
-import views.Option.PlotPitch;
-import views.Option.Transform;
 
 public class PhaseShifter extends View {
 	//starting pitch:
@@ -34,12 +36,12 @@ public class PhaseShifter extends View {
 	private int activeNote1, activeNote2;
 	
 	//options
-	private OptionValue<ActiveNote> activeNote = new OptionValue<ActiveNote>(Option.activeNote(), 0);
-	private OptionValue<Transform> transform = new OptionValue(Option.transform(), 0);
-	private OptionValue<Camera> camera = new OptionValue(Option.camera(), 1);
-	private OptionValue<NoteGraphic> noteGraphic = new OptionValue(Option.noteGraphic(), 0);
-	private OptionValue<PlotPitch> plotPitch = new OptionValue(Option.plotPitch(), 0);
-	private OptionValue<ColorScheme> colorScheme = new OptionValue(Option.colorScheme(), 0);
+	public OptionValue<ActiveNote> activeNote = new OptionValue<ActiveNote>(Option.activeNote(), 1);
+	public OptionValue<Transform> transform = new OptionValue(Option.transform(), 0);
+	public OptionValue<Camera> camera = new OptionValue(Option.camera(), 1);
+	public OptionValue<NoteGraphic> noteGraphic = new OptionValue(Option.noteGraphic(), 0);
+	public OptionValue<PlotPitch> plotPitch = new OptionValue(Option.plotPitch(), 0);
+	public OptionValue<ColorScheme> colorScheme = new OptionValue(Option.colorScheme(), 0);
 	
 	@Override
 	public int numOptions() {

@@ -1,20 +1,17 @@
 package icons;
 
+import phases.Option.Superimpose;
 import phases.PhasesPApplet;
 
 public class SuperimposedOrSeparatedIcon extends Icon {
-    private boolean superimposed;
-    private String text;
-  
-    public SuperimposedOrSeparatedIcon(boolean superimposed) {
-        this.superimposed = superimposed;
-        text = (superimposed) ? "1" : "2";
+    public SuperimposedOrSeparatedIcon(int value) {
+        super(value);
     }
     
     public void draw(float x, float y, float radius, PhasesPApplet pa) {
         pa.textAlign(pa.CENTER, pa.CENTER);
         pa.fill(0);
         pa.textSize(radius);
-        pa.text(text, x, y);
+        pa.text((value == Superimpose.SUPERIMPOSED) ? "1" : "2", x, y);
     }
 }

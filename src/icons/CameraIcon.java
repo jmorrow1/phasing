@@ -1,13 +1,11 @@
 package icons;
 
+import phases.Option.Camera;
 import phases.PhasesPApplet;
 
 public class CameraIcon extends Icon {
-    final int FIXED=0, RELATIVE_TO_1=1, RELATIVE_TO_2=2;
-    private int cameraType;
-  
-    public CameraIcon(int cameraType) {
-        this.cameraType = cameraType;
+    public CameraIcon(int value) {
+        super(value);
     }
   
     public void draw(float x, float y, float radius, PhasesPApplet pa) {
@@ -36,8 +34,8 @@ public class CameraIcon extends Icon {
         pa.line(x3, y1, x3, y3);
         pa.drawArrowHead(x3, y3, arrowHeadSize, -pa.HALF_PI, 0.75f*pa.PI);
         
-        if (cameraType != FIXED) {
-            float y4 = (cameraType == RELATIVE_TO_1) ? y2 : y3;
+        if (value != Camera.FIXED) {
+            float y4 = (value == Camera.RELATIVE_TO_1) ? y2 : y3;
             pa.line(x1 + 0.05f*w1, y1, x1 + 0.05f*w1, y4);
             pa.drawArrowHead(x1 + 0.05f*w1, y4, arrowHeadSize, -pa.HALF_PI, 0.75f*pa.PI);
         }

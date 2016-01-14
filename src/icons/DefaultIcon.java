@@ -4,17 +4,16 @@ import geom.Polygon;
 import phases.PhasesPApplet;
 
 public class DefaultIcon extends Icon {
-	private int num;
-	
-	public DefaultIcon(int num) {
-		this.num = num;
+	public DefaultIcon(int value) {
+		super(value);
 	}
 	
 	@Override
 	public void draw(float x, float y, float radius, PhasesPApplet pa) {
+		pa.strokeWeight(2);
 		pa.stroke(0);
 		pa.noFill();
 		radius /= 2f;
-		Polygon.drawRegularPolygon(x, y, radius, radius, num, 0, pa);
+		Polygon.drawRegularPolygon(x, y, radius, radius, value+3, 0, pa);
 	}
 }

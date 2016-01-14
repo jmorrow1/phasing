@@ -1,6 +1,5 @@
-package views;
+package phases;
 
-import phases.PhasesPApplet;
 import processing.core.PApplet;
 
 public class OptionValue <T extends Option> {

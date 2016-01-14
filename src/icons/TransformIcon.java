@@ -1,13 +1,11 @@
 package icons;
 
+import phases.Option.Transform;
 import phases.PhasesPApplet;
 
 public class TransformIcon extends Icon {
-    final int TRANSLATE=0, ROTATE=1, ROTATE_Z=2;
-    private int transformType;
-  
-    public TransformIcon(int transformType) {
-        this.transformType = transformType;
+    public TransformIcon(int value) {
+        super(value);
     }
   
     public void draw(float x, float y, float radius, PhasesPApplet pa) {
@@ -17,18 +15,18 @@ public class TransformIcon extends Icon {
         
         float arrowHeadSize = radius / 4f;
         
-        if (transformType == TRANSLATE) {
+        if (value == Transform.TRANSLATE) {
             float x1 = x - radius + 5;
             float x2 = x + radius - 5;
             pa.line(x1, y, x2, y);
             pa.drawArrowHead(x2, y, arrowHeadSize, 0, 0.75f*pa.PI);
         }
-        else if (transformType == ROTATE) {
+        else if (value == Transform.ROTATE) {
             pa.ellipseMode(pa.RADIUS); 
             pa.arc(x, y, radius - 10, radius - 10, pa.QUARTER_PI, pa.TWO_PI);
             pa.drawArrowHead(x + radius - 10, y, arrowHeadSize, pa.HALF_PI, 0.75f*pa.PI);
         }
-        else if (transformType == ROTATE_Z) {
+        else if (value == Transform.ROTATE_Z) {
              
         }
     }
