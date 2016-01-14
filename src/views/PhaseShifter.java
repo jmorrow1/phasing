@@ -44,6 +44,56 @@ public class PhaseShifter extends View {
 	public OptionValue<ColorScheme> colorScheme = new OptionValue(Option.colorScheme(), 0);
 	
 	@Override
+	public int getValue(int index) {
+		switch (index) {
+			case 0: return showActiveNote ? 1 : 0;
+			case 1: return movementType;
+			case 2: return cameraType;
+			case 3: return phraseGraphicType;
+			case 4: return doPlotPitch ? 1 : 0;
+			case 5: return colorSchemeType;
+			default: return -1;
+		}
+	}
+	
+	@Override
+	public int numValues(int optionVariableIndex) {
+		switch(optionVariableIndex) {
+			case 0: return 2;
+			case 1: return 2;
+			case 2: return 2;
+			case 3: return numPhraseGraphicTypes;
+			case 4: return 2;
+			case 5: return 2;
+			default: return -1;
+		}
+	}
+	
+	@Override
+	public String showOption(int index) {
+		String s = "";
+		switch (index) {
+			case 0: return "show active note? " + showActiveNote;
+			case 1: return "movement type: " + ((movementType == SCROLLS) ? "SCROLLS" : "ROTATES");
+			case 2: return "camera type: " + ((cameraType == RELATIVE) ? "RELATIVE" : "FIXED");
+			case 3: 
+				s += "phrase graphic type: ";
+				switch (phraseGraphicType) {
+					case SYMBOLS: s += "SYMBOLS"; break;
+					case DOTS: s += "DOTS"; break;
+					case CONNECTED_DOTS: s += "CONNECTED_DOTS"; break;
+					case RECTS_OR_SECTORS: s += "RECTS_OR_SECTORS"; break;
+					case SINE_WAVE: s += "SINE_WAVE"; break;
+					default: s += phraseGraphicType; break;
+				}
+				return s;
+			case 4: return "do plot pitch? " + doPlotPitch;
+			case 5: return "color scheme type: " + ((colorSchemeType == MONOCHROMATIC) ? "MONOCHROMATIC" : "DIACHROMATIC");
+			default: return s;
+		}
+	}
+	
+	@Override
 	public int numOptions() {
 		return 6;
 	}

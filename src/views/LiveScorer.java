@@ -47,10 +47,53 @@ public class LiveScorer extends View {
 	private int colorSchemeType = DIACHROME;
 	
 	@Override
+	public int getValue(int optionVariableIndex) {
+		switch(optionVariableIndex) {
+			case 0: return sineWave ? 1 : 0;
+			case 1: return scrollsOrFades;
+			case 2: return noteType;
+			case 3: return colorSchemeType;
+			default: return -1;
+		}
+	}
+	
+	@Override
+	public int numValues(int optionVariableIndex) {
+		switch(optionVariableIndex) {
+			case 0: return 2;
+			case 1: return 2;
+			case 2: return numNoteTypes;
+			case 3: return 2;
+			default: return -1;
+		}
+	}
+	
+	@Override
 	public int numOptions() {
 		return 4;
 	}
 
+	@Override
+	public String showOption(int index) {
+		String s = "";
+		switch (index) {
+			case 0: return "is sinewave? " + sineWave;
+			case 1: return "scrolls or fades? " + ((scrollsOrFades == SCROLLS) ? "SCROLLS" : "FADES");
+			case 2: 
+				s += "note type: ";
+				switch (noteType) {
+					case DOTS: s += "DOTS"; break;
+					case SYMBOLS: s += "SYMBOLS"; break;
+					case CONNECTED_DOTS: s += "CONNECTED_DOTS"; break;
+					case RECTS: s += "RECTS"; break;
+					default: s += noteType; break;
+				}
+				return s;
+			case 3: return "color scheme type: " + ((colorSchemeType == MONOCHROME) ? "MONOCHROME" : "DIACHROME");
+			default: return s;
+		}
+	}
+	
 	public LiveScorer(Rect rect, int opacity, PhasesPApplet pa) {
 		super(rect, opacity, pa);
 		
