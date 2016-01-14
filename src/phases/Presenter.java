@@ -92,17 +92,19 @@ public class Presenter extends Screen {
 		Field[] fields = view.getClass().getFields();
 		try {
 			for (Field f : fields) {
-				switch(f.getName()) {
-					//case "showActiveNote": new ShowActiveNoteIcon(f.getBoolean(view)); break;
-					case "transformation": new TransformIcon(f.getInt(view)); break;
-					case "cameraMode": new CameraIcon(f.getInt(view)); break;
-					case "noteGraphic": new NoteIcon(f.getInt(view)); break;
-					case "doPlotPitch": new PlotPitchIcon(f.getBoolean(view)); break;
-					case "colorScheme": new ColorSchemeIcon(f.getInt(view)); break;
-					case "superimposedOrSeparated": new SuperimposedOrSeparatedIcon(f.getInt(view)); break;
-					case "instrument" : new InstrumentIcon(f.getInt(view)); break;
-					case "scoreMode" : break;
-					default: System.out.println("Don't know that view field name"); break;
+				if (f.isAccessible()) {
+					switch(f.getName()) {
+						//case "showActiveNote": new ShowActiveNoteIcon(f.getBoolean(view)); break;
+						case "transformation": new TransformIcon(f.getInt(view)); break;
+						case "cameraMode": new CameraIcon(f.getInt(view)); break;
+						case "noteGraphic": new NoteIcon(f.getInt(view)); break;
+						case "doPlotPitch": new PlotPitchIcon(f.getBoolean(view)); break;
+						case "colorScheme": new ColorSchemeIcon(f.getInt(view)); break;
+						case "superimposedOrSeparated": new SuperimposedOrSeparatedIcon(f.getInt(view)); break;
+						case "instrument" : new InstrumentIcon(f.getInt(view)); break;
+						case "scoreMode" : break;
+						default: System.out.println("Don't know that view field name " + f.getName()); break;
+					}
 				}
 			}
 		}

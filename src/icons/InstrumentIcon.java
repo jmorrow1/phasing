@@ -12,8 +12,8 @@ public class InstrumentIcon implements Icon {
 	@Override
 	public void draw(float x, float y, float radius, PhasesPApplet pa) {
 		if (instrument == PIANO) {
-            float w = radius;
-            float h = 0.8f*radius;
+			float w = 1.25f*radius;
+            float h = radius;
             float y1 = y - h/2f;
             float y2 = y + h/2f;
             
