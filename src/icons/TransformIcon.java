@@ -2,7 +2,7 @@ package icons;
 
 import phases.PhasesPApplet;
 
-public class TransformIcon implements Icon {
+public class TransformIcon extends Icon {
     final int TRANSLATE=0, ROTATE=1, ROTATE_Z=2;
     private int transformType;
   

@@ -2,7 +2,7 @@ package icons;
 
 import phases.PhasesPApplet;
 
-public class ColorSchemeIcon implements Icon {
+public class ColorSchemeIcon extends Icon {
     private boolean grayscale;
     
     public ColorSchemeIcon(boolean grayscale) {

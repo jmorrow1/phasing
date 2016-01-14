@@ -2,7 +2,7 @@ package icons;
 
 import phases.PhasesPApplet;
 
-public class PlotPitchIcon implements Icon {
+public class PlotPitchIcon extends Icon {
     private boolean doPlotPitch;
   
     public PlotPitchIcon(boolean doPlotPitch) {

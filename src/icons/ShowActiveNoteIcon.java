@@ -2,7 +2,7 @@ package icons;
 
 import phases.PhasesPApplet;
 
-public class ShowActiveNoteIcon implements Icon {
+public class ShowActiveNoteIcon extends Icon {
     final int SHOW_ACTIVE_NOTE=0, ONLY_SHOW_ACTIVE_NOTE=1, DONT_SHOW_ACTIVE_NOTE=2, SHOW_LINE_AT_NOTE=3;
     private int showState;
   

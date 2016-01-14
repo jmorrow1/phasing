@@ -3,7 +3,7 @@ package icons;
 import geom.Polygon;
 import phases.PhasesPApplet;
 
-public class DefaultIcon implements Icon {
+public class DefaultIcon extends Icon {
 	private int num;
 	
 	public DefaultIcon(int num) {

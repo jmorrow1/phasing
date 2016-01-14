@@ -2,7 +2,7 @@ package icons;
 
 import phases.PhasesPApplet;
 
-public class CameraIcon implements Icon {
+public class CameraIcon extends Icon {
     final int FIXED=0, RELATIVE_TO_1=1, RELATIVE_TO_2=2;
     private int cameraType;
   

@@ -2,7 +2,7 @@ package icons;
 
 import phases.PhasesPApplet;
 
-public class NoteIcon implements Icon {
+public class NoteIcon extends Icon {
     final int SYMBOLS=0, DOTS=1, CONNECTED_DOTS=2, RECTS_OR_SECTORS=3;  
     private int noteType;
     

@@ -2,7 +2,7 @@ package icons;
 
 import phases.PhasesPApplet;
 
-public class SuperimposedOrSeparatedIcon implements Icon {
+public class SuperimposedOrSeparatedIcon extends Icon {
     private boolean superimposed;
     private String text;
   
