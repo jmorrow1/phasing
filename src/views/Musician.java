@@ -37,50 +37,10 @@ public class Musician extends View {
 		return 3;
 	}
 	
-	@Override
-	public int getValue(int index) {
-		switch(index) {
-			case 0: return superimposedOrSeparated;
-			case 1: return colorScheme;
-			case 2: return instrument;
-			default: return -1;
-		}
-	}
-	
-	@Override
-	public int numValues(int index) {
-		switch(index) {
-			case 0: return 2;
-			case 1: return 2;
-			case 2: return numInstruments;
-			default: return -1;
-		}
-	}
-	
 	private void updateState() {
 		initInstrumentPlayers();
 		readerA.setCallee(playerA);
 		readerB.setCallee(playerB);
-	}
-
-	@Override
-	public String showOption(int index) {
-		String s = "";
-		switch (index) {
-			case 0: 
-				return "superimposed or separated? " 
-						+ ((superimposedOrSeparated == SUPERIMPOSED) ? "SUPERIMPOSED" : "SEPARATED");
-			case 1:
-				return "color scheme type: " + ((colorScheme == MONOCHROME) ? "MONOCHROME" : "DIACHROME");
-			case 2:
-				s += "instrument: ";
-				switch (instrument) {
-					case PIANO: s += "PIANO"; break;
-					default: s += instrument; break;
-				}
-				return s;
-			default: return s;
-		}
 	}
 	
 	public Musician(Rect rect, int opacity, PhasesPApplet pa) {
