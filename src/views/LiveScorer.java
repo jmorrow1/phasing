@@ -34,10 +34,10 @@ public class LiveScorer extends View {
 	private int startingPitch = 0;
 	
 	//options:
-	public ModInt sineWave = new ModInt(0, numWaysOfBeingASineWaveOrNot, sineWaveName);
+	public ModInt sineWave = new ModInt(1, numWaysOfBeingASineWaveOrNot, sineWaveName);
 	public ModInt scoreMode = new ModInt(0, numScoreModes, scoreModeName);
 	public ModInt noteGraphic = new ModInt(0, numNoteGraphics, noteGraphicName);
-	public ModInt colorScheme = new ModInt(0, numColorSchemes, colorSchemeName);
+	public ModInt colorScheme = new ModInt(1, numColorSchemes, colorSchemeName);
 	
 	@Override
 	public int numOptions() {
@@ -190,6 +190,7 @@ public class LiveScorer extends View {
 			pa.strokeWeight(2);
 			pa.fill(color, opacity);
 			if (noteGraphic.toInt() == SYMBOLS) {
+				pa.textSize(42);
 				int pitch = (int) (pa.phrase.getSCPitch(noteIndex) % 12);
 				String symbol = pa.scale.getNoteNameByPitchValue(pitch);
 				pa.text(symbol, startX, startY);

@@ -13,7 +13,7 @@ public class TransformIcon implements Icon {
     public void draw(float x, float y, float radius, PhasesPApplet pa) {
         pa.noFill();
         pa.stroke(0);
-        pa.strokeWeight(4);
+        pa.strokeWeight(radius/10f);
         
         float arrowHeadSize = radius / 4f;
         

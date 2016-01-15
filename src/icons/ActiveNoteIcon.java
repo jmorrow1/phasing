@@ -26,7 +26,7 @@ public class ActiveNoteIcon implements Icon {
         pa.quarterNote(x + radius*0.65f, y, quarterNoteSize);
         
         if (value == SHOW_LINE_AT_ACTIVE_NOTE) {
-            pa.strokeWeight(4);
+            pa.strokeWeight(radius/10f);
             pa.stroke(PhasesPApplet.getColor2());
             pa.line(x, y - radius/2f, x, y + radius);
         }

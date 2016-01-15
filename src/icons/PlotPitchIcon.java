@@ -16,7 +16,7 @@ public class PlotPitchIcon implements Icon {
         float y2 = y + 0.6f*radius;
         float arrowHeadSize = 0.25f*radius;
         pa.stroke(0);
-        pa.strokeWeight(3);
+        pa.strokeWeight(radius/15f);
         
         pa.line(x1, y, x2, y);
         pa.drawArrowHead(x1, y, arrowHeadSize, pa.PI, 0.75f*pa.PI);

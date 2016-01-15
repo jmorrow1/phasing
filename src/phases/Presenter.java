@@ -17,7 +17,7 @@ import icons.SuperimposedOrSeparatedIcon;
 import icons.TransformIcon;
 import processing.core.PApplet;
 import soundcipher.SCScorePlus;
-import views.PhaseShifter;
+import views.LiveScorer;
 import views.View;
 import views.ViewVariableInfo;
 
@@ -54,9 +54,9 @@ public class Presenter extends Screen implements ViewVariableInfo{
 	
 	@Override
 	public void onEnter() {
-		view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		//view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		//view = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		//view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 	
 		pa.phrase.addToScore(player1, 0, 0, 0);
 		pa.phrase.addToScore(player2, 0, 0, 0);
@@ -130,7 +130,7 @@ public class Presenter extends Screen implements ViewVariableInfo{
 	}
 	
 	public void drawIcons() {
-		float radius = 35;
+		float radius = 25;
 		float dx = radius*2.25f;
 		float x = radius;
 		float y = pa.height - radius;

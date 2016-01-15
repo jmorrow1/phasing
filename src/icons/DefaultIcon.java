@@ -12,6 +12,7 @@ public class DefaultIcon implements Icon {
 	
 	@Override
 	public void draw(float x, float y, float radius, PhasesPApplet pa) {
+		pa.strokeWeight(radius/20f);
 		pa.stroke(0);
 		pa.noFill();
 		radius /= 2f;

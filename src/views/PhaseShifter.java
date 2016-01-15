@@ -91,7 +91,7 @@ public class PhaseShifter extends View {
 		readerA.update(dNotept1);
 		readerB.update(dNotept2);
 		
-		if (cameraMode.toInt() == RELATIVE) {
+		if (cameraMode.toInt() == RELATIVE_TO_1) {
 			dNotept2 = (dNotept2 - dNotept1) + dNoteptAcc;
 			dNotept1 = 0;
 			
@@ -151,6 +151,7 @@ public class PhaseShifter extends View {
 	private void styleNoteGraphics(int color, boolean activeStyle) {
 		switch (noteGraphic.toInt()) {
 			case SYMBOLS:
+				pa.textSize(42);
 				pa.noStroke();
 				if (activeStyle) {
 					pa.fill(color);

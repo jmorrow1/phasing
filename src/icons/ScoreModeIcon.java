@@ -31,7 +31,7 @@ public class ScoreModeIcon implements Icon {
         
         if (mode == SCROLLS) {
         	pa.stroke(0);
-        	pa.strokeWeight(2);
+        	pa.strokeWeight(radius/15f);
         	pa.line(x + radius*0.9f, y + radius*0.4f, x - radius*0.9f, y + radius*0.4f);
             float arrowHeadSize = radius*0.25f;
             pa.drawArrowHead(x - radius*0.9f, y + radius*0.4f, arrowHeadSize, pa.PI, pa.PI*0.75f);

@@ -3,7 +3,6 @@ package icons;
 import phases.PhasesPApplet;
 
 public class CameraIcon implements Icon {
-    final int FIXED=0, RELATIVE_TO_1=1, RELATIVE_TO_2=2;
     private int cameraType;
   
     public CameraIcon(int cameraType) {
@@ -28,7 +27,7 @@ public class CameraIcon implements Icon {
         
         pa.videoCamera(x1, y1, w1, h1);
         
-        pa.strokeWeight(2);
+        pa.strokeWeight(radius/15f);
         pa.stroke(0);
         
         pa.line(x2, y1, x2, y2);
@@ -37,7 +36,7 @@ public class CameraIcon implements Icon {
         pa.drawArrowHead(x3, y3, arrowHeadSize, -pa.HALF_PI, 0.75f*pa.PI);
         
         if (cameraType != FIXED) {
-            float y4 = (cameraType == RELATIVE_TO_1) ? y2 : y3;
+            float y4 = (cameraType == RELATIVE_TO_1) ? y3 : y2;
             pa.line(x1 + 0.05f*w1, y1, x1 + 0.05f*w1, y4);
             pa.drawArrowHead(x1 + 0.05f*w1, y4, arrowHeadSize, -pa.HALF_PI, 0.75f*pa.PI);
         }

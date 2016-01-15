@@ -7,8 +7,8 @@ public interface ViewVariableInfo {
 	public final int TRANSLATE=0, ROTATE=1;
 	
 	public final String cameraModeName = "Camera Mode";
-	public final int numCameraModes = 2;
-	public final int RELATIVE=0, FIXED=1;
+	public final int numCameraModes = 3;
+	public final int RELATIVE_TO_1=0, RELATIVE_TO_2=1, FIXED=2;
 	
 	public final String noteGraphicName = "Note Graphic";
 	public final int numNoteGraphics=5;

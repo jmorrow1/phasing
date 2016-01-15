@@ -17,7 +17,7 @@ public class InstrumentIcon implements Icon {
             float y1 = y - h/2f;
             float y2 = y + h/2f;
             
-            pa.strokeWeight(2);
+            pa.strokeWeight(radius/20f);
             pa.rectMode(pa.CENTER);
             
             //white keys
