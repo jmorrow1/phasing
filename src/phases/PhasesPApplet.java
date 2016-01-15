@@ -47,7 +47,7 @@ public class PhasesPApplet extends PApplet {
 	
 	//visual variables
 	private static int color1, color2;
-	public static PFont pfont12, pfont18, musicFont;
+	public static PFont pfont12, pfont18, pfont42, musicFont;
 	
 	//gui
 	private ControlP5 cp5;
@@ -74,6 +74,7 @@ public class PhasesPApplet extends PApplet {
 		//init font variables
 		pfont12 = loadFont("DejaVuSans-12.vlw");
 		pfont18 = loadFont("DejaVuSans-18.vlw");
+		pfont42 = loadFont("DejaVuSans-42.vlw");
 		musicFont = loadFont("MaestroWide-48.vlw");
 		
 		//init controlp5
@@ -116,7 +117,7 @@ public class PhasesPApplet extends PApplet {
 		editor = new Editor(this);
 		
 		//setup current screen
-		currentScreen = presenter;
+		currentScreen = editor;
 		currentScreen.onEnter();
 		
 		if (currentScreen == editor) {

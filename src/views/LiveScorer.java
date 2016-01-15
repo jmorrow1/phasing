@@ -83,8 +83,6 @@ public class LiveScorer extends View {
 	}
 	
 	public void onEnter() {
-		pa.textAlign(pa.CENTER, pa.CENTER);
-		pa.textSize(24);
 	}
 	
 	@Override
@@ -190,7 +188,9 @@ public class LiveScorer extends View {
 			pa.strokeWeight(2);
 			pa.fill(color, opacity);
 			if (noteGraphic.toInt() == SYMBOLS) {
+				pa.textAlign(pa.CENTER, pa.CENTER);
 				pa.textSize(42);
+				pa.textFont(pa.pfont42);
 				int pitch = (int) (pa.phrase.getSCPitch(noteIndex) % 12);
 				String symbol = pa.scale.getNoteNameByPitchValue(pitch);
 				pa.text(symbol, startX, startY);

@@ -1,6 +1,6 @@
 package phases;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
 import arb.soundcipher.SCScore;
 import processing.core.PApplet;
@@ -514,10 +514,24 @@ public class Phrase {
 	public float getUnitDuration() {
 		return unitDuration;
 	}
+
+	public String cellTypesToString() {
+		String s = "";
+		for (int i=0; i<cellTypes.length; i++) {
+			switch (cellTypes[i]) {
+				case NOTE_START: s += "START   "; break;
+				case NOTE_SUSTAIN: s += "SUSTAIN "; break;
+				case REST: s += "REST    "; break;
+				default: s += "UNKNOWN "; break;
+			}
+		}
+		return s;
+	}
 	
 	public String toString() {
-		return "{pitches: " + scPitches.toString() + ", dynamics: " + scDynamics.toString()
-			+ ", durations: " + scDurations.toString();
+		if (!scArraysUpToDate) updateSCValues();
+		return "{pitches: " + Arrays.toString(scPitches) + ", dynamics: " + Arrays.toString(scDynamics)
+			+ ", durations: " + Arrays.toString(scDurations);
 	}
 	
 	/**

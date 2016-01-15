@@ -72,8 +72,7 @@ public class PhaseShifter extends View {
 	}
 	
 	public void onEnter() {
-		pa.textAlign(pa.CENTER, pa.CENTER);
-		pa.textSize(42);
+		
 	}
 	
 	//callback:
@@ -151,7 +150,9 @@ public class PhaseShifter extends View {
 	private void styleNoteGraphics(int color, boolean activeStyle) {
 		switch (noteGraphic.toInt()) {
 			case SYMBOLS:
+				pa.textAlign(pa.CENTER, pa.CENTER);
 				pa.textSize(42);
+				pa.textFont(pa.pfont42);
 				pa.noStroke();
 				if (activeStyle) {
 					pa.fill(color);
@@ -212,7 +213,6 @@ public class PhaseShifter extends View {
                                newMin, newMax);
 		}
 		else {
-			//TODO: Is this right? :
 			return (int)pa.lerp(newMin, newMax, 0.5f);
 		}
 	}
@@ -264,6 +264,10 @@ public class PhaseShifter extends View {
 	}
 	
 	private Point getNoteGraphicPoint(int noteIndex) {
+		if (pa.phrase.getSCDynamic(noteIndex) <= 0) {
+			return null;
+		}
+			
 		if (transformation.toInt() == TRANSLATE) {
 			float x = pa.map(pa.phrase.getPercentDurationOfSCIndex(noteIndex),
 						0, 1, -halfWidth, halfWidth);
@@ -278,7 +282,9 @@ public class PhaseShifter extends View {
 	}
 	
 	private void drawNoteGraphic(int index) {
-		if (noteGraphic.toInt()== SYMBOLS) {
+		if (getNoteGraphicPoint(index) == null) {		
+		}
+		else if (noteGraphic.toInt()== SYMBOLS) {
 			Point a = getNoteGraphicPoint(index);
 			pa.pushMatrix();
 				pa.translate(a.x, a.y);

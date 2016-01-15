@@ -26,26 +26,29 @@ public class Editor extends Screen {
 	private SoundCipherPlus livePlayer;
 	private long prev_t;
 	private float notept = 0;
+	
 	//animation
 	private final int NOT_APPLICABLE = -1;
 	private int activeNoteIndex = NOT_APPLICABLE;
-	//phasing screen graphics
-	private int[] pixelsBuffer;
+	
 	//piano
 	private boolean labelPianoKeys = true;
 	private int minOctave = 5;
 	private int numKeys = 24;
 	private final static int W=0xffffffff, B=PhasesPApplet.getColor2();
 	private final static int[] keyColors = new int[] {W, B, W, B, W, W, B, W, B, W, B, W};
+	
 	//grid
 	private Rect gridFrame;
 	private int rowSize = 12;
 	private int columnSize = numKeys;
 	private float cellWidth, cellHeight;
+	
 	//interaction w/ grid
 	private boolean userIsDrawingNote = false;
 	private int startIndexOfUserDrawnNote = -1;
 	private int indexMousePressed=-1, pitchMousePressed=-1;
+	
 	//controllers
 	private final static int BPM_1 = 1, BPM_DIFFERENCE = 2;
 	private int maxPhaseDifferenceAmplitude = 10;
@@ -153,18 +156,8 @@ public class Editor extends Screen {
 	
 		//hide cp5
 		cp5.hide();
-		
-		//init pixels buffer
-		pixelsBuffer = new int[pa.width * pa.height];
-		clearBuffer();
 	}
-	
-	private void clearBuffer() {
-	    for (int i=0; i<pixelsBuffer.length; i++) {
-	        pixelsBuffer[i] = 0xffffffff;
-	    }
-	}
-	
+
 	private void formatLabel(DropdownList x) {
 		x.getCaptionLabel().toUpperCase(false);
 		x.getValueLabel().toUpperCase(false);
@@ -268,6 +261,10 @@ public class Editor extends Screen {
 		cp5.hide();
 	}
 	
+	private boolean shiftClick() {
+		return pa.keyPressed && pa.key == pa.CODED && pa.keyCode == pa.SHIFT && pa.mousePressed && (pa.mouseButton == pa.LEFT || pa.mouseButton == pa.RIGHT);
+	}
+	
 	public void mousePressed() {
 		//for drawing a note to the grid:
 		if (mouseIntersectsGrid()) {
@@ -275,14 +272,29 @@ public class Editor extends Screen {
 			pitchMousePressed = mouseToPitch();
 			startIndexOfUserDrawnNote = indexMousePressed;
 			if (!rootMenu.isInside() && !scaleMenu.isInside()) {
-				boolean success = pa.phrase.setCell(indexMousePressed, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
-				if (success && 
-						indexMousePressed+1 < pa.phrase.getGridRowSize() &&
-						pa.phrase.getNoteType(indexMousePressed+1) == Phrase.NOTE_SUSTAIN) {
-					pa.phrase.setNoteType(indexMousePressed+1, Phrase.NOTE_START);
+				if (pa.mouseButton == pa.LEFT && !shiftClick()) {
+					boolean success = pa.phrase.setCell(indexMousePressed, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
+					if (success && 
+							indexMousePressed+1 < pa.phrase.getGridRowSize() &&
+							pa.phrase.getNoteType(indexMousePressed+1) == Phrase.NOTE_SUSTAIN) {
+						pa.phrase.setNoteType(indexMousePressed+1, Phrase.NOTE_START);
+					}
+					if (success) {
+						userIsDrawingNote = true;
+						drawBody();
+					}
 				}
-				if (success) {
-					userIsDrawingNote = true;
+				else if (pa.mouseButton == pa.RIGHT || shiftClick()) {
+					boolean success = pa.phrase.setCell(indexMousePressed, pitchMousePressed, defaultDynamic(), Phrase.REST);
+					pa.phrase.setNoteType(indexMousePressed, Phrase.REST);
+					if (success) {
+						if (indexMousePressed+1 < pa.phrase.getGridRowSize() && 
+								pa.phrase.getNoteType(indexMousePressed+1) == Phrase.NOTE_SUSTAIN) {
+							pa.phrase.setNoteType(indexMousePressed+1, Phrase.NOTE_START);
+						}
+					}
+					System.out.println(pa.phrase.cellTypesToString());
+					System.out.println(pa.phrase.toString());
 					drawBody();
 				}
 			}
@@ -443,18 +455,20 @@ public class Editor extends Screen {
 		pa.rectMode(pa.CORNER);
 		float x = gridFrame.getX1() + cellWidth;
 		for (int i=0; i<pa.phrase.getNumNotes(); i++) {
-			
-			if (i == activeNoteIndex) {
-				pa.fill(activeColor);
-			}
-			else {
-				pa.fill(inactiveColor);
-			}
-			
-			int pitch = pa.phrase.getSCPitch(i);
-			float y = pitchToY(pitch);
 			float numCellsWide = pa.phrase.getSCDuration(i) / pa.phrase.getUnitDuration();
-			pa.rect(x, y, cellWidth*numCellsWide, cellHeight);
+			if (pa.phrase.getSCDynamic(i) != 0) {
+				if (i == activeNoteIndex) {
+					pa.fill(activeColor);
+				}
+				else {
+					pa.fill(inactiveColor);
+				}
+				
+				int pitch = pa.phrase.getSCPitch(i);
+				float y = pitchToY(pitch);
+				pa.rect(x, y, cellWidth*numCellsWide, cellHeight);
+			}
+			
 			x += (cellWidth*numCellsWide);
 		}
 		pa.strokeWeight(1);
@@ -510,6 +524,7 @@ public class Editor extends Screen {
 		float y = gridFrame.getY2() - cellHeight;
 		
 		pa.textAlign(pa.CENTER, pa.CENTER);
+		pa.textFont(pa.pfont18);
 		pa.textSize(16);
 		for (int i=0; i<numKeys; i++) {
 			int iModScaleSize = i % pa.scale.size();
