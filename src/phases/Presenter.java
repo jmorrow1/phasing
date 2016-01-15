@@ -1,14 +1,18 @@
 package phases;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 import geom.Rect;
 import icons.CameraIcon;
 import icons.ColorSchemeIcon;
+import icons.DefaultIcon;
+import icons.Icon;
 import icons.InstrumentIcon;
 import icons.NoteIcon;
 import icons.PlotPitchIcon;
 import icons.ScoreModeIcon;
+import icons.ShowActiveNoteIcon;
 import icons.SuperimposedOrSeparatedIcon;
 import icons.TransformIcon;
 import processing.core.PApplet;
@@ -35,6 +39,9 @@ public class Presenter extends Screen implements ViewVariableInfo{
 	
 	//view
 	private View view;
+	
+	//icons
+	private ArrayList<Icon> icons = new ArrayList<Icon>();
 
 
 	/**
@@ -88,32 +95,49 @@ public class Presenter extends Screen implements ViewVariableInfo{
 	public void draw() {
 		pa.background(255);
 		animateView();
+		drawIcons();
 	}
 	
 	public void setupIcons() {
-		Field[] fields = view.getClass().getFields();
+		icons.clear();
+		Field[] fields = view.getClass().getDeclaredFields();
 		try {
 			for (Field f : fields) {
-				if (f.isAccessible() && f.getType().equals(ModInt.class)) {
+				if (f.getType().equals(ModInt.class)) {
 					ModInt x = (ModInt)f.get(view);
 					String name = x.getName();
 					switch(name) {
-						//case "showActiveNote": new ShowActiveNoteIcon(f.getBoolean(view)); break;
-						case transformationName: new TransformIcon(f.getInt(view)); break;
-						case cameraModeName: new CameraIcon(f.getInt(view)); break;
-						case noteGraphicName: new NoteIcon(f.getInt(view)); break;
-						case plotPitchModeName: new PlotPitchIcon(f.getBoolean(view)); break;
-						case colorSchemeName: new ColorSchemeIcon(f.getInt(view)); break;
-						case superimposedOrSeparatedName: new SuperimposedOrSeparatedIcon(f.getInt(view)); break;
-						case instrumentName : new InstrumentIcon(f.getInt(view)); break;
-						case scoreModeName : new ScoreModeIcon(f.getInt(view)); break;
-						default: System.out.println("Don't know that view field name " + f.getName()); break;
+						case activeNoteModeName: icons.add(new ShowActiveNoteIcon(x.toInt())); break;
+						case transformationName: icons.add(new TransformIcon(x.toInt())); break;
+						case cameraModeName: icons.add(new CameraIcon(x.toInt())); break;
+						case noteGraphicName: icons.add(new NoteIcon(x.toInt())); break;
+						case plotPitchModeName: icons.add(new PlotPitchIcon(x.toInt())); break;
+						case colorSchemeName: icons.add(new ColorSchemeIcon(x.toInt())); break;
+						case superimposedOrSeparatedName: icons.add(new SuperimposedOrSeparatedIcon(x.toInt())); break;
+						case instrumentName : icons.add(new InstrumentIcon(x.toInt())); break;
+						case scoreModeName : icons.add(new ScoreModeIcon(x.toInt())); break;
+						default: 
+							icons.add(new DefaultIcon(x.toInt()));
+							System.out.println("Don't know that view variable: " + name); 
+							break;
 					}
 				}
 			}
 		}
 		catch (IllegalAccessException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public void drawIcons() {
+		float radius = 35;
+		float dx = radius*2.25f;
+		float x = radius;
+		float y = pa.height - radius;
+		
+		for (Icon icon : icons) {
+			icon.draw(x, y, radius, pa);
+			x += dx;
 		}
 	}
 	

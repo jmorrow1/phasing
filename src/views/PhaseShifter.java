@@ -34,7 +34,7 @@ public class PhaseShifter extends View {
 	public ModInt cameraMode = new ModInt(0, numCameraModes, cameraModeName);
 	public ModInt noteGraphic = new ModInt(0, numNoteGraphics, noteGraphicName);
 	public ModInt plotPitchMode = new ModInt(0, numWaysOfPlottingPitchOrNot, plotPitchModeName);
-	public ModInt colorScheme = new ModInt(0, numColorSchemes, colorSchemeName);
+	public ModInt colorScheme = new ModInt(1, numColorSchemes, colorSchemeName);
 	
 	@Override
 	public int numOptions() {

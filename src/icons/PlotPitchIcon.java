@@ -3,10 +3,10 @@ package icons;
 import phases.PhasesPApplet;
 
 public class PlotPitchIcon implements Icon {
-    private boolean doPlotPitch;
+    private int plotPitchMode;
   
-    public PlotPitchIcon(boolean doPlotPitch) {
-        this.doPlotPitch = doPlotPitch;
+    public PlotPitchIcon(int plotPitchMode) {
+        this.plotPitchMode = plotPitchMode;
     }
     
     public void draw(float x, float y, float radius, PhasesPApplet pa) {
@@ -21,7 +21,7 @@ public class PlotPitchIcon implements Icon {
         pa.line(x1, y, x2, y);
         pa.drawArrowHead(x1, y, arrowHeadSize, pa.PI, 0.75f*pa.PI);
         pa.drawArrowHead(x2, y, arrowHeadSize, 0, 0.75f*pa.PI);
-        if (doPlotPitch) {
+        if (plotPitchMode == PLOT_PITCH) {
             pa.line(x, y1, x, y2);
             pa.drawArrowHead(x, y1, arrowHeadSize, -pa.HALF_PI, 0.75f*pa.PI);
             pa.drawArrowHead(x, y2, arrowHeadSize, pa.HALF_PI, 0.75f*pa.PI);

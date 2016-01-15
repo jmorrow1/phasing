@@ -34,11 +34,6 @@ public class LiveScorer extends View {
 	private int startingPitch = 0;
 	
 	//options:
-	//public int sineWave = IS_NOT_SINE_WAVE;
-	//public int scoreMode = SCROLLS;
-	//public int noteType = SYMBOLS;
-	//public int colorSchemeType = DIACHROMATIC;
-	
 	public ModInt sineWave = new ModInt(0, numWaysOfBeingASineWaveOrNot, sineWaveName);
 	public ModInt scoreMode = new ModInt(0, numScoreModes, scoreModeName);
 	public ModInt noteGraphic = new ModInt(0, numNoteGraphics, noteGraphicName);

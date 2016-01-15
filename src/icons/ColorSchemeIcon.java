@@ -23,7 +23,7 @@ public class ColorSchemeIcon implements Icon {
         
         pa.ellipse(x - radius/3f, y, radius, radius);
        
-        if (colorScheme == DIACHROMATIC) {
+        if (colorScheme == MONOCHROMATIC) {
             pa.fill(0, 100);
         }
         else {
