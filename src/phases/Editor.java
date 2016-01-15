@@ -45,7 +45,8 @@ public class Editor extends Screen {
 	private float cellWidth, cellHeight;
 	
 	//interaction w/ grid
-	private boolean userIsDrawingNote = false;
+	private final int NOT_DRAWING=-1, DRAWING_NOTE=0, DRAWING_REST=1;
+	private int drawState = NOT_DRAWING;
 	private int startIndexOfUserDrawnNote = -1;
 	private int indexMousePressed=-1, pitchMousePressed=-1;
 	
@@ -280,22 +281,15 @@ public class Editor extends Screen {
 						pa.phrase.setNoteType(indexMousePressed+1, Phrase.NOTE_START);
 					}
 					if (success) {
-						userIsDrawingNote = true;
+						drawState = DRAWING_NOTE;
 						drawBody();
 					}
 				}
-				else if (pa.mouseButton == pa.RIGHT || shiftClick()) {
-					boolean success = pa.phrase.setCell(indexMousePressed, pitchMousePressed, defaultDynamic(), Phrase.REST);
-					pa.phrase.setNoteType(indexMousePressed, Phrase.REST);
-					if (success) {
-						if (indexMousePressed+1 < pa.phrase.getGridRowSize() && 
-								pa.phrase.getNoteType(indexMousePressed+1) == Phrase.NOTE_SUSTAIN) {
-							pa.phrase.setNoteType(indexMousePressed+1, Phrase.NOTE_START);
-						}
+				else if ( (pa.mouseButton == pa.RIGHT || shiftClick())) {
+					drawState = DRAWING_REST;
+					if (pitchMousePressed == pa.phrase.getGridPitch(indexMousePressed)) {
+						drawRest(indexMousePressed, pitchMousePressed);
 					}
-					System.out.println(pa.phrase.cellTypesToString());
-					System.out.println(pa.phrase.toString());
-					drawBody();
 				}
 			}
 		}
@@ -310,22 +304,36 @@ public class Editor extends Screen {
 		}
 	}
 	
+	private void drawRest(int index, int pitch) {
+		boolean success = pa.phrase.setCell(index, pitch, defaultDynamic(), Phrase.REST);
+		pa.phrase.setNoteType(index, Phrase.REST);
+		if (success) {
+			if (index+1 < pa.phrase.getGridRowSize() && 
+					pa.phrase.getNoteType(index+1) == Phrase.NOTE_SUSTAIN) {
+				pa.phrase.setNoteType(index+1, Phrase.NOTE_START);
+			}
+			drawBody();
+			
+		}	
+	}
+	
 	public void mouseReleased() {
 		//for resetting the Editor's state w/r/t the grid:
-		userIsDrawingNote = false;
+		drawState = NOT_DRAWING;
 		startIndexOfUserDrawnNote = -1;
 	}
 	
 	public void mouseDragged() {
 		//for continuing to draw notes to the grid:
-		if (userIsDrawingNote && mouseIntersectsGrid()) {
+		if (drawState == DRAWING_NOTE && mouseIntersectsGrid()) {
 			int newIndex = mouseToIndex();
 			int newPitch = mouseToPitch();
 			if (newPitch == pitchMousePressed) {
 				if (newIndex > indexMousePressed) {
 					if (newIndex+1 < pa.phrase.getGridRowSize() &&
 							(pa.phrase.getNoteType(newIndex) == Phrase.NOTE_SUSTAIN ||
-							 pa.phrase.getNoteType(newIndex) == Phrase.NOTE_START)) {
+							 pa.phrase.getNoteType(newIndex) == Phrase.NOTE_START) &&
+							pa.phrase.getNoteType(newIndex+1) == Phrase.NOTE_SUSTAIN) {
 						pa.phrase.setNoteType(newIndex+1, Phrase.NOTE_START);
 						indexMousePressed++;
 					}
@@ -344,6 +352,13 @@ public class Editor extends Screen {
 			}
 			else {
 				mousePressed();
+			}
+		}
+		else if (drawState == DRAWING_REST && mouseIntersectsGrid()) {
+			int index = mouseToIndex();
+			int pitch = mouseToPitch();
+			if (0 <= index && index < pa.phrase.getGridRowSize() && pitch == pa.phrase.getGridPitch(index)) {
+				drawRest(index, pitch);
 			}
 		}
 		/*else {
