@@ -1,6 +1,6 @@
 package phases;
 
-import java.awt.event.MouseListener;
+import processing.event.MouseEvent;
 
 /**
  * An abstraction that draws things to the canvas and receives input events,
@@ -44,6 +44,10 @@ public abstract class Screen {
 	 * Method that responds to key released events.
 	 */
 	public void keyReleased() {}
+	/**
+	 * Method that responds to scroll wheel events.
+	 */
+	public void mouseWheel(MouseEvent event) {}
 	/**
 	 * Method that responds to the event of this screen becoming active.
 	 */

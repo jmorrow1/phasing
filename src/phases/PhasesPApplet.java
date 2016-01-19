@@ -14,7 +14,9 @@ import controlP5.Controller;
 import geom.Polygon;
 import processing.core.PApplet;
 import processing.core.PFont;
+import processing.core.PGraphics;
 import processing.data.JSONObject;
+import processing.event.MouseEvent;
 
 /**
  * 
@@ -149,6 +151,11 @@ public class PhasesPApplet extends PApplet {
 		}
 	}
 	
+	public static void drawArrowHead(float x, float y, float leng, float headAngle, float deviationAngle, PGraphics pg) {
+		 pg.line(x, y, x + leng*cos(headAngle + deviationAngle), y + leng*sin(headAngle + deviationAngle));
+		 pg.line(x, y, x + leng*cos(headAngle - deviationAngle), y + leng*sin(headAngle - deviationAngle));
+	}
+	
 	public void drawArrowHead(float x, float y, float leng, float headAngle, float deviationAngle) {
 	    line(x, y, x + leng*cos(headAngle + deviationAngle), y + leng*sin(headAngle + deviationAngle));
 	    line(x, y, x + leng*cos(headAngle - deviationAngle), y + leng*sin(headAngle - deviationAngle));
@@ -238,6 +245,10 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void keyReleased() {
 		currentScreen.keyReleased();
+	}
+	
+	public void mouseWheel(MouseEvent event) {
+		currentScreen.mouseWheel(event);
 	}
 	
 	public Scale getScale(String root, String scaleName) {

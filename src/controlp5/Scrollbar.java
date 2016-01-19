@@ -24,7 +24,7 @@ public class Scrollbar extends Controller<Scrollbar> {
         this.ticksPerScroller = ticksPerScroller;
         this.currentTick = 0;
         
-        updateGeometricData();
+        updateGeometricalData();
                 
         setView(new ControllerView<Scrollbar>() {
             public void display(PGraphics pg, Scrollbar s) {
@@ -43,27 +43,27 @@ public class Scrollbar extends Controller<Scrollbar> {
         });
     }
     
-    private void updateGeometricData() {
+    private void updateGeometricalData() {
         scrollerWidth = PApplet.map(ticksPerScroller, 0, numTickMarks, 0, getWidth());
         scrollerX1 = PApplet.map(currentTick, 0, numTickMarks, 0, getWidth());
         scrollerX2 = scrollerX1 + scrollerWidth;
     }
     
     private void updateCurrentTick() {
-        currentTick = (int)PApplet.map(scrollerX1, 0, getWidth(), 0, numTickMarks);
+        currentTick = PApplet.round(PApplet.map(scrollerX1, 0, getWidth(), 0, numTickMarks));
     }
     
     @Override
     public Scrollbar setSize(int w, int h) {
         super.setSize(w, h);
-        updateGeometricData();
+        updateGeometricalData();
         return this;
     }
 
     @Override
     public Scrollbar setPosition(float x, float y) {
         super.setPosition(x, y);
-        updateGeometricData();
+        updateGeometricalData();
         return this;
     }
 
@@ -95,10 +95,7 @@ public class Scrollbar extends Controller<Scrollbar> {
                 scrollerX2 = scrollerX1 + scrollerWidth;
             }
             updateCurrentTick();
-            updateGeometricData();
-
-            //scrollerX1 = PApplet.map(currentTick, 0, numTickMarks, 0, getWidth());
-            //scrollerX2 = scrollerX1 + scrollerWidth;
+            updateGeometricalData();
         }
     }
     
@@ -108,4 +105,54 @@ public class Scrollbar extends Controller<Scrollbar> {
             draggingScroller = false;
         }
     }
+    
+    public void myOnScroll(int sign) {
+    	int dTick = -sign;
+    	currentTick = PApplet.constrain(currentTick+dTick, 0, numTickMarks - ticksPerScroller);
+    	updateGeometricalData();
+    }
+
+	public int getTicksPerScroller() {
+		return ticksPerScroller;
+	}
+
+	public void setTicksPerScroller(int ticksPerScroller) {
+		this.ticksPerScroller = ticksPerScroller;
+	}
+
+	public float getScrollerX1() {
+		return scrollerX1;
+	}
+
+	public void setScrollerX1(float scrollerX1) {
+		this.scrollerX1 = scrollerX1;
+		updateCurrentTick();
+	}
+
+	public float getScrollerWidth() {
+		return scrollerWidth;
+	}
+
+	public void setScrollerWidth(float scrollerWidth) {
+		this.scrollerWidth = scrollerWidth;
+		updateCurrentTick();
+	}
+
+	public float getScrollerX2() {
+		return scrollerX2;
+	}
+
+	public int getNumTickMarks() {
+		return numTickMarks;
+	}
+
+	public void setNumTickMarks(int numTickMarks) {
+		currentTick = (int)PApplet.map(currentTick, 0, this.numTickMarks, 0, numTickMarks);
+		this.numTickMarks = numTickMarks;
+		updateGeometricalData();
+	}
+	
+	public int getCurrentTick() {
+		return currentTick;
+	}
 }

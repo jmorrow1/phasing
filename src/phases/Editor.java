@@ -10,12 +10,14 @@ import controlP5.ControllerView;
 import controlP5.DropdownList;
 import controlP5.Slider;
 import controlP5.Toggle;
+import controlp5.ArrowButtonView;
 import controlp5.DropdownListPlus;
+import controlp5.Scrollbar;
 import controlp5.SliderPlus;
 import geom.Rect;
 import processing.core.PApplet;
-import processing.core.PFont;
 import processing.core.PGraphics;
+import processing.event.MouseEvent;
 import soundcipher.SoundCipherPlus;
 
 /**
@@ -59,6 +61,7 @@ public class Editor extends Screen {
 	private Toggle playStop;
 	private Slider bpmSlider, bpmDifferenceSlider;
 	private DropdownList rootMenu, scaleMenu;
+	private Scrollbar scrollbar;
 	private String rootLabel, scaleLabel;
 	private boolean rootMenuOpen, scaleMenuOpen;
 	
@@ -78,7 +81,7 @@ public class Editor extends Screen {
 		}
 		
 		//init grid variables
-		gridFrame = new Rect(10, 50, pa.width-10, pa.height-25, pa.CORNERS);
+		gridFrame = new Rect(10, 50, pa.width-10, pa.height-40, pa.CORNERS);
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
 		cellHeight = gridFrame.getHeight() / columnSize;
 		
@@ -156,7 +159,33 @@ public class Editor extends Screen {
 		colorController(scaleMenu);
 		formatLabel(scaleMenu);
 		scaleLabel = scaleMenu.getLabel();
+		
+		//add scrollbar
+		scrollbar = new Scrollbar(cp5, "scrollbar", 12, 14);
+	    scrollbar.setPosition(60, 570)
+			     .setSize(680, 25)
+			     .setColorBackground(pa.getColor1())
+			     .setColorForeground(pa.getBrightColor1())
+			     ;
 	
+		//add buttons that flank the scrollbar and control the adding and removing of notes from the phrase
+	    cp5.addButton("decreasePhraseLength")
+	       .setPosition(10, 570)
+	       .setSize(40, 25)
+	       .setView(new ArrowButtonView(false))
+	       .setColorBackground(pa.color(255))
+	       .setColorForeground(pa.getColor1())
+	       .setColorActive(pa.getBrightColor1())
+	       ;
+		cp5.addButton("increasePhraseLength")
+	       .setPosition(750, 570)
+	       .setSize(40, 25)
+	       .setView(new ArrowButtonView(true))
+	       .setColorBackground(pa.color(255))
+	       .setColorForeground(pa.getColor1())
+	       .setColorActive(pa.getBrightColor1())
+	       ;
+	    
 		//hide cp5
 		cp5.hide();
 	}
@@ -266,6 +295,10 @@ public class Editor extends Screen {
 	
 	private boolean shiftClick() {
 		return pa.keyPressed && pa.key == pa.CODED && pa.keyCode == pa.SHIFT && pa.mousePressed && (pa.mouseButton == pa.LEFT || pa.mouseButton == pa.RIGHT);
+	}
+	
+	public void mouseWheel(MouseEvent event) {
+		scrollbar.myOnScroll(event.getCount());
 	}
 	
 	public void mousePressed() {
@@ -417,15 +450,23 @@ public class Editor extends Screen {
 		drawToolbar();
 	}
 	
-	private void drawToolbarBackground() {
+	private void drawToolbar() {
+		//top toolbar background
 		pa.noStroke();
 		pa.fill(255);
 		pa.rectMode(pa.CORNER);
 		pa.rect(0, 0, pa.width, 50);
-	}
-	
-	private void drawToolbar() {
-		drawToolbarBackground();
+		
+		//bottom toolbar background
+		pa.rectMode(pa.CORNERS);
+		pa.rect(0, gridFrame.getY2() + 1, pa.width, pa.height);
+		
+		//fill in margins
+		pa.rectMode(pa.CORNER);
+		pa.rect(0, gridFrame.getY2(), 10, 1);
+		pa.rect(gridFrame.getX2(), gridFrame.getY2(), 10, 1);
+		
+		//controllers
 		cp5.draw();
 		updateMenus();
 	}
@@ -434,7 +475,7 @@ public class Editor extends Screen {
 		pa.noStroke();
 		pa.fill(255);
 		pa.rectMode(pa.CORNERS);
-		pa.rect(0, 50, pa.width, pa.height);
+		pa.rect(0, gridFrame.getY1(), pa.width, gridFrame.getY2());
 		
 		//draw ghost image of grid
 		float ghostCellWidth = cellWidth * pa.getBPM2() / pa.getBPM1();
