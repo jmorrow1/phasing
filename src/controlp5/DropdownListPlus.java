@@ -1,4 +1,4 @@
-package phases;
+package controlp5;
 
 import controlP5.ControlP5;
 import controlP5.ControllerGroup;

@@ -10,6 +10,8 @@ import controlP5.ControllerView;
 import controlP5.DropdownList;
 import controlP5.Slider;
 import controlP5.Toggle;
+import controlp5.DropdownListPlus;
+import controlp5.SliderPlus;
 import geom.Rect;
 import processing.core.PApplet;
 import processing.core.PFont;
@@ -103,11 +105,11 @@ public class Editor extends Screen {
 						    	
 								if (t.isMouseOver()) {
 									pg.stroke(0);
-									pg.fill(PhasesPApplet.getColor1());
+									pg.fill(pa.getBrightColor1());
 								}
 								else {
-									pg.stroke(0, 150);
-									pg.fill(PhasesPApplet.getColor1(), 175);
+									pg.stroke(0);
+									pg.fill(pa.getColor1());
 								}
 								
 								if (t.getValue() == 0) {
@@ -172,9 +174,9 @@ public class Editor extends Screen {
 		c.setColorCaptionLabel(pa.color(255));
 	    c.setColorValueLabel(pa.color(255));
 		if (c instanceof DropdownList || c instanceof Button) {
-			c.setColorBackground(pa.color(PhasesPApplet.getColor1()));
-			c.setColorActive(pa.getColor2());
-			c.setColorForeground(pa.getColor2());
+			c.setColorBackground(pa.getColor1());
+			c.setColorActive(pa.getBrightColor1());
+			c.setColorForeground(pa.getBrightColor1());
 		}
 		else if (c instanceof Slider) {
 			c.setColorBackground(pa.lerpColor(pa.getColor1(), pa.color(255), 0.3f));

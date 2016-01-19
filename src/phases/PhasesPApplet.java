@@ -46,7 +46,7 @@ public class PhasesPApplet extends PApplet {
 	private Screen currentScreen;
 	
 	//visual variables
-	private static int color1, color2;
+	private static int color1, color2, brightColor1, brightColor2;
 	public static PFont pfont12, pfont18, pfont42, musicFont;
 	
 	//gui
@@ -69,7 +69,9 @@ public class PhasesPApplet extends PApplet {
 	public void setup() {
 		//init colors
 		color1 = color(255, 100, 100);
+		brightColor1 = color(255, 50, 50);
 		color2 = color(100, 100, 255);
+		brightColor2 = color(50, 50, 255);
 		
 		//init font variables
 		pfont12 = loadFont("DejaVuSans-12.vlw");
@@ -131,9 +133,9 @@ public class PhasesPApplet extends PApplet {
 	private void colorController(Controller c) {
 		c.setColorCaptionLabel(color(255));
 	    c.setColorValueLabel(color(255));
-		c.setColorBackground(color(PhasesPApplet.getColor1()));
-		c.setColorActive(getColor2());
-		c.setColorForeground(getColor2());
+		c.setColorBackground(getColor1());
+		c.setColorActive(getBrightColor1());
+		c.setColorForeground(getBrightColor1());
 	}
 	
 	private void testGetScale() {
@@ -267,12 +269,20 @@ public class PhasesPApplet extends PApplet {
 		return color1;
 	}
 	
+	public static int getBrightColor1() {
+		return brightColor1;
+	}
+	
 	/**
 	 * 
 	 * @return color2 of the program-wide color scheme
 	 */
 	public static int getColor2() {
 		return color2;
+	}
+	
+	public static int getBrightColor2() {
+		return brightColor2;
 	}
 	
 	/**

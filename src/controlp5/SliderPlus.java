@@ -1,8 +1,9 @@
-package phases;
+package controlp5;
 
 import controlP5.ControlP5;
 import controlP5.ControllerGroup;
 import controlP5.Slider;
+import phases.FloatFormatter;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
