@@ -37,6 +37,13 @@ public class Presenter extends Screen implements ViewVariableInfo{
 	private boolean playing;
 	private int sign;
 	
+	//to smooth animation
+	private float accountBalance1=0, accountBalance2=0;
+	private float totalNotept1, totalNotept2;
+	private float avg_dNotept1, avg_dNotept2;
+	private int dataPts=0;
+	private float acceptableAccountSize = 0.05f;
+	
 	//view
 	private View view;
 	
@@ -101,6 +108,7 @@ public class Presenter extends Screen implements ViewVariableInfo{
 	
 	public void setupIcons() {
 		iconLists.clear();
+		variables.clear();
 		Field[] fields = view.getClass().getDeclaredFields();
 		try {
 			for (Field f : fields) {
@@ -206,7 +214,7 @@ public class Presenter extends Screen implements ViewVariableInfo{
 		
 	}
 	
-	private void animateView() {
+	private void animateView() {		
 		float notept1 = PApplet.map(player1.getTickPosition(),
 					                0, player1.getTickLength(),
 					                0, pa.phrase.getTotalDuration());
@@ -219,11 +227,33 @@ public class Presenter extends Screen implements ViewVariableInfo{
 		float dNotept2 = notept2 - prev_notept2;
 		
 		if (dNotept1 < 0) {
-		dNotept1 += pa.phrase.getTotalDuration();
+			dNotept1 += pa.phrase.getTotalDuration();
 		}
 		
 		if (dNotept2 < 0) {
-		dNotept2 += pa.phrase.getTotalDuration();
+			dNotept2 += pa.phrase.getTotalDuration();
+		}
+		
+		//smoothing:
+		totalNotept1 += dNotept1;
+		totalNotept2 += dNotept2;
+		dataPts++;
+		if (dataPts > 1000) {
+			avg_dNotept1 = totalNotept1 / dataPts;
+			avg_dNotept2 = totalNotept2 / dataPts;
+			accountBalance1 += (dNotept1 - avg_dNotept1);
+			accountBalance2 += (dNotept2 - avg_dNotept2);
+			dNotept1 = avg_dNotept1;
+			dNotept2 = avg_dNotept2;
+			if (pa.abs(accountBalance1) > acceptableAccountSize) {
+				accountBalance1 = 0;
+				dNotept1 += accountBalance1;
+			}
+			if (pa.abs(accountBalance2) > acceptableAccountSize) {
+				accountBalance2 = 0;
+				dNotept2 += accountBalance2;
+			}
+			//pa.println("accountBalance1 = " + accountBalance1 + ", accountBalance2 = " + accountBalance2);
 		}
 		
 		prev_notept1 = notept1;

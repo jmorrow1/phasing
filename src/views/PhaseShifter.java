@@ -17,9 +17,8 @@ public class PhaseShifter extends View {
 	private float width, height, halfWidth, halfHeight;
 	private float minRadius, maxRadius;
 	
-	//scrolling or rotating movement:
-	private float translateAcc1, translateAcc2, rotateAcc1, rotateAcc2, dNoteptAcc=0;
-	private float pixelsPerNoteTime, radiansPerNoteTime;
+	//movement:
+	private float normalTransform1, normalTransform2;
 	
 	//phrase readers:
 	private PhraseReader readerA, readerB;
@@ -51,9 +50,6 @@ public class PhaseShifter extends View {
 		halfHeight = height*0.5f;
 		minRadius = 100;
 		maxRadius = 200;
-	
-		pixelsPerNoteTime = width / pa.phrase.getTotalDuration();
-		radiansPerNoteTime = PApplet.TWO_PI / pa.phrase.getTotalDuration();
 		
 		initPhraseReaders();
 		
@@ -91,23 +87,19 @@ public class PhaseShifter extends View {
 		readerB.update(dNotept2);
 		
 		if (cameraMode.toInt() == RELATIVE_TO_1) {
-			dNotept2 = (dNotept2 - dNotept1) + dNoteptAcc;
+			dNotept2 = (dNotept2 - dNotept1);// + noteptDebt2;
 			dNotept1 = 0;
-			
-			if ( (dNotept2 < 0 && sign > 0) || (dNotept2 > 0 && sign < 0) ) {
-				dNoteptAcc = dNotept2;
-				dNotept2 = 0;
-			}
-			else {
-				dNoteptAcc = 0;
-			}
+		}
+		else if (cameraMode.toInt() == RELATIVE_TO_2) {
+			dNotept1 = (dNotept1 - dNotept2);// + noteptDebt1;
+			dNotept2 = 0;
 		}
 		
 		pa.pushMatrix();
 		
 		pa.translate(this.getCenx(), this.getCeny());
 		
-		updateTransformAccumulators(dNotept2, dNotept1);
+		updateAccumulators(dNotept2, dNotept1);
 		
 		//draw graphics for player 1
 		pa.pushMatrix();
@@ -124,26 +116,18 @@ public class PhaseShifter extends View {
 		pa.popMatrix();
 	}
 	
-	private void updateTransformAccumulators(float dNotept1, float dNotept2) {
-		translateAcc1 = PhasesPApplet.remainder(translateAcc1 + pixelsPerNoteTime * dNotept1, width);
-		translateAcc2 = PhasesPApplet.remainder(translateAcc2 + pixelsPerNoteTime * dNotept2, width);
-		rotateAcc1 = rotateAcc1 + radiansPerNoteTime * dNotept1;
-		rotateAcc2 = rotateAcc2 + radiansPerNoteTime * dNotept2;
+	private void updateAccumulators(float dNotept1, float dNotept2) {
+		normalTransform1 += PApplet.map(dNotept1, 0, pa.phrase.getTotalDuration(), 0, 1);
+		normalTransform2 += PApplet.map(dNotept2, 0, pa.phrase.getTotalDuration(), 0, 1);
+		normalTransform1 %= 1;
+		normalTransform2 %= 1;
 	}
 
 	private void transform(int playerNum) {
-		if (playerNum == 1) {
-			transform(translateAcc1, rotateAcc1);
-		}
-		else if (playerNum == 2) {
-			transform(translateAcc2, rotateAcc2);
-		}
-	}
-	
-	private void transform(float translateAmt, float rotateAmt) {
+		float normalAcc = (playerNum == 1) ? normalTransform1 : normalTransform2;
 		switch(transformation.toInt()) {
-			case TRANSLATE: pa.translate(translateAmt, 0); break;
-			case ROTATE: pa.rotate(rotateAmt); break;
+			case TRANSLATE: pa.translate(normalAcc*width, 0); break;
+			case ROTATE: pa.rotate(normalAcc*pa.PI); break;
 		}
 	}
 	
@@ -279,8 +263,7 @@ public class PhaseShifter extends View {
 		
 		if (pa.phrase.getSCDynamic(noteIndex) <= 0) {
 			return null;
-		}
-			
+		}	
 		
 		if (transformation.toInt() == TRANSLATE) {
 			float x = pa.map(percentDuration, 0, 1, -halfWidth, halfWidth);
