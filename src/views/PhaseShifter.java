@@ -264,25 +264,38 @@ public class PhaseShifter extends View {
 	}
 	
 	private Point getNoteGraphicPoint(int noteIndex) {
+		float percentDuration = -1;
+		
+		if (noteIndex == pa.phrase.getNumNotes()) {
+			noteIndex = 0;
+			percentDuration = 1;
+		}
+		else if (noteIndex > pa.phrase.getNumNotes()) {
+			noteIndex %= pa.phrase.getNumNotes();
+		}
+		else {
+			percentDuration = pa.phrase.getPercentDurationOfSCIndex(noteIndex % pa.phrase.getNumNotes());
+		}
+		
 		if (pa.phrase.getSCDynamic(noteIndex) <= 0) {
 			return null;
 		}
 			
+		
 		if (transformation.toInt() == TRANSLATE) {
-			float x = pa.map(pa.phrase.getPercentDurationOfSCIndex(noteIndex),
-						0, 1, -halfWidth, halfWidth);
+			float x = pa.map(percentDuration, 0, 1, -halfWidth, halfWidth);
 			float y = mapPitch(noteIndex, halfHeight, -halfHeight);
 			return new Point(x, y);
 		}
 		else {
-			float theta = pa.phrase.getPercentDurationOfSCIndex(noteIndex) * pa.TWO_PI - pa.HALF_PI;
+			float theta = percentDuration * pa.TWO_PI - pa.HALF_PI;
 			return new Point(PApplet.cos(theta)*mapPitch(noteIndex, minRadius, maxRadius),
 					         PApplet.sin(theta)*mapPitch(noteIndex, minRadius, maxRadius));
 		}
 	}
 	
 	private void drawNoteGraphic(int index) {
-		if (getNoteGraphicPoint(index) == null) {		
+		if (getNoteGraphicPoint(index) == null) {
 		}
 		else if (noteGraphic.toInt()== SYMBOLS) {
 			Point a = getNoteGraphicPoint(index);
