@@ -162,24 +162,24 @@ public class Editor extends Screen {
 		
 		//add scrollbar
 		scrollbar = new Scrollbar(cp5, "scrollbar", 12, 14);
-	    scrollbar.setPosition(60, 570)
-			     .setSize(680, 25)
+	    scrollbar.setPosition(60, 575f)
+			     .setSize(680, 15)
 			     .setColorBackground(pa.getColor1())
 			     .setColorForeground(pa.getBrightColor1())
 			     ;
 	
 		//add buttons that flank the scrollbar and control the adding and removing of notes from the phrase
 	    cp5.addButton("decreasePhraseLength")
-	       .setPosition(10, 570)
-	       .setSize(40, 25)
+	       .setPosition(10, 575f)
+	       .setSize(40, 15)
 	       .setView(new ArrowButtonView(false))
 	       .setColorBackground(pa.color(255))
 	       .setColorForeground(pa.getColor1())
 	       .setColorActive(pa.getBrightColor1())
 	       ;
 		cp5.addButton("increasePhraseLength")
-	       .setPosition(750, 570)
-	       .setSize(40, 25)
+	       .setPosition(750, 575f)
+	       .setSize(40, 15)
 	       .setView(new ArrowButtonView(true))
 	       .setColorBackground(pa.color(255))
 	       .setColorForeground(pa.getColor1())

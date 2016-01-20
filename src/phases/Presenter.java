@@ -41,8 +41,9 @@ public class Presenter extends Screen implements ViewVariableInfo{
 	private View view;
 	
 	//icons
-	private ArrayList<Icon> icons = new ArrayList<Icon>();
-
+	private int activeIconIndex = 0;
+	private ArrayList<Icon[]> iconLists = new ArrayList<Icon[]>();
+	private ArrayList<ModInt> variables = new ArrayList<ModInt>();
 
 	/**
 	 * 
@@ -99,28 +100,79 @@ public class Presenter extends Screen implements ViewVariableInfo{
 	}
 	
 	public void setupIcons() {
-		icons.clear();
+		iconLists.clear();
 		Field[] fields = view.getClass().getDeclaredFields();
 		try {
 			for (Field f : fields) {
 				if (f.getType().equals(ModInt.class)) {
 					ModInt x = (ModInt)f.get(view);
 					String name = x.getName();
+					Icon[] iconList = null;
 					switch(name) {
-						case activeNoteModeName: icons.add(new ShowActiveNoteIcon(x.toInt())); break;
-						case transformationName: icons.add(new TransformIcon(x.toInt())); break;
-						case cameraModeName: icons.add(new CameraIcon(x.toInt())); break;
-						case noteGraphicName: icons.add(new NoteIcon(x.toInt())); break;
-						case plotPitchModeName: icons.add(new PlotPitchIcon(x.toInt())); break;
-						case colorSchemeName: icons.add(new ColorSchemeIcon(x.toInt())); break;
-						case superimposedOrSeparatedName: icons.add(new SuperimposedOrSeparatedIcon(x.toInt())); break;
-						case instrumentName : icons.add(new InstrumentIcon(x.toInt())); break;
-						case scoreModeName : icons.add(new ScoreModeIcon(x.toInt())); break;
+						case activeNoteModeName: 
+							iconList = new Icon[x.getDivisor()];
+							for (int i=0; i<iconList.length; i++) {
+								iconList[i] = new ShowActiveNoteIcon(i);
+							}
+							break;
+						case transformationName:
+							iconList = new Icon[x.getDivisor()];
+							for (int i=0; i<iconList.length; i++) {
+								iconList[i] = new TransformIcon(i);
+							}
+							break;
+						case cameraModeName:
+							iconList = new Icon[x.getDivisor()];
+							for (int i=0; i<iconList.length; i++) {
+								iconList[i] = new CameraIcon(i); 
+							}
+							break;
+						case noteGraphicName:
+							iconList = new Icon[x.getDivisor()];
+							for (int i=0; i<iconList.length; i++) {
+								iconList[i] = new NoteIcon(i); 
+							}
+							break;
+						case plotPitchModeName: 
+							iconList = new Icon[x.getDivisor()];
+							for (int i=0; i<iconList.length; i++) {
+								iconList[i] = new PlotPitchIcon(i);
+							}
+							break;
+						case colorSchemeName:
+							iconList = new Icon[x.getDivisor()];
+							for (int i=0; i<iconList.length; i++) {
+								iconList[i] = new ColorSchemeIcon(i); 
+							}
+							break;
+						case superimposedOrSeparatedName: 
+							iconList = new Icon[x.getDivisor()];
+							for (int i=0; i<iconList.length; i++) {
+								iconList[i] = new SuperimposedOrSeparatedIcon(i);
+							}
+							break;
+						case instrumentName :
+							iconList = new Icon[x.getDivisor()];
+							for (int i=0; i<iconList.length; i++) {
+								iconList[i] = new InstrumentIcon(i);
+							}
+							break;
+						case scoreModeName :
+							iconList = new Icon[x.getDivisor()];
+							for (int i=0; i<iconList.length; i++) {
+								iconList[i] = new ScoreModeIcon(i);
+							}
+							break;
 						default: 
-							icons.add(new DefaultIcon(x.toInt()));
+							iconList = new Icon[x.getDivisor()];
+							for (int i=0; i<iconList.length; i++) {
+								iconList[i] = new DefaultIcon(i);
+							}
 							System.out.println("Don't know that view variable: " + name); 
 							break;
 					}
+					iconLists.add(iconList);
+					variables.add(x);
 				}
 			}
 		}
@@ -132,13 +184,26 @@ public class Presenter extends Screen implements ViewVariableInfo{
 	public void drawIcons() {
 		float radius = 25;
 		float dx = radius*2.25f;
-		float x = radius;
-		float y = pa.height - radius;
+		float startX = 1.25f*radius;
+		float startY = pa.height - 1.25f*radius;
+		float x = startX;
+		float y = startY;
 		
-		for (Icon icon : icons) {
+		for (int i=0; i<iconLists.size(); i++) {
+			int j = variables.get(i).toInt();
+			Icon[] iconList = iconLists.get(i);
+			Icon icon = iconList[j];
 			icon.draw(x, y, radius, pa);
 			x += dx;
 		}
+
+		//draw box around active icon
+		pa.noFill();
+		pa.strokeWeight(2);
+		pa.stroke(pa.getBrightColor2());
+		pa.rectMode(pa.RADIUS);
+		pa.rect(startX + activeIconIndex*dx, startY, radius, radius);
+		
 	}
 	
 	private void animateView() {
@@ -168,6 +233,20 @@ public class Presenter extends Screen implements ViewVariableInfo{
 	}
 
 	@Override
-	public void mouseMoved() {
+	public void keyPressed() {
+		if (pa.key == pa.CODED) {
+			if (pa.keyCode == pa.LEFT) {
+				activeIconIndex = PhasesPApplet.remainder(activeIconIndex-1, iconLists.size());
+			}
+			else if (pa.keyCode == pa.RIGHT) {
+				activeIconIndex = (activeIconIndex+1) % iconLists.size();
+			}
+			else if (pa.keyCode == pa.UP) {
+				variables.get(activeIconIndex).decrement();
+			}
+			else if (pa.keyCode == pa.DOWN) {
+				variables.get(activeIconIndex).increment();
+			}
+		}
 	}
 }
