@@ -32,7 +32,8 @@ public class Musician extends View {
 		return 3;
 	}
 	
-	private void updateState() {
+	@Override
+	public void updateState() {
 		initInstrumentPlayers();
 		readerA.setCallee(playerA);
 		readerB.setCallee(playerB);

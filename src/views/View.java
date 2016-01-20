@@ -17,4 +17,5 @@ public abstract class View extends Rect implements ViewVariableInfo {
 	
 	public abstract void update(float dNotept1, float dNotept2, int sign);
 	public abstract int numOptions();
+	public void updateState() {}
 }

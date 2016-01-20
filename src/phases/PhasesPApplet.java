@@ -369,8 +369,8 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public static int remainder(int num, int denom) {
 		if (0 <= num && num < denom) return num;
-		else if (num > 0) return num % denom;
-		else return denom - ((-num) % denom);
+	    else if (num > 0) return num % denom;
+	    else return (denom - ((-num) % denom)) % denom;
 	}
 	
 	/**
