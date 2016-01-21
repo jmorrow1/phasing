@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import geom.Rect;
+import geom.Sector;
 import phases.ModInt;
 import phases.PhasesPApplet;
 import phases.PhraseReader;
@@ -59,10 +60,10 @@ public class PhaseShifter extends View {
 	}
 	
 	public void onEnter() {
-		initData();
+		initDataPoints();
 	}
 	
-	private void initData() {
+	private void initDataPoints() {
 		data.clear();
 		int i = 0;
 		while (i <= pa.phrase.getNumNotes()) {
@@ -166,10 +167,12 @@ public class PhaseShifter extends View {
 	}
 	
 	class DataPoint {
-		float tx, ty, twidth;
-		float rx, ry, theta1, theta2, radius;
-		float rxAlt, ryAlt;
-		String pitchName;
+		final float tx, ty, twidth;
+		final float rx, ry, theta1, theta2, radius;
+		final float rxAlt, ryAlt;
+		final String pitchName;
+		final static int sectorThickness = 20;
+		final Sector sector, sectorAlt;
 		
 		DataPoint(int i) {
 			float normalStart = (i == pa.phrase.getNumNotes()) ? 1 : pa.phrase.getPercentDurationOfSCIndex(i);
@@ -186,6 +189,12 @@ public class PhaseShifter extends View {
 			ry = pa.sin(theta1 - pa.HALF_PI) * radius;
 			rxAlt = pa.cos(theta1 - pa.HALF_PI)*pa.lerp(minRadius, maxRadius, 0.5f);
 			ryAlt = pa.sin(theta1 - pa.HALF_PI)*pa.lerp(minRadius, maxRadius, 0.5f);
+			sector = new Sector(radius, sectorThickness, theta1, theta2);
+			sectorAlt = new Sector(pa.lerp(minRadius, maxRadius, 0.5f), sectorThickness, theta1, theta2);
+		}
+		
+		Sector sector() {
+			return (plotPitchMode.toInt() == PLOT_PITCH) ? sector : sectorAlt;
 		}
 		
 		float x() {
@@ -241,26 +250,13 @@ public class PhaseShifter extends View {
 				}
 				break;
 			case RECTS_OR_SECTORS:
-				if (transformation.toInt() == TRANSLATE) {
-					if (activeStyle) {
-						pa.stroke(0);
-						pa.fill(color);
-					}
-					else {
-						pa.stroke(0, opacity);
-						pa.fill(color, opacity);
-					}
+				pa.noStroke();
+				if (activeStyle) {
+					pa.fill(color);
 				}
-				else if (transformation.toInt() == ROTATE) {
-					if (activeStyle) {
-						pa.stroke(color);
-					}
-					else {
-						pa.stroke(color, opacity);
-					}
-					pa.noFill();
+				else {
+					pa.fill(color, opacity);
 				}
-				
 				break;
 		}
 	}
@@ -295,12 +291,18 @@ public class PhaseShifter extends View {
 			float d_y = d.y();
 			
 			pa.ellipseMode(pa.CENTER);
-			pa.ellipse(d_x, d_y, 20, 20);
+			pa.pushStyle();
+				pa.noStroke();
+				pa.ellipse(d_x, d_y, 20, 20);
+			pa.popStyle();
 			pa.line(d_x, d_y, e.x(), e.y());
 			if (transformation.toInt() == TRANSLATE) {
-				pa.ellipse(d_x - width, d_y, 20, 20);
+				pa.pushStyle();
+					pa.noStroke();
+					pa.ellipse(d_x - width, d_y, 20, 20);
+					pa.ellipse(d_x + width, d_y, 20, 20);
+				pa.popStyle();
 				pa.line(d_x - width, d_y, e.x() - width, e.y());
-				pa.ellipse(d_x + width, d_y, 20, 20);
 				pa.line(d_x + width, d_y, e.x() + width, e.y());
 			}
 		}
@@ -315,13 +317,7 @@ public class PhaseShifter extends View {
 				pa.rect(d_x + width, d_y, d.twidth, 20);
 			}
 			else {
-				pa.ellipseMode(pa.RADIUS);
-				pa.arc(0, 0, d.radius-10, d.radius-10, d.theta1, d.theta2);
-				pa.line(pa.cos(d.theta1)*(d.radius-10), pa.sin(d.theta1)*(d.radius-10),
-						pa.cos(d.theta1)*(d.radius+10), pa.sin(d.theta1)*(d.radius+10));
-				pa.line(pa.cos(d.theta2)*(d.radius-10), pa.sin(d.theta2)*(d.radius-10),
-						pa.cos(d.theta2)*(d.radius+10), pa.sin(d.theta2)*(d.radius+10));
-				pa.arc(0, 0, d.radius+10, d.radius+10, d.theta1, d.theta2);
+				d.sector().display(pa);
 			}
 		}
 	}
