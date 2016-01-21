@@ -140,21 +140,28 @@ public class PhaseShifter extends View {
 		float normalAcc = (playerNum == 1) ? normalTransform1 : normalTransform2;
 		switch(transformation.toInt()) {
 			case TRANSLATE: pa.translate(normalAcc*width, 0); break;
-			case ROTATE: pa.rotate(normalAcc*pa.PI); break;
+			case ROTATE: pa.rotate(normalAcc*pa.TWO_PI); break;
 		}
 	}
 	
 	private void drawPhraseGraphic(int activeNote, int color, float bpm) {
 		styleNoteGraphics(color, false);
-		for (int i=0; i<data.size()-1; i++) {
-			if ( (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE) && i == activeNote) {
-				styleNoteGraphics(color, true);
-				drawNoteGraphic(data.get(i), data.get(i+1));
-				styleNoteGraphics(color, false);
+		
+		int i=0; //loops through notes in phrase
+		int j=0; //loops through data points
+		while (i < pa.phrase.getNumNotes()) {
+			if (pa.phrase.getSCDynamic(i) > 0) {
+				if ( (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE) && i == activeNote) {
+					styleNoteGraphics(color, true);
+					drawNoteGraphic(data.get(j), data.get(j+1));
+					styleNoteGraphics(color, false);
+				}
+				else {
+					drawNoteGraphic(data.get(j), data.get(j+1));
+				}
+				j++;
 			}
-			else {
-				drawNoteGraphic(data.get(i), data.get(i+1));
-			}
+			i++;
 		}
 	}
 	
