@@ -29,6 +29,7 @@ public class PhaseShifter extends View {
 	private int activeNote1, activeNote2;
 	
 	//geometrical data:
+	private final static int DOT_RADIUS = 10;
 	private ArrayList<DataPoint> data = new ArrayList<DataPoint>();
 	
 	//options:
@@ -170,7 +171,9 @@ public class PhaseShifter extends View {
 		final float tx, ty, twidth;
 		final float rx, ry, theta1, theta2, radius;
 		final float rxAlt, ryAlt;
+		//specific to symbols:
 		final String pitchName;
+		//specific to sectors:
 		final static int sectorThickness = 20;
 		final Sector sector, sectorAlt;
 		
@@ -191,6 +194,12 @@ public class PhaseShifter extends View {
 			ryAlt = pa.sin(theta1 - pa.HALF_PI)*pa.lerp(minRadius, maxRadius, 0.5f);
 			sector = new Sector(radius, sectorThickness, theta1, theta2);
 			sectorAlt = new Sector(pa.lerp(minRadius, maxRadius, 0.5f), sectorThickness, theta1, theta2);
+			/*float lineDist = pa.dist(d_x, d_y, e.x(), e.y());
+			float amt = (DOT_RADIUS / lineDist);
+			float x1 = pa.lerp(d_x, e.x(), amt);
+			float y1 = pa.lerp(d_y, e.y(), amt);
+			float x2 = pa.lerp(d_x, e.x(), 1-amt);
+			float y2 = pa.lerp(d_y, e.y(), 1-amt);*/
 		}
 		
 		Sector sector() {
@@ -290,17 +299,19 @@ public class PhaseShifter extends View {
 			float d_x = d.x();
 			float d_y = d.y();
 			
-			pa.ellipseMode(pa.CENTER);
+			pa.ellipseMode(pa.RADIUS);
 			pa.pushStyle();
 				pa.noStroke();
-				pa.ellipse(d_x, d_y, 20, 20);
+				pa.ellipse(d_x, d_y, DOT_RADIUS, DOT_RADIUS);
 			pa.popStyle();
+		
 			pa.line(d_x, d_y, e.x(), e.y());
+		
 			if (transformation.toInt() == TRANSLATE) {
 				pa.pushStyle();
 					pa.noStroke();
-					pa.ellipse(d_x - width, d_y, 20, 20);
-					pa.ellipse(d_x + width, d_y, 20, 20);
+					pa.ellipse(d_x - width, d_y, DOT_RADIUS, DOT_RADIUS);
+					pa.ellipse(d_x + width, d_y, DOT_RADIUS, DOT_RADIUS);
 				pa.popStyle();
 				pa.line(d_x - width, d_y, e.x() - width, e.y());
 				pa.line(d_x + width, d_y, e.x() + width, e.y());
