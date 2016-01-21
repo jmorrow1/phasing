@@ -275,14 +275,22 @@ public class Phrase {
 		scArraysUpToDate = true;
 	}
 	
+	public boolean containsNonRests() {
+		for (int i=0; i<this.getNumNotes(); i++) {
+			if (this.getSCDynamic(i) > 0) return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * Searches the phrase and returns the lowest value MIDI pitch in the phrase.
+	 * Rests don't count as having a pitch, so they're excluded from the search.
 	 * @return The lowest value MIDI pitch
 	 */
 	public float minPitch() {
 		float minPitch = Float.MAX_VALUE;
 		for (int i=0; i<this.getNumNotes(); i++) {
-			if (this.getSCPitch(i) < minPitch) {
+			if (this.getSCDynamic(i) > 0 && this.getSCPitch(i) < minPitch) {
 				minPitch = this.getSCPitch(i);
 			}
 		}
@@ -291,12 +299,13 @@ public class Phrase {
 	
 	/**
 	 * Searches the phrase and returns the greatest value MIDI pitch in the phrase.
+	 * Rests don't count as having a pitch, so they're excluded from the search.
 	 * @return The greatest value MIDI pitch
 	 */
 	public float maxPitch() {
 		float maxPitch = Float.MIN_VALUE;
 		for (int i=0; i<this.getNumNotes(); i++) {
-			if (this.getSCPitch(i) > maxPitch) {
+			if (this.getSCDynamic(i) > 0 && this.getSCPitch(i) > maxPitch) {
 				maxPitch = this.getSCPitch(i);
 			}
 		}

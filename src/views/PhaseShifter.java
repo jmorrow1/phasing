@@ -1,8 +1,8 @@
 package views;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
-import geom.Point;
 import geom.Rect;
 import phases.ModInt;
 import phases.PhasesPApplet;
@@ -26,6 +26,9 @@ public class PhaseShifter extends View {
 	
 	//active note:
 	private int activeNote1, activeNote2;
+	
+	//geometrical data:
+	private ArrayList<DataPoint> data = new ArrayList<DataPoint>();
 	
 	//options:
 	public ModInt activeNoteMode = new ModInt(0, numActiveNoteModes, activeNoteModeName);
@@ -52,8 +55,22 @@ public class PhaseShifter extends View {
 		maxRadius = 200;
 		
 		initPhraseReaders();
-		
 		onEnter();
+	}
+	
+	public void onEnter() {
+		initData();
+	}
+	
+	private void initData() {
+		data.clear();
+		int i = 0;
+		while (i <= pa.phrase.getNumNotes()) {
+			if (pa.phrase.getSCDynamic(i % pa.phrase.getNumNotes()) > 0) {
+				data.add(new DataPoint(i));
+			}
+			i++;
+		}
 	}
 	
 	private void initPhraseReaders() {
@@ -65,10 +82,6 @@ public class PhaseShifter extends View {
 		} catch (NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public void onEnter() {
-		
 	}
 	
 	//callback:
@@ -87,11 +100,11 @@ public class PhaseShifter extends View {
 		readerB.update(dNotept2);
 		
 		if (cameraMode.toInt() == RELATIVE_TO_1) {
-			dNotept2 = (dNotept2 - dNotept1);// + noteptDebt2;
+			dNotept2 = (dNotept2 - dNotept1);
 			dNotept1 = 0;
 		}
 		else if (cameraMode.toInt() == RELATIVE_TO_2) {
-			dNotept1 = (dNotept1 - dNotept2);// + noteptDebt1;
+			dNotept1 = (dNotept1 - dNotept2);
 			dNotept2 = 0;
 		}
 		
@@ -128,6 +141,62 @@ public class PhaseShifter extends View {
 		switch(transformation.toInt()) {
 			case TRANSLATE: pa.translate(normalAcc*width, 0); break;
 			case ROTATE: pa.rotate(normalAcc*pa.PI); break;
+		}
+	}
+	
+	private void drawPhraseGraphic(int activeNote, int color, float bpm) {
+		styleNoteGraphics(color, false);
+		for (int i=0; i<data.size()-1; i++) {
+			if ( (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE) && i == activeNote) {
+				styleNoteGraphics(color, true);
+				drawNoteGraphic(data.get(i), data.get(i+1));
+				styleNoteGraphics(color, false);
+			}
+			else {
+				drawNoteGraphic(data.get(i), data.get(i+1));
+			}
+		}
+	}
+	
+	class DataPoint {
+		float tx, ty, twidth;
+		float rx, ry, theta1, theta2, radius;
+		float rxAlt, ryAlt;
+		String pitchName;
+		
+		DataPoint(int i) {
+			float normalStart = (i == pa.phrase.getNumNotes()) ? 1 : pa.phrase.getPercentDurationOfSCIndex(i);
+			i %= pa.phrase.getNumNotes();
+			float normalWidth = pa.phrase.getSCDuration(i) / pa.phrase.getTotalDuration();
+			tx = pa.map(normalStart, 0, 1, -halfWidth, halfWidth);
+			ty = pa.map(pa.phrase.getSCPitch(i), pa.phrase.minPitch(), pa.phrase.maxPitch(), halfHeight, -halfHeight);
+			twidth = normalWidth * width;
+			theta1 = pa.map(normalStart, 0, 1, 0, pa.TWO_PI);
+			theta2 = pa.map(normalWidth, 0, 1, 0, pa.TWO_PI) + theta1;
+			pitchName = pa.scale.getNoteNameByPitchValue(pa.phrase.getSCPitch(i));
+			radius = pa.map(pa.phrase.getSCPitch(i), pa.phrase.minPitch(), pa.phrase.maxPitch(), minRadius, maxRadius);
+			rx = pa.cos(theta1 - pa.HALF_PI) * radius;
+			ry = pa.sin(theta1 - pa.HALF_PI) * radius;
+			rxAlt = pa.cos(theta1 - pa.HALF_PI)*pa.lerp(minRadius, maxRadius, 0.5f);
+			ryAlt = pa.sin(theta1 - pa.HALF_PI)*pa.lerp(minRadius, maxRadius, 0.5f);
+		}
+		
+		float x() {
+			if (transformation.toInt() == TRANSLATE) {
+				return tx;
+			}
+			else {
+				return (plotPitchMode.toInt() == PLOT_PITCH) ? rx : rxAlt;
+			}
+		}
+	
+		float y() {
+			if (transformation.toInt() == TRANSLATE) {
+				return (plotPitchMode.toInt() == PLOT_PITCH) ? ty : 0;
+			}
+			else {
+				return (plotPitchMode.toInt() == PLOT_PITCH) ? ry : ryAlt;
+			}
 		}
 	}
 	
@@ -189,156 +258,63 @@ public class PhaseShifter extends View {
 		}
 	}
 	
-	private float mapPitch(int i, float newMin, float newMax) {
-		i %= 12;
-		if (plotPitchMode.toInt() == PLOT_PITCH && pa.phrase.minPitch() != pa.phrase.maxPitch()) {
-			return PApplet.map(pa.phrase.getSCPitch(i),
-                               pa.phrase.minPitch(), pa.phrase.maxPitch(),
-                               newMin, newMax);
-		}
-		else {
-			return (int)pa.lerp(newMin, newMax, 0.5f);
-		}
-	}
-	
-	private void drawPhraseGraphic(int activeNote, int color, float bpm) {
-		if (noteGraphic.toInt()== SINE_WAVE) {
-			pa.noFill();
-			pa.stroke(color);
-			if (transformation.toInt() == TRANSLATE) {
-				drawSineWave();
-			}
-			else if (transformation.toInt() == ROTATE) {	
-				int radius = (int)pa.map(bpm, pa.MIN_BPM, pa.MAX_BPM, 0, halfWidth);
-				pa.ellipseMode(pa.RADIUS);
-				pa.ellipse(0, 0, radius, radius);
-			}
-		}
-		else {
-			styleNoteGraphics(color, false);
-			for (int i=0; i<pa.phrase.getNumNotes(); i++) {
-				if ( (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE)
-						&& i == activeNote) {
-					styleNoteGraphics(color, true);
-					drawNoteGraphic(i);
-					styleNoteGraphics(color, false);
-				}
-				else {
-					drawNoteGraphic(i);
-				}
-				
-			}
-		}
-	}
-	
-	private void drawSineWave() {
-		pa.beginShape();
-			float x = -halfWidth;
-			float dx = 2;
-			float angle = 0;
-			float dAngle = pa.TWO_PI / (width / dx);
-			while (x < halfWidth) {
-				pa.vertex(x, halfHeight * PApplet.sin(angle));
-				x += dx;
-				angle += dAngle;
-			}
-			pa.vertex(x, halfHeight * PApplet.sin(pa.TWO_PI));
-		
-		pa.endShape();
-	}
-	
-	private Point getNoteGraphicPoint(int noteIndex) {
-		float percentDuration = -1;
-		
-		if (noteIndex == pa.phrase.getNumNotes()) {
-			noteIndex = 0;
-			percentDuration = 1;
-		}
-		else if (noteIndex > pa.phrase.getNumNotes()) {
-			noteIndex %= pa.phrase.getNumNotes();
-		}
-		else {
-			percentDuration = pa.phrase.getPercentDurationOfSCIndex(noteIndex % pa.phrase.getNumNotes());
-		}
-		
-		if (pa.phrase.getSCDynamic(noteIndex) <= 0) {
-			return null;
-		}	
-		
-		if (transformation.toInt() == TRANSLATE) {
-			float x = pa.map(percentDuration, 0, 1, -halfWidth, halfWidth);
-			float y = mapPitch(noteIndex, halfHeight, -halfHeight);
-			return new Point(x, y);
-		}
-		else {
-			float theta = percentDuration * pa.TWO_PI - pa.HALF_PI;
-			return new Point(PApplet.cos(theta)*mapPitch(noteIndex, minRadius, maxRadius),
-					         PApplet.sin(theta)*mapPitch(noteIndex, minRadius, maxRadius));
-		}
-	}
-	
-	private void drawNoteGraphic(int index) {
-		if (getNoteGraphicPoint(index) == null) {
-		}
-		else if (noteGraphic.toInt()== SYMBOLS) {
-			Point a = getNoteGraphicPoint(index);
+	private void drawNoteGraphic(DataPoint d, DataPoint e) {
+		if (noteGraphic.toInt()== SYMBOLS) {
 			pa.pushMatrix();
-				pa.translate(a.x, a.y);
+				pa.translate(d.x(), d.y());
 				if (transformation.toInt() == ROTATE) {
-					float theta = pa.phrase.getPercentDurationOfSCIndex(index) * pa.TWO_PI;
-					pa.rotate(theta);
+					pa.rotate(d.theta1);
 				}
-				int pitch = (int) (pa.phrase.getSCPitch(index) % 12);
-				String symbol = pa.scale.getNoteNameByPitchValue(pitch);
-				pa.text(symbol, 0, 0);
+				pa.text(d.pitchName, 0, 0);
 				if (transformation.toInt() == TRANSLATE) {
-					pa.text(symbol, width, 0);
-					pa.text(symbol, -width, 0);
+					pa.text(d.pitchName, width, 0);
+					pa.text(d.pitchName, -width, 0);
 				}
 			pa.popMatrix();
 		}
 		else if (noteGraphic.toInt()== DOTS) {
-			Point a = getNoteGraphicPoint(index);
+			float d_x = d.x();
+			float d_y = d.y();
+					
 			pa.ellipseMode(pa.CENTER);
-			pa.ellipse(a.x, a.y, 20, 20);
+			pa.ellipse(d_x, d_y, 20, 20);
 			if (transformation.toInt() == TRANSLATE) {
-				pa.ellipse(a.x - width, a.y, 20, 20);
-				pa.ellipse(a.x + width, a.y, 20, 20);
+				pa.ellipse(d_x - width, d_y, 20, 20);
+				pa.ellipse(d_x + width, d_y, 20, 20);
 			}
 		}
-		else if (noteGraphic.toInt()== CONNECTED_DOTS) {
-			Point a = getNoteGraphicPoint(index);
-			Point b = getNoteGraphicPoint(index+1);
+		else if (noteGraphic.toInt() == CONNECTED_DOTS) {
+			float d_x = d.x();
+			float d_y = d.y();
+			
 			pa.ellipseMode(pa.CENTER);
-			pa.ellipse(a.x, a.y, 20, 20);
-			pa.line(a.x, a.y, b.x, b.y);
+			pa.ellipse(d_x, d_y, 20, 20);
+			pa.line(d_x, d_y, e.x(), e.y());
 			if (transformation.toInt() == TRANSLATE) {
-				pa.ellipse(a.x - width, a.y, 20, 20);
-				pa.line(a.x - width, a.y, b.x - width, b.y);
-				pa.ellipse(a.x + width, a.y, 20, 20);
-				pa.line(a.x + width, a.y, b.x + width, b.y);
+				pa.ellipse(d_x - width, d_y, 20, 20);
+				pa.line(d_x - width, d_y, e.x() - width, e.y());
+				pa.ellipse(d_x + width, d_y, 20, 20);
+				pa.line(d_x + width, d_y, e.x() + width, e.y());
 			}
 		}
-		else if (noteGraphic.toInt()== RECTS_OR_SECTORS) {
+		else if (noteGraphic.toInt() == RECTS_OR_SECTORS) {
 			if (transformation.toInt() == TRANSLATE) {
-				Point a = getNoteGraphicPoint(index);
-				Point b = getNoteGraphicPoint(index+1);
-				pa.rectMode(pa.CORNERS);
-				pa.rect(a.x, a.y, b.x, a.y + 20);
-				pa.rect(a.x - width, a.y, b.x - width, a.y + 20);
-				pa.rect(a.x + width, a.y, b.x + width, a.y + 20);
+				float d_x = d.x();
+				float d_y = d.y();
+				
+				pa.rectMode(pa.CORNER);
+				pa.rect(d_x, d_y, d.twidth, 20);
+				pa.rect(d_x - width, d_y, d.twidth, 20);
+				pa.rect(d_x + width, d_y, d.twidth, 20);
 			}
 			else {
-				float alpha = pa.map(index, 0, pa.phrase.getGridRowSize(), 0, pa.TWO_PI);
-				float beta = pa.map(index+1, 0, pa.phrase.getGridRowSize(), 0, pa.TWO_PI);
-				float radius = mapPitch(index, minRadius, maxRadius);
 				pa.ellipseMode(pa.RADIUS);
-				pa.arc(0, 0, radius-10, radius-10, alpha, beta);
-				pa.line(pa.cos(alpha)*(radius-10), pa.sin(alpha)*(radius-10),
-						pa.cos(alpha)*(radius+10), pa.sin(alpha)*(radius+10));
-				pa.line(pa.cos(beta)*(radius-10), pa.sin(beta)*(radius-10),
-						pa.cos(beta)*(radius+10), pa.sin(beta)*(radius+10));
-				pa.arc(0, 0, radius+10, radius+10, alpha, beta);
+				pa.arc(0, 0, d.radius-10, d.radius-10, d.theta1, d.theta2);
+				pa.line(pa.cos(d.theta1)*(d.radius-10), pa.sin(d.theta1)*(d.radius-10),
+						pa.cos(d.theta1)*(d.radius+10), pa.sin(d.theta1)*(d.radius+10));
+				pa.line(pa.cos(d.theta2)*(d.radius-10), pa.sin(d.theta2)*(d.radius-10),
+						pa.cos(d.theta2)*(d.radius+10), pa.sin(d.theta2)*(d.radius+10));
+				pa.arc(0, 0, d.radius+10, d.radius+10, d.theta1, d.theta2);
 			}
 		}
 	}
