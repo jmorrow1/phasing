@@ -3,7 +3,6 @@ package icons;
 import phases.PhasesPApplet;
 
 public class TransformIcon implements Icon {
-    final int TRANSLATE=0, ROTATE=1, ROTATE_Z=2;
     private int transformType;
   
     public TransformIcon(int transformType) {
@@ -27,9 +26,6 @@ public class TransformIcon implements Icon {
             pa.ellipseMode(pa.RADIUS); 
             pa.arc(x, y, radius - 10, radius - 10, pa.QUARTER_PI, pa.TWO_PI);
             pa.drawArrowHead(x + radius - 10, y, arrowHeadSize, pa.HALF_PI, 0.75f*pa.PI);
-        }
-        else if (transformType == ROTATE_Z) {
-             
         }
     }
 }
