@@ -61,7 +61,7 @@ public class Scale {
 	
 	public String getNoteNameByPitchValue(int pitchValue) {
 		int i = this.getIndexOfNoteValue(pitchValue);
-		i %= 12;
+		i %= this.size();
 		return noteNames[i];
 	}
 	

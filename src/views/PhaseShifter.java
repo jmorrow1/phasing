@@ -348,9 +348,6 @@ public class PhaseShifter extends View {
 	private void styleNoteGraphics(int color, boolean activeStyle) {
 		switch (noteGraphic.toInt()) {
 			case SYMBOLS:
-				pa.textAlign(pa.CENTER, pa.CENTER);
-				pa.textSize(42);
-				pa.textFont(pa.pfont42);
 				pa.noStroke();
 				if (activeStyle) {
 					pa.fill(color);
@@ -381,6 +378,21 @@ public class PhaseShifter extends View {
 		}
 	}
 	
+	private void drawSymbol(String s, float x, float y) {
+		pa.textSize(42);
+		pa.textFont(pa.pfont42);
+		pa.text(s.charAt(0), x, y);
+		
+		x += pa.textWidth(s.charAt(0))/2f + 5;
+		y += pa.textDescent();
+		
+		if (s.length() > 1) {
+			pa.textSize(18);
+			pa.textFont(pa.pfont18);
+			pa.text(s.charAt(1), x, y);
+		}
+	}
+	
 	private void drawNoteGraphic(DataPoint d, DataPoint e) {
 		if (noteGraphic.toInt()== SYMBOLS) {
 			pa.pushMatrix();
@@ -388,10 +400,13 @@ public class PhaseShifter extends View {
 				if (transformation.toInt() == ROTATE) {
 					pa.rotate(d.theta1);
 				}
-				pa.text(d.pitchName, 0, 0);
+				//pa.text(d.pitchName, 0, 0);
+				drawSymbol(d.pitchName, 0, 0);
 				if (transformation.toInt() == TRANSLATE) {
-					pa.text(d.pitchName, width, 0);
-					pa.text(d.pitchName, -width, 0);
+					//pa.text(d.pitchName, width, 0);
+					//pa.text(d.pitchName, -width, 0);
+					drawSymbol(d.pitchName, width, 0);
+					drawSymbol(d.pitchName, -width, 0);
 				}
 			pa.popMatrix();
 		}
