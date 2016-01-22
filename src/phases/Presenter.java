@@ -97,6 +97,8 @@ public class Presenter extends Screen implements ViewVariableInfo{
 		dataPts = 0;
 		
 		setupIcons();
+		
+		view.onEnter();
 	}
 	
 	@Override
@@ -244,23 +246,22 @@ public class Presenter extends Screen implements ViewVariableInfo{
 		totalNotept1 += dNotept1;
 		totalNotept2 += dNotept2;
 		dataPts++;
-		if (dataPts > 100) {
-			avg_dNotept1 = totalNotept1 / dataPts;
-			avg_dNotept2 = totalNotept2 / dataPts;
-			accountBalance1 += (dNotept1 - avg_dNotept1);
-			accountBalance2 += (dNotept2 - avg_dNotept2);
-			dNotept1 = avg_dNotept1;
-			dNotept2 = avg_dNotept2;
-			if (pa.abs(accountBalance1) > acceptableAccountSize) {
-				accountBalance1 = 0;
-				dNotept1 += accountBalance1;
-			}
-			if (pa.abs(accountBalance2) > acceptableAccountSize) {
-				accountBalance2 = 0;
-				dNotept2 += accountBalance2;
-			}
-			//pa.println("accountBalance1 = " + accountBalance1 + ", accountBalance2 = " + accountBalance2);
+	
+		avg_dNotept1 = totalNotept1 / dataPts;
+		avg_dNotept2 = totalNotept2 / dataPts;
+		accountBalance1 += (dNotept1 - avg_dNotept1);
+		accountBalance2 += (dNotept2 - avg_dNotept2);
+		dNotept1 = avg_dNotept1;
+		dNotept2 = avg_dNotept2;
+		if (pa.abs(accountBalance1) > acceptableAccountSize) {
+			accountBalance1 = 0;
+			dNotept1 += accountBalance1;
 		}
+		if (pa.abs(accountBalance2) > acceptableAccountSize) {
+			accountBalance2 = 0;
+			dNotept2 += accountBalance2;
+		}
+		//pa.println("accountBalance1 = " + accountBalance1 + ", accountBalance2 = " + accountBalance2);
 		
 		prev_notept1 = notept1;
 		prev_notept2 = notept2;

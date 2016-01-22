@@ -58,7 +58,6 @@ public class PhaseShifter extends View {
 		maxRadius = 200;
 		
 		initPhraseReaders();
-		onEnter();
 	}
 	
 	public void onEnter() {
@@ -106,11 +105,11 @@ public class PhaseShifter extends View {
 		readerB.update(dNotept2);
 		
 		if (cameraMode.toInt() == RELATIVE_TO_1) {
-			dNotept2 = (dNotept1 - dNotept2);
+			dNotept2 = (dNotept2 - dNotept1);
 			dNotept1 = 0;
 		}
 		else if (cameraMode.toInt() == RELATIVE_TO_2) {
-			dNotept1 = (dNotept2 - dNotept1);
+			dNotept1 = (dNotept1 - dNotept2);
 			dNotept2 = 0;
 		}
 		
@@ -121,16 +120,10 @@ public class PhaseShifter extends View {
 		updateAccumulators(dNotept2, dNotept1);
 		
 		//draw graphics for player 1
-		pa.pushMatrix();
-			transform(1);
-			drawPhraseGraphic(activeNote1, (colorScheme.toInt() == DIACHROMATIC) ? pa.getColor1() : 0, pa.getBPM1());
-		pa.popMatrix();
+		drawPhraseGraphic(activeNote1, (colorScheme.toInt() == DIACHROMATIC) ? pa.getColor1() : 0, 1);
 		
 		//draw graphics for player 2
-		pa.pushMatrix();
-			transform(2);
-			drawPhraseGraphic(activeNote2, (colorScheme.toInt() == DIACHROMATIC) ? pa.getColor2() : 0, pa.getBPM2());
-		pa.popMatrix();
+		drawPhraseGraphic(activeNote2, (colorScheme.toInt() == DIACHROMATIC) ? pa.getColor2() : 0, 2);
 		
 		pa.popMatrix();
 	}
@@ -143,46 +136,88 @@ public class PhaseShifter extends View {
 	}
 
 	private void transform(int playerNum) {
-		float normalAcc = (playerNum == 1) ? normalTransform1 : normalTransform2;
+		float normalAcc = (playerNum == 2) ? normalTransform1 : normalTransform2;
 		switch(transformation.toInt()) {
 			case TRANSLATE: pa.translate(-normalAcc*width, 0); break;
 			case ROTATE: pa.rotate(-normalAcc*pa.TWO_PI); break;
 		}
 	}
 	
-	private void drawPhraseGraphic(int activeNote, int color, float bpm) {
-		styleNoteGraphics(color, false);
-		
-		int i=0; //loops through notes in phrase
-		int j=0; //loops through data points
-		while (i < pa.phrase.getNumNotes()) {
-			if (pa.phrase.getSCDynamic(i) > 0) {
-				if ( (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE) && i == activeNote) {
-					styleNoteGraphics(color, true);
-					drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
-					styleNoteGraphics(color, false);
+	private void drawPhraseGraphic(int activeNote, int color, int playerNum) {
+		if (noteGraphic.toInt() != SINE_WAVE) {
+			pa.pushMatrix();
+			transform(playerNum);
+			styleNoteGraphics(color, false);
+			
+			int i=0; //loops through notes in phrase
+			int j=0; //loops through data points
+			while (i < pa.phrase.getNumNotes()) {
+				if (pa.phrase.getSCDynamic(i) > 0) {
+					if ( (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE) && i == activeNote) {
+						styleNoteGraphics(color, true);
+						drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
+						styleNoteGraphics(color, false);
+					}
+					else {
+						drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
+					}
+					j++;
+				}
+				i++;
+			}
+			
+			if (noteGraphic.toInt() == CONNECTED_DOTS) {
+				for (int k=0; k<dataConnections.size(); k++) {
+					DataConnection c = dataConnections.get(k);
+					if (k == activeNote) {
+						pa.stroke(color);
+					}
+					else {
+						pa.stroke(color, opacity);
+					}
+			
+					c.drawLine();
+				}
+			}
+			pa.popMatrix();
+		}
+		else if (noteGraphic.toInt() == SINE_WAVE) {
+			pa.stroke(color, opacity);
+			if (transformation.toInt() == TRANSLATE) {
+				if (plotPitchMode.toInt() == PLOT_PITCH) {
+					drawSineWave((playerNum == 1) ? normalTransform2 : normalTransform1);
 				}
 				else {
-					drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
+					pa.line(-halfWidth, 0, halfWidth, 0);
 				}
-				j++;
 			}
-			i++;
-		}
-		
-		if (noteGraphic.toInt() == CONNECTED_DOTS) {
-			for (int k=0; k<dataConnections.size(); k++) {
-				DataConnection c = dataConnections.get(k);
-				if (k == activeNote) {
-					pa.stroke(color);
-				}
-				else {
-					pa.stroke(color, opacity);
-				}
-		
-				c.drawLine();
+			else if (transformation.toInt() == ROTATE) {
+				float bpm = (playerNum == 1) ? pa.getBPM1() : pa.getBPM2();
+				float radius = pa.min(halfWidth, halfHeight);
+				pa.noFill();
+				pa.ellipseMode(pa.RADIUS);
+				pa.ellipse(0, 0, radius, radius);
 			}
 		}
+	}
+	
+	private void drawSineWave(float normalTransform) {
+		int x = (int)-halfWidth;
+		int dx = 4;
+		float amp = halfHeight;
+		
+		float translation = normalTransform * width;
+		float theta = pa.map(translation, 0, width, 0, pa.TWO_PI);
+		float dTheta = dx / width * PApplet.TWO_PI;
+		
+		pa.strokeWeight(4);
+		pa.beginShape();
+		while (x <= halfWidth) {
+			pa.vertex(x, pa.sin(theta) * amp);
+			x += dx;
+			theta += dTheta;
+		}
+		pa.endShape();
 	}
 	
 	class DataConnection {

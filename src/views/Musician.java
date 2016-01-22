@@ -46,6 +46,10 @@ public class Musician extends View {
 		initPhraseReaders();
 	}
 	
+	public void onEnter() {
+		
+	}
+	
 	@Override
 	public void update(float dNotept1, float dNotept2, int sign) {
 		readerA.update(dNotept1);
