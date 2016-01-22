@@ -108,11 +108,11 @@ public class Editor extends Screen {
 						    	
 								if (t.isMouseOver()) {
 									pg.stroke(0);
-									pg.fill(pa.getBrightColor1());
+									pg.fill(t.getColor().getForeground());
 								}
 								else {
 									pg.stroke(0);
-									pg.fill(pa.getColor1());
+									pg.fill(t.getColor().getBackground());
 								}
 								
 								if (t.getValue() == 0) {
@@ -128,6 +128,7 @@ public class Editor extends Screen {
 							   
 					   })
 					   ;
+		colorController(playStop);
 		
 		//bpm sliders
 		bpmSlider = addBPMSlider(BPM_1);
@@ -164,28 +165,23 @@ public class Editor extends Screen {
 		scrollbar = new Scrollbar(cp5, "scrollbar", 12, 14);
 	    scrollbar.setPosition(60, 575f)
 			     .setSize(680, 15)
-			     .setColorBackground(pa.getColor1())
-			     .setColorForeground(pa.getBrightColor1())
 			     ;
+	    colorController(scrollbar);
 	
 		//add buttons that flank the scrollbar and control the adding and removing of notes from the phrase
-	    cp5.addButton("decreasePhraseLength")
-	       .setPosition(10, 575f)
-	       .setSize(40, 15)
-	       .setView(new ArrowButtonView(false))
-	       .setColorBackground(pa.color(255))
-	       .setColorForeground(pa.getColor1())
-	       .setColorActive(pa.getBrightColor1())
-	       ;
-		cp5.addButton("increasePhraseLength")
-	       .setPosition(750, 575f)
-	       .setSize(40, 15)
-	       .setView(new ArrowButtonView(true))
-	       .setColorBackground(pa.color(255))
-	       .setColorForeground(pa.getColor1())
-	       .setColorActive(pa.getBrightColor1())
-	       ;
-	    
+	    Button leftArrow = cp5.addButton("decreasePhraseLength")
+						      .setPosition(10, 575f)
+						      .setSize(40, 15)
+						      .setView(new ArrowButtonView(false))
+						      ;
+	    colorController(leftArrow);
+		Button rightArrow = cp5.addButton("increasePhraseLength")
+						       .setPosition(750, 575f)
+						       .setSize(40, 15)
+						       .setView(new ArrowButtonView(true))
+						       ;
+	    colorController(rightArrow);
+		
 		//hide cp5
 		cp5.hide();
 	}
@@ -202,15 +198,24 @@ public class Editor extends Screen {
 	private void colorController(Controller c) {
 		c.setColorCaptionLabel(pa.color(255));
 	    c.setColorValueLabel(pa.color(255));
-		if (c instanceof DropdownList || c instanceof Button) {
+		if (c instanceof DropdownList) {
 			c.setColorBackground(pa.getColor1());
 			c.setColorActive(pa.getBrightColor1());
 			c.setColorForeground(pa.getBrightColor1());
 		}
-		else if (c instanceof Slider) {
+		else if (c instanceof Slider || c instanceof Scrollbar) {
 			c.setColorBackground(pa.lerpColor(pa.getColor1(), pa.color(255), 0.3f));
 		    c.setColorActive(pa.getColor1());
 		    c.setColorForeground(pa.getColor1());
+		}
+		else if (c instanceof Button) {
+			c.setColorBackground(pa.color(255));
+		    c.setColorForeground(pa.getColor1());
+		    c.setColorActive(pa.getBrightColor1());
+		}
+		else if (c instanceof Toggle) {
+			c.setColorBackground(pa.getColor1());
+			c.setColorForeground(pa.getBrightColor1());
 		}
 	}
 	

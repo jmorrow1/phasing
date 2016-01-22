@@ -35,8 +35,8 @@ public interface ViewVariableInfo {
 	public final int IS_SINE_WAVE=0, IS_NOT_SINE_WAVE=1;
 	
 	public final String activeNoteModeName = "Active Note Mode";
-	public final int numActiveNoteModes = 4;
-	public final int ONLY_SHOW_ACTIVE_NOTE=0, SHOW_ACTIVE_NOTE=1, SHOW_LINE_AT_ACTIVE_NOTE=2, DONT_SHOW_ACTIVE_NOTE=3;
+	public final int numActiveNoteModes = 3;
+	public final int ONLY_SHOW_ACTIVE_NOTE=0, SHOW_ACTIVE_NOTE=1, DONT_SHOW_ACTIVE_NOTE=2;
 	
 	public final String plotPitchModeName = "Plot Pitch Mode";
 	public final int numWaysOfPlottingPitchOrNot = 2;

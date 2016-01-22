@@ -48,7 +48,7 @@ public class PhasesPApplet extends PApplet {
 	private Screen currentScreen;
 	
 	//visual variables
-	private static int color1, color2, brightColor1, brightColor2;
+	private static int color1, color2, brightColor1, brightColor2, blendColor, brightBlendColor;
 	public static PFont pfont12, pfont18, pfont42, musicFont;
 	
 	//gui
@@ -71,9 +71,11 @@ public class PhasesPApplet extends PApplet {
 	public void setup() {
 		//init colors
 		color1 = color(255, 100, 100);
-		brightColor1 = color(255, 50, 50);
+		brightColor1 = color(255, 0, 0);
 		color2 = color(100, 100, 255);
-		brightColor2 = color(50, 50, 255);
+		brightColor2 = color(0, 0, 255);
+		blendColor = lerpColor(color1, color2, 0.5f);
+		brightBlendColor = lerpColor(brightColor1, brightColor2, 0.5f);
 		
 		//init font variables
 		pfont12 = loadFont("DejaVuSans-12.vlw");
@@ -166,7 +168,7 @@ public class PhasesPApplet extends PApplet {
 	    textFont(musicFont);
 	    textSize(textSize);
 	    textAlign(CENTER, CENTER);
-	    text("q", x, y);
+	    text("q", x, y  - textSize*0.2f);
 	    popStyle();
 	}
 	
@@ -294,6 +296,14 @@ public class PhasesPApplet extends PApplet {
 	
 	public static int getBrightColor2() {
 		return brightColor2;
+	}
+	
+	public static int getBlendColor() {
+		return blendColor;
+	}
+	
+	public static int getBrightBlendColor() {
+		return brightBlendColor;
 	}
 	
 	/**

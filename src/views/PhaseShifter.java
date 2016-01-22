@@ -24,6 +24,7 @@ public class PhaseShifter extends View {
 	//phrase readers:
 	private PhraseReader readerA, readerB;
 	private final int ONE_ID = 1, TWO_ID = 2;
+	private float noteTime = 0;
 	
 	//active note:
 	private int activeNote1, activeNote2;
@@ -104,6 +105,8 @@ public class PhaseShifter extends View {
 		readerA.update(dNotept1);
 		readerB.update(dNotept2);
 		
+		noteTime = (noteTime + dNotept1) % pa.phrase.getTotalDuration();
+		
 		if (cameraMode.toInt() == RELATIVE_TO_1) {
 			dNotept2 = (dNotept2 - dNotept1);
 			dNotept1 = 0;
@@ -116,14 +119,10 @@ public class PhaseShifter extends View {
 		pa.pushMatrix();
 		
 		pa.translate(this.getCenx(), this.getCeny());
-		
 		updateAccumulators(dNotept2, dNotept1);
-		
-		//draw graphics for player 1
-		drawPhraseGraphic(activeNote1, (colorScheme.toInt() == DIACHROMATIC) ? pa.getColor1() : 0, 1);
-		
-		//draw graphics for player 2
-		drawPhraseGraphic(activeNote2, (colorScheme.toInt() == DIACHROMATIC) ? pa.getColor2() : 0, 2);
+
+		drawPhraseGraphic(activeNote1, 1);
+		drawPhraseGraphic(activeNote2, 2);
 		
 		pa.popMatrix();
 	}
@@ -143,22 +142,33 @@ public class PhaseShifter extends View {
 		}
 	}
 	
-	private void drawPhraseGraphic(int activeNote, int color, int playerNum) {
+	private void drawPhraseGraphic(int activeNote, int playerNum) {
+		//set non-active and active colors
+		int nonActiveColor = pa.color(0, opacity);
+		int activeColor = pa.color(0, opacity);
+		if (colorScheme.toInt() == DIACHROMATIC) {
+			nonActiveColor = (playerNum == 1) ? pa.getColor1() : pa.getColor2();
+			nonActiveColor = pa.color(nonActiveColor, opacity);
+			activeColor = (playerNum == 1) ? pa.getBrightColor1() : pa.getBrightColor2();
+			activeColor = pa.color(activeColor, opacity);
+		}
+		
+		//draw non-sine wave graphics
 		if (noteGraphic.toInt() != SINE_WAVE) {
 			pa.pushMatrix();
 			transform(playerNum);
-			styleNoteGraphics(color, false);
+			styleNoteGraphics(nonActiveColor);
 			
 			int i=0; //loops through notes in phrase
 			int j=0; //loops through data points
 			while (i < pa.phrase.getNumNotes()) {
 				if (pa.phrase.getSCDynamic(i) > 0) {
 					if ( (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE) && i == activeNote) {
-						styleNoteGraphics(color, true);
+						styleNoteGraphics(activeColor);
 						drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
-						styleNoteGraphics(color, false);
+						styleNoteGraphics(nonActiveColor);
 					}
-					else {
+					else if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
 						drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
 					}
 					j++;
@@ -166,14 +176,15 @@ public class PhaseShifter extends View {
 				i++;
 			}
 			
+			//draw connections between dots
 			if (noteGraphic.toInt() == CONNECTED_DOTS) {
 				for (int k=0; k<dataConnections.size(); k++) {
 					DataConnection c = dataConnections.get(k);
 					if (k == activeNote) {
-						pa.stroke(color);
+						pa.stroke(activeColor);
 					}
 					else {
-						pa.stroke(color, opacity);
+						pa.stroke(nonActiveColor);
 					}
 			
 					c.drawLine();
@@ -181,8 +192,9 @@ public class PhaseShifter extends View {
 			}
 			pa.popMatrix();
 		}
+		//draw sine wave graphics
 		else if (noteGraphic.toInt() == SINE_WAVE) {
-			pa.stroke(color, opacity);
+			pa.stroke(nonActiveColor);
 			if (transformation.toInt() == TRANSLATE) {
 				if (plotPitchMode.toInt() == PLOT_PITCH) {
 					drawSineWave((playerNum == 1) ? normalTransform2 : normalTransform1);
@@ -192,7 +204,6 @@ public class PhaseShifter extends View {
 				}
 			}
 			else if (transformation.toInt() == ROTATE) {
-				float bpm = (playerNum == 1) ? pa.getBPM1() : pa.getBPM2();
 				float radius = pa.min(halfWidth, halfHeight);
 				pa.noFill();
 				pa.ellipseMode(pa.RADIUS);
@@ -345,35 +356,14 @@ public class PhaseShifter extends View {
 		}
 	}
 	
-	private void styleNoteGraphics(int color, boolean activeStyle) {
+	private void styleNoteGraphics(int color) {
 		switch (noteGraphic.toInt()) {
 			case SYMBOLS:
-				pa.noStroke();
-				if (activeStyle) {
-					pa.fill(color);
-				}
-				else {
-					pa.fill(color, opacity);
-				}
-				break;
 			case DOTS:
 			case CONNECTED_DOTS:
-				pa.noStroke();
-				if (activeStyle) {
-					pa.fill(color);
-				}
-				else {
-					pa.fill(color, opacity);
-				}
-				break;
 			case RECTS_OR_SECTORS:
 				pa.noStroke();
-				if (activeStyle) {
-					pa.fill(color);
-				}
-				else {
-					pa.fill(color, opacity);
-				}
+				pa.fill(color);
 				break;
 		}
 	}
@@ -400,11 +390,8 @@ public class PhaseShifter extends View {
 				if (transformation.toInt() == ROTATE) {
 					pa.rotate(d.theta1);
 				}
-				//pa.text(d.pitchName, 0, 0);
 				drawSymbol(d.pitchName, 0, 0);
 				if (transformation.toInt() == TRANSLATE) {
-					//pa.text(d.pitchName, width, 0);
-					//pa.text(d.pitchName, -width, 0);
 					drawSymbol(d.pitchName, width, 0);
 					drawSymbol(d.pitchName, -width, 0);
 				}
