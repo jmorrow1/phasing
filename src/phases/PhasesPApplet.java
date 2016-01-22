@@ -37,7 +37,7 @@ public class PhasesPApplet extends PApplet {
 	public Scale scale;
 	private float bpm1 = 60;
 	private float bpms1 = bpm1 / 60000f;
-	private float bpm2 = 65;
+	private float bpm2 = 60.5f;
 	private float bpms2 = bpm2 / 60000f;
 	
 	//all screens

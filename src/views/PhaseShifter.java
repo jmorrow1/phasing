@@ -30,7 +30,8 @@ public class PhaseShifter extends View {
 	
 	//geometrical data:
 	private final static int DOT_RADIUS = 10;
-	private ArrayList<DataPoint> data = new ArrayList<DataPoint>();
+	private ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
+	private ArrayList<DataConnection> dataConnections = new ArrayList<DataConnection>();
 	
 	//options:
 	public ModInt activeNoteMode = new ModInt(0, numActiveNoteModes, activeNoteModeName);
@@ -61,17 +62,20 @@ public class PhaseShifter extends View {
 	}
 	
 	public void onEnter() {
-		initDataPoints();
+		initData();
 	}
 	
-	private void initDataPoints() {
-		data.clear();
-		int i = 0;
-		while (i <= pa.phrase.getNumNotes()) {
+	private void initData() {
+		dataPoints.clear();
+		for (int i=0; i<=pa.phrase.getNumNotes(); i++) {
 			if (pa.phrase.getSCDynamic(i % pa.phrase.getNumNotes()) > 0) {
-				data.add(new DataPoint(i));
+				dataPoints.add(new DataPoint(i));
 			}
-			i++;
+		}
+		
+		dataConnections.clear();
+		for (int i=0; i<dataPoints.size()-1; i++) {
+			dataConnections.add(new DataConnection(dataPoints.get(i), dataPoints.get(i+1)));
 		}
 	}
 	
@@ -102,11 +106,11 @@ public class PhaseShifter extends View {
 		readerB.update(dNotept2);
 		
 		if (cameraMode.toInt() == RELATIVE_TO_1) {
-			dNotept2 = (dNotept2 - dNotept1);
+			dNotept2 = (dNotept1 - dNotept2);
 			dNotept1 = 0;
 		}
 		else if (cameraMode.toInt() == RELATIVE_TO_2) {
-			dNotept1 = (dNotept1 - dNotept2);
+			dNotept1 = (dNotept2 - dNotept1);
 			dNotept2 = 0;
 		}
 		
@@ -141,8 +145,8 @@ public class PhaseShifter extends View {
 	private void transform(int playerNum) {
 		float normalAcc = (playerNum == 1) ? normalTransform1 : normalTransform2;
 		switch(transformation.toInt()) {
-			case TRANSLATE: pa.translate(normalAcc*width, 0); break;
-			case ROTATE: pa.rotate(normalAcc*pa.TWO_PI); break;
+			case TRANSLATE: pa.translate(-normalAcc*width, 0); break;
+			case ROTATE: pa.rotate(-normalAcc*pa.TWO_PI); break;
 		}
 	}
 	
@@ -155,20 +159,104 @@ public class PhaseShifter extends View {
 			if (pa.phrase.getSCDynamic(i) > 0) {
 				if ( (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE) && i == activeNote) {
 					styleNoteGraphics(color, true);
-					drawNoteGraphic(data.get(j), data.get(j+1));
+					drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
 					styleNoteGraphics(color, false);
 				}
 				else {
-					drawNoteGraphic(data.get(j), data.get(j+1));
+					drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
 				}
 				j++;
 			}
 			i++;
 		}
+		
+		if (noteGraphic.toInt() == CONNECTED_DOTS) {
+			for (int k=0; k<dataConnections.size(); k++) {
+				DataConnection c = dataConnections.get(k);
+				if (k == activeNote) {
+					pa.stroke(color);
+				}
+				else {
+					pa.stroke(color, opacity);
+				}
+		
+				c.drawLine();
+			}
+		}
+	}
+	
+	class DataConnection {
+		//specific to connected dots:
+		float tx1, ty1, tx2, ty2;
+		float tx1Alt, ty1Alt, tx2Alt, ty2Alt;
+		float rx1, ry1, rx2, ry2;
+		float rx1Alt, ry1Alt, rx2Alt, ry2Alt;
+		
+		DataConnection(DataPoint d, DataPoint e) {
+			float lineDist = pa.dist(d.tx, d.ty, e.tx, e.ty);
+			float amt = (DOT_RADIUS / lineDist);
+			
+			tx1 = pa.lerp(d.tx, e.tx, amt);
+			ty1 = pa.lerp(d.ty, e.ty, amt);
+			tx2 = pa.lerp(d.tx, e.tx, 1-amt);
+			ty2 = pa.lerp(d.ty, e.ty, 1-amt);
+			
+			lineDist = pa.dist(d.txAlt, d.tyAlt, e.txAlt, e.tyAlt);
+			amt = (DOT_RADIUS / lineDist);
+			
+			tx1Alt = pa.lerp(d.txAlt, e.txAlt, amt);
+			ty1Alt = pa.lerp(d.tyAlt, e.tyAlt, amt);
+			tx2Alt = pa.lerp(d.txAlt, e.txAlt, 1-amt);
+			ty2Alt = pa.lerp(d.tyAlt, e.tyAlt, 1-amt);
+			
+			lineDist = pa.dist(d.rx, d.ry, e.rx, e.ry);
+			amt = (DOT_RADIUS / lineDist);
+			
+			rx1 = pa.lerp(d.rx, e.rx, amt);
+			ry1 = pa.lerp(d.ry, e.ry, amt);
+			rx2 = pa.lerp(d.rx, e.rx, 1-amt);
+			ry2 = pa.lerp(d.ry, e.ry, 1-amt);
+			
+			lineDist = pa.dist(d.rxAlt, d.ryAlt, e.rxAlt, e.ryAlt);
+			amt = (DOT_RADIUS / lineDist);
+			
+			rx1Alt = pa.lerp(d.rxAlt, e.rxAlt, amt);
+			ry1Alt = pa.lerp(d.ryAlt, e.ryAlt, amt);
+			rx2Alt = pa.lerp(d.rxAlt, e.rxAlt, 1-amt);
+			ry2Alt = pa.lerp(d.ryAlt, e.ryAlt, 1-amt);
+		}
+		
+		void drawLine() {
+			if (transformation.toInt() == TRANSLATE) {
+				if (plotPitchMode.toInt() == PLOT_PITCH) {
+					pa.line(tx1, ty1, tx2, ty2);
+					pa.line(tx1 - width, ty1, tx2 - width, ty2);
+					pa.line(tx1 + width, ty1, tx2 + width, ty2);
+				}
+				else {
+					pa.line(tx1Alt, ty1Alt, tx2Alt, ty2Alt);
+					pa.line(tx1Alt - width, ty1Alt, tx2Alt - width, ty2Alt);
+					pa.line(tx1Alt + width, ty1Alt, tx2Alt + width, ty2Alt);
+				}
+			}
+			else {
+				if (plotPitchMode.toInt() == PLOT_PITCH) {
+					pa.line(rx1, ry1, rx2, ry2);
+					pa.line(rx1 - width, ry1, rx2 - width, ry2);
+					pa.line(rx1 + width, ry1, rx2 + width, ry2);
+				}
+				else {
+					pa.line(rx1Alt, ry1Alt, rx2Alt, ry2Alt);
+					pa.line(rx1Alt - width, ry1Alt, rx2Alt - width, ry2Alt);
+					pa.line(rx1Alt + width, ry1Alt, rx2Alt + width, ry2Alt);
+				}
+			}
+		}
 	}
 	
 	class DataPoint {
 		final float tx, ty, twidth;
+		final float txAlt, tyAlt;
 		final float rx, ry, theta1, theta2, radius;
 		final float rxAlt, ryAlt;
 		//specific to symbols:
@@ -194,12 +282,9 @@ public class PhaseShifter extends View {
 			ryAlt = pa.sin(theta1 - pa.HALF_PI)*pa.lerp(minRadius, maxRadius, 0.5f);
 			sector = new Sector(radius, sectorThickness, theta1, theta2);
 			sectorAlt = new Sector(pa.lerp(minRadius, maxRadius, 0.5f), sectorThickness, theta1, theta2);
-			/*float lineDist = pa.dist(d_x, d_y, e.x(), e.y());
-			float amt = (DOT_RADIUS / lineDist);
-			float x1 = pa.lerp(d_x, e.x(), amt);
-			float y1 = pa.lerp(d_y, e.y(), amt);
-			float x2 = pa.lerp(d_x, e.x(), 1-amt);
-			float y2 = pa.lerp(d_y, e.y(), 1-amt);*/
+			
+			txAlt = tx;
+			tyAlt = 0;
 		}
 		
 		Sector sector() {
@@ -208,7 +293,7 @@ public class PhaseShifter extends View {
 		
 		float x() {
 			if (transformation.toInt() == TRANSLATE) {
-				return tx;
+				return (plotPitchMode.toInt() == PLOT_PITCH) ? tx : txAlt;
 			}
 			else {
 				return (plotPitchMode.toInt() == PLOT_PITCH) ? rx : rxAlt;
@@ -217,7 +302,7 @@ public class PhaseShifter extends View {
 	
 		float y() {
 			if (transformation.toInt() == TRANSLATE) {
-				return (plotPitchMode.toInt() == PLOT_PITCH) ? ty : 0;
+				return (plotPitchMode.toInt() == PLOT_PITCH) ? ty : tyAlt;
 			}
 			else {
 				return (plotPitchMode.toInt() == PLOT_PITCH) ? ry : ryAlt;
@@ -240,22 +325,13 @@ public class PhaseShifter extends View {
 				}
 				break;
 			case DOTS:
+			case CONNECTED_DOTS:
 				pa.noStroke();
 				if (activeStyle) {
 					pa.fill(color);
 				}
 				else {
 					pa.fill(color, opacity);
-				}
-				break;
-			case CONNECTED_DOTS:
-				if (activeStyle) {
-					pa.fill(color);
-					pa.stroke(color);
-				}
-				else {
-					pa.fill(color, opacity);
-					pa.stroke(color, opacity);
 				}
 				break;
 			case RECTS_OR_SECTORS:
@@ -284,7 +360,7 @@ public class PhaseShifter extends View {
 				}
 			pa.popMatrix();
 		}
-		else if (noteGraphic.toInt()== DOTS) {
+		else if (noteGraphic.toInt() == DOTS || noteGraphic.toInt() == CONNECTED_DOTS) {
 			float d_x = d.x();
 			float d_y = d.y();
 					
@@ -293,28 +369,6 @@ public class PhaseShifter extends View {
 			if (transformation.toInt() == TRANSLATE) {
 				pa.ellipse(d_x - width, d_y, 20, 20);
 				pa.ellipse(d_x + width, d_y, 20, 20);
-			}
-		}
-		else if (noteGraphic.toInt() == CONNECTED_DOTS) {
-			float d_x = d.x();
-			float d_y = d.y();
-			
-			pa.ellipseMode(pa.RADIUS);
-			pa.pushStyle();
-				pa.noStroke();
-				pa.ellipse(d_x, d_y, DOT_RADIUS, DOT_RADIUS);
-			pa.popStyle();
-		
-			pa.line(d_x, d_y, e.x(), e.y());
-		
-			if (transformation.toInt() == TRANSLATE) {
-				pa.pushStyle();
-					pa.noStroke();
-					pa.ellipse(d_x - width, d_y, DOT_RADIUS, DOT_RADIUS);
-					pa.ellipse(d_x + width, d_y, DOT_RADIUS, DOT_RADIUS);
-				pa.popStyle();
-				pa.line(d_x - width, d_y, e.x() - width, e.y());
-				pa.line(d_x + width, d_y, e.x() + width, e.y());
 			}
 		}
 		else if (noteGraphic.toInt() == RECTS_OR_SECTORS) {

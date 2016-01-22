@@ -90,6 +90,12 @@ public class Presenter extends Screen implements ViewVariableInfo{
 		prev_notept1 = 0;
 		prev_notept2 = 0;
 		
+		totalNotept1 = 0;
+		totalNotept2 = 0;
+		avg_dNotept1 = 0;
+		avg_dNotept2 = 0;
+		dataPts = 0;
+		
 		setupIcons();
 	}
 	
@@ -238,7 +244,7 @@ public class Presenter extends Screen implements ViewVariableInfo{
 		totalNotept1 += dNotept1;
 		totalNotept2 += dNotept2;
 		dataPts++;
-		if (dataPts > 1000) {
+		if (dataPts > 100) {
 			avg_dNotept1 = totalNotept1 / dataPts;
 			avg_dNotept2 = totalNotept2 / dataPts;
 			accountBalance1 += (dNotept1 - avg_dNotept1);
