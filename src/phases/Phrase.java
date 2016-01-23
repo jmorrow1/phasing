@@ -596,7 +596,6 @@ public class Phrase {
 	                else s += "Ab";
 	                break;
 	        }
-	        //s += octave;
 	        return s;
 	    }
 	    else {
