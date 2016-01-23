@@ -49,8 +49,8 @@ public class Piano extends Rect implements Instrument {
 	}
 	
 	private Polygon initWhiteKey(int keyIndex, float x1, float y1, float whiteKeyWidth, float whiteKeyHeight, float blackKeyWidth, float blackKeyHeight) {
-		boolean leftNeighborIsBlack = isBlackKey(keyIndex-1);
-		boolean rightNeighborIsBlack = isBlackKey(keyIndex+1);
+		boolean leftNeighborIsBlack = Instrument.isBlackKey(keyIndex-1);
+		boolean rightNeighborIsBlack = Instrument.isBlackKey(keyIndex+1);
 		
 		float x2 = x1 + blackKeyWidth/2f;
 		float x3 = x1 + whiteKeyWidth - blackKeyWidth/2f;
@@ -209,7 +209,7 @@ public class Piano extends Rect implements Instrument {
 	 * @param i
 	 * @return
 	 */
-	public Shape getKeyCopy(int i) {
+	public Shape getShapeAtNoteIndex(int i) {
 		if (0 <= i && i < keys.length) {
 			return keys[i].clone();
 		}
@@ -264,24 +264,5 @@ public class Piano extends Rect implements Instrument {
 		else {
 			return null;
 		}
-	}
-	
-	/**
-	 *
-	 * @param midiPitch The midi pitch value
-	 * @return True if the given midi pitch value cooresponds to a white piano key, false otherwise.
-	 */
-	public static boolean isWhiteKey(int midiPitch) {
-		return !isBlackKey(midiPitch);
-	}
-	
-	/**
-	 * 
-	 * @param midiPitch The midi pitch value
-	 * @return True if the given midi pitch value cooresponds to a black piano key, false otherwise.
-	 */
-	public static boolean isBlackKey(int i) {
-		i = PhasesPApplet.remainder(i, 12);
-		return i == 1 || i == 3 || i == 6 || i == 8 || i == 10;
 	}
 }

@@ -6,8 +6,7 @@ import processing.core.PApplet;
 
 public class SineWaveIcon implements Icon {
 	private int mode;
-	private final static int maxNumPts = 10;
-	private final float dTheta = PApplet.TWO_PI / maxNumPts;
+	private final static int maxNumPts = 12;
 	
 	public SineWaveIcon(int mode, PApplet pa) {
 		this.mode = mode;
@@ -25,7 +24,8 @@ public class SineWaveIcon implements Icon {
 		float ptx = x - halfWidth;
 		final float dx = (2*halfWidth) / numPts;
 		if (mode == IS_SINE_WAVE) {
-    		float theta = 0;	
+    		float theta = 0;
+    		float dTheta = pa.TWO_PI / numPts;
     		for (int i=0; i<numPts; i++) {
     			pa.point(ptx, y + amp*pa.sin(theta));
     			theta += dTheta;
@@ -36,7 +36,8 @@ public class SineWaveIcon implements Icon {
 			final float minPitch = pa.phrase.minPitch();
 			final float maxPitch = pa.phrase.maxPitch();
 			for (int i=0; i<numPts; i++) {
-				pa.point(ptx, y + pa.map(pa.phrase.getSCPitch(i), maxPitch, minPitch, -amp, amp));
+				float pty = (minPitch != maxPitch) ? y + pa.map(pa.phrase.getSCPitch(i), maxPitch, minPitch, -amp, amp) : y;
+				pa.point(ptx, pty);
 				ptx += dx;
 			}
 		}

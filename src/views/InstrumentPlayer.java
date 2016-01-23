@@ -24,7 +24,7 @@ public class InstrumentPlayer {
 		this.firstPitch = firstPitch;
 		
 		for (int i=0; i<keyCopies.length; i++) {
-			keyCopies[i] = instrument.getKeyCopy(phrase.getSCPitch(i) - firstPitch);
+			keyCopies[i] = instrument.getShapeAtNoteIndex(phrase.getSCPitch(i) - firstPitch);
 		}
 		
 		this.phrase = phrase;
