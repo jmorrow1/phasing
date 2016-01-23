@@ -10,9 +10,13 @@ public interface ViewVariableInfo {
 	public final int numCameraModes = 3;
 	public final int RELATIVE_TO_1=0, RELATIVE_TO_2=1, FIXED=2;
 	
-	public final String noteGraphicName = "Note Graphic";
-	public final int numNoteGraphics=5;
-	public final int SYMBOLS=0, DOTS=1, CONNECTED_DOTS=2, RECTS_OR_SECTORS=3, SINE_WAVE=4;
+	public final String noteGraphicSet1Name = "Note Graphic Set 1";
+	public final int numNoteGraphicSet1s=5;
+	public final int DOTS=0, RECTS_OR_SECTORS=1, SYMBOLS=2, CONNECTED_DOTS=3, SINE_WAVE=4;
+	
+	public final String noteGraphicSet2Name = "Note Graphic Set 2";
+	public final int numNoteGraphicSet2s=2;
+	public final int /*DOTS=0,*/ RECTS=1;
 	
 	public final String colorSchemeName = "Color Scheme";
 	public final int numColorSchemes=2;

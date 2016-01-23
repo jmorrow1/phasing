@@ -38,7 +38,7 @@ public class PhaseShifter extends View {
 	public ModInt activeNoteMode = new ModInt(0, numActiveNoteModes, activeNoteModeName);
 	public ModInt transformation = new ModInt(0, numTransformations, transformationName);
 	public ModInt cameraMode = new ModInt(0, numCameraModes, cameraModeName);
-	public ModInt noteGraphic = new ModInt(0, numNoteGraphics, noteGraphicName);
+	public ModInt noteGraphic = new ModInt(0, numNoteGraphicSet1s, noteGraphicSet1Name);
 	public ModInt plotPitchMode = new ModInt(0, numWaysOfPlottingPitchOrNot, plotPitchModeName);
 	public ModInt colorScheme = new ModInt(1, numColorSchemes, colorSchemeName);
 	

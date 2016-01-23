@@ -9,15 +9,17 @@ import icons.ColorSchemeIcon;
 import icons.DefaultIcon;
 import icons.Icon;
 import icons.InstrumentIcon;
-import icons.NoteIcon;
+import icons.NoteSetOneIcon;
+import icons.NoteSetTwoIcon;
 import icons.PlotPitchIcon;
 import icons.ScoreModeIcon;
 import icons.ShowActiveNoteIcon;
+import icons.SineWaveIcon;
 import icons.SuperimposedOrSeparatedIcon;
 import icons.TransformIcon;
 import processing.core.PApplet;
 import soundcipher.SCScorePlus;
-import views.PhaseShifter;
+import views.LiveScorer;
 import views.View;
 import views.ViewVariableInfo;
 
@@ -62,9 +64,9 @@ public class Presenter extends Screen implements ViewVariableInfo{
 	
 	@Override
 	public void onEnter() {
-		view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		//view = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		//view = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		//view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		view = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 	
 		pa.phrase.addToScore(player1, 0, 0, 0);
 		pa.phrase.addToScore(player2, 0, 0, 0);
@@ -143,10 +145,16 @@ public class Presenter extends Screen implements ViewVariableInfo{
 								iconList[i] = new CameraIcon(i); 
 							}
 							break;
-						case noteGraphicName:
+						case noteGraphicSet1Name:
 							iconList = new Icon[x.getDivisor()];
 							for (int i=0; i<iconList.length; i++) {
-								iconList[i] = new NoteIcon(i); 
+								iconList[i] = new NoteSetOneIcon(i); 
+							}
+							break;
+						case noteGraphicSet2Name:
+							iconList = new Icon[x.getDivisor()];
+							for (int i=0; i<iconList.length; i++) {
+								iconList[i] = new NoteSetTwoIcon(i);
 							}
 							break;
 						case plotPitchModeName: 
@@ -177,6 +185,12 @@ public class Presenter extends Screen implements ViewVariableInfo{
 							iconList = new Icon[x.getDivisor()];
 							for (int i=0; i<iconList.length; i++) {
 								iconList[i] = new ScoreModeIcon(i);
+							}
+							break;
+						case sineWaveName :
+							iconList = new Icon[x.getDivisor()];
+							for (int i=0; i<iconList.length; i++) {
+								iconList[i] = new SineWaveIcon(i, pa);
 							}
 							break;
 						default: 
@@ -246,7 +260,6 @@ public class Presenter extends Screen implements ViewVariableInfo{
 		totalNotept1 += dNotept1;
 		totalNotept2 += dNotept2;
 		dataPts++;
-	
 		avg_dNotept1 = totalNotept1 / dataPts;
 		avg_dNotept2 = totalNotept2 / dataPts;
 		accountBalance1 += (dNotept1 - avg_dNotept1);

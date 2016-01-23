@@ -3,14 +3,14 @@ package icons;
 import phases.PhasesPApplet;
 import processing.core.PApplet;
 
-public class NoteIcon implements Icon {
+public class NoteSetOneIcon implements Icon {
     private int noteType;
     
     //parameters for sine wave graphic:
     private static final int NUM_PTS = 100;
     private static final float dTheta = PApplet.TWO_PI / NUM_PTS;
     
-    public NoteIcon(int noteType) {
+    public NoteSetOneIcon(int noteType) {
         this.noteType = noteType;
     }
   

@@ -36,7 +36,7 @@ public class LiveScorer extends View {
 	//options:
 	public ModInt sineWave = new ModInt(1, numWaysOfBeingASineWaveOrNot, sineWaveName);
 	public ModInt scoreMode = new ModInt(0, numScoreModes, scoreModeName);
-	public ModInt noteGraphic = new ModInt(0, numNoteGraphics, noteGraphicName);
+	public ModInt noteGraphic = new ModInt(0, numNoteGraphicSet2s, noteGraphicSet2Name);
 	public ModInt colorScheme = new ModInt(1, numColorSchemes, colorSchemeName);
 	
 	@Override
@@ -110,17 +110,9 @@ public class LiveScorer extends View {
 		}
 		
 		//draw data points
-		for (int i=0; i<dataPts.size(); i++) {
-					
+		for (int i=0; i<dataPts.size(); i++) {			
 			DataPoint pt = dataPts.get(i);
-			
-			if (i != dataPts.size()-1) {
-				pt.display(color, false);
-			}
-			else {
-				pt.display(color, true);
-			}
-			
+			pt.display(color);
 		}
 		
 		//get rid of any data points that are out of bounds
@@ -162,8 +154,8 @@ public class LiveScorer extends View {
 		}
 		
 		dataPts.add(new DataPoint(0, y1,
-                pixelsPerWholeNote*pa.phrase.getSCDuration(noteIndex), y2,
-                noteIndex));
+                	pixelsPerWholeNote*pa.phrase.getSCDuration(noteIndex), y2,
+                	noteIndex));
 	}
 	
 	class DataPoint {
@@ -183,30 +175,15 @@ public class LiveScorer extends View {
 			endX += dx;
 		}
 		
-		void display(int color, boolean rightmostPoint) {
+		void display(int color) {
 			pa.stroke(color, opacity);
 			pa.strokeWeight(2);
 			pa.fill(color, opacity);
-			if (noteGraphic.toInt() == SYMBOLS) {
-				pa.textAlign(pa.CENTER, pa.CENTER);
-				pa.textSize(42);
-				pa.textFont(pa.pfont42);
-				int pitch = (int) (pa.phrase.getSCPitch(noteIndex) % 12);
-				String symbol = pa.scale.getNoteNameByPitchValue(pitch);
-				pa.text(symbol, startX, startY);
-			}
-			else if (noteGraphic.toInt() == DOTS) {
+			if (noteGraphic.toInt() == DOTS) {
 				pa.ellipseMode(pa.CENTER);
 				pa.ellipse(startX, startY, 20, 20);
 			}
-			else if (noteGraphic.toInt() == CONNECTED_DOTS) {
-				pa.ellipseMode(pa.CENTER);
-				pa.ellipse(startX, startY, 20, 20);
-				if (!rightmostPoint) {
-					pa.line(startX, startY, endX, endY);
-				}
-			}
-			else if (noteGraphic.toInt() == RECTS_OR_SECTORS) {
+			else if (noteGraphic.toInt() == RECTS) {
 				pa.rectMode(pa.CORNERS);
 				pa.rect(startX, startY, endX, startY + 20);
 			}
