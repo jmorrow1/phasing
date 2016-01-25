@@ -3,6 +3,7 @@ package views;
 import geom.Rect;
 import instrument_graphics.Instrument;
 import instrument_graphics.Piano;
+import instrument_graphics.Xylophone;
 import phases.ModInt;
 import phases.PhasesPApplet;
 import phases.PhraseReader;
@@ -14,6 +15,7 @@ public class Musician extends View {
 	
 	//instruments:
 	private Piano pianoA, pianoB, pianoAB;
+	private Xylophone xylophoneA, xylophoneB, xylophoneAB;
 	private Instrument instrumentA, instrumentB, instrumentAB;
 	
 	//players:
@@ -34,6 +36,7 @@ public class Musician extends View {
 	
 	@Override
 	public void updateState() {
+		assignInstruments();
 		initInstrumentPlayers();
 		readerA.setCallee(playerA);
 		readerB.setCallee(playerB);
@@ -42,6 +45,7 @@ public class Musician extends View {
 	public Musician(Rect rect, int opacity, PhasesPApplet pa) {
 		super(rect, opacity, pa);
 		initInstruments();
+		assignInstruments();
 		initInstrumentPlayers();
 		initPhraseReaders();
 	}
@@ -81,19 +85,35 @@ public class Musician extends View {
 	}
 	
 	private void initInstruments() {
-		initPianos(60);
-		instrumentA = pianoA;
-		instrumentB = pianoB;
-		instrumentAB = pianoAB;
+		initPianos(0.75f*this.getWidth(), 60);
+		initXylophones(0.75f*this.getWidth(), 150);
 	}
 	
-	private void initPianos(int size) {
-		pianoAB = new Piano(4, new Rect(this.getCenx(), this.getCeny(),
-				            0.75f*this.getWidth(), size, PApplet.CENTER), true, pa.color(255));
-		pianoA = new Piano(4, new Rect(this.getCenx(), this.getCeny() - size,
-						   0.75f*this.getWidth(), size, PApplet.CENTER), true, pa.color(255));	
-		pianoB = new Piano(4, new Rect(this.getCenx(), this.getCeny() + size,
-						   0.75f*this.getWidth(), size, PApplet.CENTER), true, pa.color(255));
+	private void assignInstruments() {
+		switch (instrument.toInt()) {
+			case PIANO:
+				instrumentA = pianoA;
+				instrumentB = pianoB;
+				instrumentAB = pianoAB;
+				break;
+			case XYLOPHONE:
+				instrumentA = xylophoneA;
+				instrumentB = xylophoneB;
+				instrumentAB = xylophoneAB;
+				break;
+		}
+	}
+	
+	private void initXylophones(float width, float height) {
+		xylophoneAB = new Xylophone(3, new Rect(this.getCenx(), this.getCeny(), width, height, PApplet.CENTER));
+		xylophoneA = new Xylophone(3, new Rect(this.getCenx(), this.getCeny() - height, width, height, PApplet.CENTER));
+		xylophoneB = new Xylophone(3, new Rect(this.getCenx(), this.getCeny() + height, width, height, PApplet.CENTER));
+	}
+	
+	private void initPianos(float width, float height) {
+		pianoAB = new Piano(4, new Rect(this.getCenx(), this.getCeny(), width, height, PApplet.CENTER), true, pa.color(255));
+		pianoA = new Piano(4, new Rect(this.getCenx(), this.getCeny() - height, width, height, PApplet.CENTER), true, pa.color(255));	
+		pianoB = new Piano(4, new Rect(this.getCenx(), this.getCeny() + height, width, height, PApplet.CENTER), true, pa.color(255));
 	}
 
 	private void initInstrumentPlayers() {	
@@ -104,17 +124,6 @@ public class Musician extends View {
 		else {
 			playerA = new InstrumentPlayer(instrumentA, pa.phrase, firstPitch);
 			playerB = new InstrumentPlayer(instrumentB, pa.phrase, firstPitch);
-		}
-	}
-	
-	private void reinitInstrumentPlayers() {
-		if (superimposedOrSeparated.toInt() == SUPERIMPOSED) {
-			playerA = new InstrumentPlayer(instrumentAB, playerA);
-			playerB = new InstrumentPlayer(instrumentAB, playerB);
-		}
-		else {
-			playerA = new InstrumentPlayer(instrumentA, playerA);
-			playerB = new InstrumentPlayer(instrumentB, playerB);
 		}
 	}
 	

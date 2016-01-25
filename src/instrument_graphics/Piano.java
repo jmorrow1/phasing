@@ -15,7 +15,7 @@ import processing.core.PApplet;
  */
 public class Piano extends Rect implements Instrument {
 	//independent parameters
-	private int numOctaves;
+	private final int numOctaves;
 	private boolean facePositive;
 	//keys
 	private Polygon[] whiteKeys;
@@ -181,16 +181,6 @@ public class Piano extends Rect implements Instrument {
 	
 	public float getBlackKeyHeight() {
 		return blackKeys[0].getHeight();
-	}
-	
-	public void setNumOctaves(int numOctaves) {
-		this.numOctaves = numOctaves;
-		if (numOctaves >= 0) {
-			initArrays();
-		}
-		if (numOctaves > 0) {
-			initKeys();
-		}
 	}
 	
 	public boolean getFacePositive() {

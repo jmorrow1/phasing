@@ -27,8 +27,8 @@ public interface ViewVariableInfo {
 	public final int SUPERIMPOSED=0, SEPARATED=1;
 	
 	public final String instrumentName = "Instrument";
-	public final int numInstruments=1;
-	public final int PIANO=0;
+	public final int numInstruments=2;
+	public final int PIANO=0, XYLOPHONE=1;
 	
 	public final String scoreModeName = "Score Mode";
 	public final int numScoreModes=2;
