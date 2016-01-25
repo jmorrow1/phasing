@@ -5,15 +5,20 @@ import controlP5.ControllerGroup;
 import controlP5.DropdownList;
 import processing.core.PGraphics;
 
+/**
+ * A subclass of ControlP5's DropdownList that circumvents an IndexOutOfBounds bug that occurs with DropdownList.
+ * @author James Morrow
+ *
+ */
 public class DropdownListPlus extends DropdownList {
-
+	
+	/**
+	 * 
+	 * @param theControlP5 The ControlP5 instance
+	 * @param theName The controller name
+	 */
 	public DropdownListPlus(ControlP5 theControlP5, String theName) {
 		super(theControlP5, theName);
-	}
-
-	protected DropdownListPlus(ControlP5 theControlP5, ControllerGroup<?> theGroup, String theName, int theX, int theY,
-			int theW, int theH) {
-		super(theControlP5, theGroup, theName, theX, theY, theW, theH);
 	}
 	
 	public void draw(final PGraphics pg) {
@@ -34,8 +39,8 @@ public class DropdownListPlus extends DropdownList {
 		try {
 			super.onRelease();
 		}
-		catch (IndexOutOfBoundsException e) {
-		}
+		//the following line circumvents the IndexOutOfBounds bug:
+		catch (IndexOutOfBoundsException e) {}
 	}
 
 }

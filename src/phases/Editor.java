@@ -167,7 +167,7 @@ public class Editor extends Screen {
 			     .setSize(680, 15)
 			     ;
 	    colorController(scrollbar);
-	
+	    
 		//add buttons that flank the scrollbar and control the adding and removing of notes from the phrase
 	    Button leftArrow = cp5.addButton("decreasePhraseLength")
 						      .setPosition(10, 575f)

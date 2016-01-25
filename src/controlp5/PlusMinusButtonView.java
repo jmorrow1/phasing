@@ -5,9 +5,18 @@ import controlP5.ControllerView;
 import phases.PhasesPApplet;
 import processing.core.PGraphics;
 
+/**
+ * Draws a ControlP5 button as either a plus sign (+) or a minus sign (-)
+ * @author James Morrow
+ *
+ */
 public class PlusMinusButtonView implements ControllerView<Button> {
 	private boolean plus;
 	
+	/**
+	 * 
+	 * @param plus If true, it draws a plus sign (+) when display is called. If false, it draws a minus sign (-) when display is called.
+	 */
 	public PlusMinusButtonView(boolean plus) {
 		this.plus = plus;
 	}

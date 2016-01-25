@@ -5,11 +5,20 @@ import controlP5.ControllerView;
 import phases.PhasesPApplet;
 import processing.core.PGraphics;
 
+/**
+ * Draws a ControlP5 button as an arrow that is pointed either left or right.
+ * @author James Morrow
+ *
+ */
 public class ArrowButtonView implements ControllerView<Button> {
-    private boolean faceRight;
+    private boolean pointsRight;
     
-    public ArrowButtonView(boolean faceRight) {
-        this.faceRight = faceRight;
+    /**
+     * 
+     * @param pointsRight If true, the arrow points right. If false, the arrow points left.
+     */
+    public ArrowButtonView(boolean pointsRight) {
+        this.pointsRight = pointsRight;
     }
   
     @Override
@@ -27,7 +36,7 @@ public class ArrowButtonView implements ControllerView<Button> {
         pg.strokeWeight(3);
         pg.stroke(c);
         pg.line(x - halfWidth, y, x + halfWidth, y);
-        if (faceRight) {
+        if (pointsRight) {
             PhasesPApplet.drawArrowHead(x + halfWidth, y, arrowHeadLength, 0, 0.75f*pg.PI, pg); 
         }
         else {
