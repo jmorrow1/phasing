@@ -32,7 +32,7 @@ public interface ViewVariableInfo {
 	
 	public final String scoreModeName = "Score Mode";
 	public final int numScoreModes=2;
-	public final int SCROLLS=0, FADES=1;
+	public final int MOVE_NOTES=0, MOVE_SPAWN_POINT=1;
 	
 	public final String sineWaveName = "Sine Wave";
 	public final int numWaysOfBeingASineWaveOrNot=2;

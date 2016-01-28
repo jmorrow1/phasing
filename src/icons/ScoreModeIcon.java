@@ -14,22 +14,22 @@ public class ScoreModeIcon implements Icon {
         
         pa.fill(0);
         
-        if (mode == FADES) {
+        if (mode == MOVE_SPAWN_POINT) {
             pa.fill(0, 75);
         }
         pa.quarterNote(x - radius*0.4f, y - 0.5f*radius, quarterNoteSize);
        
-        if (mode == FADES) {
+        if (mode == MOVE_SPAWN_POINT) {
             pa.fill(0, 150);
         }
         pa.quarterNote(x + 0.1f*radius, y - 0.5f*radius, quarterNoteSize);
         
-        if (mode == FADES) {
+        if (mode == MOVE_SPAWN_POINT) {
             pa.fill(0, 255);
         }
         pa.quarterNote(x + radius*0.6f, y - 0.5f*radius, quarterNoteSize);
         
-        if (mode == SCROLLS) {
+        if (mode == MOVE_NOTES) {
         	pa.stroke(0);
         	pa.strokeWeight(radius/15f);
         	pa.line(x + radius*0.9f, y + radius*0.4f, x - radius*0.9f, y + radius*0.4f);

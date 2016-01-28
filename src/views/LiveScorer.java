@@ -17,6 +17,9 @@ public class LiveScorer extends View {
 	private float x;
 	private float y;
 	
+	//used in calculating where to spawn new points when scoreMode is MOVE_SPAWN_POINT
+	private float spawnX1, spawnY1, spawnX2, spawnY2;
+	
 	//labels of plot's y-axis:
 	private float[] ys;
 	private float halfHeight;
@@ -29,9 +32,9 @@ public class LiveScorer extends View {
 	//other:
 	private float pixelsPerWholeNote;
 	private float radiansPerWholeNote;
-	private float durationAcc1, durationAcc2;
 	private final int ONE_ID = 1, TWO_ID = 2;
 	private int startingPitch = 0;
+	private float fadeRate = 0.25f;
 	
 	//options:
 	public ModInt sineWave = new ModInt(1, numWaysOfBeingASineWaveOrNot, sineWaveName);
@@ -57,8 +60,8 @@ public class LiveScorer extends View {
 		}
 		
 		//note spawn point
-		x = this.getCenx();
-		y = this.getCeny();
+		x = 0;
+		y = 0;
 		
 		//labels of y-axis
 		ys = new float[pa.phrase.getNumNotes()];
@@ -75,11 +78,27 @@ public class LiveScorer extends View {
 			}
 		}
 		
+		//variables for computing note spawn point when scoreMode is MOVE_SPAWN_POINT
+		spawnX1 = -halfWidth;
+		spawnY1 = -halfHeight;
+		spawnX2 = halfWidth;
+		spawnY2 = halfHeight;
+		
 		//pixels to musical time conversion
 		pixelsPerWholeNote = 60;
 		radiansPerWholeNote = pa.TWO_PI / pa.getBPM1();
 		
 		onEnter();
+	}
+	
+	public void updateState() {
+		if (scoreMode.toInt() == MOVE_NOTES) {
+			x = this.getCenx();
+			y = this.getCeny();
+		}
+		else if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
+			
+		}
 	}
 	
 	public void onEnter() {
@@ -89,35 +108,69 @@ public class LiveScorer extends View {
 	public void update(float dNotept1, float dNotept2, int sign) {
 		pa.pushMatrix();
 		
-		pa.translate(x, y);
+		pa.translate(getCenx(), getCeny());
 		
 		readerA.update(dNotept1);
 		readerB.update(dNotept2);
 		
 		float dx = -dNotept1 * pixelsPerWholeNote;
 		
-		scroll(dx, dataPts1, (colorScheme.toInt() == MONOCHROMATIC) ? 0 : pa.getColor1());
-		scroll(dx, dataPts2, (colorScheme.toInt() == MONOCHROMATIC) ? 0 : pa.getColor2());
+		drawDataPoints(dataPts1, (colorScheme.toInt() == MONOCHROMATIC) ? 0 : pa.getColor1());
+		drawDataPoints(dataPts2, (colorScheme.toInt() == MONOCHROMATIC) ? 0 : pa.getColor2());
 		
 		pa.popMatrix();
-
+		
+		if (scoreMode.toInt() == MOVE_NOTES) {
+			scroll(dx, dataPts1);
+			scroll(dx, dataPts2);
+			//fade(dataPts1);
+			//fade(dataPts2);
+		}
+		else if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
+			pa.println("dx = " + (-dx) + ", x = " + x + ", y = " + y);
+			moveSpawnPoint(-dx);
+		}
 	}
 	
-	private void scroll(float dx, ArrayList<DataPoint> dataPts, int color) {
-		//translate data points	
-		for (DataPoint pt : dataPts) {
-			pt.translate(dx);
-		}
-		
+	private void drawDataPoints(ArrayList<DataPoint> dataPts, int color) {
 		//draw data points
 		for (int i=0; i<dataPts.size(); i++) {			
 			DataPoint pt = dataPts.get(i);
 			pt.display(color);
 		}
+	}
+	
+	private void scroll(float dx, ArrayList<DataPoint> dataPts) {
+		//translate data points	
+		for (DataPoint pt : dataPts) {
+			pt.translate(dx);
+		}
 		
 		//get rid of any data points that are out of bounds
 		while (dataPts.size() > 0 && dataPts.get(0).startX < -halfWidth) {
 			dataPts.remove(0);
+		}
+	}
+	
+	private void fade(ArrayList<DataPoint> dataPts) {
+		//fade data points
+		for (DataPoint pt : dataPts) {
+			pt.opacity -= fadeRate;
+		}
+	}
+	
+	private void moveSpawnPoint(float dx) {
+		if (x < spawnX2) {
+			x += dx;
+		}
+		else {
+			x = spawnX1;
+			if (y < spawnY2) {
+				y += dx;
+			}
+			else {
+				y = spawnY1;
+			}
 		}
 	}
 
@@ -130,20 +183,14 @@ public class LiveScorer extends View {
 		float y2 = 0;
 		
 		if (sineWave.toInt() == IS_SINE_WAVE) {
-			float durationAcc = 0;
-		
-			if (reader.getId() == ONE_ID) {
-				durationAcc1 = (noteIndex == 0) ? 0 : (durationAcc1 + pa.phrase.getSCDuration(noteIndex-1));
-				durationAcc = durationAcc1;
-			}
-			else {
-				durationAcc2 = (noteIndex == 0) ? 0 : (durationAcc2 + pa.phrase.getSCDuration(noteIndex-1));
-				durationAcc = durationAcc2;
-			}
-				
-			float angle1 = PApplet.map(durationAcc, 0, pa.phrase.getTotalDuration(), 0, PApplet.TWO_PI);
-			float angle2 = PApplet.map(durationAcc+pa.phrase.getSCDuration(noteIndex),
-					0, pa.phrase.getTotalDuration(), 0, PApplet.TWO_PI);
+			float noteDuration = (noteIndex == 0) ? 0 : pa.phrase.getSCDuration(noteIndex-1);
+
+			float angle1 = PApplet.map(noteDuration,
+					                   0, pa.phrase.getTotalDuration(),
+					                   0, PApplet.TWO_PI);
+			float angle2 = PApplet.map(noteDuration+pa.phrase.getSCDuration(noteIndex),
+									   0, pa.phrase.getTotalDuration(),
+									   0, PApplet.TWO_PI);
 			
 			y1 = PApplet.sin(angle1)*halfHeight;
 			y2 = PApplet.sin(angle2)*halfHeight;
@@ -155,19 +202,21 @@ public class LiveScorer extends View {
 		
 		dataPts.add(new DataPoint(0, y1,
                 	pixelsPerWholeNote*pa.phrase.getSCDuration(noteIndex), y2,
-                	noteIndex));
+                	noteIndex, opacity));
 	}
 	
 	class DataPoint {
 		float startX, startY, endX, endY;
 		int noteIndex;
+		float opacity;
 		
-		DataPoint(float startX, float startY, float endX, float endY, int noteIndex) {
+		DataPoint(float startX, float startY, float endX, float endY, int noteIndex, float opacity) {
 			this.startX = startX;
 			this.startY = startY;
 			this.endX = endX;
 			this.endY = endY;
 			this.noteIndex = noteIndex;
+			this.opacity = opacity;
 		}
 		
 		void translate(float dx) {
