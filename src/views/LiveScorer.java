@@ -30,6 +30,7 @@ public class LiveScorer extends View {
 	private ArrayList<DataPoint> dataPts2 = new ArrayList<DataPoint>();
 	
 	//other:
+	private float durationAcc1, durationAcc2;
 	private float pixelsPerWholeNote;
 	private float radiansPerWholeNote;
 	private final int ONE_ID = 1, TWO_ID = 2;
@@ -79,10 +80,10 @@ public class LiveScorer extends View {
 		}
 		
 		//variables for computing note spawn point when scoreMode is MOVE_SPAWN_POINT
-		spawnX1 = -halfWidth;
-		spawnY1 = -halfHeight;
-		spawnX2 = halfWidth;
-		spawnY2 = halfHeight;
+		spawnX1 = -getWidth() * 0.5f;
+		spawnY1 = -getHeight() * 0.3f;
+		spawnX2 = getWidth() * 0.5f;
+		spawnY2 = getHeight() * 0.3f;
 		
 		//pixels to musical time conversion
 		pixelsPerWholeNote = 60;
@@ -93,11 +94,16 @@ public class LiveScorer extends View {
 	
 	public void updateState() {
 		if (scoreMode.toInt() == MOVE_NOTES) {
-			x = this.getCenx();
-			y = this.getCeny();
+			x = 0;
+			y = 0;
+			halfWidth = getWidth() * 0.5f;
+			halfHeight = getHeight() * 0.3f;
 		}
 		else if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
-			
+			x = spawnX1;
+			y = spawnY1;
+			halfWidth = getWidth() * 0.25f;
+			halfHeight = getHeight() * 0.15f;
 		}
 	}
 	
@@ -127,8 +133,9 @@ public class LiveScorer extends View {
 			//fade(dataPts2);
 		}
 		else if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
-			pa.println("dx = " + (-dx) + ", x = " + x + ", y = " + y);
-			moveSpawnPoint(-dx);
+			moveSpawnPoint(-dx, 2*halfHeight);
+			fade(dataPts1);
+			fade(dataPts2);
 		}
 	}
 	
@@ -159,14 +166,14 @@ public class LiveScorer extends View {
 		}
 	}
 	
-	private void moveSpawnPoint(float dx) {
+	private void moveSpawnPoint(float dx, float dy) {
 		if (x < spawnX2) {
 			x += dx;
 		}
 		else {
 			x = spawnX1;
 			if (y < spawnY2) {
-				y += dx;
+				y += dy;
 			}
 			else {
 				y = spawnY1;
@@ -179,30 +186,51 @@ public class LiveScorer extends View {
 		int noteIndex = reader.getNoteIndex();
 		ArrayList<DataPoint> dataPts = (reader.getId() == ONE_ID) ? dataPts1 : dataPts2;
 		
-		float y1 = 0;
-		float y2 = 0;
+		float y1 = -1;
+		float y2 = -1;
 		
 		if (sineWave.toInt() == IS_SINE_WAVE) {
-			float noteDuration = (noteIndex == 0) ? 0 : pa.phrase.getSCDuration(noteIndex-1);
-
-			float angle1 = PApplet.map(noteDuration,
+			float notept = -1;
+			
+			if (reader.getId() == ONE_ID) {
+				durationAcc1 = (noteIndex == 0) ? 0 : durationAcc1 + pa.phrase.getSCDuration(noteIndex-1);
+				notept = durationAcc1;
+			}
+			else if (reader.getId() == TWO_ID) {
+				durationAcc2 = (noteIndex == 0) ? 0 : durationAcc2 + pa.phrase.getSCDuration(noteIndex-1);
+				notept = durationAcc2;
+			}
+			
+			float angle1 = PApplet.map(notept,
 					                   0, pa.phrase.getTotalDuration(),
 					                   0, PApplet.TWO_PI);
-			float angle2 = PApplet.map(noteDuration+pa.phrase.getSCDuration(noteIndex),
+			float angle2 = PApplet.map(notept+pa.phrase.getSCDuration(noteIndex),
 									   0, pa.phrase.getTotalDuration(),
 									   0, PApplet.TWO_PI);
 			
-			y1 = PApplet.sin(angle1)*halfHeight;
-			y2 = PApplet.sin(angle2)*halfHeight;
+			y1 = y + PApplet.sin(angle1)*halfHeight;
+			y2 = y + PApplet.sin(angle2)*halfHeight;
 		}
 		else {
-			y1 = ys[noteIndex];
-			y2 = ys[(noteIndex+1) % ys.length];
+			y1 = noteIndexToY(noteIndex);
+			y2 = noteIndexToY((noteIndex+1) % ys.length);
 		}
 		
-		dataPts.add(new DataPoint(0, y1,
-                	pixelsPerWholeNote*pa.phrase.getSCDuration(noteIndex), y2,
+		dataPts.add(new DataPoint(x, y1,
+                	x + pixelsPerWholeNote*pa.phrase.getSCDuration(noteIndex), y2,
                 	noteIndex, opacity));
+	}
+	
+	private float noteIndexToY(int noteIndex) {
+		float minPitch = pa.phrase.minPitch();
+		float maxPitch = pa.phrase.maxPitch();
+
+		if (minPitch != maxPitch) {
+			return y + pa.map(pa.phrase.getSCPitch(noteIndex), minPitch, maxPitch, halfHeight, -halfHeight);
+		}
+		else {
+			return y + pa.lerp(minPitch, maxPitch, 0.5f);
+		}
 	}
 	
 	class DataPoint {
