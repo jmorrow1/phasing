@@ -25,7 +25,7 @@ public class CameraIcon implements Icon {
         
         float arrowHeadSize = 0.2f*radius;
         
-        pa.videoCamera(x1, y1, w1, h1);
+        pa.drawCamera(x1, y1, w1, h1);
         
         pa.strokeWeight(radius/15f);
         pa.stroke(0);

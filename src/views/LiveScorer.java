@@ -256,6 +256,8 @@ public class LiveScorer extends View {
 			pa.stroke(color, opacity);
 			pa.strokeWeight(2);
 			pa.fill(color, opacity);
+			//TODO: elongate dots for sustained notes
+			//TODO: dots and rects are drawn in slightly different locations due to the mode. instead, make the way they are drawn consistent w/ each other.
 			if (noteGraphic.toInt() == DOTS) {
 				pa.ellipseMode(pa.CENTER);
 				pa.ellipse(startX, startY, 20, 20);

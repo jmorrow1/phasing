@@ -9,32 +9,25 @@ public class ScoreModeIcon implements Icon {
         this.mode = mode;
     }
     
-    public void draw(float x, float y, float radius, PhasesPApplet pa) { 
-        int quarterNoteSize = (int)radius;
-        
+    public void draw(float x, float y, float radius, PhasesPApplet pa) {
+    	//dot and camera
+        pa.noStroke();
         pa.fill(0);
+        pa.ellipseMode(pa.RADIUS);
+        pa.ellipse(x - radius*0.5f, y + 0.5f*radius, 0.2f*radius, 0.2f*radius);
+        pa.drawCamera(x + radius*0.5f, y + 0.5f*radius, radius, 0.5f*radius);
         
-        if (mode == MOVE_SPAWN_POINT) {
-            pa.fill(0, 75);
-        }
-        pa.quarterNote(x - radius*0.4f, y - 0.5f*radius, quarterNoteSize);
-       
-        if (mode == MOVE_SPAWN_POINT) {
-            pa.fill(0, 150);
-        }
-        pa.quarterNote(x + 0.1f*radius, y - 0.5f*radius, quarterNoteSize);
-        
-        if (mode == MOVE_SPAWN_POINT) {
-            pa.fill(0, 255);
-        }
-        pa.quarterNote(x + radius*0.6f, y - 0.5f*radius, quarterNoteSize);
-        
+        //velocity arrow
+        pa.stroke(0);
+    	pa.strokeWeight(radius/15f);
+    	float arrowHeadSize = radius*0.2f;
         if (mode == MOVE_NOTES) {
-        	pa.stroke(0);
-        	pa.strokeWeight(radius/15f);
-        	pa.line(x + radius*0.9f, y + radius*0.4f, x - radius*0.9f, y + radius*0.4f);
-            float arrowHeadSize = radius*0.25f;
-            pa.drawArrowHead(x - radius*0.9f, y + radius*0.4f, arrowHeadSize, pa.PI, pa.PI*0.75f);
+        	pa.line(x + radius*0.5f, y + radius*0.1f, x + radius*0.5f, y - 0.75f*radius);
+            pa.drawArrowHead(x + radius*0.5f, y - radius*0.75f, arrowHeadSize, -pa.HALF_PI, pa.PI*0.75f);
+        }
+        else if (mode == MOVE_SPAWN_POINT) {
+        	pa.line(x - radius*0.5f, y + radius*0.1f, x - radius*0.5f, y - 0.75f*radius);
+            pa.drawArrowHead(x - radius*0.5f, y - radius*0.75f, arrowHeadSize, -pa.HALF_PI, pa.PI*0.75f);
         }
     }
 }

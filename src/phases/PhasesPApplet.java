@@ -172,7 +172,7 @@ public class PhasesPApplet extends PApplet {
 	    popStyle();
 	}
 	
-	public void videoCamera(float x, float y, float w, float h) {
+	public void drawCamera(float x, float y, float w, float h) {
 	    noStroke();
 	    fill(0);
 	    rectMode(CORNER);
