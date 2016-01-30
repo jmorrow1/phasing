@@ -145,7 +145,7 @@ public class PhaseShifter extends View {
 	private void drawPhraseGraphic(int activeNote, int playerNum) {
 		//set non-active and active colors
 		int nonActiveColor = pa.color(0, opacity);
-		int activeColor = pa.color(0, opacity);
+		int activeColor = pa.color(0);
 		if (colorScheme.toInt() == DIACHROMATIC) {
 			nonActiveColor = (playerNum == 1) ? pa.getColor1() : pa.getColor2();
 			nonActiveColor = pa.color(nonActiveColor, opacity);
@@ -178,15 +178,22 @@ public class PhaseShifter extends View {
 			
 			//draw connections between dots
 			if (noteGraphic.toInt() == CONNECTED_DOTS) {
-				for (int k=0; k<dataConnections.size(); k++) {
-					DataConnection c = dataConnections.get(k);
-					if (k == activeNote) {
-						pa.stroke(activeColor);
+				if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
+					for (int k=0; k<dataConnections.size(); k++) {
+						DataConnection c = dataConnections.get(k);
+						if (k == activeNote && activeNoteMode.toInt() != DONT_SHOW_ACTIVE_NOTE) {
+							pa.stroke(activeColor);
+						}
+						else {
+							pa.stroke(nonActiveColor);
+						}
+				
+						c.drawLine();
 					}
-					else {
-						pa.stroke(nonActiveColor);
-					}
-			
+				}
+				else {
+					pa.stroke(activeColor);
+					DataConnection c = dataConnections.get(activeNote);
 					c.drawLine();
 				}
 			}
