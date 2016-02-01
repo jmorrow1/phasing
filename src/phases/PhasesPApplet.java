@@ -123,7 +123,7 @@ public class PhasesPApplet extends PApplet {
 		editor = new Editor(this);
 		
 		//setup current screen
-		currentScreen = presenter;
+		currentScreen = editor;
 		currentScreen.onEnter();
 		
 		if (currentScreen == editor) {
@@ -219,7 +219,6 @@ public class PhasesPApplet extends PApplet {
 			changeScreenButton.setCaptionLabel("Rehearse");
 		}
 		currentScreen.onEnter();
-		//colorController(changeScreenButton);
 	}
 	
 	/**

@@ -61,7 +61,7 @@ public class Editor extends Screen {
 	private Toggle playStop;
 	private Slider bpmSlider, bpmDifferenceSlider;
 	private DropdownList rootMenu, scaleMenu;
-	private Scrollbar scrollbar;
+	private Scrollbar vScrollbar, hScrollbar;
 	private String rootLabel, scaleLabel;
 	private boolean rootMenuOpen, scaleMenuOpen;
 	
@@ -81,7 +81,7 @@ public class Editor extends Screen {
 		}
 		
 		//init grid variables
-		gridFrame = new Rect(10, 50, pa.width-10, pa.height-40, pa.CORNERS);
+		gridFrame = new Rect(40, 60, pa.width-10, pa.height-40, pa.CORNERS);
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
 		cellHeight = gridFrame.getHeight() / columnSize;
 		
@@ -161,22 +161,28 @@ public class Editor extends Screen {
 		formatLabel(scaleMenu);
 		scaleLabel = scaleMenu.getLabel();
 		
-		//add scrollbar
-		scrollbar = new Scrollbar(cp5, "scrollbar", 12, 14);
-	    scrollbar.setPosition(60, 575f)
-			     .setSize(680, 15)
-			     ;
-	    colorController(scrollbar);
+		//vertical scrollbar
+		vScrollbar = new Scrollbar(cp5, "vertical scrollbar", numKeys, numKeys);
+		vScrollbar.setPosition(10, gridFrame.getY1());
+		vScrollbar.setSize(15, (int)gridFrame.getHeight());
+		colorController(vScrollbar);
+		
+		//horizontal scrollbar
+		hScrollbar = new Scrollbar(cp5, "scrollbar", 12, 14);
+	    hScrollbar.setPosition(gridFrame.getX1() + 50, 575f)
+			      .setSize((int)gridFrame.getWidth() - 100, 15)
+			      ;
+	    colorController(hScrollbar);
 	    
 		//add buttons that flank the scrollbar and control the adding and removing of notes from the phrase
 	    Button leftArrow = cp5.addButton("decreasePhraseLength")
-						      .setPosition(10, 575f)
+						      .setPosition(gridFrame.getX1(), 575f)
 						      .setSize(40, 15)
 						      .setView(new ArrowButtonView(false))
 						      ;
 	    colorController(leftArrow);
 		Button rightArrow = cp5.addButton("increasePhraseLength")
-						       .setPosition(750, 575f)
+						       .setPosition(gridFrame.getX2() - 40, 575f)
 						       .setSize(40, 15)
 						       .setView(new ArrowButtonView(true))
 						       ;
@@ -303,7 +309,7 @@ public class Editor extends Screen {
 	}
 	
 	public void mouseWheel(MouseEvent event) {
-		scrollbar.myOnScroll(event.getCount());
+		hScrollbar.myOnScroll(event.getCount());
 	}
 	
 	public void mousePressed() {
@@ -460,7 +466,7 @@ public class Editor extends Screen {
 		pa.noStroke();
 		pa.fill(255);
 		pa.rectMode(pa.CORNER);
-		pa.rect(0, 0, pa.width, 50);
+		pa.rect(0, 0, pa.width, gridFrame.getY1());
 		
 		//bottom toolbar background
 		pa.rectMode(pa.CORNERS);
@@ -468,7 +474,7 @@ public class Editor extends Screen {
 		
 		//fill in margins
 		pa.rectMode(pa.CORNER);
-		pa.rect(0, gridFrame.getY2(), 10, 1);
+		pa.rect(0, gridFrame.getY2(), gridFrame.getX1(), 1);
 		pa.rect(gridFrame.getX2(), gridFrame.getY2(), 10, 1);
 		
 		//controllers
@@ -546,12 +552,12 @@ public class Editor extends Screen {
 		pa.stroke(color);
 		
 		//horizontal lines
-		float y = gridFrame.getY2();
+		float y = gridFrame.getY1();
 		pa.line(gridFrame.getX1() + cellWidth, y, gridFrame.getX2(), y);
-		y -= cellHeight;
+		y += cellHeight;
 		for (int i=0; i<numKeys; i++) {
 			pa.line(gridFrame.getX1() + cellWidth, y, gridFrame.getX2(), y);		
-			y -= cellHeight;
+			y += cellHeight;
 		}
 		
 		//vertical lines
