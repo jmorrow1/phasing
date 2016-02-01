@@ -59,6 +59,7 @@ public class Presenter extends Screen implements ViewVariableInfo{
 	private int activeIconIndex = 0;
 	private ArrayList<Icon[]> iconLists = new ArrayList<Icon[]>();
 	private ArrayList<ModInt> variables = new ArrayList<ModInt>();
+	private Icon[] viewTypeIcons;
 	private ModInt viewType = new ModInt(0, numViewTypes, viewTypeName);
 
 	/**
@@ -67,13 +68,13 @@ public class Presenter extends Screen implements ViewVariableInfo{
 	 */
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
-		musicianView = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		phaseShifterView = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		liveScorerView = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 	}
 	
 	@Override
 	public void onEnter() {
+		musicianView = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		phaseShifterView = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		liveScorerView = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		view = musicianView;
 		
 		pa.phrase.addToScore(player1, 0, 0, 0);
@@ -106,7 +107,8 @@ public class Presenter extends Screen implements ViewVariableInfo{
 		avg_dNotept2 = 0;
 		dataPts = 0;
 		
-		setupIcons();
+		setupViewTypeIcons();
+		setupIconLists();
 		
 		view.onEnter();
 	}
@@ -124,18 +126,22 @@ public class Presenter extends Screen implements ViewVariableInfo{
 		drawIcons();
 	}
 	
-	public void setupIcons() {
+	private void setupViewTypeIcons() {
+		viewTypeIcons = new Icon[numViewTypes];
+		for (int i=0; i<viewTypeIcons.length; i++) {
+			viewTypeIcons[i] = new ViewTypeIcon(i);
+		}
+		iconLists.add(viewTypeIcons);
+		variables.add(viewType);
+	}
+	
+	private void setupIconLists() {
 		iconLists.clear();
 		variables.clear();
+		iconLists.add(viewTypeIcons);
+		variables.add(viewType);
 		Field[] fields = view.getClass().getDeclaredFields();
 		try {
-			Icon[] viewTypeIcons = new Icon[numViewTypes];
-			for (int i=0; i<viewTypeIcons.length; i++) {
-				viewTypeIcons[i] = new ViewTypeIcon(i);
-			}
-			iconLists.add(viewTypeIcons);
-			variables.add(viewType);
-			
 			for (Field f : fields) {
 				if (f.getType().equals(ModInt.class)) {
 					ModInt x = (ModInt)f.get(view);
@@ -251,14 +257,21 @@ public class Presenter extends Screen implements ViewVariableInfo{
 		
 	}
 	
+	private float computeNotept1() {
+		return PApplet.map(player1.getTickPosition(),
+			               0, player1.getTickLength(),
+			               0, pa.phrase.getTotalDuration());
+	}
+	
+	private float computeNotept2() {
+		return PApplet.map(player2.getTickPosition(),
+			               0, player2.getTickLength(),
+			               0, pa.phrase.getTotalDuration());
+	}
+	
 	private void animateView() {		
-		float notept1 = PApplet.map(player1.getTickPosition(),
-					                0, player1.getTickLength(),
-					                0, pa.phrase.getTotalDuration());
-		
-		float notept2 = PApplet.map(player2.getTickPosition(),
-					                0, player2.getTickLength(),
-					                0, pa.phrase.getTotalDuration());
+		float notept1 = computeNotept1();
+		float notept2 = computeNotept2();
 		
 		float dNotept1 = notept1 - prev_notept1;
 		float dNotept2 = notept2 - prev_notept2;
@@ -295,6 +308,9 @@ public class Presenter extends Screen implements ViewVariableInfo{
 		prev_notept2 = notept2;
 		
 		view.update(dNotept1, dNotept2, sign);
+		if (view != phaseShifterView) {
+			phaseShifterView.updateNormalTransforms(dNotept1, dNotept2);
+		}
 	}
 
 	@Override
@@ -322,7 +338,10 @@ public class Presenter extends Screen implements ViewVariableInfo{
 				case LIVE_SCORER : newView = liveScorerView; break;
 			}
 			if (view != newView) {
-				
+				view = newView;
+				view.recalibrate(computeNotept1(), computeNotept2());
+				setupIconLists();
+				view.onEnter();
 			}
 		}
 	}

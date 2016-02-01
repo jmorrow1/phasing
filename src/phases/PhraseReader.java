@@ -66,6 +66,17 @@ public class PhraseReader {
 		}
 	}
 	
+	public void calibrate(float notept) {
+		noteIndex = -1;
+		noteTimeTillNextNote = -notept;
+		
+		while (noteTimeTillNextNote <= 0) {
+			noteIndex = (noteIndex+1) % phrase.getNumNotes();
+			noteTimeTillNextNote += phrase.getSCDuration(noteIndex);
+		}
+		
+	}
+	
 	public void setCallback(Object callee, Method callback) {
 		this.callee = callee;
 		this.callback = callback;

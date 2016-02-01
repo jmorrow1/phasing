@@ -24,7 +24,6 @@ public class PhaseShifter extends View {
 	//phrase readers:
 	private PhraseReader readerA, readerB;
 	private final int ONE_ID = 1, TWO_ID = 2;
-	private float noteTime = 0;
 	
 	//active note:
 	private int activeNote1, activeNote2;
@@ -105,8 +104,25 @@ public class PhaseShifter extends View {
 		readerA.update(dNotept1);
 		readerB.update(dNotept2);
 		
-		noteTime = (noteTime + dNotept1) % pa.phrase.getTotalDuration();
 		
+		pa.pushMatrix();
+		
+		pa.translate(this.getCenx(), this.getCeny());
+		updateNormalTransforms(dNotept1, dNotept2);
+
+		drawPhraseGraphic(activeNote1, 1);
+		drawPhraseGraphic(activeNote2, 2);
+		
+		pa.popMatrix();
+	}
+	
+	@Override
+	public void recalibrate(float notept1, float notept2) {
+		readerA.calibrate(notept1);
+		readerB.calibrate(notept2);
+	}
+	
+	public void updateNormalTransforms(float dNotept1, float dNotept2) {
 		if (cameraMode.toInt() == RELATIVE_TO_1) {
 			dNotept2 = (dNotept2 - dNotept1);
 			dNotept1 = 0;
@@ -116,20 +132,8 @@ public class PhaseShifter extends View {
 			dNotept2 = 0;
 		}
 		
-		pa.pushMatrix();
-		
-		pa.translate(this.getCenx(), this.getCeny());
-		updateAccumulators(dNotept2, dNotept1);
-
-		drawPhraseGraphic(activeNote1, 1);
-		drawPhraseGraphic(activeNote2, 2);
-		
-		pa.popMatrix();
-	}
-	
-	private void updateAccumulators(float dNotept1, float dNotept2) {
-		normalTransform1 += PApplet.map(dNotept1, 0, pa.phrase.getTotalDuration(), 0, 1);
-		normalTransform2 += PApplet.map(dNotept2, 0, pa.phrase.getTotalDuration(), 0, 1);
+		normalTransform1 += PApplet.map(dNotept2, 0, pa.phrase.getTotalDuration(), 0, 1);
+		normalTransform2 += PApplet.map(dNotept1, 0, pa.phrase.getTotalDuration(), 0, 1);
 		normalTransform1 %= 1;
 		normalTransform2 %= 1;
 	}

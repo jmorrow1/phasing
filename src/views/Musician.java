@@ -50,6 +50,13 @@ public class Musician extends View {
 		initPhraseReaders();
 	}
 	
+	@Override
+	public void recalibrate(float notept1, float notept2) {
+		readerA.calibrate(notept1);
+		readerB.calibrate(notept2);
+	}
+	
+	@Override
 	public void onEnter() {
 		
 	}

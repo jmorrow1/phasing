@@ -97,6 +97,15 @@ public class LiveScorer extends View {
 		onEnter();
 	}
 	
+	@Override
+	public void recalibrate(float notept1, float notept2) {
+		dataPts1.clear();
+		dataPts2.clear();
+		readerA.calibrate(notept1);
+		readerB.calibrate(notept2);
+	}
+	
+	@Override
 	public void updateState() {
 		boolean scoreModeChanged = ((scoreMode.toInt() == MOVE_NOTES && x != 0 && y != 0) || 
 				                    (scoreMode.toInt() == MOVE_SPAWN_POINT && x == 0 && y == 0));
@@ -117,6 +126,7 @@ public class LiveScorer extends View {
 		}
 	}
 	
+	@Override
 	public void onEnter() {
 		updateState();
 	}
