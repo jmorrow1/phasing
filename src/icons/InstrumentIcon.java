@@ -3,7 +3,7 @@ package icons;
 import phases.PhasesPApplet;
 
 public class InstrumentIcon implements Icon {
-	private int instrument;
+	private final int instrument;
 
 	public InstrumentIcon(int instrument) {
 		this.instrument = instrument;

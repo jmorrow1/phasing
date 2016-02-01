@@ -4,7 +4,7 @@ import geom.Polygon;
 import phases.PhasesPApplet;
 
 public class DefaultIcon implements Icon {
-	private int num;
+	private final int num;
 	
 	public DefaultIcon(int num) {
 		this.num = num;

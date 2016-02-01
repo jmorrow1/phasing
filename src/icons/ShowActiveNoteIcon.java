@@ -3,7 +3,7 @@ package icons;
 import phases.PhasesPApplet;
 
 public class ShowActiveNoteIcon implements Icon {
-    private int showState;
+    private final int showState;
   
     public ShowActiveNoteIcon(int showState) {
         this.showState = showState;

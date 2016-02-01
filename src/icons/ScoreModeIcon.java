@@ -3,7 +3,7 @@ package icons;
 import phases.PhasesPApplet;
 
 public class ScoreModeIcon implements Icon {
-    private int mode;
+    private final int mode;
     
     public ScoreModeIcon(int mode) {
         this.mode = mode;

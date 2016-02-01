@@ -3,7 +3,7 @@ package icons;
 import phases.PhasesPApplet;
 
 public class ColorSchemeIcon implements Icon {
-    private int colorScheme;
+    private final int colorScheme;
     
     public ColorSchemeIcon(int colorScheme) {
         this.colorScheme = colorScheme;

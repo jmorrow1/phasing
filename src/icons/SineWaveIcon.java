@@ -5,7 +5,7 @@ import phases.PhasesPApplet;
 import processing.core.PApplet;
 
 public class SineWaveIcon implements Icon {
-	private int mode;
+	private final int mode;
 	private final static int maxNumPts = 12;
 	
 	public SineWaveIcon(int mode, PApplet pa) {

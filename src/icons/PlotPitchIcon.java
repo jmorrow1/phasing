@@ -3,7 +3,7 @@ package icons;
 import phases.PhasesPApplet;
 
 public class PlotPitchIcon implements Icon {
-    private int plotPitchMode;
+    private final int plotPitchMode;
   
     public PlotPitchIcon(int plotPitchMode) {
         this.plotPitchMode = plotPitchMode;

@@ -3,7 +3,7 @@ package icons;
 import phases.PhasesPApplet;
 
 public class SuperimposedOrSeparatedIcon implements Icon {
-    private int superimposed;
+    private final int superimposed;
   
     public SuperimposedOrSeparatedIcon(int superimposed) {
         this.superimposed = superimposed;

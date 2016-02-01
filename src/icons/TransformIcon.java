@@ -3,7 +3,7 @@ package icons;
 import phases.PhasesPApplet;
 
 public class TransformIcon implements Icon {
-    private int transformType;
+    private final int transformType;
   
     public TransformIcon(int transformType) {
         this.transformType = transformType;

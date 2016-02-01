@@ -1,7 +1,10 @@
 package views;
 
 public interface ViewVariableInfo {
-	//possible values of view variables
+	public final String viewTypeName = "View";
+	public final int numViewTypes = 3;
+	public final int MUSICIAN=0, PHASE_SHIFTER=1, LIVE_SCORER=2;
+	
 	public final String transformationName = "Transformation";
 	public final int numTransformations = 2;
 	public final int TRANSLATE=0, ROTATE=1;

@@ -36,7 +36,7 @@ public class LiveScorer extends View {
 	private float pixelsPerWholeNote;
 	private final int ONE_ID = 1, TWO_ID = 2;
 	private int startingPitch = 0;
-	private float fadeRate = 0.1f;
+	private float fadeRate = 0.15f;
 	private final float NOTE_SIZE = 20;
 	private float roundStrokeCapSurplus;
 	
@@ -91,25 +91,30 @@ public class LiveScorer extends View {
 		//pixels to musical time conversion
 		pixelsPerWholeNote = 60;
 		
+		//this helps make it such that a quarter note is drawn as a circle when the stroke cap is round:
+		roundStrokeCapSurplus = pixelsPerWholeNote/8f;
+		
 		onEnter();
 	}
 	
 	public void updateState() {
-		if (scoreMode.toInt() == MOVE_NOTES) {
-			x = 0;
-			y = 0;
-			halfWidth = getWidth() * 0.5f;
-			halfHeight = getHeight() * 0.3f;
-		}
-		else if (scoreMode.toInt() == MOVE_SPAWN_POINT && x == 0 && y == 0) {
-			x = spawnX1;
-			y = spawnY1;
-			halfWidth = getWidth() * 0.25f;
-			halfHeight = getHeight() * 0.15f;
-		}
+		boolean scoreModeChanged = ((scoreMode.toInt() == MOVE_NOTES && x != 0 && y != 0) || 
+				                    (scoreMode.toInt() == MOVE_SPAWN_POINT && x == 0 && y == 0));
 		
-		//this makes it such that a quarter note is drawn as a circle when the stroke cap is round:
-		roundStrokeCapSurplus = pixelsPerWholeNote/8f; 
+		if (scoreModeChanged) {
+			if (scoreMode.toInt() == MOVE_NOTES) {
+				x = 0;
+				y = 0;
+				halfWidth = getWidth() * 0.5f;
+				halfHeight = getHeight() * 0.3f;
+			}
+			else if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
+				x = spawnX1;
+				y = spawnY1;
+				halfWidth = getWidth() * 0.25f;
+				halfHeight = getHeight() * 0.15f;
+			}
+		}
 	}
 	
 	public void onEnter() {

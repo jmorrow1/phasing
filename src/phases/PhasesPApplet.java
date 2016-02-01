@@ -93,7 +93,6 @@ public class PhasesPApplet extends PApplet {
 							    ;
 		changeScreenButton.getCaptionLabel().toUpperCase(false);
 		changeScreenButton.getCaptionLabel().setFont(pfont18);
-		colorController(changeScreenButton);
 		
 		//load scales
 		try {
@@ -116,7 +115,8 @@ public class PhasesPApplet extends PApplet {
 				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
 				            new int[] {n, n, n, n, n, n, n, n, n, n, n, n});
 		
-		scale = this.getScale("C", "Chromatic"); //default scale
+		//set the scale to the default scale
+		scale = this.getScale("C", "Chromatic");
 		
 		//create screens
 		presenter = new Presenter(this);
@@ -132,6 +132,8 @@ public class PhasesPApplet extends PApplet {
 		else if (currentScreen == presenter) {
 			changeScreenButton.setCaptionLabel("Compose");
 		}
+		
+		colorController(changeScreenButton);
 	}
 	
 	private void colorController(Controller c) {
@@ -182,6 +184,25 @@ public class PhasesPApplet extends PApplet {
 	    Polygon.drawRegularPolygon(x - 0.3f*w - 0.1f*w, y, 0.2f*w, 0.2f*w, 3, 0, this);
 	}
 	
+	public void drawSineWave(float cenx, float y, float length, float amp) {
+		drawSineWave(cenx, y, length, amp, 0);
+	}
+	
+	public void drawSineWave(float cenx, float y, float length, float amp, float startAngle) {
+		int numPts = 100;
+		float dTheta = TWO_PI / numPts;
+		float theta = startAngle;
+		float radius = length / 2f;
+		float x = cenx - radius;
+		float dx = length / numPts;
+		
+		for (int i=0; i<numPts; i++) {
+			point(x, y + amp*sin(theta));
+			x += dx;
+			theta += dTheta;
+		}
+	}
+	
 	/**
 	 * Callback from ControlP5
 	 * Controls changing the screen from Presentation screen to Editor screen and vice versa
@@ -198,6 +219,7 @@ public class PhasesPApplet extends PApplet {
 			changeScreenButton.setCaptionLabel("Rehearse");
 		}
 		currentScreen.onEnter();
+		//colorController(changeScreenButton);
 	}
 	
 	/**

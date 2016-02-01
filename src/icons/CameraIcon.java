@@ -3,7 +3,7 @@ package icons;
 import phases.PhasesPApplet;
 
 public class CameraIcon implements Icon {
-    private int cameraType;
+    private final int cameraType;
   
     public CameraIcon(int cameraType) {
         this.cameraType = cameraType;

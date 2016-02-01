@@ -4,7 +4,7 @@ import phases.PhasesPApplet;
 import processing.core.PApplet;
 
 public class NoteSetTwoIcon implements Icon {
-	private int noteType;
+	private final int noteType;
     
     public NoteSetTwoIcon(int noteType) {
         this.noteType = noteType;

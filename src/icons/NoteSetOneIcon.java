@@ -4,11 +4,7 @@ import phases.PhasesPApplet;
 import processing.core.PApplet;
 
 public class NoteSetOneIcon implements Icon {
-    private int noteType;
-    
-    //parameters for sine wave graphic:
-    private static final int NUM_PTS = 100;
-    private static final float dTheta = PApplet.TWO_PI / NUM_PTS;
+    private final int noteType;
     
     public NoteSetOneIcon(int noteType) {
         this.noteType = noteType;
@@ -48,15 +44,7 @@ public class NoteSetOneIcon implements Icon {
 	        case SINE_WAVE:
 	        	pa.strokeWeight(radius/6f);
 	        	pa.stroke(0);
-        		float theta = 0;
-        		float ptx = x - radius*0.75f;
-        		float dx = (1.5f*radius) / NUM_PTS;
-        		float amp = radius*0.5f;
-        		for (int i=0; i<NUM_PTS; i++) {
-        			pa.point(ptx, y + amp*pa.sin(theta));
-        			ptx += dx;
-        			theta += dTheta;
-        		}	
+        		pa.drawSineWave(x, y, 1.5f*radius, 0.5f*radius);
 	        	break;
         }
         
