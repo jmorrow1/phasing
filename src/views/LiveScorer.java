@@ -13,11 +13,11 @@ public class LiveScorer extends View {
 	//phrase readers:
 	private PhraseReader readerA, readerB;
 	
-	//where to spawn new points
+	//where to spawn new points:
 	private float x;
 	private float y;
 	
-	//used in calculating where to spawn new points when scoreMode is MOVE_SPAWN_POINT
+	//used in calculating where to spawn new points when scoreMode is MOVE_SPAWN_POINT:
 	private float spawnX1, spawnY1, spawnX2, spawnY2;
 	
 	//labels of plot's y-axis:
@@ -29,13 +29,16 @@ public class LiveScorer extends View {
 	private ArrayList<DataPoint> dataPts1 = new ArrayList<DataPoint>();
 	private ArrayList<DataPoint> dataPts2 = new ArrayList<DataPoint>();
 	
-	//other:
+	//musical time bookkeeping:
 	private float durationAcc1, durationAcc2;
+	
+	//other
 	private float pixelsPerWholeNote;
-	private float radiansPerWholeNote;
 	private final int ONE_ID = 1, TWO_ID = 2;
 	private int startingPitch = 0;
-	private float fadeRate = 0.25f;
+	private float fadeRate = 0.1f;
+	private final float NOTE_SIZE = 20;
+	private float roundStrokeCapSurplus;
 	
 	//options:
 	public ModInt sineWave = new ModInt(1, numWaysOfBeingASineWaveOrNot, sineWaveName);
@@ -81,13 +84,12 @@ public class LiveScorer extends View {
 		
 		//variables for computing note spawn point when scoreMode is MOVE_SPAWN_POINT
 		spawnX1 = -getWidth() * 0.5f;
-		spawnY1 = -getHeight() * 0.3f;
+		spawnY1 = -getHeight() * 0.15f - NOTE_SIZE/2f;
 		spawnX2 = getWidth() * 0.5f;
-		spawnY2 = getHeight() * 0.3f;
+		spawnY2 = getHeight() * 0.15f + NOTE_SIZE/2f;
 		
 		//pixels to musical time conversion
 		pixelsPerWholeNote = 60;
-		radiansPerWholeNote = pa.TWO_PI / pa.getBPM1();
 		
 		onEnter();
 	}
@@ -99,15 +101,19 @@ public class LiveScorer extends View {
 			halfWidth = getWidth() * 0.5f;
 			halfHeight = getHeight() * 0.3f;
 		}
-		else if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
+		else if (scoreMode.toInt() == MOVE_SPAWN_POINT && x == 0 && y == 0) {
 			x = spawnX1;
 			y = spawnY1;
 			halfWidth = getWidth() * 0.25f;
 			halfHeight = getHeight() * 0.15f;
 		}
+		
+		//this makes it such that a quarter note is drawn as a circle when the stroke cap is round:
+		roundStrokeCapSurplus = pixelsPerWholeNote/8f; 
 	}
 	
 	public void onEnter() {
+		updateState();
 	}
 	
 	@Override
@@ -129,14 +135,12 @@ public class LiveScorer extends View {
 		if (scoreMode.toInt() == MOVE_NOTES) {
 			scroll(dx, dataPts1);
 			scroll(dx, dataPts2);
-			//fade(dataPts1);
-			//fade(dataPts2);
 		}
 		else if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
-			moveSpawnPoint(-dx, 2*halfHeight);
-			fade(dataPts1);
-			fade(dataPts2);
+			moveSpawnPoint(-dx, getHeight() * 0.3f + NOTE_SIZE);
 		}
+		fade(dataPts1);
+		fade(dataPts2);
 	}
 	
 	private void drawDataPoints(ArrayList<DataPoint> dataPts, int color) {
@@ -254,18 +258,19 @@ public class LiveScorer extends View {
 		
 		void display(int color) {
 			pa.stroke(color, opacity);
-			pa.strokeWeight(2);
+			pa.strokeWeight(NOTE_SIZE);
 			pa.fill(color, opacity);
-			//TODO: elongate dots for sustained notes
-			//TODO: dots and rects are drawn in slightly different locations due to the mode. instead, make the way they are drawn consistent w/ each other.
 			if (noteGraphic.toInt() == DOTS) {
-				pa.ellipseMode(pa.CENTER);
-				pa.ellipse(startX, startY, 20, 20);
+				pa.strokeCap(pa.ROUND);
+				float x1 = startX + roundStrokeCapSurplus;
+				float x2 = endX - roundStrokeCapSurplus;
+				pa.line(x1, startY, x2, startY);
 			}
 			else if (noteGraphic.toInt() == RECTS) {
-				pa.rectMode(pa.CORNERS);
-				pa.rect(startX, startY, endX, startY + 20);
+				pa.strokeCap(pa.SQUARE);
+				pa.line(startX, startY, endX, startY);
 			}
+			pa.strokeCap(pa.ROUND); //back to default stroke cap
 		}
 	}
 }
