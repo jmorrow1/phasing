@@ -210,21 +210,6 @@ public class Piano extends Rect implements Instrument {
 	}
 	
 	/**
-	 * Returns the center coordinate of the key indexed by i.
-	 * @param i
-	 * @return
-	 */
-	public Point getKeyCenter(int i) {
-		if (0 <= i && i < keys.length) {
-			return keys[i].getCenter();
-		}
-		else {
-			System.err.println("index out of range in call to Piano.getKeyCenter(" + i + ")");
-			return null;
-		}
-	}
-	
-	/**
 	 * Returns a rectangle the same size as the white keys in this piano.
 	 * The rectangle will be positioned with its center at (0, 0).
 	 * @return

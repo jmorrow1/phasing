@@ -2,6 +2,11 @@ package geom;
 
 import processing.core.PApplet;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 public class Polygon extends Shape {
 	private Point[] pts;
 	private Point cen;
@@ -9,40 +14,43 @@ public class Polygon extends Shape {
 	
 	/**
 	 * Constructs a regular polygon inscribed in a circle.
-	 * @param c
-	 * @param numPoints
-	 * @param startAngle
+	 * 
+	 * @param c The circle
+	 * @param numVertices The number of vertices in the polygon
+	 * @param startAngle The angle of the first vertex
 	 */
-	public Polygon(Circle c, int numPoints, float startAngle) {
-		this(c.getX(), c.getY(), c.getRadius(), c.getRadius(), numPoints, startAngle);
+	public Polygon(Circle c, int numVertices, float startAngle) {
+		this(c.getX(), c.getY(), c.getRadius(), c.getRadius(), numVertices, startAngle);
 	}
 
 	/**
 	 * Constructs a regular polygon inscribed in a circle.
-	 * @param cenx 
-	 * @param ceny 
-	 * @param radius
-	 * @param numPoints
-	 * @param startAngle
+	 * 
+	 * @param cenx The center x-coordinate of the circle
+	 * @param ceny The center y-coordinate of the circle
+	 * @param radius The radius of the circle
+	 * @param numVertices The number of vertices in the polygon
+	 * @param startAngle The angle of the first vertex
 	 */
-	public Polygon(float cenx, float ceny, float radius, int numPoints, float startAngle) {
-		this(cenx, ceny, radius, radius, numPoints, startAngle);
+	public Polygon(float cenx, float ceny, float radius, int numVertices, float startAngle) {
+		this(cenx, ceny, radius, radius, numVertices, startAngle);
 	}
 	
 	/**
 	 * Constructs a polygon inscribed in an ellipse.
-	 * @param cenx
-	 * @param ceny
-	 * @param half_width
-	 * @param half_height
-	 * @param numPoints
-	 * @param startAngle
+	 * 
+	 * @param cenx The center x-coordinate of the ellipse
+	 * @param ceny The center y-coordinate of the ellipse
+	 * @param half_width Half the width of the ellipse
+	 * @param half_height Half the height of the ellipse
+	 * @param numVertices The number of vertices in the polygon
+	 * @param startAngle The angle of the first vertex
 	 */
-	public Polygon(float cenx, float ceny, float half_width, float half_height, int numPoints, float startAngle) {
+	public Polygon(float cenx, float ceny, float half_width, float half_height, int numVertices, float startAngle) {
 		cen = new Point(cenx, ceny);
-		pts = new Point[numPoints];		
+		pts = new Point[numVertices];		
 		float angle=startAngle;
-		float changeInAngle = PApplet.TWO_PI / numPoints;
+		float changeInAngle = PApplet.TWO_PI / numVertices;
 		for (int i=0; i<pts.length; i++) {
 			pts[i] = new Point(cenx + half_width*PApplet.cos(angle),
 							   ceny + half_height*PApplet.sin(angle));
@@ -53,11 +61,11 @@ public class Polygon extends Shape {
 	
 	/**
 	 * Constructs a polygon inscribed in an ellipse.
-	 * @param cenx
-	 * @param ceny
-	 * @param half_width
-	 * @param half_height
-	 * @param angles
+	 * @param cenx The center x-coordinate of the ellipse
+	 * @param ceny The center y-coordinate of the ellipse
+	 * @param half_width Half the width of the ellipse
+	 * @param half_height Half the height of the ellipse
+	 * @param angles The sequence of angles
 	 */
 	public Polygon(float cenx, float ceny, float half_width, float half_height, float[] angles) {
 		cen = new Point(cenx, ceny);
@@ -70,6 +78,10 @@ public class Polygon extends Shape {
 		computeDimensions();
 	}
 	
+	/**
+	 * Constructs a polygon from an array of alternating x and y coordinates.
+	 * @param coords The array of x and y coordinates. Even indices should give x-coordinates and odd indices should give y-coordinates.
+	 */
 	public Polygon(float[] coords) {
 		pts = new Point[coords.length/2];
 		for (int i=0; i<pts.length; i++) {
@@ -80,7 +92,7 @@ public class Polygon extends Shape {
 	
 	/**
 	 * Constructs a polygon from an array of points
-	 * @param pts
+	 * @param pts The points
 	 */
 	public Polygon(Point[] pts) {
 		this.pts = pts;
@@ -100,6 +112,10 @@ public class Polygon extends Shape {
 		this.height = poly.height;
 	}
 	
+	/**
+	 * Computes the dependent state of the Polygon.
+	 * That is, the width, height, and center.
+	 */
 	private void computeDimensions() {
 		float minX = Float.MAX_VALUE;
 		float maxX = Float.MIN_VALUE;
@@ -118,11 +134,22 @@ public class Polygon extends Shape {
 		this.cen = new Point((maxX - minX) / 2f, (maxY - minY) / 2f);
 	}
 	
-	public static void drawRegularPolygon(float cenx, float ceny, float half_width, float half_height, int numPoints, float startAngle, PApplet pa) {
+	/**
+	 * Draws a polygon inscribed in an ellipse.
+	 * 
+	 * @param cenx The center x-coordinate of the ellipse
+	 * @param ceny The center y-coordinate of the ellipse
+	 * @param half_width Half the width of the ellipse
+	 * @param half_height Half the height of the ellipse
+	 * @param numVertices The number of vertices in the polygon
+	 * @param startAngle The angle of the first vertex
+	 * @param pa The PApplet instance to draw to
+	 */
+	public static void drawPolygon(float cenx, float ceny, float half_width, float half_height, int numVertices, float startAngle, PApplet pa) {
 		float theta = startAngle;
-		float dTheta = pa.TWO_PI / numPoints;
+		float dTheta = pa.TWO_PI / numVertices;
 		pa.beginShape();
-		for (int i=0; i<numPoints; i++) {
+		for (int i=0; i<numVertices; i++) {
 			pa.vertex(cenx + half_width*pa.cos(theta), ceny + half_height*pa.sin(theta));
 			theta += dTheta;
 		}
@@ -146,19 +173,35 @@ public class Polygon extends Shape {
 		}
 	}
 	
-	@Override
+	/**
+	 * 
+	 * @return The center of the polygon
+	 */
 	public Point getCenter() {
 		return new Point(cen);
 	}
 	
+	/**
+	 * Sets the center of the polygon, thereby translating the polygon.
+	 * @param x
+	 * @param y
+	 */
 	public void setCenter(float x, float y) {
 		translate(x - cen.x, y - cen.y);
 	}
 	
+	/**
+	 * 
+	 * @return The width of the polygon
+	 */
 	public float getWidth() {
 		return width;
 	}
 	
+	/**
+	 * 
+	 * @return The height of the polygon
+	 */
 	public float getHeight() {
 		return height;
 	}

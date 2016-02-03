@@ -181,7 +181,7 @@ public class PhasesPApplet extends PApplet {
 	    rect(x - 0.3f*w, y - 0.5f*h, 0.8f*w - 5, h);
 	    noStroke();
 	    fill(0);
-	    Polygon.drawRegularPolygon(x - 0.3f*w - 0.1f*w, y, 0.2f*w, 0.2f*w, 3, 0, this);
+	    Polygon.drawPolygon(x - 0.3f*w - 0.1f*w, y, 0.2f*w, 0.2f*w, 3, 0, this);
 	}
 	
 	public void drawSineWave(float cenx, float y, float length, float amp) {

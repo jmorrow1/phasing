@@ -73,8 +73,7 @@ public class PhraseReader {
 		while (noteTimeTillNextNote <= 0) {
 			noteIndex = (noteIndex+1) % phrase.getNumNotes();
 			noteTimeTillNextNote += phrase.getSCDuration(noteIndex);
-		}
-		
+		}		
 	}
 	
 	public void setCallback(Object callee, Method callback) {

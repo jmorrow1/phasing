@@ -26,42 +26,4 @@ public class Point {
 		this.x = pt.x;
 		this.y = pt.y;
 	}
-	
-	/**
-	 * Moves every element in the array leftward.
-	 * @param xs The array to left-shift.
-	 */
-	public static void leftShift(Point[] xs) {
-	    if (xs.length > 0) {
-	        int i = xs.length-1;
-	        Point next = xs[i];
-	        xs[i] = xs[0];
-	        i--;
-	        while (i >= 0) {
-	            Point temp = xs[i];
-	            xs[i] = next;
-	            next = temp;
-	            i--;
-	        }
-	    }
-	}
-
-	/**
-	 * Moves every element in the array rightward.
-	 * @param xs The array to right-shift.
-	 */
-	public static void rightShift(Point[] xs) {
-	    if (xs.length > 0) {
-	        int i=0;
-	        Point prev = xs[i];
-	        xs[i] = xs[xs.length-1];
-	        i++;
-	        while (i < xs.length) {
-	        	Point temp = xs[i];
-	            xs[i] = prev;
-	            prev = temp;
-	            i++;
-	        }
-	    }
-	}
 }

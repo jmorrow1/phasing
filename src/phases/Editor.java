@@ -417,7 +417,7 @@ public class Editor extends Screen {
 	 * @return True, if the mouse intersects the grid (but not the piano-shaped y-axis), false otherwise
 	 */
 	private boolean mouseIntersectsGrid() {
-		return (gridFrame.intersects(pa.mouseX, pa.mouseY) && gridFrame.getX1() + cellWidth < pa.mouseX);
+		return (gridFrame.touches(pa.mouseX, pa.mouseY) && gridFrame.getX1() + cellWidth < pa.mouseX);
 	}
 	
 	/**

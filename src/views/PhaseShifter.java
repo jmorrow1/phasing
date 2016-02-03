@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import geom.Rect;
-import geom.Sector;
+import geom.CurvedRect;
 import phases.ModInt;
 import phases.PhasesPApplet;
 import phases.PhraseReader;
@@ -320,7 +320,7 @@ public class PhaseShifter extends View {
 		final String pitchName;
 		//specific to sectors:
 		final static int sectorThickness = 20;
-		final Sector sector, sectorAlt;
+		final CurvedRect curvedRect, sectorAlt;
 		
 		DataPoint(int i) {
 			float normalStart = (i == pa.phrase.getNumNotes()) ? 1 : pa.phrase.getPercentDurationOfSCIndex(i);
@@ -337,15 +337,15 @@ public class PhaseShifter extends View {
 			ry = pa.sin(theta1 - pa.HALF_PI) * radius;
 			rxAlt = pa.cos(theta1 - pa.HALF_PI)*pa.lerp(minRadius, maxRadius, 0.5f);
 			ryAlt = pa.sin(theta1 - pa.HALF_PI)*pa.lerp(minRadius, maxRadius, 0.5f);
-			sector = new Sector(radius, sectorThickness, theta1, theta2);
-			sectorAlt = new Sector(pa.lerp(minRadius, maxRadius, 0.5f), sectorThickness, theta1, theta2);
+			curvedRect = new CurvedRect(radius, sectorThickness, theta1, theta2);
+			sectorAlt = new CurvedRect(pa.lerp(minRadius, maxRadius, 0.5f), sectorThickness, theta1, theta2);
 			
 			txAlt = tx;
 			tyAlt = 0;
 		}
 		
-		Sector sector() {
-			return (plotPitchMode.toInt() == PLOT_PITCH) ? sector : sectorAlt;
+		CurvedRect curvedRect() {
+			return (plotPitchMode.toInt() == PLOT_PITCH) ? curvedRect : sectorAlt;
 		}
 		
 		float x() {
@@ -430,7 +430,7 @@ public class PhaseShifter extends View {
 				pa.rect(d_x + width, d_y, d.twidth, 20);
 			}
 			else {
-				d.sector().display(pa);
+				d.curvedRect().display(pa);
 			}
 		}
 	}

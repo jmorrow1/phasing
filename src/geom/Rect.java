@@ -3,6 +3,7 @@ package geom;
 import processing.core.PApplet;
 
 /**
+ * Represents a rectangle.
  * 
  * @author James Morrow
  *
@@ -22,7 +23,9 @@ public class Rect extends Shape {
     }
     
     /**
-     * The following Java code...
+     * The rectMode argument behaves analogously to Processing's rectMode method.
+     * 
+     * In other words, the following Java code...
      * Rect r = new Rect(a, b, c, d, rectMode);
      * r.display(pa);
      * 
@@ -124,9 +127,9 @@ public class Rect extends Shape {
      *
      * @param x The x-coordinate of the point
      * @param y The y-coordinate of the point
-     * @return True if the point (x, y) intersects the rect, false otherwise
+     * @return True if the point (x, y) is wihtin the rect, false otherwise
      */
-    public boolean intersects(float x, float y) {
+    public boolean touches(float x, float y) {
         return (x1 <= x && x <= x1 + width &&
                 y1 <= y && y <= y1 + height);
     }
@@ -235,52 +238,10 @@ public class Rect extends Shape {
 		this.height = height;
 	}
 	
-	/**
-	 * Shifts the rect by (dx, dy)
-	 * @param dx How much to shift the x-coordinate of the rect, in pixels
-	 * @param dy How much to shift the y-coordinate of the rect, in pixels
-	 */
+	@Override
 	public void translate(float dx, float dy) {
 		x1 += dx;
 		y1 += dy;
-	}
-	
-	/**
-	 * Moves every element in the array leftward.
-	 * @param xs The array to left-shift.
-	 */
-	public static void leftShift(Rect[] xs) {
-	    if (xs.length > 0) {
-	        int i = xs.length-1;
-	        Rect next = xs[i];
-	        xs[i] = xs[0];
-	        i--;
-	        while (i >= 0) {
-	        	Rect temp = xs[i];
-	            xs[i] = next;
-	            next = temp;
-	            i--;
-	        }
-	    }
-	}
-
-	/**
-	 * Moves every element in the array rightward.
-	 * @param xs The array to left-shift.
-	 */
-	public static void rightShift(Rect[] xs) {
-	    if (xs.length > 0) {
-	        int i=0;
-	        Rect prev = xs[i];
-	        xs[i] = xs[xs.length-1];
-	        i++;
-	        while (i < xs.length) {
-	        	Rect temp = xs[i];
-	            xs[i] = prev;
-	            prev = temp;
-	            i++;
-	        }
-	    }
 	}
 	
 	@Override

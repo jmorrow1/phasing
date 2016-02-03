@@ -16,6 +16,6 @@ public class DefaultIcon implements Icon {
 		pa.stroke(0);
 		pa.noFill();
 		radius /= 2f;
-		Polygon.drawRegularPolygon(x, y, radius, radius, num+3, 0, pa);
+		Polygon.drawPolygon(x, y, radius, radius, num+3, 0, pa);
 	}
 }
