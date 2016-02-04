@@ -26,10 +26,6 @@ import soundcipher.SoundCipherPlus;
  *
  */
 public class Editor extends Screen {
-	//experimental
-	//private int quarterNoteOffset=1;
-	//private int pitchOffset=1;
-	
 	//playback
 	private SoundCipherPlus livePlayer;
 	private long prev_t;
@@ -65,7 +61,7 @@ public class Editor extends Screen {
 	private Toggle playStop;
 	private Slider bpmSlider, bpmDifferenceSlider;
 	private DropdownList rootMenu, scaleMenu;
-	private Scrollbar vScrollbar, hScrollbar;
+	private Scrollbar hScrollbar;
 	private String rootLabel, scaleLabel;
 	private boolean rootMenuOpen, scaleMenuOpen;
 	
@@ -85,13 +81,13 @@ public class Editor extends Screen {
 		}
 		
 		//init grid variables
-		gridFrame = new Rect(40, 60, pa.width-10, pa.height-40, pa.CORNERS);
+		gridFrame = new Rect(10, 60, pa.width-10, pa.height-40, pa.CORNERS);
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
 		cellHeight = gridFrame.getHeight() / columnSize;
 		
 		//init cp5
 		cp5 = new ControlP5(pa);
-		//cp5.setAutoDraw(false);
+		cp5.setAutoDraw(false);
 		
 		//play stop toggle
 		playStop = cp5.addToggle("play")
@@ -166,11 +162,6 @@ public class Editor extends Screen {
 		scaleLabel = scaleMenu.getLabel();
 		
 		//vertical scrollbar
-		vScrollbar = new Scrollbar(cp5, "vScrollbar", numKeys, numKeys);
-		vScrollbar.setPosition(10, gridFrame.getY1());
-		vScrollbar.setSize(15, (int)gridFrame.getHeight());
-		vScrollbar.plugTo(this);
-		colorController(vScrollbar);
 		
 		//horizontal scrollbar
 		hScrollbar = new Scrollbar(cp5, "hScrollbar", 12, pa.phrase.getGridRowSize());
@@ -266,10 +257,6 @@ public class Editor extends Screen {
 
 	public void hScrollbar(ControlEvent e) {
 		drawBody();
-	}
-	
-	public void vScrollbar(ControlEvent e) {
-		
 	}
 	
 	public void decreasePhraseLength(ControlEvent e) {
@@ -563,7 +550,6 @@ public class Editor extends Screen {
 		pa.rectMode(pa.CORNER);
 		float x = gridFrame.getX1() + cellWidth;
 		for (int i=hScrollbar.getLowTick(); i<pa.phrase.getNumNotes(); i++) {
-		//for (int i=0; i<pa.phrase.getNumNotes(); i++) {
 			float numCellsWide = pa.phrase.getSCDuration(i) / pa.phrase.getUnitDuration();
 			if (pa.phrase.getSCDynamic(i) != 0) {
 				if (i == activeNoteIndex) {
