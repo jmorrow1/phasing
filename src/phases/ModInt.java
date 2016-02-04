@@ -13,6 +13,12 @@ public class ModInt {
 		this.name = name;
 	}
 	
+	public void setValue(int value) {
+		if (0 <= value && value < divisor) {
+			this.value = value;
+		}
+	}
+	
 	public void add(int n) {
 		value = PhasesPApplet.remainder(value+n, divisor);
 	}

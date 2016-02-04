@@ -459,7 +459,7 @@ public class Editor extends Screen {
 
 	private int yToPitch(float y) {
 		//int pitchIndex = (int)pa.map(y, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys) - 1 + pitchOffset;
-		int pitchIndex = (int)pa.map(y, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys) - 1;
+		int pitchIndex = (int)pa.map(y + cellHeight/2f, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys);
 		return pa.scale.getNoteValue(pitchIndex) + minOctave*12;
 	}
 	
@@ -530,8 +530,6 @@ public class Editor extends Screen {
 		pa.rect(0, gridFrame.getY1(), cellWidth, gridFrame.getHeight());
 		
 		drawPiano();
-		
-		
 	}
 	
 	private void updateMenus() {

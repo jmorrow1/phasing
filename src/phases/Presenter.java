@@ -82,7 +82,11 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		musicianView = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		phaseShifterView = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		liveScorerView = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		view = musicianView;
+		switch(viewType.toInt()) {
+			case MUSICIAN : view = musicianView; break;
+			case PHASE_SHIFTER : view = phaseShifterView; break;
+			case LIVE_SCORER : view = liveScorerView; break;
+		}
 
 		pa.phrase.addToScore(player1, 0, 0, 0);
 		pa.phrase.addToScore(player2, 0, 0, 0);
@@ -114,6 +118,8 @@ public class Presenter extends Screen implements ViewVariableInfo {
 
 		setupViewTypeIcons();
 		setupIconLists();
+		
+		activeIconIndex = 0;
 
 		view.onEnter();
 	}
@@ -136,8 +142,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		for (int i = 0; i < viewTypeIcons.length; i++) {
 			viewTypeIcons[i] = new ViewTypeIcon(i);
 		}
-		iconLists.add(viewTypeIcons);
-		variables.add(viewType);
 	}
 
 	private void setupIconLists() {
