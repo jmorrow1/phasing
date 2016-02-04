@@ -12,6 +12,7 @@ import controlP5.Slider;
 import controlP5.Toggle;
 import controlp5.ArrowButtonView;
 import controlp5.DropdownListPlus;
+import controlp5.PlusMinusButtonView;
 import controlp5.Scrollbar;
 import controlp5.SliderPlus;
 import geom.Rect;
@@ -165,24 +166,24 @@ public class Editor extends Screen {
 		
 		//horizontal scrollbar
 		hScrollbar = new Scrollbar(cp5, "hScrollbar", 12, pa.phrase.getGridRowSize());
-	    hScrollbar.setPosition(gridFrame.getX1() + 50, 575f)
-			      .setSize((int)gridFrame.getWidth() - 100, 15)
+	    hScrollbar.setPosition(gridFrame.getX1() + 40, 575f)
+			      .setSize((int)gridFrame.getWidth() - 80, 15)
 			      .plugTo(this)
 			      ;
 	    colorController(hScrollbar);
 	    
 		//add buttons that flank the scrollbar and control the adding and removing of notes from the phrase
 	    Button leftArrow = cp5.addButton("decreasePhraseLength")
-						      .setPosition(gridFrame.getX1(), 575f)
-						      .setSize(40, 15)
-						      .setView(new ArrowButtonView(false))
+						      .setPosition(gridFrame.getX1(), 570f)
+						      .setSize(24, 24)
+						      .setView(new PlusMinusButtonView(false))
 						      .plugTo(this)
 						      ;
 	    colorController(leftArrow);
 		Button rightArrow = cp5.addButton("increasePhraseLength")
-						       .setPosition(gridFrame.getX2() - 40, 575f)
-						       .setSize(40, 15)
-						       .setView(new ArrowButtonView(true))
+						       .setPosition(gridFrame.getX2() - 24, 570f)
+						       .setSize(24, 24)
+						       .setView(new PlusMinusButtonView(true))
 						       .plugTo(this)
 						       ;
 	    colorController(rightArrow);
@@ -444,7 +445,7 @@ public class Editor extends Screen {
 	private int mouseToIndex() {
 		return (int)pa.map(pa.mouseX, 
 			               gridFrame.getX1() + cellWidth, gridFrame.getX2(),
-			               0, rowSize);
+			               0, rowSize) + hScrollbar.getLowTick();
 	}
 	
 	/**
