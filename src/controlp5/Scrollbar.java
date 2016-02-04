@@ -292,5 +292,6 @@ public class Scrollbar extends Controller<Scrollbar> {
 	 */
 	public void setScrollerHighTick(int highTick) {
 		currentTick = PApplet.constrain(highTick, ticksPerScroller, ticksPerTrack);
+		updateGeometricalData();
 	}
 }
