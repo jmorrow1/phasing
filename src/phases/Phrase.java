@@ -125,15 +125,29 @@ public class Phrase {
 	}
 	
 	/**
-	 * Adds a new cell to the grid, which is a rest by default.
+	 * Adds a new cell to the tail end of the grid, which is a rest by default.
 	 */
-	public void addCell() {
+	public void appendCell() {
 		gridPitches = PApplet.append(gridPitches, 0);
 		gridDynamics = PApplet.append(gridDynamics, 0);
 		cellTypes = PApplet.append(cellTypes, REST);
 		gridArts = PApplet.append(gridArts, defaultArt);
 		gridPans = PApplet.append(gridPans, defaultPan);
 		scArraysUpToDate = false;
+	}
+	
+	/**
+	 * Removes a cell from the tail end of the grid.
+	 */
+	public void removeLastCell() {
+		if (getGridRowSize() > 0) {
+			gridPitches = PApplet.shorten(gridPitches);
+			gridDynamics = PApplet.shorten(gridDynamics);
+			cellTypes = PApplet.shorten(cellTypes);
+			gridArts = PApplet.shorten(gridArts);
+			gridPans = PApplet.shorten(gridPans);
+			scArraysUpToDate = false;
+		}
 	}
 	
 	

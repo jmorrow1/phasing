@@ -53,7 +53,7 @@ public class PhraseReader {
 	public void update(float dNotept) {
 		noteTimeTillNextNote -= dNotept;
 		
-		if (noteTimeTillNextNote <= 0) {
+		if (noteTimeTillNextNote <= 0 && phrase.getNumNotes() > 0) {
 			noteIndex = (noteIndex+1) % phrase.getNumNotes();
 			noteTimeTillNextNote = noteTimeTillNextNote + phrase.getSCDuration(noteIndex);
 			try {

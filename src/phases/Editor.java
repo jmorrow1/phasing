@@ -26,6 +26,10 @@ import soundcipher.SoundCipherPlus;
  *
  */
 public class Editor extends Screen {
+	//experimental
+	//private int quarterNoteOffset=1;
+	//private int pitchOffset=1;
+	
 	//playback
 	private SoundCipherPlus livePlayer;
 	private long prev_t;
@@ -87,7 +91,7 @@ public class Editor extends Screen {
 		
 		//init cp5
 		cp5 = new ControlP5(pa);
-		cp5.setAutoDraw(false);
+		//cp5.setAutoDraw(false);
 		
 		//play stop toggle
 		playStop = cp5.addToggle("play")
@@ -162,15 +166,17 @@ public class Editor extends Screen {
 		scaleLabel = scaleMenu.getLabel();
 		
 		//vertical scrollbar
-		vScrollbar = new Scrollbar(cp5, "vertical scrollbar", numKeys, numKeys);
+		vScrollbar = new Scrollbar(cp5, "vScrollbar", numKeys, numKeys);
 		vScrollbar.setPosition(10, gridFrame.getY1());
 		vScrollbar.setSize(15, (int)gridFrame.getHeight());
+		vScrollbar.plugTo(this);
 		colorController(vScrollbar);
 		
 		//horizontal scrollbar
-		hScrollbar = new Scrollbar(cp5, "scrollbar", 12, 14);
+		hScrollbar = new Scrollbar(cp5, "hScrollbar", 12, pa.phrase.getGridRowSize());
 	    hScrollbar.setPosition(gridFrame.getX1() + 50, 575f)
 			      .setSize((int)gridFrame.getWidth() - 100, 15)
+			      .plugTo(this)
 			      ;
 	    colorController(hScrollbar);
 	    
@@ -179,12 +185,14 @@ public class Editor extends Screen {
 						      .setPosition(gridFrame.getX1(), 575f)
 						      .setSize(40, 15)
 						      .setView(new ArrowButtonView(false))
+						      .plugTo(this)
 						      ;
 	    colorController(leftArrow);
 		Button rightArrow = cp5.addButton("increasePhraseLength")
 						       .setPosition(gridFrame.getX2() - 40, 575f)
 						       .setSize(40, 15)
 						       .setView(new ArrowButtonView(true))
+						       .plugTo(this)
 						       ;
 	    colorController(rightArrow);
 		
@@ -254,6 +262,26 @@ public class Editor extends Screen {
         s.plugTo(this);
 		colorController(s);
 		return s;
+	}
+
+	public void hScrollbar(ControlEvent e) {
+		drawBody();
+	}
+	
+	public void vScrollbar(ControlEvent e) {
+		
+	}
+	
+	public void decreasePhraseLength(ControlEvent e) {
+		pa.phrase.removeLastCell();
+		drawBody();
+		hScrollbar.setNumTickMarks(pa.phrase.getGridRowSize());
+	}
+	
+	public void increasePhraseLength(ControlEvent e) {
+		pa.phrase.appendCell();
+		drawBody();
+		hScrollbar.setNumTickMarks(pa.phrase.getGridRowSize());
 	}
 	
 	public void beatsPerMinute(ControlEvent e) {
@@ -440,11 +468,13 @@ public class Editor extends Screen {
 	}
 
 	private int yToPitch(float y) {
+		//int pitchIndex = (int)pa.map(y, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys) - 1 + pitchOffset;
 		int pitchIndex = (int)pa.map(y, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys) - 1;
 		return pa.scale.getNoteValue(pitchIndex) + minOctave*12;
 	}
 	
 	private float pitchToY(int pitch) {
+		//int pitchIndex = pa.scale.getIndexOfNoteValue(pitch - minOctave*12) + 1 - pitchOffset;
 		int pitchIndex = pa.scale.getIndexOfNoteValue(pitch - minOctave*12) + 1;
 		return pa.map(pitchIndex, 0, numKeys, gridFrame.getY2(), gridFrame.getY1());
 	}
@@ -472,10 +502,8 @@ public class Editor extends Screen {
 		pa.rectMode(pa.CORNERS);
 		pa.rect(0, gridFrame.getY2() + 1, pa.width, pa.height);
 		
-		//fill in margins
-		pa.rectMode(pa.CORNER);
-		pa.rect(0, gridFrame.getY2(), gridFrame.getX1(), 1);
-		pa.rect(gridFrame.getX2(), gridFrame.getY2(), 10, 1);
+		//left toolbar background
+		pa.rect(0, 0, gridFrame.getX1(), pa.height);
 		
 		//controllers
 		cp5.draw();
@@ -483,10 +511,11 @@ public class Editor extends Screen {
 	}
 	
 	private void drawBody() {
+		//draw blank background behind grid
 		pa.noStroke();
 		pa.fill(255);
 		pa.rectMode(pa.CORNERS);
-		pa.rect(0, gridFrame.getY1(), pa.width, gridFrame.getY2());
+		pa.rect(gridFrame.getX1(), gridFrame.getY1(), pa.width, gridFrame.getY2());
 		
 		//draw ghost image of grid
 		float ghostCellWidth = cellWidth * pa.getBPM2() / pa.getBPM1();
@@ -494,7 +523,15 @@ public class Editor extends Screen {
 		drawPhrase(pa.lerpColor(PhasesPApplet.getColor1(), pa.color(255), 0.8f),
 				pa.lerpColor(PhasesPApplet.getColor2(), pa.color(255), 0.8f), pa.color(255), ghostCellWidth);
 		
-		//draw main image of grid
+		if (pa.phrase.getNumNotes() < 12) {
+			//draw outline of grid frame
+			pa.stroke(pa.getColor2());
+			pa.noFill();
+			pa.rectMode(pa.CORNERS);
+			pa.rect(gridFrame.getX1(), gridFrame.getY1(), gridFrame.getX2(), gridFrame.getY2());
+		}
+			
+		//draw grid
 		drawPiano();
 		drawGrid(PhasesPApplet.getColor2(), cellWidth);
 		drawPhrase(PhasesPApplet.getColor1(), PhasesPApplet.getColor2(), 0, cellWidth);
@@ -523,7 +560,8 @@ public class Editor extends Screen {
 		pa.stroke(strokeColor);
 		pa.rectMode(pa.CORNER);
 		float x = gridFrame.getX1() + cellWidth;
-		for (int i=0; i<pa.phrase.getNumNotes(); i++) {
+		for (int i=hScrollbar.getLowTick(); i<pa.phrase.getNumNotes(); i++) {
+		//for (int i=0; i<pa.phrase.getNumNotes(); i++) {
 			float numCellsWide = pa.phrase.getSCDuration(i) / pa.phrase.getUnitDuration();
 			if (pa.phrase.getSCDynamic(i) != 0) {
 				if (i == activeNoteIndex) {
@@ -551,21 +589,23 @@ public class Editor extends Screen {
 		//line color
 		pa.stroke(color);
 		
-		//horizontal lines
-		float y = gridFrame.getY1();
-		pa.line(gridFrame.getX1() + cellWidth, y, gridFrame.getX2(), y);
-		y += cellHeight;
-		for (int i=0; i<numKeys; i++) {
-			pa.line(gridFrame.getX1() + cellWidth, y, gridFrame.getX2(), y);		
-			y += cellHeight;
-		}
-		
 		//vertical lines
+		int numQuarterNotes = (int)(pa.phrase.getTotalDuration() / 0.25f) - hScrollbar.getLowTick();
 		float x = gridFrame.getX1() + cellWidth;
-		while (x < gridFrame.getX2()) {
+		for (int i=0; i<numQuarterNotes; i++) {
 			pa.line(x, gridFrame.getY1(), x, gridFrame.getY2());
 			x += cellWidth;
 		}
+		
+		//horizontal lines
+		float y = gridFrame.getY1();
+		pa.line(gridFrame.getX1() + cellWidth, y, x, y);
+		y += cellHeight;
+		for (int i=0; i<numKeys; i++) {
+			pa.line(gridFrame.getX1() + cellWidth, y, x, y);		
+			y += cellHeight;
+		}
+		
 		pa.line(x, gridFrame.getY1(), x, gridFrame.getY2());
 	}
 	
@@ -595,6 +635,7 @@ public class Editor extends Screen {
 		pa.textAlign(pa.CENTER, pa.CENTER);
 		pa.textFont(pa.pfont18);
 		pa.textSize(16);
+		//for (int i=pitchOffset; i<numKeys+pitchOffset; i++) {
 		for (int i=0; i<numKeys; i++) {
 			int iModScaleSize = i % pa.scale.size();
 			int noteValueMod12 = pa.scale.getNoteValue(iModScaleSize) % 12;

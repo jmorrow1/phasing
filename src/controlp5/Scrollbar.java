@@ -155,6 +155,7 @@ public class Scrollbar extends Controller<Scrollbar> {
         		}
         	}
         }
+        setValue(scrollerLow);
     }
     
     @Override
@@ -186,6 +187,7 @@ public class Scrollbar extends Controller<Scrollbar> {
         	}
             updateCurrentTick();
             updateGeometricalData();
+            setValue(scrollerLow);
         }
     }
     
