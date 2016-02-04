@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import arb.soundcipher.SCScore;
 import controlP5.Button;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
@@ -293,6 +294,13 @@ public class PhasesPApplet extends PApplet {
 	
 	private boolean noteNamesAreEquivalent(String root, String scaleRootName) {
 		return (scaleRootName.length() > 1 && root.contains(scaleRootName)) || root.equals(scaleRootName);
+	}
+	
+	//TODO: implement this function
+	public static void phraseToMidiFile(String location, String name) {
+		SCScore score = new SCScore();
+		//THE IMPORTANT PART GOES HERE
+		score.writeMidiFile(location + "/" + name + ".mid");
 	}
 	
 	/**

@@ -70,8 +70,8 @@ public class Presenter extends Screen implements ViewVariableInfo {
 
 	/**
 	 * 
-	 * @param pa
-	 *            The PhasesPApplet on which to draw views
+	 * @param pa The PhasesPApplet on which to draw views
+	 * 
 	 */
 	public Presenter(PhasesPApplet pa) {
 		super(pa);

@@ -505,7 +505,7 @@ public class Editor extends Screen {
 		pa.noStroke();
 		pa.fill(255);
 		pa.rectMode(pa.CORNERS);
-		pa.rect(gridFrame.getX1(), gridFrame.getY1(), pa.width, gridFrame.getY2());
+		pa.rect(0, gridFrame.getY1(), pa.width, gridFrame.getY2());
 		
 		//draw ghost image of grid
 		float ghostCellWidth = cellWidth * pa.getBPM2() / pa.getBPM1();
@@ -515,6 +515,7 @@ public class Editor extends Screen {
 		
 		if (pa.phrase.getNumNotes() < 12) {
 			//draw outline of grid frame
+			pa.strokeWeight(1);
 			pa.stroke(pa.getColor2());
 			pa.noFill();
 			pa.rectMode(pa.CORNERS);
@@ -522,9 +523,15 @@ public class Editor extends Screen {
 		}
 			
 		//draw grid
-		drawPiano();
 		drawGrid(PhasesPApplet.getColor2(), cellWidth);
 		drawPhrase(PhasesPApplet.getColor1(), PhasesPApplet.getColor2(), 0, cellWidth);
+		pa.noStroke();
+		pa.fill(255);
+		pa.rect(0, gridFrame.getY1(), cellWidth, gridFrame.getHeight());
+		
+		drawPiano();
+		
+		
 	}
 	
 	private void updateMenus() {
@@ -550,7 +557,12 @@ public class Editor extends Screen {
 		pa.stroke(strokeColor);
 		pa.rectMode(pa.CORNER);
 		float x = gridFrame.getX1() + cellWidth;
-		for (int i=hScrollbar.getLowTick(); i<pa.phrase.getNumNotes(); i++) {
+		
+		pa.pushMatrix();
+		
+		pa.translate(-hScrollbar.getLowTick() * cellWidth, 0);
+		
+		for (int i=0; i<pa.phrase.getNumNotes(); i++) {
 			float numCellsWide = pa.phrase.getSCDuration(i) / pa.phrase.getUnitDuration();
 			if (pa.phrase.getSCDynamic(i) != 0) {
 				if (i == activeNoteIndex) {
@@ -568,6 +580,8 @@ public class Editor extends Screen {
 			x += (cellWidth*numCellsWide);
 		}
 		pa.strokeWeight(1);
+		
+		pa.popMatrix();
 	}
 	
 	/**
@@ -575,7 +589,7 @@ public class Editor extends Screen {
 	 * @param color
 	 */
 	private void drawGrid(int color, float cellWidth) {
-		//line color
+		pa.strokeWeight(1);
 		pa.stroke(color);
 		
 		//vertical lines
@@ -608,8 +622,10 @@ public class Editor extends Screen {
 		pa.scale = newScale;
 		
 		for (int i=0; i<pa.phrase.getGridRowSize(); i++) {
-			int pitch = yToPitch(ys[i]);
-			pa.phrase.setGridPitch(i, pitch);
+			if (pa.phrase.getGridPitch(i) > 0) {
+				int pitch = yToPitch(ys[i]);
+				pa.phrase.setGridPitch(i, pitch);
+			}
 		}
 	}
 	
