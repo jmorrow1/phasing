@@ -257,6 +257,7 @@ public class Scrollbar extends Controller<Scrollbar> {
 	public void setNumTickMarks(int ticksPerTrack) {
 		currentTick = (int)PApplet.map(currentTick, 0, this.ticksPerTrack, 0, ticksPerTrack);
 		this.ticksPerTrack = ticksPerTrack;
+		ticksPerScroller = (int)PApplet.constrain(ticksPerScroller, 0, ticksPerTrack);
 		updateGeometricalData();
 	}
 	

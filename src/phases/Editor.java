@@ -274,14 +274,16 @@ public class Editor extends Screen {
 	
 	public void decreasePhraseLength(ControlEvent e) {
 		pa.phrase.removeLastCell();
-		drawBody();
-		hScrollbar.setNumTickMarks(pa.phrase.getGridRowSize());
+		int numTickMarks = PApplet.max(pa.phrase.getGridRowSize(), 12);
+		hScrollbar.setNumTickMarks(numTickMarks);
+		drawBody();		
 	}
 	
 	public void increasePhraseLength(ControlEvent e) {
 		pa.phrase.appendCell();
+		int numTickMarks = PApplet.max(pa.phrase.getGridRowSize(), 12);
+		hScrollbar.setNumTickMarks(numTickMarks);
 		drawBody();
-		hScrollbar.setNumTickMarks(pa.phrase.getGridRowSize());
 	}
 	
 	public void beatsPerMinute(ControlEvent e) {
