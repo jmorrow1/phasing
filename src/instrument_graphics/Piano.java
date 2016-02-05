@@ -200,13 +200,8 @@ public class Piano extends Rect implements Instrument {
 	 * @return
 	 */
 	public Shape getShapeAtNoteIndex(int i) {
-		if (0 <= i && i < keys.length) {
-			return keys[i].clone();
-		}
-		else {
-			System.err.println("index out of range in call to Piano.getKeyCopy(" + i + ")");
-			return null;
-		}
+		i = PhasesPApplet.remainder(i, keys.length);
+		return keys[i].clone();
 	}
 	
 	/**

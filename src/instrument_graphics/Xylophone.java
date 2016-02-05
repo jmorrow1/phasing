@@ -3,6 +3,7 @@ package instrument_graphics;
 import geom.Polygon;
 import geom.Rect;
 import geom.Shape;
+import phases.PhasesPApplet;
 import processing.core.PApplet;
 
 public class Xylophone implements Instrument {
@@ -72,13 +73,8 @@ public class Xylophone implements Instrument {
 
 	@Override
 	public Shape getShapeAtNoteIndex(int index) {
-		if (0 <= index && index < bars.length) {
-			return bars[index].clone();
-		}
-		else {
-			System.err.println("index out of range in call to Piano.getKeyCopy(" + index + ")");
-			return null;
-		}
+		index = PhasesPApplet.remainder(index, bars.length);
+		return bars[index].clone();
 	}
 
 	@Override
