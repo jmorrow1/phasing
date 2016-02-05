@@ -51,16 +51,33 @@ public class PhasesPApplet extends PApplet {
 	//visual variables
 	private static int color1, color2, brightColor1, brightColor2, blendColor, brightBlendColor;
 	public static PFont pfont12, pfont18, pfont42, musicFont;
+	public int changeScreenButtonY2 = 50;
+	public int changeScreenButtonX2 = 135;
 	
 	//gui
 	private ControlP5 cp5;
 	private Button changeScreenButton;
 	
+	//screen size
+	public static final int _800x600 = 0, _1366x768 = 1, _1920x1080 = 2, _1024x768 = 3, _1280x800 = 4, _1280x1024 = 5;
+	public int screenSizeMode = _1366x768;
+	
 	/**
 	 * Sets up the size of the canvas/window
 	 */
 	public void settings() {
-		size(800, 600);
+		setSize(screenSizeMode);
+	}
+	
+	private void setSize(int screenSizeMode) {
+		switch (screenSizeMode) {
+			case _800x600 : size(800, 600); break;
+			case _1366x768 : size(1366, 768); break;
+			case _1920x1080 : size(1920, 1080); break;
+			case _1024x768 : size(1024, 768); break;
+			case _1280x800 : size(1280, 800); break;
+			case _1280x1024 : size(1280, 1024); break;
+		}
 	}
 	
 	/**
@@ -89,7 +106,7 @@ public class PhasesPApplet extends PApplet {
 		
 		//init change screen button
 		changeScreenButton = cp5.addButton("changeScreen")
-							    .setPosition(10, 5)
+							    .setPosition(changeScreenButtonX2 - 125, changeScreenButtonY2 - 40)
 							    .setSize(125, 40)
 							    ;
 		changeScreenButton.getCaptionLabel().toUpperCase(false);
@@ -124,7 +141,7 @@ public class PhasesPApplet extends PApplet {
 		editor = new Editor(this);
 		
 		//setup current screen
-		currentScreen = presenter;
+		currentScreen = editor;
 		currentScreen.onEnter();
 		
 		if (currentScreen == editor) {

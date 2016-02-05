@@ -45,7 +45,7 @@ public class Editor extends Screen {
 	
 	//grid
 	private Rect gridFrame;
-	private int rowSize = 12;
+	private int rowSize;
 	private int columnSize = numKeys;
 	private float cellWidth, cellHeight;
 	
@@ -66,6 +66,9 @@ public class Editor extends Screen {
 	private String rootLabel, scaleLabel;
 	private boolean rootMenuOpen, scaleMenuOpen;
 	
+	//controller layout
+	private int controller_dx = 15;
+	
 	/**
 	 * 
 	 * @param pa The PApplet to draw to
@@ -83,16 +86,76 @@ public class Editor extends Screen {
 		
 		//init grid variables
 		gridFrame = new Rect(10, 60, pa.width-10, pa.height-40, pa.CORNERS);
+		
+		//other things dependent on screen size
+		switch (pa.screenSizeMode) {
+			case PhasesPApplet._800x600 :
+				rowSize = 12;
+				break;
+			case PhasesPApplet._1366x768 :
+				rowSize = 18;
+				break;
+		}
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
 		cellHeight = gridFrame.getHeight() / columnSize;
 		
-		//init cp5
+		//cp5
 		cp5 = new ControlP5(pa);
 		cp5.setAutoDraw(false);
+		setupControllers();
+		cp5.hide();
+	}
+	
+	/****************************
+	 ***** Controller Setup *****
+	 ****************************/
+	
+	private void setupControllers() {
+		//scale menus
+		int menuItemHeight = 22;
+		rootMenu = new DropdownListPlus(cp5, "root");
+		rootMenu.setPosition(pa.changeScreenButtonX2 + controller_dx, pa.changeScreenButtonY2 - menuItemHeight)
+			    .setSize(90, menuItemHeight*(pa.roots.length+1))
+			    .addItems(pa.roots)
+			    .setItemHeight(menuItemHeight)
+			    .setBarHeight(menuItemHeight)
+			    .close()
+			    ;
+		rootMenu.setLabel("C");
+		colorController(rootMenu);
+		formatLabel(rootMenu);
+		rootLabel = rootMenu.getLabel();
+		
+		scaleMenu = new DropdownListPlus(cp5, "Scale");
+		scaleMenu.setPosition(rootMenu.getPosition()[0] +  rootMenu.getWidth() + controller_dx,
+				              pa.changeScreenButtonY2 - menuItemHeight)
+		         .setSize(130, menuItemHeight*(pa.scaleTypes.size()+1))
+				 .addItems(pa.scaleTypes)
+				 .setItemHeight(menuItemHeight)
+				 .setBarHeight(menuItemHeight)
+				 .close()
+				 ;
+		scaleMenu.setLabel("Chromatic");
+		colorController(scaleMenu);
+		formatLabel(scaleMenu);
+		scaleLabel = scaleMenu.getLabel();
+		
+		//bpm sliders
+		int sliderWidth = 442;
+		int sliderHeight = 23;
+		bpmSlider = addBpm1Slider(scaleMenu.getPosition()[0] + scaleMenu.getWidth() + controller_dx, 
+				                  pa.changeScreenButtonY2 - sliderHeight,
+				                  sliderWidth,
+				                  sliderHeight);
+		
+		bpmDifferenceSlider = addBpmDifferenceSlider(bpmSlider.getPosition()[0] + sliderWidth + controller_dx,
+				                                     pa.changeScreenButtonY2 - sliderHeight,
+				                                     sliderWidth, 
+				                                     sliderHeight);
 		
 		//play stop toggle
 		playStop = cp5.addToggle("play")
-				      .setPosition(750, 5)
+				      .setPosition(pa.width - 50, pa.changeScreenButtonY2 - 35)
 					  .setSize(35, 35)
 					  .plugTo(this)
 					  .setView(new ControllerView<Toggle>() {
@@ -131,42 +194,9 @@ public class Editor extends Screen {
 					   ;
 		colorController(playStop);
 		
-		//bpm sliders
-		bpmSlider = addBPMSlider(BPM_1);
-		bpmDifferenceSlider = addBPMSlider(BPM_DIFFERENCE);
-		
-		//scale menus
-		rootMenu = new DropdownListPlus(cp5, "root");
-		rootMenu.setPosition(155, 19)
-			    .setSize(90, 22*(PhasesPApplet.roots.length+1))
-			    .addItems(PhasesPApplet.roots)
-			    .setItemHeight(22)
-			    .setBarHeight(22)
-			    .close()
-			    ;
-		rootMenu.setLabel("C");
-		colorController(rootMenu);
-		formatLabel(rootMenu);
-		rootLabel = rootMenu.getLabel();
-		
-		scaleMenu = new DropdownListPlus(cp5, "Scale");
-		scaleMenu.setPosition(260, 19)
-		         .setSize(130, 22*(PhasesPApplet.scaleTypes.size()+1))
-				 .addItems(PhasesPApplet.scaleTypes)
-				 .setItemHeight(22)
-				 .setBarHeight(22)
-				 .close()
-				 ;
-		scaleMenu.setLabel("Chromatic");
-		colorController(scaleMenu);
-		formatLabel(scaleMenu);
-		scaleLabel = scaleMenu.getLabel();
-		
-		//vertical scrollbar
-		
 		//horizontal scrollbar
-		hScrollbar = new Scrollbar(cp5, "hScrollbar", 12, pa.phrase.getGridRowSize());
-	    hScrollbar.setPosition(gridFrame.getX1() + 40, 575f)
+		hScrollbar = new Scrollbar(cp5, "hScrollbar", PApplet.min(rowSize, pa.phrase.getGridRowSize()), pa.phrase.getGridRowSize());
+	    hScrollbar.setPosition(gridFrame.getX1() + 40, pa.height - 25f)
 			      .setSize((int)gridFrame.getWidth() - 80, 15)
 			      .plugTo(this)
 			      ;
@@ -174,22 +204,19 @@ public class Editor extends Screen {
 	    
 		//add buttons that flank the scrollbar and control the adding and removing of notes from the phrase
 	    Button leftArrow = cp5.addButton("decreasePhraseLength")
-						      .setPosition(gridFrame.getX1(), 570f)
+						      .setPosition(gridFrame.getX1(), pa.height - 30f)
 						      .setSize(24, 24)
 						      .setView(new PlusMinusButtonView(false))
 						      .plugTo(this)
 						      ;
 	    colorController(leftArrow);
 		Button rightArrow = cp5.addButton("increasePhraseLength")
-						       .setPosition(gridFrame.getX2() - 24, 570f)
+						       .setPosition(gridFrame.getX2() - 24, pa.height - 30f)
 						       .setSize(24, 24)
 						       .setView(new PlusMinusButtonView(true))
 						       .plugTo(this)
 						       ;
 	    colorController(rightArrow);
-		
-		//hide cp5
-		cp5.hide();
 	}
 
 	private void formatLabel(DropdownList x) {
@@ -225,30 +252,34 @@ public class Editor extends Screen {
 		}
 	}
 	
-	private Slider addBPMSlider(int id) {
-		switch(id) {
-			case BPM_1 :
-				return addBPMSlider("beatsPerMinute", "Beats Per Minute", id, 405, 18, pa.getBPM1(), 1, 100, 1,
-						(x) -> "" + PApplet.round(x));
-			case BPM_DIFFERENCE :
-				return addBPMSlider("bpmDifference", "Difference", id, 575, 18, pa.getBPM2() - pa.getBPM1(),
-						-maxPhaseDifferenceAmplitude, maxPhaseDifferenceAmplitude, 4,
-						(x) -> String.format("%.2f", x));
-			default :
-				return null;
-		}
+	private Slider addBpm1Slider(float x, float y, int w, int h) {
+		return addBPMSlider("beatsPerMinute", "Beats Per Minute", BPM_1,
+			                x, y, w, h,
+			                pa.getBPM1(),
+			                1, 100,
+			                1,
+			                (floatingPoint) -> "" + PApplet.round(floatingPoint));
 	}
 	
-	private Slider addBPMSlider(String name, String label, int id, int x, int y, 
-		float bpm, int minValue, int maxValue, int ticksPerWholeNumber, FloatFormatter f) {
+	private Slider addBpmDifferenceSlider(float x, float y, int w, int h) {
+		return addBPMSlider("bpmDifference", "Difference", BPM_DIFFERENCE,
+			                x, y, w, h,
+			                pa.getBPM2() - pa.getBPM1(),
+			                -maxPhaseDifferenceAmplitude, maxPhaseDifferenceAmplitude,
+			                4, 
+			                (floatingPoint) -> String.format("%.2f", floatingPoint));
+	}
+	
+	private Slider addBPMSlider(String name, String label, int id, float x, float y, int w, int h,
+		  float value, int minValue, int maxValue, int ticksPerWholeNumber, FloatFormatter f) {
 		Slider s = new SliderPlus(cp5, name, pa.pfont12, pa.pfont18, f);
         s.setId(id);
         s.setCaptionLabel(label);
         s.setDecimalPrecision(0);
         s.setRange(minValue, maxValue);
         s.setPosition(x, y);
-        s.setSize(150, 23);
-        s.setValue(bpm);
+        s.setSize(w, h);
+        s.setValue(value);
         s.setLabelVisible(false);
         s.setNumberOfTickMarks((maxValue-minValue) * ticksPerWholeNumber + 1);
         s.plugTo(this);
@@ -260,17 +291,33 @@ public class Editor extends Screen {
 		drawBody();
 	}
 	
+	/********************************
+	 ***** Controller Callbacks *****
+	 ********************************/
+	
 	public void decreasePhraseLength(ControlEvent e) {
 		pa.phrase.removeLastCell();
-		int numTickMarks = PApplet.max(pa.phrase.getGridRowSize(), 12);
-		hScrollbar.setNumTickMarks(numTickMarks);
+		if (pa.phrase.getGridRowSize() <= rowSize) {
+			hScrollbar.setNumTickMarks(pa.phrase.getGridRowSize());
+			hScrollbar.setTicksPerScroller(pa.phrase.getGridRowSize());
+		}
+		else {
+			hScrollbar.setNumTickMarks(pa.phrase.getGridRowSize());
+			hScrollbar.setTicksPerScroller(rowSize);
+		}
 		drawBody();		
 	}
 	
 	public void increasePhraseLength(ControlEvent e) {
 		pa.phrase.appendCell();
-		int numTickMarks = PApplet.max(pa.phrase.getGridRowSize(), 12);
-		hScrollbar.setNumTickMarks(numTickMarks);
+		if (pa.phrase.getGridRowSize() <= rowSize) {
+			hScrollbar.setNumTickMarks(pa.phrase.getGridRowSize());
+			hScrollbar.setTicksPerScroller(pa.phrase.getGridRowSize());
+		}
+		else {
+			hScrollbar.setNumTickMarks(pa.phrase.getGridRowSize());
+			hScrollbar.setTicksPerScroller(rowSize);
+		}
 		drawBody();
 	}
 	
@@ -302,6 +349,10 @@ public class Editor extends Screen {
 		}
 	}
 	
+	/**************************
+	 ***** Music Callback *****
+	 **************************/
+	
 	/**
 	 * Callback from livePlayer
 	 * @param livePlayer
@@ -309,6 +360,10 @@ public class Editor extends Screen {
 	public void animate(SoundCipherPlus livePlayer) {
 		activeNoteIndex = livePlayer.getNoteIndex();
 	}
+	
+	/*************************************
+	 ***** Enter/Exit Event Handling *****
+	 *************************************/
 
 	@Override
 	public void onEnter() {
@@ -321,6 +376,10 @@ public class Editor extends Screen {
 	public void onExit() {
 		cp5.hide();
 	}
+	
+	/********************************
+	 ***** Input Event Handling *****
+	 ********************************/
 	
 	private boolean shiftClick() {
 		return pa.keyPressed && pa.key == pa.CODED && pa.keyCode == pa.SHIFT && pa.mousePressed && (pa.mouseButton == pa.LEFT || pa.mouseButton == pa.RIGHT);
@@ -456,6 +515,10 @@ public class Editor extends Screen {
 		int pitchIndex = (int)pa.map(pa.mouseY, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys);
 		return pa.scale.getNoteValue(pitchIndex) + minOctave*12;
 	}
+	
+	/*********************************
+	 ***** Music/Grid Conversion *****
+	 *********************************/
 
 	private int yToPitch(float y) {
 		//int pitchIndex = (int)pa.map(y, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys) - 1 + pitchOffset;
@@ -468,6 +531,10 @@ public class Editor extends Screen {
 		int pitchIndex = pa.scale.getIndexOfNoteValue(pitch - minOctave*12) + 1;
 		return pa.map(pitchIndex, 0, numKeys, gridFrame.getY2(), gridFrame.getY1());
 	}
+	
+	/*******************
+	 ***** Drawing *****
+	 *******************/
 	
 	@Override
 	public void draw() {
@@ -513,14 +580,14 @@ public class Editor extends Screen {
 		drawPhrase(pa.lerpColor(PhasesPApplet.getColor1(), pa.color(255), 0.8f),
 				pa.lerpColor(PhasesPApplet.getColor2(), pa.color(255), 0.8f), pa.color(255), ghostCellWidth);
 		
-		if (pa.phrase.getNumNotes() < 12) {
+		/*if (pa.phrase.getNumNotes() < rowSize) {
 			//draw outline of grid frame
-			pa.strokeWeight(1);
-			pa.stroke(pa.getColor2());
-			pa.noFill();
+			pa.noStroke();
+			pa.fill(pa.getColor2(), 25);
 			pa.rectMode(pa.CORNERS);
-			pa.rect(gridFrame.getX1(), gridFrame.getY1(), gridFrame.getX2(), gridFrame.getY2());
-		}
+			pa.rect(gridFrame.getX1() + cellWidth * (pa.phrase.getNumNotes()+1), gridFrame.getY1(),
+					gridFrame.getX2(), gridFrame.getY2());
+		}*/
 			
 		//draw grid
 		drawGrid(PhasesPApplet.getColor2(), cellWidth);
@@ -656,6 +723,10 @@ public class Editor extends Screen {
 			y -= cellHeight;
 		}
 	}
+	
+	/*************************
+	 ***** Miscellaneous *****
+	 *************************/
 	
 	/**
 	 * 
