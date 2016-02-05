@@ -12,15 +12,16 @@ import processing.data.JSONObject;
  *
  */
 public class Scale {
-	private String name;
-	private String[] noteNames;
-	private int[] noteValues;
+	private final String name;
+	private final String className;
+	private final String[] noteNames;
+	private final int[] noteValues;
 	
 	/**
 	 * Constructs a Scale from a JSONObject containing a name, an array of note names, and an array of note values.
 	 * @param json The JSONObject
 	 */
-	public Scale(JSONObject json) {
+	public Scale(JSONObject json, String className) {
 		name = json.getString("name");
 		JSONArray jNoteNames = json.getJSONArray("noteNames");
 		noteNames = new String[jNoteNames.size()];
@@ -32,6 +33,7 @@ public class Scale {
 		for (int i=0; i<noteValues.length; i++) {
 			noteValues[i] = jNoteValues.getInt(i);
 		}
+		this.className = className;
 	}
 	
 	/**
@@ -44,10 +46,18 @@ public class Scale {
 
 	/**
 	 * 
-	 * @return The name of the scale
+	 * @return The name of the scale. "A", for example.
 	 */
 	public String getName() {
 		return name;
+	}
+	
+	/**
+	 * 
+	 * @return The class name of the scale. "Major Pentatonic", for example.
+	 */
+	public String getClassName() {
+		return className;
 	}
 	
 	/**

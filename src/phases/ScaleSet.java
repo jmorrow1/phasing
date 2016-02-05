@@ -14,7 +14,7 @@ public class ScaleSet {
 		JSONArray jscales = json.getJSONArray("scales");
 		scales = new Scale[jscales.size()];
 		for (int i=0; i<jscales.size(); i++) {
-			scales[i] = new Scale(jscales.getJSONObject(i));
+			scales[i] = new Scale(jscales.getJSONObject(i), name);
 		}
 	}
 	

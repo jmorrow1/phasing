@@ -10,7 +10,6 @@ import controlP5.ControllerView;
 import controlP5.DropdownList;
 import controlP5.Slider;
 import controlP5.Toggle;
-import controlp5.ArrowButtonView;
 import controlp5.DropdownListPlus;
 import controlp5.PlusMinusButtonView;
 import controlp5.Scrollbar;
@@ -84,10 +83,8 @@ public class Editor extends Screen {
 			e.printStackTrace();
 		}
 		
-		//init grid variables
-		gridFrame = new Rect(10, 60, pa.width-10, pa.height-40, pa.CORNERS);
-		
 		//other things dependent on screen size
+		gridFrame = new Rect(10, 60, pa.width-10, pa.height-40, pa.CORNERS);
 		switch (pa.screenSizeMode) {
 			case PhasesPApplet._800x600 :
 				rowSize = 12;
@@ -96,6 +93,7 @@ public class Editor extends Screen {
 				rowSize = 18;
 				break;
 		}
+		
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
 		cellHeight = gridFrame.getHeight() / columnSize;
 		
@@ -121,7 +119,7 @@ public class Editor extends Screen {
 			    .setBarHeight(menuItemHeight)
 			    .close()
 			    ;
-		rootMenu.setLabel("C");
+		rootMenu.setLabel(pa.scale.getName());
 		colorController(rootMenu);
 		formatLabel(rootMenu);
 		rootLabel = rootMenu.getLabel();
@@ -135,13 +133,13 @@ public class Editor extends Screen {
 				 .setBarHeight(menuItemHeight)
 				 .close()
 				 ;
-		scaleMenu.setLabel("Chromatic");
+		scaleMenu.setLabel(pa.scale.getClassName());
 		colorController(scaleMenu);
 		formatLabel(scaleMenu);
 		scaleLabel = scaleMenu.getLabel();
 		
 		//bpm sliders
-		int sliderWidth = 442;
+		int sliderWidth = getSliderWidth();
 		int sliderHeight = 23;
 		bpmSlider = addBpm1Slider(scaleMenu.getPosition()[0] + scaleMenu.getWidth() + controller_dx, 
 				                  pa.changeScreenButtonY2 - sliderHeight,
@@ -219,6 +217,14 @@ public class Editor extends Screen {
 	    colorController(rightArrow);
 	}
 
+	private int getSliderWidth() {
+		switch(pa.screenSizeMode) {
+			case PhasesPApplet._800x600 : return 160;
+			case PhasesPApplet._1366x768 : return 442;
+			default : return 100;
+		}
+	}
+	
 	private void formatLabel(DropdownList x) {
 		x.getCaptionLabel().toUpperCase(false);
 		x.getValueLabel().toUpperCase(false);

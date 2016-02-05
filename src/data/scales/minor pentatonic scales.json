@@ -9,7 +9,7 @@
 		  16,
 		  19
 		],
-		"name": "A Minor Pentatonic",
+		"name": "A",
 		"noteNames": [
 		  "A",
 		  "C",
@@ -26,7 +26,7 @@
 		  11,
 		  14
 		],
-		"name": "E Minor Pentatonic",
+		"name": "E",
 		"noteNames": [
 		  "E",
 		  "G",
@@ -43,7 +43,7 @@
 		  18,
 		  21
 		],
-		"name": "B Minor Pentatonic",
+		"name": "B",
 		"noteNames": [
 		  "B",
 		  "D",
@@ -60,7 +60,7 @@
 		  13,
 		  16
 		],
-		"name": "F# Minor Pentatonic",
+		"name": "F#",
 		"noteNames": [
 		  "F#",
 		  "A",
@@ -77,7 +77,7 @@
 		  8,
 		  11
 		],
-		"name": "C# Minor Pentatonic",
+		"name": "C#",
 		"noteNames": [
 		  "C#",
 		  "E",
@@ -94,7 +94,7 @@
 		  15,
 		  18
 		],
-		"name": "G# Minor Pentatonic",
+		"name": "G#",
 		"noteNames": [
 		  "G#",
 		  "B",
@@ -111,7 +111,7 @@
 		  10,
 		  13
 		],
-		"name": "D# Minor Pentatonic",
+		"name": "D#",
 		"noteNames": [
 		  "D#",
 		  "F#",
@@ -128,7 +128,7 @@
 		  17,
 		  20
 		],
-		"name": "Bb Minor Pentatonic",
+		"name": "Bb",
 		"noteNames": [
 		  "Bb",
 		  "Db",
@@ -145,7 +145,7 @@
 		  12,
 		  15
 		],
-		"name": "F Minor Pentatonic",
+		"name": "F",
 		"noteNames": [
 		  "F",
 		  "Ab",
@@ -162,7 +162,7 @@
 		  7,
 		  10
 		],
-		"name": "C Minor Pentatonic",
+		"name": "C",
 		"noteNames": [
 		  "C",
 		  "Eb",
@@ -179,7 +179,7 @@
 		  14,
 		  17
 		],
-		"name": "G Minor Pentatonic",
+		"name": "G",
 		"noteNames": [
 		  "G",
 		  "Bb",
@@ -196,7 +196,7 @@
 		  9,
 		  12
 		],
-		"name": "D Minor Pentatonic",
+		"name": "D",
 		"noteNames": [
 		  "D",
 		  "F",

@@ -60,7 +60,11 @@ public class PhasesPApplet extends PApplet {
 	
 	//screen size
 	public static final int _800x600 = 0, _1366x768 = 1, _1920x1080 = 2, _1024x768 = 3, _1280x800 = 4, _1280x1024 = 5;
-	public int screenSizeMode = _1366x768;
+	public int screenSizeMode = _800x600;
+	
+	/****************
+	***** Setup *****
+	*****************/
 	
 	/**
 	 * Sets up the size of the canvas/window
@@ -129,12 +133,11 @@ public class PhasesPApplet extends PApplet {
 		
 		//create default phrase
 		int n = Phrase.NOTE_START;
-		phrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
+		/*phrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
 				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
-				            new int[] {n, n, n, n, n, n, n, n, n, n, n, n});
-		
-		//set the scale to the default scale
-		scale = this.getScale("C", "Chromatic");
+				            new int[] {n, n, n, n, n, n, n, n, n, n, n, n});*/
+		scale = getRandomScale();
+		phrase = generateReichLikePhrase(scale, 5);
 		
 		//create screens
 		presenter = new Presenter(this);
@@ -154,6 +157,119 @@ public class PhasesPApplet extends PApplet {
 		colorController(changeScreenButton);
 	}
 	
+	/***********************************
+	***** Random Phrase Generation *****
+	************************************/
+	
+	/**
+	 * Generates a phrase that has the property of being like the phrase in Steve Reich's Piano Phase
+	 * in this sense: every pitch in the phrase occurs periodically.
+	 * 
+	 * A phasing process over a phrase like this as opposed to a generic phrase results in a
+	 * greater frequence of unisons (two notes of the same pitch playing at the same time).
+	 * 
+	 * @param scale The set of pitches the phrase draws from.
+	 * @param octave The starting octave. Pitches in the phrase may be above this octave, but not below it.
+	 * @return
+	 */
+	private Phrase generateReichLikePhrase(final Scale scale, final int octave) {
+		return generatePhraseFromTemplates(new String[] {"ABCDAECF", "ABCDABCE", "ABCDEBADCBED", "ABCDEBADCBED", "ABCDEBADFBEDABGDEBADHBED", "ABCDAECFADCEAGCDAECHADCE"}, scale, octave);
+	}
+	
+	/**
+	 * Generates a phrase from one of the given templates.
+	 * 
+	 * A template is a string of characters. Each character is like a variable. It represents some pitch.
+	 * This function randomly binds every character in the template to a pitch in the scale.
+	 * 
+	 * @param templates The set of templates.
+	 * @param scale The set of pitches the phrase draws from.
+	 * @param octave The starting octave. Pitches in the phrase may be above this octave, but not below it.
+	 * @return
+	 */
+	private Phrase generatePhraseFromTemplates(final String[] templates, final Scale scale, int octave) {
+		final String template = templates[(int)random(templates.length)];
+	    int pitchOffset = octave * 12;
+		HashMap<Character, Integer> map = new HashMap<Character, Integer>();
+		
+		int[] shuffledScale = new int[2*scale.size()];
+		for (int i=0; i<scale.size(); i++) {
+			shuffledScale[i] = scale.getNoteValue(i);
+		}
+		for (int i=0; i<scale.size(); i++) {
+			shuffledScale[i + scale.size()] = scale.getNoteValue(i) + 12;
+		}
+		shuffle(shuffledScale);
+		
+		float[] pitches = new float[template.length()];
+		float[] dynamics = new float[template.length()];
+		int[] cellTypes = new int[template.length()];
+		
+		int j=0; //loops through pitch choices
+		
+		for (int i=0; i<template.length(); i++) {
+			char c = template.charAt(i);
+			if (!map.containsKey(c)) {
+				int pitch = shuffledScale[j] + pitchOffset;
+				
+				//increment j
+				j++;
+				if (j == shuffledScale.length) {
+					j=0;
+					octave += 1;
+					pitchOffset += 12;
+					shuffle(shuffledScale);
+				}
+
+				map.put(c, pitch);
+			}
+			pitches[i] = map.get(c);
+			dynamics[i] = 50;
+			cellTypes[i] = Phrase.NOTE_START;
+		}
+		
+		return new Phrase(pitches, dynamics, cellTypes);
+	}
+	
+	/**
+	 * Randomly shuffles an array of ints.
+	 * @param xs The array of ints to shuffle.
+	 */
+	private void shuffle(int[] xs) {
+		int i = xs.length - 1;
+		while (i > 0) {
+			int j = (int)random(0, i+1);
+			swap(xs, i, j);
+			i--;
+		}
+	}
+	
+	/**
+	 * Swaps two ints within an int array.
+	 * @param xs The int array.
+	 * @param i The index of one int.
+	 * @param j The index of the other int.
+	 */
+	private void swap(int[] xs, int i, int j) {
+		int xs_i = xs[i];
+		xs[i] = xs[j];
+		xs[j] = xs_i;
+	}
+	
+	/**
+	 * 
+	 * @return A random scale contained by this PhasesPApplet object.
+	 */
+	private Scale getRandomScale() {
+		String type = scaleTypes.get((int)random(scaleTypes.size()));
+		ScaleSet s = scaleSets.get(type);
+		return s.getScale((int)random(s.numScales()));
+	}
+	
+	/**************************
+	***** ControlP5 Style *****
+	***************************/
+	
 	private void colorController(Controller c) {
 		c.setColorCaptionLabel(color(255));
 	    c.setColorValueLabel(color(255));
@@ -162,16 +278,92 @@ public class PhasesPApplet extends PApplet {
 		c.setColorForeground(getBrightColor1());
 	}
 	
-	private void testGetScale() {
-		for (int i=0; i<roots.length; i++) {
-			for (int j=0; j<scaleTypes.size(); j++) {
-				Scale s = getScale(roots[i], scaleTypes.get(j));
-				if (s == null) {
-					println("error: scale is null");
-				}
-			}
+	/**********************************
+	***** Callback from ControlP5 *****
+	***********************************/
+	
+	/**
+	 * Callback from ControlP5
+	 * Controls changing the screen from Presentation screen to Editor screen and vice versa
+	 * @param e
+	 */
+	public void changeScreen(ControlEvent e) {
+		currentScreen.onExit();
+		if (currentScreen == editor) {
+			currentScreen = presenter;
+			changeScreenButton.setCaptionLabel("Compose");
 		}
+		else if (currentScreen == presenter) {
+			currentScreen = editor;
+			changeScreenButton.setCaptionLabel("Rehearse");
+		}
+		currentScreen.onEnter();
 	}
+	
+	/********************
+	***** Draw Loop *****
+	*********************/
+	
+	/**
+	 * Lets the current screen draw itself.
+	 */
+	public void draw() {
+		currentScreen.draw();
+	}
+	
+	/*******************************
+	***** Input Event Handling *****
+	********************************/
+	
+	/**
+	 * Sends mouse pressed events to the current screen.
+	 */
+	public void mousePressed() {
+		currentScreen.mousePressed();
+	}
+	
+	/**
+	 * Sends mouse released events to the current screen.
+	 */
+	public void mouseReleased() {
+		currentScreen.mouseReleased();
+	}
+	
+	/**
+	 * Sends mouse dragged events to the current screen.
+	 */
+	public void mouseDragged() {
+		currentScreen.mouseDragged();
+	}
+	
+	/**
+	 * Sends mouse moved events to the current screen.
+	 */
+	public void mouseMoved() {
+		currentScreen.mouseMoved();
+	}
+	
+	/**
+	 * Sends key pressed events to the current screen.
+	 */
+	public void keyPressed() {
+		currentScreen.keyPressed();
+	}
+	
+	/**
+	 * Sends key released events to the current screen.
+	 */
+	public void keyReleased() {
+		currentScreen.keyReleased();
+	}
+	
+	public void mouseWheel(MouseEvent event) {
+		currentScreen.mouseWheel(event);
+	}
+	
+	/***********************************************
+	***** Extended Primitive Drawing Functions *****
+	************************************************/
 	
 	public static void drawArrowHead(float x, float y, float leng, float headAngle, float deviationAngle, PGraphics pg) {
 		 pg.line(x, y, x + leng*cos(headAngle + deviationAngle), y + leng*sin(headAngle + deviationAngle));
@@ -221,76 +413,57 @@ public class PhasesPApplet extends PApplet {
 		}
 	}
 	
-	/**
-	 * Callback from ControlP5
-	 * Controls changing the screen from Presentation screen to Editor screen and vice versa
-	 * @param e
-	 */
-	public void changeScreen(ControlEvent e) {
-		currentScreen.onExit();
-		if (currentScreen == editor) {
-			currentScreen = presenter;
-			changeScreenButton.setCaptionLabel("Compose");
-		}
-		else if (currentScreen == presenter) {
-			currentScreen = editor;
-			changeScreenButton.setCaptionLabel("Rehearse");
-		}
-		currentScreen.onEnter();
+	/****************************
+	***** Utility Functions *****
+	*****************************/
+	
+	//TODO: implement this function
+	public static void phraseToMidiFile(String location, String name) {
+		SCScore score = new SCScore();
+		//THE IMPORTANT PART GOES HERE
+		score.writeMidiFile(location + "/" + name + ".mid");
 	}
 	
 	/**
-	 * Lets the current screen draw itself.
+	 * A generalization of the other remainder function.
+	 * In normal modulo arithmetic, the upper number is constrained.
+	 * This is a generalization of that where the lower number can also be constrained.
+	 * @param num
+	 * @param min
+	 * @param max
+	 * @return
 	 */
-	public void draw() {
-		currentScreen.draw();
+	public static int remainder(int num, int min, int max) {
+		return remainder(num - min, max-min) + min;
 	}
 	
 	/**
-	 * Sends mouse pressed events to the current screen.
+	 * Calculates the remainder of num / denom.
+	 * @param num The numerator
+	 * @param denom The denominator
+	 * @return The remainder of num / denom
 	 */
-	public void mousePressed() {
-		currentScreen.mousePressed();
+	public static int remainder(int num, int denom) {
+		if (0 <= num && num < denom) return num;
+	    else if (num > 0) return num % denom;
+	    else return (denom - ((-num) % denom)) % denom;
 	}
 	
 	/**
-	 * Sends mouse released events to the current screen.
+	 * Calculates the remainder of num / denom.
+	 * @param num The numerator
+	 * @param denom The denominator
+	 * @return The remainder of num / denom
 	 */
-	public void mouseReleased() {
-		currentScreen.mouseReleased();
+	public static float remainder(float num, float denom) {
+		if (0 <= num && num < denom) return num;
+		else if (num > 0) return num % denom;
+		else return denom - ((-num) % denom);
 	}
 	
-	/**
-	 * Sends mouse dragged events to the current screen.
-	 */
-	public void mouseDragged() {
-		currentScreen.mouseDragged();
-	}
-	
-	/**
-	 * Sends mouse moved events to the current screen.
-	 */
-	public void mouseMoved() {
-		currentScreen.mouseMoved();
-	}
-	
-	/**
-	 * Sends key pressed events to the current screen.
-	 */
-	public void keyPressed() {
-		currentScreen.keyPressed();
-	}
-	
-	/**
-	 * Sends key released events to the current screen.
-	 */
-	public void keyReleased() {
-		currentScreen.keyReleased();
-	}
-	
-	public void mouseWheel(MouseEvent event) {
-		currentScreen.mouseWheel(event);
-	}
+	/******************************
+	***** Getters and Setters *****
+	******************************/
 	
 	public Scale getScale(String root, String scaleName) {
 		for (String name : scaleTypes) {
@@ -309,15 +482,8 @@ public class PhasesPApplet extends PApplet {
 		return null;
 	}
 	
-	private boolean noteNamesAreEquivalent(String root, String scaleRootName) {
+	private static boolean noteNamesAreEquivalent(String root, String scaleRootName) {
 		return (scaleRootName.length() > 1 && root.contains(scaleRootName)) || root.equals(scaleRootName);
-	}
-	
-	//TODO: implement this function
-	public static void phraseToMidiFile(String location, String name) {
-		SCScore score = new SCScore();
-		//THE IMPORTANT PART GOES HERE
-		score.writeMidiFile(location + "/" + name + ".mid");
 	}
 	
 	/**
@@ -402,42 +568,5 @@ public class PhasesPApplet extends PApplet {
 		bpm2 = constrain(bpm2, MIN_BPM, MAX_BPM);
 		this.bpm2 = bpm2;
 		this.bpms2 = bpm2 / 60000f;
-	}
-	
-	/**
-	 * A generalization of the other remainder function.
-	 * In normal modulo arithmetic, the upper number is constrained.
-	 * This is a generalization of that where the lower number can also be constrained.
-	 * @param num
-	 * @param min
-	 * @param max
-	 * @return
-	 */
-	public static int remainder(int num, int min, int max) {
-		return remainder(num - min, max-min) + min;
-	}
-	
-	/**
-	 * Calculates the remainder of num / denom.
-	 * @param num The numerator
-	 * @param denom The denominator
-	 * @return The remainder of num / denom
-	 */
-	public static int remainder(int num, int denom) {
-		if (0 <= num && num < denom) return num;
-	    else if (num > 0) return num % denom;
-	    else return (denom - ((-num) % denom)) % denom;
-	}
-	
-	/**
-	 * Calculates the remainder of num / denom.
-	 * @param num The numerator
-	 * @param denom The denominator
-	 * @return The remainder of num / denom
-	 */
-	public static float remainder(float num, float denom) {
-		if (0 <= num && num < denom) return num;
-		else if (num > 0) return num % denom;
-		else return denom - ((-num) % denom);
 	}
 }
