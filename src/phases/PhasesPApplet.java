@@ -49,7 +49,8 @@ public class PhasesPApplet extends PApplet {
 	private Screen currentScreen;
 	
 	//visual variables
-	private static int color1, color2, brightColor1, brightColor2, blendColor, brightBlendColor;
+	private static ColorScheme colorScheme;
+	//private static int color1, color2, brightColor1, brightColor2, blendColor, brightBlendColor;
 	public static PFont pfont12, pfont18, pfont42, musicFont;
 	public int changeScreenButtonY2 = 50;
 	public int changeScreenButtonX2 = 135;
@@ -93,13 +94,11 @@ public class PhasesPApplet extends PApplet {
 	public void setup() {
 		//init colors
 		colorMode(HSB, 360, 100, 100, 100);
-		color1 = color(0, 60, 90);
-		brightColor1 = color(0, 100, 90);
-		color2 = color(240, 60, 90);
-		brightColor2 = color(240, 100, 90);
-		
-		blendColor = lerpColor(color1, color2, 0.5f);
-		brightBlendColor = lerpColor(brightColor1, brightColor2, 0.5f);
+		int color1 = color(0, 60, 90);
+		int color1Bold = color(0, 100, 90);
+		int color2 = color(240, 60, 90);
+		int color2Bold = color(240, 100, 90);
+		colorScheme = new ColorScheme(color1, color2, color1Bold, color2Bold);
 		colorMode(RGB, 255, 255, 255, 255);
 		
 		//init font variables
@@ -265,7 +264,7 @@ public class PhasesPApplet extends PApplet {
 	 * @param i The index of one int.
 	 * @param j The index of the other int.
 	 */
-	private void swap(int[] xs, int i, int j) {
+	private static void swap(int[] xs, int i, int j) {
 		int xs_i = xs[i];
 		xs[i] = xs[j];
 		xs[j] = xs_i;
@@ -289,8 +288,8 @@ public class PhasesPApplet extends PApplet {
 		c.setColorCaptionLabel(color(255));
 	    c.setColorValueLabel(color(255));
 		c.setColorBackground(getColor1());
-		c.setColorActive(getBrightColor1());
-		c.setColorForeground(getBrightColor1());
+		c.setColorActive(getColor1Bold());
+		c.setColorForeground(getColor1Bold());
 	}
 	
 	/**********************************
@@ -561,31 +560,47 @@ public class PhasesPApplet extends PApplet {
 	 * @return color 1 of the program-wide color scheme
 	 */
 	public static int getColor1() {
-		return color1;
-	}
-	
-	public static int getBrightColor1() {
-		return brightColor1;
+		return colorScheme.color1;
 	}
 	
 	/**
 	 * 
-	 * @return color2 of the program-wide color scheme
+	 * @return The bold version of color 1 of the program-wide color scheme
+	 */
+	public static int getColor1Bold() {
+		return colorScheme.color1Bold;
+	}
+	
+	/**
+	 * 
+	 * @return color 2 of the program-wide color scheme
 	 */
 	public static int getColor2() {
-		return color2;
+		return colorScheme.color2;
 	}
 	
-	public static int getBrightColor2() {
-		return brightColor2;
+	/**
+	 * 
+	 * @return The bold version of color 2 of the program-wide color scheme
+	 */
+	public static int getColor2Bold() {
+		return colorScheme.color2Bold;
 	}
 	
-	public static int getBlendColor() {
-		return blendColor;
+	/**
+	 * 
+	 * @return The color in between color 1 and color 2 of the program-wide color scheme
+	 */
+	public static int getBlendedColor() {
+		return colorScheme.blendedColor;
 	}
 	
-	public static int getBrightBlendColor() {
-		return brightBlendColor;
+	/**
+	 * 
+	 * @return The color in between color of color 1 bold and color 2 bold of the program-wide color scheme
+	 */
+	public static int getBlendedColorBold() {
+		return colorScheme.blendedColorBold;
 	}
 	
 	/**
@@ -638,5 +653,18 @@ public class PhasesPApplet extends PApplet {
 		bpm2 = constrain(bpm2, MIN_BPM, MAX_BPM);
 		this.bpm2 = bpm2;
 		this.bpms2 = bpm2 / 60000f;
+	}
+	
+	private class ColorScheme {
+		final int color1, color2, color1Bold, color2Bold, blendedColor, blendedColorBold;
+
+		ColorScheme(int color1, int color2, int color1Bold, int color2Bold) {
+			this.color1 = color1;
+			this.color2 = color2;
+			this.color1Bold = color1Bold;
+			this.color2Bold = color2Bold;
+			blendedColor = lerpColor(color1, color2, 0.5f);
+			blendedColorBold = lerpColor(color1Bold, color2Bold, 0.5f);
+		}
 	}
 }

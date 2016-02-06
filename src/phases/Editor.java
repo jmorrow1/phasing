@@ -239,8 +239,8 @@ public class Editor extends Screen {
 	    c.setColorValueLabel(pa.color(255));
 		if (c instanceof DropdownList) {
 			c.setColorBackground(pa.getColor1());
-			c.setColorActive(pa.getBrightColor1());
-			c.setColorForeground(pa.getBrightColor1());
+			c.setColorActive(pa.getColor1Bold());
+			c.setColorForeground(pa.getColor1Bold());
 		}
 		else if (c instanceof Slider || c instanceof Scrollbar) {
 			c.setColorBackground(pa.lerpColor(pa.getColor1(), pa.color(255), 0.3f));
@@ -250,11 +250,11 @@ public class Editor extends Screen {
 		else if (c instanceof Button) {
 			c.setColorBackground(pa.color(255));
 		    c.setColorForeground(pa.getColor1());
-		    c.setColorActive(pa.getBrightColor1());
+		    c.setColorActive(pa.getColor1Bold());
 		}
 		else if (c instanceof Toggle) {
 			c.setColorBackground(pa.getColor1());
-			c.setColorForeground(pa.getBrightColor1());
+			c.setColorForeground(pa.getColor1Bold());
 		}
 	}
 	

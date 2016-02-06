@@ -153,7 +153,7 @@ public class PhaseShifter extends View {
 		if (colorScheme.toInt() == DIACHROMATIC) {
 			nonActiveColor = (playerNum == 1) ? pa.getColor1() : pa.getColor2();
 			nonActiveColor = pa.color(nonActiveColor, opacity);
-			activeColor = (playerNum == 1) ? pa.getBrightColor1() : pa.getBrightColor2();
+			activeColor = (playerNum == 1) ? pa.getColor1Bold() : pa.getColor2Bold();
 			activeColor = pa.color(activeColor, opacity);
 		}
 		

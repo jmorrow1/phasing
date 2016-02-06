@@ -13,7 +13,7 @@ public class ShowActiveNoteIcon implements Icon {
         int quarterNoteSize = (int)(radius*1.5f);
         
         if (showState == ONLY_SHOW_ACTIVE_NOTE || showState == SHOW_ACTIVE_NOTE) {
-            pa.fill(PhasesPApplet.getBrightColor1());
+            pa.fill(PhasesPApplet.getColor1Bold());
         }
         else {
             pa.fill(0);
