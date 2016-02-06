@@ -18,12 +18,12 @@ public class ShowActiveNoteIcon implements Icon {
         else {
             pa.fill(0);
         }
-        pa.quarterNote(x, y, quarterNoteSize);
+        pa.drawQuarterNoteSymbol(x, y, quarterNoteSize);
         
         if (showState != ONLY_SHOW_ACTIVE_NOTE) {
         	pa.fill(0);
-        	pa.quarterNote(x - radius*0.65f, y, quarterNoteSize);
-            pa.quarterNote(x + radius*0.65f, y, quarterNoteSize);
+        	pa.drawQuarterNoteSymbol(x - radius*0.65f, y, quarterNoteSize);
+            pa.drawQuarterNoteSymbol(x + radius*0.65f, y, quarterNoteSize);
         }
     }
 }

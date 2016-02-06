@@ -15,7 +15,7 @@ public class ScoreModeIcon implements Icon {
         pa.fill(0);
         pa.ellipseMode(pa.RADIUS);
         pa.ellipse(x - radius*0.5f, y + 0.5f*radius, 0.2f*radius, 0.2f*radius);
-        pa.drawCamera(x + radius*0.5f, y + 0.5f*radius, radius, 0.5f*radius);
+        pa.drawCameraIcon(x + radius*0.5f, y + 0.5f*radius, radius, 0.5f*radius);
         
         //velocity arrow
         pa.stroke(0);

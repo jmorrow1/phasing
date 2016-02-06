@@ -92,12 +92,15 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void setup() {
 		//init colors
-		color1 = color(255, 100, 100);
-		brightColor1 = color(255, 0, 0);
-		color2 = color(100, 100, 255);
-		brightColor2 = color(0, 0, 255);
+		colorMode(HSB, 360, 100, 100, 100);
+		color1 = color(0, 60, 90);
+		brightColor1 = color(0, 100, 90);
+		color2 = color(240, 60, 90);
+		brightColor2 = color(240, 100, 90);
+		
 		blendColor = lerpColor(color1, color2, 0.5f);
 		brightBlendColor = lerpColor(brightColor1, brightColor2, 0.5f);
+		colorMode(RGB, 255, 255, 255, 255);
 		
 		//init font variables
 		pfont12 = loadFont("DejaVuSans-12.vlw");
@@ -155,6 +158,18 @@ public class PhasesPApplet extends PApplet {
 		}
 		
 		colorController(changeScreenButton);
+	}
+	
+	/**************************
+	***** Color Loading *******
+	***************************/
+	
+	public int loadColor(JSONObject json) {
+		pushStyle();
+		colorMode(HSB, 360, 100, 100, 100);
+		int color = color(json.getInt("hue"), json.getInt("saturation"), json.getInt("brightness"), json.getInt("opacity"));
+		popStyle();
+		return color;
 	}
 	
 	/***********************************
@@ -305,7 +320,7 @@ public class PhasesPApplet extends PApplet {
 	*********************/
 	
 	/**
-	 * Lets the current screen draw itself.
+	 * Sends a message to the current screen to draw itself.
 	 */
 	public void draw() {
 		currentScreen.draw();
@@ -365,40 +380,95 @@ public class PhasesPApplet extends PApplet {
 	***** Extended Primitive Drawing Functions *****
 	************************************************/
 	
+	/**
+	 * Draws an arrow head from two lines (which looks like this: >).
+	 * It has its tip at (x,y).
+	 * The lines have a given length.
+	 * The headAngle tells the arrow head which direction to point, in radians
+	 * The deviationAngle tells the lines how much to bend away from the head angle, in radians.
+	 * 
+	 * @param x The x-coordinate of the arrow head's tip
+	 * @param y The y-coordinate of the aroow head's tip
+	 * @param length The length of each of the lines
+	 * @param headAngle The direction in which the arrow head points, in radians
+	 * @param deviationAngle How much the lines bend away from the head angle, in radians
+	 * @param pg The PGraphics instance on which to draw the arrow head
+	 */
 	public static void drawArrowHead(float x, float y, float leng, float headAngle, float deviationAngle, PGraphics pg) {
 		 pg.line(x, y, x + leng*cos(headAngle + deviationAngle), y + leng*sin(headAngle + deviationAngle));
 		 pg.line(x, y, x + leng*cos(headAngle - deviationAngle), y + leng*sin(headAngle - deviationAngle));
 	}
 	
-	public void drawArrowHead(float x, float y, float leng, float headAngle, float deviationAngle) {
-	    line(x, y, x + leng*cos(headAngle + deviationAngle), y + leng*sin(headAngle + deviationAngle));
-	    line(x, y, x + leng*cos(headAngle - deviationAngle), y + leng*sin(headAngle - deviationAngle));
+	/**
+	 * Draws an arrow head from two lines (which looks like this: >).
+	 * It has its tip at (x,y).
+	 * The lines have a given length.
+	 * The headAngle tells the arrow head which direction to point, in radians
+	 * The deviationAngle tells the lines how much to bend away from the head angle, in radians.
+	 * 
+	 * @param x The x-coordinate of the arrow head's tip
+	 * @param y The y-coordinate of the aroow head's tip
+	 * @param length The length of each of the lines
+	 * @param headAngle The direction in which the arrow head points, in radians
+	 * @param deviationAngle How much the lines bend away from the head angle, in radians
+	 */
+	public void drawArrowHead(float x, float y, float length, float headAngle, float deviationAngle) {
+	    line(x, y, x + length*cos(headAngle + deviationAngle), y + length*sin(headAngle + deviationAngle));
+	    line(x, y, x + length*cos(headAngle - deviationAngle), y + length*sin(headAngle - deviationAngle));
 	}
 	
-	public void quarterNote(float x, float y, int textSize) {
+	/**
+	 * Draws a quarter note symbol, as in standard musical notation, centered about (cenx, ceny).
+	 * @param cenx The center x-coordinate
+	 * @param ceny The center y-coordinate
+	 * @param textSize The size of the font that draws the symbol
+	 */
+	public void drawQuarterNoteSymbol(float cenx, float ceny, int textSize) {
 	    pushStyle();
 	    textFont(musicFont);
 	    textSize(textSize);
 	    textAlign(CENTER, CENTER);
-	    text("q", x, y  - textSize*0.2f);
+	    text("q", cenx, ceny  - textSize*0.2f);
 	    popStyle();
 	}
 	
-	public void drawCamera(float x, float y, float w, float h) {
+	/**
+	 * Draws a camera icon with upperleft corner (x1, y1), width w, and height h.
+	 * @param x1 The leftmost x-coordinate
+	 * @param y1 The uppermost y-coordinate
+	 * @param w The width
+	 * @param h The height
+	 */
+	public void drawCameraIcon(float x1, float y1, float w, float h) {
 	    noStroke();
 	    fill(0);
 	    rectMode(CORNER);
-	    rect(x - 0.3f*w, y - 0.5f*h, 0.8f*w - 5, h);
+	    rect(x1 - 0.3f*w, y1 - 0.5f*h, 0.8f*w - 5, h);
 	    noStroke();
 	    fill(0);
-	    Polygon.drawPolygon(x - 0.3f*w - 0.1f*w, y, 0.2f*w, 0.2f*w, 3, 0, this);
+	    Polygon.drawPolygon(x1 - 0.3f*w - 0.1f*w, y1, 0.2f*w, 0.2f*w, 3, 0, this);
 	}
 	
-	public void drawSineWave(float cenx, float y, float length, float amp) {
-		drawSineWave(cenx, y, length, amp, 0);
+	/**
+	 * Draws a transverse sine wave centered about (cenx, ceny) with a given length and amplitude.
+	 * @param cenx The center x-coordinate
+	 * @param ceny The center y-coordinate
+	 * @param length The length
+	 * @param amp The amplitude
+	 */
+	public void drawSineWave(float cenx, float ceny, float length, float amp) {
+		drawSineWave(cenx, ceny, length, amp, 0);
 	}
 	
-	public void drawSineWave(float cenx, float y, float length, float amp, float startAngle) {
+	/**
+	 * Draws a transverse sine wave centered about (cenx, ceny) with a given length, amplitude, and a starting angle, in radians, which displaces the wave.
+	 * @param cenx The center x-coordinate
+	 * @param ceny The center y-coordinate
+	 * @param length The length
+	 * @param amp The amplitude
+	 * @param startAngle The starting angle, in radians
+	 */
+	public void drawSineWave(float cenx, float ceny, float length, float amp, float startAngle) {
 		int numPts = 100;
 		float dTheta = TWO_PI / numPts;
 		float theta = startAngle;
@@ -407,7 +477,7 @@ public class PhasesPApplet extends PApplet {
 		float dx = length / numPts;
 		
 		for (int i=0; i<numPts; i++) {
-			point(x, y + amp*sin(theta));
+			point(x, ceny + amp*sin(theta));
 			x += dx;
 			theta += dTheta;
 		}
