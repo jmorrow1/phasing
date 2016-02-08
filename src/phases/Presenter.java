@@ -154,10 +154,13 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		checkUnlocks();
 		pa.background(255);
 		animateView();
-		drawIcons();
+		drawNavigationMenu();
 		
 	}
 	
+	/**
+	 * Updates variables related to tracking the amount of time the program has been executing under certain conditions.
+	 */
 	private void updateTime() {
 		int t = pa.millis();
 		int dt = t - prev_t;
@@ -169,7 +172,10 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 	}
 
-	private void drawIcons() {
+	/**
+	 * Draws the icon navigation menu.
+	 */
+	private void drawNavigationMenu() {
 		if (iconLists.size() > 0) {
 			float x = iconStartX;
 			float y = iconStartY;
@@ -192,6 +198,14 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}	
 	}
 	
+	/**
+	 * If the given (x,y) position lies within the area in which an icon is being displayed, the index of that icon is returned.
+	 * If the given (x,y) position does not lie within the area in which an icon is being displayed, -1 is returned.
+	 * 
+	 * @param x The x-coordinate in pixels.
+	 * @param y The y-coordinate in pixels.
+	 * @return
+	 */
 	private int iconIndexTouches(int x, int y) {
 		float iconEndX = iconStartX + icon_dx*iconLists.size() + 2*iconRadius;
 		if (iconStartX-iconRadius <= x && x <= iconEndX && iconStartY <= y && y <= iconStartY + 2*iconRadius) {
@@ -202,14 +216,26 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 	}
 
+	/**
+	 * 
+	 * @return The position of player1 along the duration of the phrase it is playing.
+	 */
 	private float computeNotept1() {
 		return PApplet.map(player1.getTickPosition(), 0, player1.getTickLength(), 0, pa.phrase.getTotalDuration());
 	}
 
+	/**
+	 * 
+	 * @return The position of player2 along the duration of the phrase it is playing.
+	 */
 	private float computeNotept2() {
 		return PApplet.map(player2.getTickPosition(), 0, player2.getTickLength(), 0, pa.phrase.getTotalDuration());
 	}
 
+	/**
+	 * First, it computes information relating to musical timing, such as the duration a player has traveled since last frame.
+	 * Then it sends that information to the active view and tells the view to update and draw itself.
+	 */
 	private void animateView() {
 		float notept1 = computeNotept1();
 		float notept2 = computeNotept2();
@@ -243,8 +269,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			accountBalance2 = 0;
 			dNotept2 += accountBalance2;
 		}
-		// pa.println("accountBalance1 = " + accountBalance1 + ",
-		// accountBalance2 = " + accountBalance2);
 
 		prev_notept1 = notept1;
 		prev_notept2 = notept2;
@@ -313,6 +337,10 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 ***** Icon Initialization *****
 	 *******************************/
 	
+	/**
+	 * First, it checks if new icons have been unlocked for the active view type.
+	 * If so, it calls setupIconLists(), which refreshes the state of the icon lists.
+	 */
 	private void checkUnlocks() {
 		if (viewType.toInt() == MUSICIAN && 
 				nextMusicianUnlockIndex < musicianUnlockSeq.length &&
@@ -335,6 +363,9 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		
 	}
 	
+	/**
+	 * Adds all the unlocked view type icons to the container called "iconLists", which stores all the icons that are currently available to the player.
+	 */
 	private void setupViewTypeIcons() {
 		int availability = getIconAvailability(viewTypeName);
 		if (availability > 0) {
@@ -347,6 +378,9 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 	}
 
+	/**
+	 * Adds all the unlocked icons relating to the current view type + all the unlocked view type icons.
+	 */
 	private void setupIconLists() {
 		iconLists.clear();
 		variables.clear();
@@ -445,6 +479,11 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param name The String identifier for a type of icon related to the current view type. All of these kinds of names are given in views.ViewVariableInfo.java.
+	 * @return The number of icons that are available (unlocked) of the icon type associated with the given identifier.
+	 */
 	private int getIconAvailability(String name) {
 		switch (name) {
 			case viewTypeName:
@@ -467,6 +506,11 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}	
 	}
 	
+	/**
+	 * 
+	 * @param name The String identifier for a type of icon related to the view type called Musician. All of these kinds of names are given in views.ViewVariableInfo.java.
+	 * @return The number of icons that are available (unlocked) of the icon type associated with the given identifier.
+	 */
 	private int getMusicianIconAvailability(String name) {
 		switch (name) {
 			case colorSchemeName:
@@ -495,6 +539,11 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param name The String identifier for a type of icon related to the view type called PhaseShifter. All of these kinds of names are given in views.ViewVariableInfo.java.
+	 * @return The number of icons that are available (unlocked) of the icon type associated with the given identifier.
+	 */
 	private int getPhaseShifterIconAvailability(String name) {
 		switch (name) {
 			case colorSchemeName: 
@@ -554,6 +603,11 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param name The String identifier for a type of icon related to the view type called LiveScorer. All of these kinds of names are given in views.ViewVariableInfo.java.
+	 * @return The number of icons that are available (unlocked) of the icon type associated with the given identifier.
+	 */
 	private int getLiveScorerIconAvailability(String name) {
 		switch (name) {
 			case colorSchemeName:

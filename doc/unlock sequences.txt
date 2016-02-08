@@ -8,8 +8,6 @@ Musician
 	(3) Instrument Variable, Xylophone
 	...
 	
-
-	
 Phase Shifter
 	(0) Color Scheme Variable (all values), plot pitch, relative camera, only show active note, symbols, scrolls
 	(1) Active Note Mode Variable, SHOW_ACTIVE_NOTE
