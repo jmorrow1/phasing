@@ -50,7 +50,6 @@ public class PhasesPApplet extends PApplet {
 	
 	//visual variables
 	private static ColorScheme colorScheme;
-	//private static int color1, color2, brightColor1, brightColor2, blendColor, brightBlendColor;
 	public static PFont pfont12, pfont18, pfont42, musicFont;
 	public int changeScreenButtonY2 = 50;
 	public int changeScreenButtonX2 = 135;
@@ -655,6 +654,12 @@ public class PhasesPApplet extends PApplet {
 		this.bpms2 = bpm2 / 60000f;
 	}
 	
+	/**
+	 * Data container for a color scheme.
+	 * 
+	 * @author James Morrow
+	 *
+	 */
 	private class ColorScheme {
 		final int color1, color2, color1Bold, color2Bold, blendedColor, blendedColorBold;
 

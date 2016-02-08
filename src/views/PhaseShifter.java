@@ -370,7 +370,7 @@ public class PhaseShifter extends View {
 	private void styleNoteGraphics(int color) {
 		switch (noteGraphic.toInt()) {
 			case SYMBOLS:
-			case DOTS:
+			case DOTS1:
 			case CONNECTED_DOTS:
 			case RECTS_OR_SECTORS:
 				pa.noStroke();
@@ -408,7 +408,7 @@ public class PhaseShifter extends View {
 				}
 			pa.popMatrix();
 		}
-		else if (noteGraphic.toInt() == DOTS || noteGraphic.toInt() == CONNECTED_DOTS) {
+		else if (noteGraphic.toInt() == DOTS1 || noteGraphic.toInt() == CONNECTED_DOTS) {
 			float d_x = d.x();
 			float d_y = d.y();
 					

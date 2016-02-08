@@ -1,0 +1,28 @@
+Literal -> abstract
+Abstract -> literal
+
+Musician
+	(0) monochrome, piano, superimposed
+	(1) Color Scheme Variable, DIACHROME
+	(2) Superimposed or separated variable, SEPARATED
+	(3) PhaseShifter view
+	(4) Instrument Variable, Xylophone
+	...
+	
+Phase Shifter
+	(0) Color Scheme Variable (all values), plot pitch, relative camera, only show active note, symbols, scrolls
+	(1) Active Note Mode Variable, SHOW_ACTIVE_NOTE
+	(2) Note Graphic Variable, DOTS
+	(3) CONNECTED_DOTS
+	(4) Active Note Mode Variable, DONT_SHOW_ACTIVE_NOTE
+	(5) Camera Mode Variable, RELATIVE_TO_OTHER	
+	(6) Plot Pitch Mode Variable, DONT_PLOT_PITCH
+	(7) RECTS_OR_SECTORS
+	(8) Transformation Variable, ROTATES
+	(9) SINE_WAVE
+	(10) FIXED (camera)
+
+Live Scorer
+	(0) Color Scheme Variable (all values), Score Mode Variable (all values), Note Graphic Variable (dots), not a sine wave
+	(1) RECTS
+	(2) Sine Wave Variable, IS_SINE_WAVE (also: Sine Wave value for Phase Shifter's Note Graphic Variable)

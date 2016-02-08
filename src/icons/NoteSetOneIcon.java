@@ -19,7 +19,7 @@ public class NoteSetOneIcon implements Icon {
 	            pa.textAlign(pa.CENTER, pa.CENTER);
 	            pa.text("A", x, y);
 	            break;
-	        case DOTS:
+	        case DOTS1:
 	            pa.noStroke();
 	            pa.fill(0);
 	            pa.ellipseMode(pa.CENTER);

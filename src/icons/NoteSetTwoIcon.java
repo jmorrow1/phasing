@@ -12,7 +12,7 @@ public class NoteSetTwoIcon implements Icon {
   
     public void draw(float x, float y, float radius, PhasesPApplet pa) {
         switch(noteType) {
-	        case DOTS:
+	        case DOTS2:
 	            pa.noStroke();
 	            pa.fill(0);
 	            pa.ellipseMode(pa.CENTER);

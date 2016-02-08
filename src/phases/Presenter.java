@@ -33,7 +33,12 @@ import views.ViewVariableInfo;
  *
  */
 public class Presenter extends Screen implements ViewVariableInfo {
-	// time
+	// real time
+	private int prev_t; //milliseconds
+	private float minutesSpentWithMusician, minutesSpentWithPhaseShifter, minutesSpentWithLiveScorer;
+	private float minutesPerMillisecond = 1f / 60000f;
+	
+	// musical time
 	private float prev_notept1, prev_notept2;
 
 	// playback
@@ -62,11 +67,11 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private Icon[] viewTypeIcons;
 	private ModInt viewType = new ModInt(0, numViewTypes, viewTypeName);
 	
-	//icon parameters
-	float iconRadius = 25;
-	float icon_dx = iconRadius * 2.25f;
-	float iconStartX = 0.25f * iconRadius;
-	float iconStartY = pa.height - 2.25f * iconRadius;
+	// icon parameters
+	private float iconRadius = 25;
+	private float icon_dx = iconRadius * 2.25f;
+	private float iconStartX = 0.25f * iconRadius;
+	private float iconStartY = pa.height - 2.25f * iconRadius;
 
 	/**
 	 * 
@@ -135,6 +140,18 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		pa.background(255);
 		animateView();
 		drawIcons();
+		updateTime();
+	}
+	
+	private void updateTime() {
+		int t = pa.millis();
+		int dt = t - prev_t;
+		prev_t = t;
+		switch (viewType.toInt()) {
+			case MUSICIAN : minutesSpentWithMusician += dt * minutesPerMillisecond; break;
+			case PHASE_SHIFTER : minutesSpentWithPhaseShifter += dt * minutesPerMillisecond; break;
+			case LIVE_SCORER : minutesSpentWithLiveScorer += dt * minutesPerMillisecond; break;
+		}
 	}
 
 	private void setupViewTypeIcons() {
@@ -237,6 +254,140 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			}
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private int getIconAvailability(String name) {
+		switch (name) {
+			case viewTypeName:
+				if (minutesSpentWithMusician + minutesSpentWithPhaseShifter > 25f) {
+					return 3;
+				}
+				else if (minutesSpentWithMusician > 2f) {
+					return 2;
+				}
+				else {
+					return 1;
+				}
+			default : 
+				switch (viewType.toInt()) {
+					case MUSICIAN: return getMusicianIconAvailability(name);
+					case PHASE_SHIFTER: return getPhaseShifterIconAvailability(name);
+					case LIVE_SCORER: return getLiveScorerIconAvailability(name);
+					default: return 0;
+				}
+		}	
+	}
+	
+	private int getMusicianIconAvailability(String name) {
+		switch (name) {
+			case colorSchemeName:
+				if (minutesSpentWithMusician > 0.5f) {
+					return 2;
+				}
+				else {
+					return 1;
+				}
+			case superimposedOrSeparatedName:
+				if (minutesSpentWithMusician > 1f) {
+					return 2;
+				}
+				else {
+					return 1;
+				}
+			case instrumentName:
+				if (minutesSpentWithMusician > 4f) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			default: 
+				return 0;
+		}
+	}
+	
+	private int getPhaseShifterIconAvailability(String name) {
+		switch (name) {
+			case colorSchemeName: 
+				return 2;
+			case activeNoteModeName:
+				if (minutesSpentWithPhaseShifter > 8f) {
+					return 3;
+				}
+				else if (minutesSpentWithPhaseShifter > 1f) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			case noteGraphicSet1Name:
+				if (minutesSpentWithPhaseShifter > 25f) {
+					return 5;
+				}
+				else if (minutesSpentWithPhaseShifter > 17f) {
+					return 4;
+				}
+				else if (minutesSpentWithPhaseShifter > 5f) {
+					return 3;
+				}
+				else if (minutesSpentWithPhaseShifter > 3f) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			case cameraModeName:
+				if (minutesSpentWithPhaseShifter > 30f) {
+					return 3;
+				}
+				if (minutesSpentWithPhaseShifter > 11f) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			case plotPitchModeName:
+				if (minutesSpentWithPhaseShifter > 14f) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			case transformationName:
+				if (minutesSpentWithPhaseShifter > 20f) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			default:
+				return 0;
+		}
+	}
+	
+	private int getLiveScorerIconAvailability(String name) {
+		switch (name) {
+			case colorSchemeName:
+				return numColorSchemes;
+			case scoreModeName:
+				return numScoreModes;
+			case noteGraphicSet2Name:
+				if (minutesSpentWithLiveScorer > 4f) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			case sineWaveName:
+				if (minutesSpentWithLiveScorer > 8f) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			default:
+				return -1;
 		}
 	}
 
