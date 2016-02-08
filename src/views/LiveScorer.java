@@ -275,7 +275,7 @@ public class LiveScorer extends View {
 			pa.stroke(color, opacity);
 			pa.strokeWeight(NOTE_SIZE);
 			pa.fill(color, opacity);
-			if (noteGraphic.toInt() == DOTS1) {
+			if (noteGraphic.toInt() == DOTS2) {
 				pa.strokeCap(pa.ROUND);
 				float x1 = startX + roundStrokeCapSurplus;
 				float x2 = endX - roundStrokeCapSurplus;

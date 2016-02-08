@@ -35,8 +35,14 @@ import views.ViewVariableInfo;
 public class Presenter extends Screen implements ViewVariableInfo {
 	// real time
 	private int prev_t; //milliseconds
-	private float minutesSpentWithMusician, minutesSpentWithPhaseShifter, minutesSpentWithLiveScorer;
-	private float minutesPerMillisecond = 1f / 60000f;
+	private final float minutesPerMillisecond = 1f / 60000f;
+	
+	// unlock sequences (in terms of minutes to unlock thing 1, minutes to unlock thing 2, etc.)
+	private float minutesSpentWithMusician = 60f, minutesSpentWithPhaseShifter=60f, minutesSpentWithLiveScorer=60f;
+	private final float[] musicianUnlockSeq = {0.5f, 1, 4};
+	private final float[] phaseShifterUnlockSeq = {1, 3, 5, 8, 11, 14, 17, 20, 25, 30};
+	private final float[] liveScorerUnlockSeq = {4, 8};
+	private int nextMusicianUnlockIndex, nextPhaseShifterUnlockIndex, nextLiveScorerUnlockIndex;
 	
 	// musical time
 	private float prev_notept1, prev_notept2;
@@ -81,7 +87,11 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
 	}
-
+	
+	/*************************************
+	 ***** Enter/Exit Event Handling *****
+	 *************************************/
+	
 	@Override
 	public void onEnter() {
 		musicianView = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
@@ -121,26 +131,31 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		avg_dNotept2 = 0;
 		dataPts = 0;
 
-		setupViewTypeIcons();
 		setupIconLists();
 		
 		activeIconIndex = 0;
 
 		view.onEnter();
 	}
-
+	
 	@Override
 	public void onExit() {
 		player1.stop();
 		player2.stop();
 	}
+	
+	/******************************
+	 ***** Drawing and Update *****
+	 ******************************/
 
 	@Override
 	public void draw() {
+		updateTime();
+		checkUnlocks();
 		pa.background(255);
 		animateView();
 		drawIcons();
-		updateTime();
+		
 	}
 	
 	private void updateTime() {
@@ -154,261 +169,27 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 	}
 
-	private void setupViewTypeIcons() {
-		viewTypeIcons = new Icon[numViewTypes];
-		for (int i = 0; i < viewTypeIcons.length; i++) {
-			viewTypeIcons[i] = new ViewTypeIcon(i);
-		}
-	}
-
-	private void setupIconLists() {
-		iconLists.clear();
-		variables.clear();
-		iconLists.add(viewTypeIcons);
-		variables.add(viewType);
-		Field[] fields = view.getClass().getDeclaredFields();
-		try {
-			for (Field f : fields) {
-				if (f.getType().equals(ModInt.class)) {
-					ModInt x = (ModInt) f.get(view);
-					String name = x.getName();
-					Icon[] iconList = null;
-					switch (name) {
-					case activeNoteModeName:
-						iconList = new Icon[x.getDivisor()];
-						for (int i = 0; i < iconList.length; i++) {
-							iconList[i] = new ShowActiveNoteIcon(i);
-						}
-						break;
-					case transformationName:
-						iconList = new Icon[x.getDivisor()];
-						for (int i = 0; i < iconList.length; i++) {
-							iconList[i] = new TransformIcon(i);
-						}
-						break;
-					case cameraModeName:
-						iconList = new Icon[x.getDivisor()];
-						for (int i = 0; i < iconList.length; i++) {
-							iconList[i] = new CameraIcon(i);
-						}
-						break;
-					case noteGraphicSet1Name:
-						iconList = new Icon[x.getDivisor()];
-						for (int i = 0; i < iconList.length; i++) {
-							iconList[i] = new NoteSetOneIcon(i);
-						}
-						break;
-					case noteGraphicSet2Name:
-						iconList = new Icon[x.getDivisor()];
-						for (int i = 0; i < iconList.length; i++) {
-							iconList[i] = new NoteSetTwoIcon(i);
-						}
-						break;
-					case plotPitchModeName:
-						iconList = new Icon[x.getDivisor()];
-						for (int i = 0; i < iconList.length; i++) {
-							iconList[i] = new PlotPitchIcon(i);
-						}
-						break;
-					case colorSchemeName:
-						iconList = new Icon[x.getDivisor()];
-						for (int i = 0; i < iconList.length; i++) {
-							iconList[i] = new ColorSchemeIcon(i);
-						}
-						break;
-					case superimposedOrSeparatedName:
-						iconList = new Icon[x.getDivisor()];
-						for (int i = 0; i < iconList.length; i++) {
-							iconList[i] = new SuperimposedOrSeparatedIcon(i);
-						}
-						break;
-					case instrumentName:
-						iconList = new Icon[x.getDivisor()];
-						for (int i = 0; i < iconList.length; i++) {
-							iconList[i] = new InstrumentIcon(i);
-						}
-						break;
-					case scoreModeName:
-						iconList = new Icon[x.getDivisor()];
-						for (int i = 0; i < iconList.length; i++) {
-							iconList[i] = new ScoreModeIcon(i);
-						}
-						break;
-					case sineWaveName:
-						iconList = new Icon[x.getDivisor()];
-						for (int i = 0; i < iconList.length; i++) {
-							iconList[i] = new SineWaveIcon(i, pa);
-						}
-						break;
-					default:
-						iconList = new Icon[x.getDivisor()];
-						for (int i = 0; i < iconList.length; i++) {
-							iconList[i] = new DefaultIcon(i);
-						}
-						System.out.println("Don't know that view variable: " + name);
-						break;
-					}
-					iconLists.add(iconList);
-					variables.add(x);
-				}
-			}
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private int getIconAvailability(String name) {
-		switch (name) {
-			case viewTypeName:
-				if (minutesSpentWithMusician + minutesSpentWithPhaseShifter > 25f) {
-					return 3;
-				}
-				else if (minutesSpentWithMusician > 2f) {
-					return 2;
-				}
-				else {
-					return 1;
-				}
-			default : 
-				switch (viewType.toInt()) {
-					case MUSICIAN: return getMusicianIconAvailability(name);
-					case PHASE_SHIFTER: return getPhaseShifterIconAvailability(name);
-					case LIVE_SCORER: return getLiveScorerIconAvailability(name);
-					default: return 0;
-				}
-		}	
-	}
-	
-	private int getMusicianIconAvailability(String name) {
-		switch (name) {
-			case colorSchemeName:
-				if (minutesSpentWithMusician > 0.5f) {
-					return 2;
-				}
-				else {
-					return 1;
-				}
-			case superimposedOrSeparatedName:
-				if (minutesSpentWithMusician > 1f) {
-					return 2;
-				}
-				else {
-					return 1;
-				}
-			case instrumentName:
-				if (minutesSpentWithMusician > 4f) {
-					return 2;
-				}
-				else {
-					return 0;
-				}
-			default: 
-				return 0;
-		}
-	}
-	
-	private int getPhaseShifterIconAvailability(String name) {
-		switch (name) {
-			case colorSchemeName: 
-				return 2;
-			case activeNoteModeName:
-				if (minutesSpentWithPhaseShifter > 8f) {
-					return 3;
-				}
-				else if (minutesSpentWithPhaseShifter > 1f) {
-					return 2;
-				}
-				else {
-					return 0;
-				}
-			case noteGraphicSet1Name:
-				if (minutesSpentWithPhaseShifter > 25f) {
-					return 5;
-				}
-				else if (minutesSpentWithPhaseShifter > 17f) {
-					return 4;
-				}
-				else if (minutesSpentWithPhaseShifter > 5f) {
-					return 3;
-				}
-				else if (minutesSpentWithPhaseShifter > 3f) {
-					return 2;
-				}
-				else {
-					return 0;
-				}
-			case cameraModeName:
-				if (minutesSpentWithPhaseShifter > 30f) {
-					return 3;
-				}
-				if (minutesSpentWithPhaseShifter > 11f) {
-					return 2;
-				}
-				else {
-					return 0;
-				}
-			case plotPitchModeName:
-				if (minutesSpentWithPhaseShifter > 14f) {
-					return 2;
-				}
-				else {
-					return 0;
-				}
-			case transformationName:
-				if (minutesSpentWithPhaseShifter > 20f) {
-					return 2;
-				}
-				else {
-					return 0;
-				}
-			default:
-				return 0;
-		}
-	}
-	
-	private int getLiveScorerIconAvailability(String name) {
-		switch (name) {
-			case colorSchemeName:
-				return numColorSchemes;
-			case scoreModeName:
-				return numScoreModes;
-			case noteGraphicSet2Name:
-				if (minutesSpentWithLiveScorer > 4f) {
-					return 2;
-				}
-				else {
-					return 0;
-				}
-			case sineWaveName:
-				if (minutesSpentWithLiveScorer > 8f) {
-					return 2;
-				}
-				else {
-					return 0;
-				}
-			default:
-				return -1;
-		}
-	}
-
 	private void drawIcons() {
-		float x = iconStartX;
-		float y = iconStartY;
-
-		for (int i = 0; i < iconLists.size(); i++) {
-			int j = variables.get(i).toInt();
-			Icon[] iconList = iconLists.get(i);
-			Icon icon = iconList[j];
-			icon.draw(x + iconRadius, y + iconRadius, iconRadius, pa);
-			x += icon_dx;
-		}
-
-		// draw box around active icon
-		pa.noFill();
-		pa.strokeWeight(3);
-		pa.stroke(pa.getColor1());
-		pa.rectMode(pa.CORNER);
-		pa.rect(iconStartX + activeIconIndex * icon_dx, iconStartY, 2*iconRadius, 2*iconRadius);
+		if (iconLists.size() > 0) {
+			float x = iconStartX;
+			float y = iconStartY;
+			
+			//draw icons
+			for (int i = 0; i < iconLists.size(); i++) {
+				int j = variables.get(i).toInt();
+				Icon[] iconList = iconLists.get(i);
+				Icon icon = iconList[j];
+				icon.draw(x + iconRadius, y + iconRadius, iconRadius, pa);
+				x += icon_dx;
+			}
+			
+			// draw box around active icon
+			pa.noFill();
+			pa.strokeWeight(3);
+			pa.stroke(pa.getColor1());
+			pa.rectMode(pa.CORNER);
+			pa.rect(iconStartX + activeIconIndex * icon_dx, iconStartY, 2*iconRadius, 2*iconRadius);
+		}	
 	}
 	
 	private int iconIndexTouches(int x, int y) {
@@ -473,6 +254,10 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			phaseShifterView.updateNormalTransforms(dNotept1, dNotept2);
 		}
 	}
+	
+	/********************************
+	 ***** Input Event Handling *****
+	 ********************************/
 
 	@Override
 	public void keyPressed() {
@@ -482,10 +267,16 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			} else if (pa.keyCode == pa.RIGHT) {
 				activeIconIndex = (activeIconIndex + 1) % iconLists.size();
 			} else if (pa.keyCode == pa.UP) {
-				variables.get(activeIconIndex).decrement();
+				ModInt activeVar = variables.get(activeIconIndex);
+				int availability = this.getIconAvailability(activeVar.getName());
+				int newValue = PhasesPApplet.remainder(activeVar.toInt() - 1, availability);
+				activeVar.setValue(newValue);
 				view.updateState();
 			} else if (pa.keyCode == pa.DOWN) {
-				variables.get(activeIconIndex).increment();
+				ModInt activeVar = variables.get(activeIconIndex);
+				int availability = this.getIconAvailability(activeVar.getName());
+				int newValue = PhasesPApplet.remainder(activeVar.toInt() + 1, availability);
+				activeVar.setValue(newValue);
 				view.updateState();
 			}
 
@@ -515,6 +306,276 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		int iconIndex = iconIndexTouches(pa.mouseX, pa.mouseY);
 		if (iconIndex != -1) {
 			activeIconIndex = iconIndex;
+		}
+	}
+	
+	/*******************************
+	 ***** Icon Initialization *****
+	 *******************************/
+	
+	private void checkUnlocks() {
+		if (viewType.toInt() == MUSICIAN && 
+				nextMusicianUnlockIndex < musicianUnlockSeq.length &&
+				musicianUnlockSeq[nextMusicianUnlockIndex] <= minutesSpentWithMusician) {
+			setupIconLists();
+			nextMusicianUnlockIndex++;
+		}
+		else if (viewType.toInt() == PHASE_SHIFTER &&
+				nextPhaseShifterUnlockIndex < phaseShifterUnlockSeq.length &&
+				phaseShifterUnlockSeq[nextPhaseShifterUnlockIndex] <= minutesSpentWithPhaseShifter) {
+			setupIconLists();
+			nextPhaseShifterUnlockIndex++;
+		}
+		else if (viewType.toInt() == LIVE_SCORER && 
+			nextLiveScorerUnlockIndex < liveScorerUnlockSeq.length &&
+			liveScorerUnlockSeq[nextLiveScorerUnlockIndex] <= minutesSpentWithLiveScorer) {
+			setupIconLists();
+			nextLiveScorerUnlockIndex++;
+		}
+		
+	}
+	
+	private void setupViewTypeIcons() {
+		int availability = getIconAvailability(viewTypeName);
+		if (availability > 0) {
+			viewTypeIcons = new Icon[availability];
+			for (int i = 0; i < availability; i++) {
+				viewTypeIcons[i] = new ViewTypeIcon(i);
+			}
+			iconLists.add(viewTypeIcons);
+			variables.add(viewType);
+		}
+	}
+
+	private void setupIconLists() {
+		iconLists.clear();
+		variables.clear();
+		setupViewTypeIcons();
+		Field[] fields = view.getClass().getDeclaredFields();
+		try {
+			for (Field f : fields) {
+				if (f.getType().equals(ModInt.class)) {
+					ModInt x = (ModInt) f.get(view);
+					String name = x.getName();
+					Icon[] iconList = null;
+					int availability = getIconAvailability(name);
+					if (availability > 0) {
+						switch (name) {
+						case activeNoteModeName:
+							iconList = new Icon[availability];
+							for (int i = 0; i < availability; i++) {
+								iconList[i] = new ShowActiveNoteIcon(i);
+							}
+							break;
+						case transformationName:
+							iconList = new Icon[availability];
+							for (int i = 0; i < availability; i++) {
+								iconList[i] = new TransformIcon(i);
+							}
+							break;
+						case cameraModeName:
+							iconList = new Icon[availability];
+							for (int i = 0; i < availability; i++) {
+								iconList[i] = new CameraIcon(i);
+							}
+							break;
+						case noteGraphicSet1Name:
+							iconList = new Icon[availability];
+							for (int i = 0; i < availability; i++) {
+								iconList[i] = new NoteSetOneIcon(i);
+							}
+							break;
+						case noteGraphicSet2Name:
+							iconList = new Icon[availability];
+							for (int i = 0; i < availability; i++) {
+								iconList[i] = new NoteSetTwoIcon(i);
+							}
+							break;
+						case plotPitchModeName:
+							iconList = new Icon[availability];
+							for (int i = 0; i < availability; i++) {
+								iconList[i] = new PlotPitchIcon(i);
+							}
+							break;
+						case colorSchemeName:
+							iconList = new Icon[availability];
+							for (int i = 0; i < availability; i++) {
+								iconList[i] = new ColorSchemeIcon(i);
+							}
+							break;
+						case superimposedOrSeparatedName:
+							iconList = new Icon[availability];
+							for (int i = 0; i < availability; i++) {
+								iconList[i] = new SuperimposedOrSeparatedIcon(i);
+							}
+							break;
+						case instrumentName:
+							iconList = new Icon[availability];
+							for (int i = 0; i < availability; i++) {
+								iconList[i] = new InstrumentIcon(i);
+							}
+							break;
+						case scoreModeName:
+							iconList = new Icon[availability];
+							for (int i = 0; i < availability; i++) {
+								iconList[i] = new ScoreModeIcon(i);
+							}
+							break;
+						case sineWaveName:
+							iconList = new Icon[availability];
+							for (int i = 0; i < availability; i++) {
+								iconList[i] = new SineWaveIcon(i, pa);
+							}
+							break;
+						default:
+							iconList = new Icon[availability];
+							for (int i = 0; i < availability; i++) {
+								iconList[i] = new DefaultIcon(i);
+							}
+							System.out.println("Don't know that view variable: " + name);
+							break;
+						}
+						iconLists.add(iconList);
+						variables.add(x);
+					}
+				}
+			}
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private int getIconAvailability(String name) {
+		switch (name) {
+			case viewTypeName:
+				if (minutesSpentWithMusician + minutesSpentWithPhaseShifter > 25f) {
+					return 3;
+				}
+				else if (minutesSpentWithMusician > 2f) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			default : 
+				switch (viewType.toInt()) {
+					case MUSICIAN: return getMusicianIconAvailability(name);
+					case PHASE_SHIFTER: return getPhaseShifterIconAvailability(name);
+					case LIVE_SCORER: return getLiveScorerIconAvailability(name);
+					default: return 0;
+				}
+		}	
+	}
+	
+	private int getMusicianIconAvailability(String name) {
+		switch (name) {
+			case colorSchemeName:
+				if (minutesSpentWithMusician > musicianUnlockSeq[0]) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			case superimposedOrSeparatedName:
+				if (minutesSpentWithMusician > musicianUnlockSeq[1]) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			case instrumentName:
+				if (minutesSpentWithMusician > musicianUnlockSeq[2]) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			default: 
+				return 0;
+		}
+	}
+	
+	private int getPhaseShifterIconAvailability(String name) {
+		switch (name) {
+			case colorSchemeName: 
+				return 2;
+			case activeNoteModeName:
+				if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[3]) {
+					return 3;
+				}
+				else if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[0]) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			case noteGraphicSet1Name:
+				if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[8]) {
+					return 5;
+				}
+				else if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[6]) {
+					return 4;
+				}
+				else if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[2]) {
+					return 3;
+				}
+				else if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[1]) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			case cameraModeName:
+				if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[9]) {
+					return 3;
+				}
+				if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[4]) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			case plotPitchModeName:
+				if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[5]) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			case transformationName:
+				if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[7]) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			default:
+				return 0;
+		}
+	}
+	
+	private int getLiveScorerIconAvailability(String name) {
+		switch (name) {
+			case colorSchemeName:
+				return numColorSchemes;
+			case scoreModeName:
+				return numScoreModes;
+			case noteGraphicSet2Name:
+				if (minutesSpentWithLiveScorer > liveScorerUnlockSeq[0]) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			case sineWaveName:
+				if (minutesSpentWithLiveScorer > liveScorerUnlockSeq[1]) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			default:
+				return 0;
 		}
 	}
 }
