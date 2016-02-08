@@ -1,5 +1,6 @@
 package phases;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -19,6 +20,7 @@ import icons.SuperimposedOrSeparatedIcon;
 import icons.TransformIcon;
 import icons.ViewTypeIcon;
 import processing.core.PApplet;
+import processing.data.JSONObject;
 import soundcipher.SCScorePlus;
 import views.LiveScorer;
 import views.Musician;
@@ -38,7 +40,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private final float minutesPerMillisecond = 1f / 60000f;
 	
 	// unlock sequences (in terms of minutes to unlock thing 1, minutes to unlock thing 2, etc.)
-	private float minutesSpentWithMusician = 60f, minutesSpentWithPhaseShifter=60f, minutesSpentWithLiveScorer=60f;
+	private PlayerInfo playerInfo;
 	private final float[] musicianUnlockSeq = {0.5f, 1, 4};
 	private final float[] phaseShifterUnlockSeq = {1, 3, 5, 8, 11, 14, 17, 20, 25, 30};
 	private final float[] liveScorerUnlockSeq = {4, 8};
@@ -78,6 +80,9 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private float icon_dx = iconRadius * 2.25f;
 	private float iconStartX = 0.25f * iconRadius;
 	private float iconStartY = pa.height - 2.25f * iconRadius;
+	
+	//save folder location
+	private final String saveFolderPath;
 
 	/**
 	 * 
@@ -86,6 +91,17 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 */
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
+		saveFolderPath = pa.sketchPath() + "\\save\\playerInfo.json";
+		File playerInfoFile = new File(saveFolderPath);
+		if (playerInfoFile.exists()) {
+			JSONObject json = pa.loadJSONObject(saveFolderPath);
+			playerInfo = new PlayerInfo(json);
+			pa.println("here");
+		}
+		else {
+			playerInfo = new PlayerInfo(true);
+			pa.println("there");
+		}
 	}
 	
 	/*************************************
@@ -166,9 +182,9 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		int dt = t - prev_t;
 		prev_t = t;
 		switch (viewType.toInt()) {
-			case MUSICIAN : minutesSpentWithMusician += dt * minutesPerMillisecond; break;
-			case PHASE_SHIFTER : minutesSpentWithPhaseShifter += dt * minutesPerMillisecond; break;
-			case LIVE_SCORER : minutesSpentWithLiveScorer += dt * minutesPerMillisecond; break;
+			case MUSICIAN : playerInfo.minutesSpentWithMusician += dt * minutesPerMillisecond; break;
+			case PHASE_SHIFTER : playerInfo.minutesSpentWithPhaseShifter += dt * minutesPerMillisecond; break;
+			case LIVE_SCORER : playerInfo.minutesSpentWithLiveScorer += dt * minutesPerMillisecond; break;
 		}
 	}
 
@@ -340,27 +356,37 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	/**
 	 * First, it checks if new icons have been unlocked for the active view type.
 	 * If so, it calls setupIconLists(), which refreshes the state of the icon lists.
+	 * Also, it updates the save file associated with the player.
 	 */
 	private void checkUnlocks() {
+		boolean unlockedSomething = false;
+		
 		if (viewType.toInt() == MUSICIAN && 
 				nextMusicianUnlockIndex < musicianUnlockSeq.length &&
-				musicianUnlockSeq[nextMusicianUnlockIndex] <= minutesSpentWithMusician) {
+				musicianUnlockSeq[nextMusicianUnlockIndex] <= playerInfo.minutesSpentWithMusician) {
 			setupIconLists();
 			nextMusicianUnlockIndex++;
+			unlockedSomething = true;
 		}
 		else if (viewType.toInt() == PHASE_SHIFTER &&
 				nextPhaseShifterUnlockIndex < phaseShifterUnlockSeq.length &&
-				phaseShifterUnlockSeq[nextPhaseShifterUnlockIndex] <= minutesSpentWithPhaseShifter) {
+				phaseShifterUnlockSeq[nextPhaseShifterUnlockIndex] <= playerInfo.minutesSpentWithPhaseShifter) {
 			setupIconLists();
 			nextPhaseShifterUnlockIndex++;
+			unlockedSomething = true;
 		}
 		else if (viewType.toInt() == LIVE_SCORER && 
 			nextLiveScorerUnlockIndex < liveScorerUnlockSeq.length &&
-			liveScorerUnlockSeq[nextLiveScorerUnlockIndex] <= minutesSpentWithLiveScorer) {
+			liveScorerUnlockSeq[nextLiveScorerUnlockIndex] <= playerInfo.minutesSpentWithLiveScorer) {
 			setupIconLists();
 			nextLiveScorerUnlockIndex++;
+			unlockedSomething = true;
 		}
 		
+		if (unlockedSomething) {
+			JSONObject json = playerInfo.toJSON();
+			pa.saveJSONObject(json, saveFolderPath);
+		}
 	}
 	
 	/**
@@ -487,10 +513,10 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private int getIconAvailability(String name) {
 		switch (name) {
 			case viewTypeName:
-				if (minutesSpentWithMusician + minutesSpentWithPhaseShifter > 25f) {
+				if (playerInfo.minutesSpentWithMusician + playerInfo.minutesSpentWithPhaseShifter > 25f) {
 					return 3;
 				}
-				else if (minutesSpentWithMusician > 2f) {
+				else if (playerInfo.minutesSpentWithMusician > 2f) {
 					return 2;
 				}
 				else {
@@ -514,21 +540,21 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private int getMusicianIconAvailability(String name) {
 		switch (name) {
 			case colorSchemeName:
-				if (minutesSpentWithMusician > musicianUnlockSeq[0]) {
+				if (playerInfo.minutesSpentWithMusician > musicianUnlockSeq[0]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case superimposedOrSeparatedName:
-				if (minutesSpentWithMusician > musicianUnlockSeq[1]) {
+				if (playerInfo.minutesSpentWithMusician > musicianUnlockSeq[1]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case instrumentName:
-				if (minutesSpentWithMusician > musicianUnlockSeq[2]) {
+				if (playerInfo.minutesSpentWithMusician > musicianUnlockSeq[2]) {
 					return 2;
 				}
 				else {
@@ -549,50 +575,50 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			case colorSchemeName: 
 				return 2;
 			case activeNoteModeName:
-				if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[3]) {
+				if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[3]) {
 					return 3;
 				}
-				else if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[0]) {
+				else if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[0]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case noteGraphicSet1Name:
-				if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[8]) {
+				if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[8]) {
 					return 5;
 				}
-				else if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[6]) {
+				else if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[6]) {
 					return 4;
 				}
-				else if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[2]) {
+				else if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[2]) {
 					return 3;
 				}
-				else if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[1]) {
+				else if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[1]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case cameraModeName:
-				if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[9]) {
+				if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[9]) {
 					return 3;
 				}
-				if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[4]) {
+				if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[4]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case plotPitchModeName:
-				if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[5]) {
+				if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[5]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case transformationName:
-				if (minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[7]) {
+				if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[7]) {
 					return 2;
 				}
 				else {
@@ -615,14 +641,14 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			case scoreModeName:
 				return numScoreModes;
 			case noteGraphicSet2Name:
-				if (minutesSpentWithLiveScorer > liveScorerUnlockSeq[0]) {
+				if (playerInfo.minutesSpentWithLiveScorer > liveScorerUnlockSeq[0]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case sineWaveName:
-				if (minutesSpentWithLiveScorer > liveScorerUnlockSeq[1]) {
+				if (playerInfo.minutesSpentWithLiveScorer > liveScorerUnlockSeq[1]) {
 					return 2;
 				}
 				else {
