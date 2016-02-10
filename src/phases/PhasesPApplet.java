@@ -44,6 +44,7 @@ public class PhasesPApplet extends PApplet {
 	//all screens
 	private Presenter presenter;
 	private Editor editor;
+	private PhraseRepository phraseRepo;
 	
 	//active screen
 	private Screen currentScreen;
@@ -143,9 +144,10 @@ public class PhasesPApplet extends PApplet {
 		//create screens
 		presenter = new Presenter(this);
 		editor = new Editor(this);
+		phraseRepo = new PhraseRepository(this);
 		
 		//setup current screen
-		currentScreen = editor;
+		currentScreen = phraseRepo;
 		currentScreen.onEnter();
 		
 		if (currentScreen == editor) {
@@ -153,6 +155,9 @@ public class PhasesPApplet extends PApplet {
 		}
 		else if (currentScreen == presenter) {
 			changeScreenButton.setCaptionLabel("Compose");
+		}
+		else if (currentScreen == phraseRepo) {
+			changeScreenButton.setCaptionLabel("Go Back");
 		}
 		
 		colorController(changeScreenButton);
@@ -302,6 +307,7 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void changeScreen(ControlEvent e) {
 		currentScreen.onExit();
+		changeScreenButton.show();
 		if (currentScreen == editor) {
 			currentScreen = presenter;
 			changeScreenButton.setCaptionLabel("Compose");
@@ -309,6 +315,9 @@ public class PhasesPApplet extends PApplet {
 		else if (currentScreen == presenter) {
 			currentScreen = editor;
 			changeScreenButton.setCaptionLabel("Rehearse");
+		}
+		else if (currentScreen == phraseRepo) {
+			changeScreenButton.setCaptionLabel("Go Back");
 		}
 		currentScreen.onEnter();
 	}

@@ -44,7 +44,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private final float[] musicianUnlockSeq = {0.5f, 1, 4};
 	private final float[] phaseShifterUnlockSeq = {1, 3, 5, 8, 11, 14, 17, 20, 25, 30};
 	private final float[] liveScorerUnlockSeq = {4, 8};
-	private int nextMusicianUnlockIndex, nextPhaseShifterUnlockIndex, nextLiveScorerUnlockIndex;
 	
 	// musical time
 	private float prev_notept1, prev_notept2;
@@ -96,11 +95,9 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		if (playerInfoFile.exists()) {
 			JSONObject json = pa.loadJSONObject(saveFolderPath);
 			playerInfo = new PlayerInfo(json);
-			pa.println("here");
 		}
 		else {
-			playerInfo = new PlayerInfo(true);
-			pa.println("there");
+			playerInfo = new PlayerInfo(false);
 		}
 	}
 	
@@ -362,24 +359,24 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		boolean unlockedSomething = false;
 		
 		if (viewType.toInt() == MUSICIAN && 
-				nextMusicianUnlockIndex < musicianUnlockSeq.length &&
-				musicianUnlockSeq[nextMusicianUnlockIndex] <= playerInfo.minutesSpentWithMusician) {
+				playerInfo.nextMusicianUnlockIndex < musicianUnlockSeq.length &&
+				musicianUnlockSeq[playerInfo.nextMusicianUnlockIndex] <= playerInfo.minutesSpentWithMusician) {
 			setupIconLists();
-			nextMusicianUnlockIndex++;
+			playerInfo.nextMusicianUnlockIndex++;
 			unlockedSomething = true;
 		}
 		else if (viewType.toInt() == PHASE_SHIFTER &&
-				nextPhaseShifterUnlockIndex < phaseShifterUnlockSeq.length &&
-				phaseShifterUnlockSeq[nextPhaseShifterUnlockIndex] <= playerInfo.minutesSpentWithPhaseShifter) {
+				playerInfo.nextPhaseShifterUnlockIndex < phaseShifterUnlockSeq.length &&
+				phaseShifterUnlockSeq[playerInfo.nextPhaseShifterUnlockIndex] <= playerInfo.minutesSpentWithPhaseShifter) {
 			setupIconLists();
-			nextPhaseShifterUnlockIndex++;
+			playerInfo.nextPhaseShifterUnlockIndex++;
 			unlockedSomething = true;
 		}
 		else if (viewType.toInt() == LIVE_SCORER && 
-			nextLiveScorerUnlockIndex < liveScorerUnlockSeq.length &&
-			liveScorerUnlockSeq[nextLiveScorerUnlockIndex] <= playerInfo.minutesSpentWithLiveScorer) {
+			playerInfo.nextLiveScorerUnlockIndex < liveScorerUnlockSeq.length &&
+			liveScorerUnlockSeq[playerInfo.nextLiveScorerUnlockIndex] <= playerInfo.minutesSpentWithLiveScorer) {
 			setupIconLists();
-			nextLiveScorerUnlockIndex++;
+			playerInfo.nextLiveScorerUnlockIndex++;
 			unlockedSomething = true;
 		}
 		
