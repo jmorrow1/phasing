@@ -1,7 +1,7 @@
 package phases;
 
+import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashMap;
 
 import arb.soundcipher.SCScore;
 import processing.core.PApplet;
@@ -30,7 +30,7 @@ import processing.core.PApplet;
  * @author James Morrow
  *
  */
-public class Phrase {
+public class Phrase implements Serializable {
 	//note types (for grid notation version of phrase data)
 	public static final int NOTE_START = 0, NOTE_SUSTAIN = 1, REST = 2;
 	

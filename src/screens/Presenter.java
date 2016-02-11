@@ -82,9 +82,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private float icon_dx = iconRadius * 2.25f;
 	private float iconStartX = 0.25f * iconRadius;
 	private float iconStartY = pa.height - 2.25f * iconRadius;
-	
-	//save folder location
-	private final String saveFolderPath;
 
 	/**
 	 * 
@@ -93,15 +90,16 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 */
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
-		saveFolderPath = pa.sketchPath() + "\\save\\playerInfo.json";
-		File playerInfoFile = new File(saveFolderPath);
+		
+		String playerInfoFileName = pa.saveFolderPath + "playerInfo.json";
+		File playerInfoFile = new File(playerInfoFileName);
 		if (playerInfoFile.exists()) {
-			JSONObject json = pa.loadJSONObject(saveFolderPath);
+			JSONObject json = pa.loadJSONObject(playerInfoFileName);
 			playerInfo = new PlayerInfo(json);
 		}
 		else {
 			playerInfo = new PlayerInfo(false);
-			pa.saveJSONObject(playerInfo.toJSON(), saveFolderPath);
+			pa.saveJSONObject(playerInfo.toJSON(), playerInfoFileName);
 			
 		}
 	}
@@ -389,7 +387,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		
 		if (unlockedSomething) {
 			JSONObject json = playerInfo.toJSON();
-			pa.saveJSONObject(json, saveFolderPath);
+			pa.saveJSONObject(json, pa.saveFolderPath);
 		}
 	}
 	

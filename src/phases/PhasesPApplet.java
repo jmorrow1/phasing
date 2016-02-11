@@ -67,6 +67,9 @@ public class PhasesPApplet extends PApplet {
 	public static final int _800x600 = 0, _1366x768 = 1, _1920x1080 = 2, _1024x768 = 3, _1280x800 = 4, _1280x1024 = 5;
 	public int screenSizeMode = _800x600;
 	
+	//save folder location
+	public String saveFolderPath;
+	
 	/****************
 	***** Setup *****
 	*****************/
@@ -96,6 +99,7 @@ public class PhasesPApplet extends PApplet {
 	 * Sets the current screen.
 	 */
 	public void setup() {
+		saveFolderPath = sketchPath() + "\\save\\";
 		//init colors
 		colorMode(HSB, 360, 100, 100, 100);
 		int color1 = color(0, 60, 90);
