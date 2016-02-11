@@ -98,8 +98,9 @@ public class PhasesPApplet extends PApplet {
 		int color1Bold = color(0, 100, 90);
 		int color2 = color(240, 60, 90);
 		int color2Bold = color(240, 100, 90);
-		colorScheme = new ColorScheme(color1, color2, color1Bold, color2Bold);
 		colorMode(RGB, 255, 255, 255, 255);
+		colorScheme = new ColorScheme(color1, color2, color1Bold, color2Bold);
+		
 		
 		//init font variables
 		pfont12 = loadFont("DejaVuSans-12.vlw");
@@ -139,8 +140,8 @@ public class PhasesPApplet extends PApplet {
 				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
 				            new int[] {n, n, n, n, n, n, n, n, n, n, n, n});*/
 		scale = getRandomScale();
-		phrase = generateReichLikePhrase(scale, 5);
-		
+		phrase = generateReichLikePhrase();
+	
 		//create screens
 		presenter = new Presenter(this);
 		editor = new Editor(this);
@@ -148,7 +149,6 @@ public class PhasesPApplet extends PApplet {
 		
 		//setup current screen
 		currentScreen = phraseRepo;
-		currentScreen.onEnter();
 		
 		if (currentScreen == editor) {
 			changeScreenButton.setCaptionLabel("Rehearse");
@@ -161,6 +161,8 @@ public class PhasesPApplet extends PApplet {
 		}
 		
 		colorController(changeScreenButton);
+		
+		currentScreen.onEnter();
 	}
 	
 	/**************************
@@ -177,7 +179,21 @@ public class PhasesPApplet extends PApplet {
 	
 	/***********************************
 	***** Random Phrase Generation *****
-	************************************/
+	************************************/	
+	
+	/**
+	 * 
+	 * @return A random scale contained by this PhasesPApplet object.
+	 */
+	public Scale getRandomScale() {
+		String type = scaleTypes.get((int)random(scaleTypes.size()));
+		ScaleSet s = scaleSets.get(type);
+		return s.getScale((int)random(s.numScales()));
+	}
+	
+	public Phrase generateReichLikePhrase() {
+		return generateReichLikePhrase(getRandomScale(), 5);
+	}
 	
 	/**
 	 * Generates a phrase that has the property of being like the phrase in Steve Reich's Piano Phase
@@ -188,9 +204,10 @@ public class PhasesPApplet extends PApplet {
 	 * 
 	 * @param scale The set of pitches the phrase draws from.
 	 * @param octave The starting octave. Pitches in the phrase may be above this octave, but not below it.
+	 * @param pa Used only as a generator of random numbers.
 	 * @return
 	 */
-	private Phrase generateReichLikePhrase(final Scale scale, final int octave) {
+	public Phrase generateReichLikePhrase(final Scale scale, final int octave) {
 		return generatePhraseFromTemplates(new String[] {"ABCDAECF", "ABCDABCE", "ABCDEBADCBED", "ABCDEBADCBED", "ABCDEBADFBEDABGDEBADHBED", "ABCDAECFADCEAGCDAECHADCE"}, scale, octave);
 	}
 	
@@ -205,7 +222,7 @@ public class PhasesPApplet extends PApplet {
 	 * @param octave The starting octave. Pitches in the phrase may be above this octave, but not below it.
 	 * @return
 	 */
-	private Phrase generatePhraseFromTemplates(final String[] templates, final Scale scale, int octave) {
+	public Phrase generatePhraseFromTemplates(final String[] templates, final Scale scale, int octave) {
 		final String template = templates[(int)random(templates.length)];
 	    int pitchOffset = octave * 12;
 		HashMap<Character, Integer> map = new HashMap<Character, Integer>();
@@ -272,16 +289,6 @@ public class PhasesPApplet extends PApplet {
 		int xs_i = xs[i];
 		xs[i] = xs[j];
 		xs[j] = xs_i;
-	}
-	
-	/**
-	 * 
-	 * @return A random scale contained by this PhasesPApplet object.
-	 */
-	private Scale getRandomScale() {
-		String type = scaleTypes.get((int)random(scaleTypes.size()));
-		ScaleSet s = scaleSets.get(type);
-		return s.getScale((int)random(s.numScales()));
 	}
 	
 	/**************************
@@ -597,7 +604,7 @@ public class PhasesPApplet extends PApplet {
 	
 	/**
 	 * 
-	 * @return The color in between color 1 and color 2 of the program-wide color scheme
+	 * @return The color halfway in between color 1 and color 2 of the program-wide color scheme
 	 */
 	public static int getBlendedColor() {
 		return colorScheme.blendedColor;
@@ -605,10 +612,28 @@ public class PhasesPApplet extends PApplet {
 	
 	/**
 	 * 
-	 * @return The color in between color of color 1 bold and color 2 bold of the program-wide color scheme
+	 * @return The color halfway in between color of color 1 bold and color 2 bold of the program-wide color scheme
 	 */
 	public static int getBlendedColorBold() {
 		return colorScheme.blendedColorBold;
+	}
+	
+	/**
+	 * 
+	 * @param amt The lerp amt, a value between 0 and 1.
+	 * @return A color in between color 1 and color 2 of the program-wide color scheme
+	 */
+	public static int getBlendedColor(float amt) {
+		return lerpColor(colorScheme.color1, colorScheme.color2, amt, PApplet.RGB);
+	}
+	
+	/**
+	 * 
+	 * @param amt The lerp amt, a value between 0 and 1.
+	 * @return A color in between color 1 and color 2 of the program-wide color scheme
+	 */
+	public static int getBlendedColorBold(float amt) {
+		return PApplet.lerpColor(colorScheme.color1Bold, colorScheme.color2Bold, amt, PApplet.RGB);
 	}
 	
 	/**

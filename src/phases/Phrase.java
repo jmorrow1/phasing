@@ -1,6 +1,7 @@
 package phases;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import arb.soundcipher.SCScore;
 import processing.core.PApplet;
@@ -39,13 +40,14 @@ public class Phrase {
 	
 	//for managing state relatively efficiently
 	private boolean scArraysUpToDate = true;
+	private float minPitch, maxPitch;
 	
 	//phrase data, in grid notation
 	private float[] gridPitches, gridDynamics, gridArts, gridPans;
 	private int[] cellTypes;
 	
 	//phrase data, in soundcipher notation
-	private float[] scPitches, scDynamics, scDurations, scArts, scPans;	
+	private float[] scPitches, scDynamics, scDurations, scArts, scPans;
 	
 	//other
 	private float[] scIndexToPercentDuration;
@@ -212,7 +214,9 @@ public class Phrase {
 	 * @param instrument The MIDI instrument
 	 */
 	public void addToScore(SCScore score, float startBeat, float channel, float instrument) {
-		updateSCValues();
+		if (!scArraysUpToDate) {
+			updateSCValues();
+		}
 		score.empty();
 		score.addPhrase(startBeat, channel, instrument, scPitches, scDynamics, scDurations, scArts, scPans);
 	}
@@ -244,6 +248,7 @@ public class Phrase {
 		scArts = new float[n];
 		scPans = new float[n];
 		
+		//compute sc array values
 		int i=0; //loops through soundcipher arrays
 		int j=0; //loops through grid-notation arrays
 		while (i < cellTypes.length) {
@@ -277,15 +282,30 @@ public class Phrase {
 			i++;
 		}
 		
+		//compute scIndexToPercentDuration
 		scIndexToPercentDuration = new float[n];
 		float durationAcc = 0;
-		i=0; //loops through soundcipher arrays
-		while (i < scPitches.length) {
-			scIndexToPercentDuration[i] = durationAcc / getTotalDuration();
-			durationAcc += scDurations[i];
-			i++;
+		for (int k = 0; k < scPitches.length; k++) {
+			scIndexToPercentDuration[k] = durationAcc / getTotalDuration();
+			durationAcc += scDurations[k];
+		}
+		
+		//compute minimimum pitch
+		minPitch = Float.MAX_VALUE;
+		for (int k = 0; k < scPitches.length; k++) {
+			if (scDynamics[k] > 0 && scPitches[k] < minPitch) {
+				minPitch = scPitches[k];
+			}
 		}
 			
+		//compute maximum pitch
+		maxPitch = Float.MIN_VALUE;
+		for (int k = 0; k < scPitches.length; k++) {
+			if (scDynamics[k] > 0 && scPitches[k] > maxPitch) {
+				maxPitch = scPitches[k];
+			}
+		}
+		
 		scArraysUpToDate = true;
 	}
 	
@@ -302,11 +322,8 @@ public class Phrase {
 	 * @return The lowest value MIDI pitch
 	 */
 	public float minPitch() {
-		float minPitch = Float.MAX_VALUE;
-		for (int i=0; i<this.getNumNotes(); i++) {
-			if (this.getSCDynamic(i) > 0 && this.getSCPitch(i) < minPitch) {
-				minPitch = this.getSCPitch(i);
-			}
+		if (!scArraysUpToDate) {
+			updateSCValues();
 		}
 		return minPitch;
 	}
@@ -317,11 +334,8 @@ public class Phrase {
 	 * @return The greatest value MIDI pitch
 	 */
 	public float maxPitch() {
-		float maxPitch = Float.MIN_VALUE;
-		for (int i=0; i<this.getNumNotes(); i++) {
-			if (this.getSCDynamic(i) > 0 && this.getSCPitch(i) > maxPitch) {
-				maxPitch = this.getSCPitch(i);
-			}
+		if (!scArraysUpToDate) {
+			updateSCValues();
 		}
 		return maxPitch;
 	}

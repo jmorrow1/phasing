@@ -37,8 +37,8 @@ public class PlayerInfo {
 		json.setFloat("minutesSpentWithPhaseShifter", minutesSpentWithPhaseShifter);
 		json.setFloat("minutesSpentWithLiveScorer", minutesSpentWithLiveScorer);
 		json.setInt("nextMusicianUnlockIndex", nextMusicianUnlockIndex);
-		json.setInt("nextPhaseShifterUnlockIndex", 0);
-		json.setInt("nextLiveScorerUnlockIndex", 0);
+		json.setInt("nextPhaseShifterUnlockIndex", nextPhaseShifterUnlockIndex);
+		json.setInt("nextLiveScorerUnlockIndex", nextLiveScorerUnlockIndex);
 		return json;
 	}
 }

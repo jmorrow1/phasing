@@ -98,6 +98,8 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 		else {
 			playerInfo = new PlayerInfo(false);
+			pa.saveJSONObject(playerInfo.toJSON(), saveFolderPath);
+			
 		}
 	}
 	
@@ -137,11 +139,12 @@ public class Presenter extends Screen implements ViewVariableInfo {
 
 		prev_notept1 = 0;
 		prev_notept2 = 0;
-
 		totalNotept1 = 0;
 		totalNotept2 = 0;
 		avg_dNotept1 = 0;
 		avg_dNotept2 = 0;
+		accountBalance1 = 0;
+		accountBalance2 = 0;
 		dataPts = 0;
 
 		setupIconLists();
@@ -252,7 +255,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private void animateView() {
 		float notept1 = computeNotept1();
 		float notept2 = computeNotept2();
-
+		
 		float dNotept1 = notept1 - prev_notept1;
 		float dNotept2 = notept2 - prev_notept2;
 
@@ -265,15 +268,16 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 
 		// smoothing:
+		dataPts++;
 		totalNotept1 += dNotept1;
 		totalNotept2 += dNotept2;
-		dataPts++;
 		avg_dNotept1 = totalNotept1 / dataPts;
 		avg_dNotept2 = totalNotept2 / dataPts;
 		accountBalance1 += (dNotept1 - avg_dNotept1);
 		accountBalance2 += (dNotept2 - avg_dNotept2);
 		dNotept1 = avg_dNotept1;
 		dNotept2 = avg_dNotept2;
+		
 		if (pa.abs(accountBalance1) > acceptableAccountSize) {
 			accountBalance1 = 0;
 			dNotept1 += accountBalance1;
