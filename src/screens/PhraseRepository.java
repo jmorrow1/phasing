@@ -1,8 +1,12 @@
-package phases;
+package screens;
 
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import geom.Rect;
+import phases.PhasesPApplet;
+import phases.Phrase;
 
 public class PhraseRepository extends Screen {
 	private ArrayList<Cell> cells = new ArrayList<Cell>();
@@ -88,7 +92,6 @@ public class PhraseRepository extends Screen {
 				drawPhrase(blendAmt);
 			}
 		}
-	
 	
 		private void drawPhrase(float blendAmt) {
 			//draw notes

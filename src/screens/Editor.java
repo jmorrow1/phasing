@@ -1,4 +1,4 @@
-package phases;
+package screens;
 
 import java.lang.reflect.Method;
 
@@ -15,6 +15,10 @@ import controlp5.PlusMinusButtonView;
 import controlp5.Scrollbar;
 import controlp5.SliderPlus;
 import geom.Rect;
+import phases.FloatFormatter;
+import phases.PhasesPApplet;
+import phases.Phrase;
+import phases.Scale;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.event.MouseEvent;

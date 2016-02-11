@@ -1,4 +1,4 @@
-package phases;
+package screens;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -19,6 +19,9 @@ import icons.SineWaveIcon;
 import icons.SuperimposedOrSeparatedIcon;
 import icons.TransformIcon;
 import icons.ViewTypeIcon;
+import phases.ModInt;
+import phases.PhasesPApplet;
+import phases.PlayerInfo;
 import processing.core.PApplet;
 import processing.data.JSONObject;
 import soundcipher.SCScorePlus;

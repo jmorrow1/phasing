@@ -18,6 +18,10 @@ import processing.core.PFont;
 import processing.core.PGraphics;
 import processing.data.JSONObject;
 import processing.event.MouseEvent;
+import screens.Editor;
+import screens.PhraseRepository;
+import screens.Presenter;
+import screens.Screen;
 
 /**
  * 
@@ -191,6 +195,15 @@ public class PhasesPApplet extends PApplet {
 		return s.getScale((int)random(s.numScales()));
 	}
 	
+	/**
+	 * Generates a phrase that has the property of being like the phrase in Steve Reich's Piano Phase
+	 * in this sense: every pitch in the phrase occurs periodically.
+	 * 
+	 * A phasing process over a phrase like this as opposed to a generic phrase results in a
+	 * greater frequence of unisons (two notes of the same pitch playing at the same time).
+	 * 
+	 * @return The generated phrase.
+	 */
 	public Phrase generateReichLikePhrase() {
 		return generateReichLikePhrase(getRandomScale(), 5);
 	}
@@ -205,7 +218,7 @@ public class PhasesPApplet extends PApplet {
 	 * @param scale The set of pitches the phrase draws from.
 	 * @param octave The starting octave. Pitches in the phrase may be above this octave, but not below it.
 	 * @param pa Used only as a generator of random numbers.
-	 * @return
+	 * @return The generated phrase.
 	 */
 	public Phrase generateReichLikePhrase(final Scale scale, final int octave) {
 		return generatePhraseFromTemplates(new String[] {"ABCDAECF", "ABCDABCE", "ABCDEBADCBED", "ABCDEBADCBED", "ABCDEBADFBEDABGDEBADHBED", "ABCDAECFADCEAGCDAECHADCE"}, scale, octave);
@@ -220,7 +233,7 @@ public class PhasesPApplet extends PApplet {
 	 * @param templates The set of templates.
 	 * @param scale The set of pitches the phrase draws from.
 	 * @param octave The starting octave. Pitches in the phrase may be above this octave, but not below it.
-	 * @return
+	 * @return The generated phrase.
 	 */
 	public Phrase generatePhraseFromTemplates(final String[] templates, final Scale scale, int octave) {
 		final String template = templates[(int)random(templates.length)];
