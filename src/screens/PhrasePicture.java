@@ -16,37 +16,39 @@ public class PhrasePicture implements Serializable {
 	
 	//style info
 	private static final int CIRCLE=0, DIAMOND=1, SQUARE=2;
-	private DrawNote drawNoteFunc, addVertexFunc;
+	private DrawNote drawNoteFunc, drawRestFunc, addVertexFunc;
 	private float blendAmt;
 	
-	public PhrasePicture(Phrase phrase, PApplet pa) {
+	public PhrasePicture(Phrase phrase, PhasesPApplet pa) {
 		this.phrase = phrase;
 		this.blendAmt = pa.random(1);
 		int noteStyleType = pa.floor(pa.random(3));
+		
+		Style drawStyle = () -> { pa.noStroke(); pa.fill(pa.getBlendedColor(blendAmt)); };
+		Style restStyle = () -> { pa.stroke(pa.getBlendedColor(blendAmt)); pa.fill(255); };
+		
 		switch (noteStyleType) {
-			case CIRCLE : drawNoteFunc = new DrawCircle(); break;
-			case DIAMOND : drawNoteFunc = new DrawDiamond(); break;
-			case SQUARE : drawNoteFunc = new DrawSquare(); break;                                             
+			case CIRCLE : drawNoteFunc = new DrawCircle(drawStyle); drawRestFunc = new DrawCircle(restStyle); break;
+			case DIAMOND : drawNoteFunc = new DrawDiamond(drawStyle); drawRestFunc = new DrawDiamond(restStyle); break;
+			case SQUARE : drawNoteFunc = new DrawSquare(drawStyle); drawRestFunc = new DrawSquare(restStyle); break;                                             
 		}
 		addVertexFunc = new AddVertex();
 	}
 	
 	protected void draw(Rect rect, PhasesPApplet pa) {
-		//draw notes
-		pa.noStroke();
-		pa.fill(pa.getBlendedColor(blendAmt));
-		iterateNotes(drawNoteFunc, rect, pa);
-		
 		//draw lines between notes
 		pa.strokeWeight(1);
 		pa.stroke(pa.getBlendedColor(blendAmt));
 		pa.noFill();
 		pa.beginShape();
-		iterateNotes(addVertexFunc, rect, pa);
+		iterateNotes(addVertexFunc, addVertexFunc, rect, pa);
 		pa.endShape();
+		
+		//draw notes
+		iterateNotes(drawNoteFunc, drawRestFunc, rect, pa);
 	}
 	
-	protected void iterateNotes(DrawNote drawer, Rect rect, PhasesPApplet pa) {
+	protected void iterateNotes(DrawNote drawNote, DrawNote drawRest, Rect rect, PhasesPApplet pa) {
 		float x1 = pa.lerp(rect.getX1(), rect.getX2(), 0.1f);
 		float x2 = pa.lerp(rect.getX2(), rect.getX1(), 0.1f);
 		float x = x1;
@@ -60,7 +62,12 @@ public class PhrasePicture implements Serializable {
 		for (int i=0; i<phrase.getNumNotes(); i++) {
 			int pitch = phrase.getSCPitch(i);
 			float y = PApplet.map(pitch, phrase.minPitch(), phrase.maxPitch(), y2, y1);
-			drawer.draw(x, y, radius, pa);
+			if (phrase.getSCDynamic(i) > 0) {
+				drawNote.draw(x, y, radius, pa);
+			}
+			else {
+				drawRest.draw(x, y, radius, pa);
+			}
 			x += dx;
 		}
 	}
@@ -69,33 +76,57 @@ public class PhrasePicture implements Serializable {
 		return phrase;
 	}
 	
-	private interface DrawNote extends Serializable {
-		void draw(float x, float y, float r, PApplet pa);
+	private interface Style extends Serializable {
+		void apply();
 	}
 	
-	private class DrawCircle implements DrawNote {	
-		public void draw(float x, float y, float r, PApplet pa) {
+	private interface DrawNote extends Serializable {
+		void draw(float x, float y, float r, PhasesPApplet pa);
+	}
+	
+	private class DrawCircle implements DrawNote {
+		Style style;
+		
+		DrawCircle(Style style) {
+			this.style = style;
+		}
+		
+		public void draw(float x, float y, float r, PhasesPApplet pa) {
+			style.apply();
 			pa.ellipseMode(pa.RADIUS); 
 			pa.ellipse(x, y, r, r);
 		}
 	}
 	
 	private class DrawDiamond implements DrawNote {
-		public void draw(float x, float y, float r, PApplet pa) {
+		Style style;
+		
+		DrawDiamond(Style style) {
+			this.style = style;
+		}
+		public void draw(float x, float y, float r, PhasesPApplet pa) {
+			style.apply();
 			r *= 1.25f;
 			Polygon.drawPolygon(x, y, r, r, 4, 0, pa);
 		}
 	}
 	
 	private class DrawSquare implements DrawNote {
-		public void draw(float x, float y, float r, PApplet pa) {
+		Style style;
+		
+		DrawSquare(Style style) {
+			this.style = style;
+		}
+		
+		public void draw(float x, float y, float r, PhasesPApplet pa) {
+			style.apply();
 			r *= 1.25f;
 			Polygon.drawPolygon(x, y, r, r, 4, pa.QUARTER_PI, pa);
 		}
 	}
 	
 	private class AddVertex implements DrawNote {
-		public void draw(float x, float y, float r, PApplet pa) {
+		public void draw(float x, float y, float r, PhasesPApplet pa) {
 			pa.vertex(x, y);
 		}
 	}

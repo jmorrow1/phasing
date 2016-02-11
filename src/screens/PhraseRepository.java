@@ -25,13 +25,14 @@ public class PhraseRepository extends Screen {
 				break;
 		}
 		
-		//populateCellsWithRandomPhrases();
+		populateCellsWithRandomPhrases();
+		cells.get(0).getPhrase().setGridDynamic(0, 0);
 		
-		File file = new File(pa.saveFolderPath + "phrases" + ".ser");
+		/*File file = new File(pa.saveFolderPath + "phrases" + ".ser");
 		if (file.exists()) {
 			ArrayList<PhrasePicture> phrasePictures = readPhrases(file);
 			assignPhrasesToCells(phrasePictures);
-		}
+		}*/
 		
 		//writeToFile(Cell.toPhraseList(cells), "phrases");
 	}
