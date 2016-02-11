@@ -35,22 +35,22 @@ public class Phrase implements Serializable {
 	public static final int NOTE_START = 0, NOTE_SUSTAIN = 1, REST = 2;
 	
 	//parameters
-	private float unitDuration = 0.25f;
-	private float defaultArt, defaultPan;
+	protected float unitDuration = 0.25f;
+	protected float defaultArt, defaultPan;
 	
 	//for managing state relatively efficiently
-	private boolean scArraysUpToDate = true;
-	private float minPitch, maxPitch;
+	protected boolean scArraysUpToDate = true;
+	protected float minPitch, maxPitch;
 	
 	//phrase data, in grid notation
-	private float[] gridPitches, gridDynamics, gridArts, gridPans;
-	private int[] cellTypes;
+	protected float[] gridPitches, gridDynamics, gridArts, gridPans;
+	protected int[] cellTypes;
 	
 	//phrase data, in soundcipher notation
-	private float[] scPitches, scDynamics, scDurations, scArts, scPans;
+	protected float[] scPitches, scDynamics, scDurations, scArts, scPans;
 	
 	//other
-	private float[] scIndexToPercentDuration;
+	protected float[] scIndexToPercentDuration;
 	
 	/**
 	 * Constructs an empty phrase.
@@ -124,6 +124,35 @@ public class Phrase implements Serializable {
 		else {
 			System.err.println("Cannot construct phrase.");
 		}
+	}
+	
+	/**
+	 * Copy constructor. This does a deep copy.
+	 * @param phrase The phrase to copy.
+	 */
+	public Phrase(Phrase phrase) {
+		if (phrase != null) {
+			this.unitDuration = phrase.unitDuration;
+			
+			this.defaultArt = phrase.defaultArt;
+			this.defaultPan = phrase.defaultPan;
+			
+			this.gridPitches = Arrays.copyOf(phrase.gridPitches, phrase.gridPitches.length);
+			this.gridDynamics = Arrays.copyOf(phrase.gridDynamics, phrase.gridDynamics.length);
+			this.gridArts = Arrays.copyOf(phrase.gridArts, phrase.gridArts.length);
+			this.gridPans = Arrays.copyOf(phrase.gridPans, phrase.gridPans.length);
+			this.cellTypes = Arrays.copyOf(phrase.cellTypes, phrase.cellTypes.length);
+		}
+		else {
+			gridPitches = new float[] {};
+			gridDynamics = new float[] {};
+			gridArts = new float[] {};
+			gridPans = new float[] {};
+			cellTypes = new int[] {};
+			scArraysUpToDate = false;
+		}
+		
+		updateSCValues();
 	}
 	
 	/**
