@@ -28,8 +28,11 @@ public class PhraseRepository extends Screen {
 		//populateCellsWithRandomPhrases();
 		
 		File file = new File(pa.saveFolderPath + "phrases" + ".ser");
-		ArrayList<Phrase> phrases = readPhrases(file);
-		assignPhrasesToCells(phrases);
+		if (file.exists()) {
+			ArrayList<PhrasePicture> phrasePictures = readPhrases(file);
+			assignPhrasesToCells(phrasePictures);
+		}
+		
 		//writeToFile(Cell.toPhraseList(cells), "phrases");
 	}
 	
@@ -38,13 +41,13 @@ public class PhraseRepository extends Screen {
 	 ****************************/
 	
 	/**
-	 * Takes an Arraylist of phrases, serializes it, and writes it to a file with the directory given
+	 * Takes an Arraylist of PhrasePictures, serializes it, and writes it to a file with the directory given
 	 * by the PhasesPApplet field, saveFolderPath.
 	 * 
 	 * @param phrases The ArrayList of phrases.
 	 * @param name The name of the file.
 	 */
-	private void writeToFile(ArrayList<Phrase> phrases, String name) {
+	private void writeToFile(ArrayList<PhrasePicture> phrases, String name) {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(pa.saveFolderPath + name + ".ser")));
 			oos.writeObject(phrases);
@@ -55,21 +58,21 @@ public class PhraseRepository extends Screen {
 	}
 	
 	/**
-	 * Takes a file and tries to deserialize it and construct an ArrayList<Phrase> from it.
-	 * If it fails, it will return an empty ArrayList<Phrase>.
+	 * Takes a file and tries to deserialize it and construct an ArrayList<PhrasePicture> from it.
+	 * If it fails, it will return an empty ArrayList<PhrasePicture>.
 	 * 
 	 * @param file The file.
-	 * @return An ArrayList<Phrase>.
+	 * @return An ArrayList<PhrasePicture>.
 	 */
-	private ArrayList<Phrase> readPhrases(File file) {
+	private ArrayList<PhrasePicture> readPhrases(File file) {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-			ArrayList<Phrase> phrases = (ArrayList<Phrase>) ois.readObject();
+			ArrayList<PhrasePicture> phrases = (ArrayList<PhrasePicture>) ois.readObject();
 			ois.close();
 			return phrases;
 		} catch (IOException | ClassNotFoundException | ClassCastException e) {
 			e.printStackTrace();
-			return new ArrayList<Phrase>();
+			return new ArrayList<PhrasePicture>();
 		}
 	}
 	
@@ -77,10 +80,10 @@ public class PhraseRepository extends Screen {
 	 ***** Initialization *****
 	 **************************/
 	
-	private void assignPhrasesToCells(ArrayList<Phrase> phrases) {
-		int end = PApplet.min(cells.size(), phrases.size());
+	private void assignPhrasesToCells(ArrayList<PhrasePicture> phrasePictures) {
+		int end = PApplet.min(cells.size(), phrasePictures.size());
 		for (int i=0; i<end; i++) {
-			cells.get(i).addPhrase(phrases.get(i), pa);
+			cells.get(i).setPhrasePicture(phrasePictures.get(i));
 		}
 	}
 	
@@ -100,7 +103,7 @@ public class PhraseRepository extends Screen {
 	
 	private void populateCellsWithRandomPhrases() {
 		for (Cell c : cells) {
-			c.addPhrase(pa.generateReichLikePhrase(), pa);
+			c.setPhrasePicture(new PhrasePicture(pa.generateReichLikePhrase(), pa));
 		}
 	}
 	

@@ -10,8 +10,7 @@ import processing.core.PApplet;
 
 class Cell {
 	private Rect rect;
-	private PictureStyle pictureStyle;
-	private Phrase phrase;
+	private PhrasePicture phrasePicture;
 	
 	protected Cell(Rect rect) {
 		this.rect = rect;
@@ -24,22 +23,22 @@ class Cell {
 		rect.display(pa);
 		
 		if (hasPhrase()) {
-			pictureStyle.draw(phrase, rect, pa);
+			phrasePicture.draw(rect, pa);
 		}
 	}
 	
 	/**
-	 * Takes an ArrayList<Cell>, extracts its DrawablePhrases, and puts those in an ArrayList.
-	 * Then it returns the ArrayList of DrawablePhrases.
+	 * Takes an ArrayList<Cell>, extracts its PhrasePictures, and puts those in an ArrayList.
+	 * Then it returns the ArrayList of PhrasePictures.
 	 * 
 	 * @param cells The ArrayList<Cell>.
-	 * @return The ArrayList<Phrase>.
+	 * @return The ArrayList<PhrasePicture>.
 	 */
-	public static ArrayList<Phrase> toPhraseList(ArrayList<Cell> cells) {
-		ArrayList<Phrase> phraseList = new ArrayList<Phrase>();
+	public static ArrayList<PhrasePicture> toPhraseList(ArrayList<Cell> cells) {
+		ArrayList<PhrasePicture> phraseList = new ArrayList<PhrasePicture>();
 		for (Cell c : cells) {
 			if (c.hasPhrase()) {
-				phraseList.add(c.getPhrase());
+				phraseList.add(c.getPhrasePicture());
 			}
 		}
 		return phraseList;
@@ -50,15 +49,18 @@ class Cell {
 	 *******************************/
 	
 	protected boolean hasPhrase() {
-		return phrase != null;
+		return phrasePicture != null;
 	}
 	
-	protected void addPhrase(Phrase phrase, PApplet pa) {
-		this.phrase = phrase;
-		this.pictureStyle = new PictureStyle(pa);
+	protected void setPhrasePicture(PhrasePicture phrasePicture) {
+		this.phrasePicture = phrasePicture;
+	}
+	
+	protected PhrasePicture getPhrasePicture() {
+		return phrasePicture;
 	}
 	
 	protected Phrase getPhrase() {
-		return phrase;
+		return phrasePicture.getPhrase();
 	}
 }
