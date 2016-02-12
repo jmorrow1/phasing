@@ -531,13 +531,11 @@ public class Editor extends Screen {
 	 *********************************/
 
 	private int yToPitch(float y) {
-		//int pitchIndex = (int)pa.map(y, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys) - 1 + pitchOffset;
 		int pitchIndex = (int)pa.map(y + cellHeight/2f, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys);
 		return pa.scale.getNoteValue(pitchIndex) + minOctave*12;
 	}
 	
 	private float pitchToY(int pitch) {
-		//int pitchIndex = pa.scale.getIndexOfNoteValue(pitch - minOctave*12) + 1 - pitchOffset;
 		int pitchIndex = pa.scale.getIndexOfNoteValue(pitch - minOctave*12) + 1;
 		return pa.map(pitchIndex, 0, numKeys, gridFrame.getY2(), gridFrame.getY1());
 	}

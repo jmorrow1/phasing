@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -148,7 +149,7 @@ public class PhasesPApplet extends PApplet {
 				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
 				            new int[] {n, n, n, n, n, n, n, n, n, n, n, n});*/
 		scale = getRandomScale();
-		phrase = generateReichLikePhrase();
+		phrase = generateReichLikePhrase(scale);
 	
 		//create screens
 		presenter = new Presenter(this);
@@ -206,10 +207,12 @@ public class PhasesPApplet extends PApplet {
 	 * A phasing process over a phrase like this as opposed to a generic phrase results in a
 	 * greater frequence of unisons (two notes of the same pitch playing at the same time).
 	 * 
+	 * @param scale The set of pitches the phrase draws from.
+	 * 
 	 * @return The generated phrase.
 	 */
-	public Phrase generateReichLikePhrase() {
-		return generateReichLikePhrase(getRandomScale(), 5);
+	public Phrase generateReichLikePhrase(final Scale scale) {
+		return generateReichLikePhrase(scale, 5, true);
 	}
 	
 	/**
@@ -221,11 +224,13 @@ public class PhasesPApplet extends PApplet {
 	 * 
 	 * @param scale The set of pitches the phrase draws from.
 	 * @param octave The starting octave. Pitches in the phrase may be above this octave, but not below it.
-	 * @param pa Used only as a generator of random numbers.
+	 * @param allowRests A boolean that indicates whether or not a rest can stand in for a pitch.
+	 * 
+	 * 
 	 * @return The generated phrase.
 	 */
-	public Phrase generateReichLikePhrase(final Scale scale, final int octave) {
-		return generatePhraseFromTemplates(new String[] {"ABCDAECF", "ABCDABCE", "ABCDEBADCBED", "ABCDEBADCBED", "ABCDEBADFBEDABGDEBADHBED", "ABCDAECFADCEAGCDAECHADCE"}, scale, octave);
+	public Phrase generateReichLikePhrase(final Scale scale, final int octave, final boolean allowRests) {
+		return generatePhraseFromTemplates(new String[] {"ABCDAECF", "ABCDABCE", "ABCDEBADCBED", "ABCDEBADCBED", "ABCDEBADFBEDABGDEBADHBED", "ABCDAECFADCEAGCDAECHADCE"}, scale, octave, allowRests);
 	}
 	
 	/**
@@ -236,10 +241,11 @@ public class PhasesPApplet extends PApplet {
 	 * 
 	 * @param templates The set of templates.
 	 * @param scale The set of pitches the phrase draws from.
-	 * @param octave The starting octave. Pitches in the phrase may be above this octave, but not below it.
+	 * @param minOctave The starting octave. Pitches in the phrase may be above this octave, but not below it.
+	 * @param allowRests A boolean that indicates whether or not a rest can stand in for a pitch.
 	 * @return The generated phrase.
 	 */
-	public Phrase generatePhraseFromTemplates(final String[] templates, final Scale scale, int octave) {
+	public Phrase generatePhraseFromTemplates(final String[] templates, final Scale scale, final int minOctave, final boolean allowRests) {
 		//choose template
 		final int REST = -1; 
 		String template = templates[(int)random(templates.length)];
@@ -248,13 +254,16 @@ public class PhasesPApplet extends PApplet {
 		//init set of pitch choices
 		int numPitchesNeeded = numUniqueChars(template);
 		int numOctavesNeeded = ceil((float)numPitchesNeeded / (float)scale.size());
-		println("numPitchesNeeded: " + numPitchesNeeded + ", numOctavesNeeded: " + numOctavesNeeded);
-		int[] shuffledScale = new int[numOctavesNeeded*scale.size()];
-		for (int i=0; i<shuffledScale.length; i++) {
-			shuffledScale[i] = scale.getNoteValue(i % scale.size()) + 12*(i / scale.size()) + octave*12;
+		int numPitchChoices = numOctavesNeeded * scale.size();
+		
+		if (allowRests) numPitchChoices++;
+		int[] pitchChoices = new int[numPitchChoices];
+		for (int i=0; i<pitchChoices.length; i++) {
+			pitchChoices[i] = scale.getNoteValue(i) + minOctave*12;
 		}
-		//shuffledScale[shuffledScale.length-1] = REST;
-		shuffle(shuffledScale);
+		if (allowRests) pitchChoices[pitchChoices.length-1] = REST;
+		
+		shuffle(pitchChoices);
 		
 		//init phrase components
 		float[] pitches = new float[template.length()];
@@ -265,7 +274,7 @@ public class PhasesPApplet extends PApplet {
 		for (int i=0; i<template.length(); i++) { //loops through template
 			char c = template.charAt(i);
 			if (!map.containsKey(c)) {
-				int pitch = shuffledScale[j];
+				int pitch = pitchChoices[j];
 				j++;
 				map.put(c, pitch);
 			}
@@ -275,9 +284,16 @@ public class PhasesPApplet extends PApplet {
 			cellTypes[i] = (pitch == REST) ? Phrase.REST : Phrase.NOTE_START;
 		}
 		
+		Phrase phrase = new Phrase(pitches, dynamics, cellTypes);
+		
 		return new Phrase(pitches, dynamics, cellTypes);
 	}
 	
+	/**
+	 * Counts the number of unique characters in the given string and returns the result.
+	 * @param s The string.
+	 * @return The number of unique characters in the given string.
+	 */
 	private int numUniqueChars(String s) {
 		String uniqueChars = "";
 		

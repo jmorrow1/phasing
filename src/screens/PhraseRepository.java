@@ -103,7 +103,7 @@ public class PhraseRepository extends Screen {
 	
 	private void populateCellsWithRandomPhrases() {
 		for (Cell c : cells) {
-			c.setPhrasePicture(new PhrasePicture(pa.generateReichLikePhrase(), pa));
+			c.setPhrasePicture(new PhrasePicture(pa.generateReichLikePhrase(pa.scale), pa));
 		}
 	}
 	
