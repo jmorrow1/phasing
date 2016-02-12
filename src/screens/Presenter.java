@@ -55,7 +55,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private SCScorePlus player1 = new SCScorePlus();
 	private SCScorePlus player2 = new SCScorePlus();
 	private boolean playing;
-	private int sign;
 
 	// to smooth animation
 	private float accountBalance1 = 0, accountBalance2 = 0;
@@ -130,14 +129,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 
 		playing = true;
 
-		if (pa.getBPM1() < pa.getBPM2()) {
-			sign = 1;
-		} else if (pa.getBPM1() > pa.getBPM2()) {
-			sign = -1;
-		} else {
-			sign = 0;
-		}
-
 		prev_notept1 = 0;
 		prev_notept2 = 0;
 		totalNotept1 = 0;
@@ -151,8 +142,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		setupIconLists();
 		
 		activeIconIndex = 0;
-
-		view.onEnter();
 	}
 	
 	@Override
@@ -291,7 +280,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		prev_notept1 = notept1;
 		prev_notept2 = notept2;
 
-		view.update(dNotept1, dNotept2, sign);
+		view.update(dNotept1, dNotept2);
 		if (view != phaseShifterView) {
 			phaseShifterView.updateNormalTransforms(dNotept1, dNotept2);
 		}
@@ -313,13 +302,13 @@ public class Presenter extends Screen implements ViewVariableInfo {
 				int availability = this.getIconAvailability(activeVar.getName());
 				int newValue = PhasesPApplet.remainder(activeVar.toInt() - 1, availability);
 				activeVar.setValue(newValue);
-				view.updateState();
+				view.respondToChangeInSettings();
 			} else if (pa.keyCode == pa.DOWN) {
 				ModInt activeVar = variables.get(activeIconIndex);
 				int availability = this.getIconAvailability(activeVar.getName());
 				int newValue = PhasesPApplet.remainder(activeVar.toInt() + 1, availability);
 				activeVar.setValue(newValue);
-				view.updateState();
+				view.respondToChangeInSettings();
 			}
 
 			View newView = null;
@@ -336,9 +325,8 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			}
 			if (view != newView) {
 				view = newView;
-				view.recalibrate(computeNotept1(), computeNotept2());
+				view.wakeUp(computeNotept1(), computeNotept2());
 				setupIconLists();
-				view.onEnter();
 			}
 		}
 	}

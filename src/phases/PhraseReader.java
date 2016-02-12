@@ -64,7 +64,11 @@ public class PhraseReader {
 		}
 	}
 	
-	public void calibrate(float notept) {
+	/**
+	 * After a period of neglect (in which update has not been invoked) this method informs the PhraseReader of where to start reading again.
+	 * @param notept The place at which to start reading again.
+	 */
+	public void wakeUp(float notept) {
 		noteIndex = -1;
 		noteTimeTillNextNote = -notept;
 		
@@ -74,15 +78,28 @@ public class PhraseReader {
 		}		
 	}
 	
+	/**
+	 * Sets the callback.
+	 * @param callee The object to call.
+	 * @param callback The method to call.
+	 */
 	public void setCallback(Object callee, Method callback) {
 		this.callee = callee;
 		this.callback = callback;
 	}
 	
+	/**
+	 * Sets the object on which callbacks are called.
+	 * @param callee The object to call.
+	 */
 	public void setCallee(Object callee) {
 		this.callee = callee;
 	}
 	
+	/**
+	 * Sets the method to call.
+	 * @param callback The method to call.
+	 */
 	public void setCallback(Method callback) {
 		this.callback = callback;
 	}

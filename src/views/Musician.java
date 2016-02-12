@@ -31,12 +31,7 @@ public class Musician extends View {
 	public ModInt instrument = new ModInt(0, numInstruments, instrumentName);
 	
 	@Override
-	public int numOptions() {
-		return 3;
-	}
-	
-	@Override
-	public void updateState() {
+	public void respondToChangeInSettings() {
 		assignInstruments();
 		initInstrumentPlayers();
 		readerA.setCallee(playerA);
@@ -52,18 +47,13 @@ public class Musician extends View {
 	}
 	
 	@Override
-	public void recalibrate(float notept1, float notept2) {
-		readerA.calibrate(notept1);
-		readerB.calibrate(notept2);
+	public void wakeUp(float notept1, float notept2) {
+		readerA.wakeUp(notept1);
+		readerB.wakeUp(notept2);
 	}
 	
 	@Override
-	public void onEnter() {
-		
-	}
-	
-	@Override
-	public void update(float dNotept1, float dNotept2, int sign) {
+	public void update(float dNotept1, float dNotept2) {
 		readerA.update(dNotept1);
 		readerB.update(dNotept2);	
 		
@@ -82,14 +72,14 @@ public class Musician extends View {
 		else {
 			pa.fill(0, opacity);
 		}
-		playerA.display(pa);
+		playerA.draw(pa);
 		if (colorScheme.toInt() == DIACHROMATIC) {
 			pa.fill(pa.getColor2(), opacity);
 		}
 		else {
 			pa.fill(0, opacity);
 		}
-		playerB.display(pa);
+		playerB.draw(pa);
 	}
 	
 	private void initInstruments() {
@@ -126,12 +116,12 @@ public class Musician extends View {
 
 	private void initInstrumentPlayers() {	
 		if (superimposedOrSeparated.toInt() == SUPERIMPOSED) {
-			playerA = new InstrumentPlayer(instrumentAB, pa.phrase, firstPitch);
-			playerB = new InstrumentPlayer(instrumentAB, pa.phrase, firstPitch);
+			playerA = new InstrumentPlayer(instrumentAB, pa.phrase);
+			playerB = new InstrumentPlayer(instrumentAB, pa.phrase);
 		}
 		else {
-			playerA = new InstrumentPlayer(instrumentA, pa.phrase, firstPitch);
-			playerB = new InstrumentPlayer(instrumentB, pa.phrase, firstPitch);
+			playerA = new InstrumentPlayer(instrumentA, pa.phrase);
+			playerB = new InstrumentPlayer(instrumentB, pa.phrase);
 		}
 	}
 	

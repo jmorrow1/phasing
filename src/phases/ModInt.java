@@ -2,13 +2,20 @@ package phases;
 
 import processing.core.PApplet;
 
+/**
+ * An integer bound by arithmetic modulo some number.
+ * That number is given when the ModInt object is constructed: it's the field called "divisor".
+ * 
+ * @author James Morrow
+ *
+ */
 public class ModInt {
 	private final String name;
 	private int value;
 	private final int divisor;
-	
+
 	public ModInt(int value, int divisor, String name) {
-		this.value = value;
+		setValue(value);
 		this.divisor = (divisor > 0) ? divisor : 1;
 		this.name = name;
 	}

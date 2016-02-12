@@ -14,20 +14,27 @@ import processing.core.PApplet;
  *
  */
 public class Piano extends Rect implements Instrument {
-	//independent parameters
 	private final int numOctaves;
-	private boolean facePositive;
+	private boolean faceDown;
+	
 	//keys
 	private Polygon[] whiteKeys;
 	private Rect[] blackKeys;
 	private Shape[] keys;
 	private int blackKeyColor;
 	
-	public Piano(int numOctaves, Rect rect, boolean facePositive, int blackKeyColor) {
-		super(rect);
+	/**
+	 * 
+	 * @param numOctaves The number of octaves the piano should span, starting on C.
+	 * @param area Defines the area the piano should cover.
+	 * @param faceDown If true, the piano faces down. If false, the piano faces up.
+	 * @param blackKeyColor The color to fill the black keys.
+	 */
+	public Piano(int numOctaves, Rect area, boolean faceDown, int blackKeyColor) {
+		super(area);
 		
 		this.numOctaves = numOctaves;
-		this.facePositive = facePositive;
+		this.faceDown = faceDown;
 		
 		if (numOctaves >= 0) {
 			initArrays();
@@ -39,6 +46,9 @@ public class Piano extends Rect implements Instrument {
 		this.blackKeyColor = blackKeyColor;
 	}
 	
+	/**
+	 * Sets up the arrays that store the keys (shapes) of the piano.
+	 */
 	private void initArrays() {
 		int numKeys = numOctaves * 12;
 		int numWhiteKeys = numOctaves * 7;
@@ -48,9 +58,22 @@ public class Piano extends Rect implements Instrument {
 		blackKeys = new Rect[numBlackKeys];
 	}
 	
-	private Polygon initWhiteKey(int keyIndex, float x1, float y1, float whiteKeyWidth, float whiteKeyHeight, float blackKeyWidth, float blackKeyHeight) {
-		boolean leftNeighborIsBlack = Instrument.isBlackKey(keyIndex-1);
-		boolean rightNeighborIsBlack = Instrument.isBlackKey(keyIndex+1);
+	/**
+	 * Constructs a polygonal white key and returns it.
+	 * 
+	 * @param pitch The pitch of the key.
+	 * @param x1 The leftmost x-coordinate of the key.
+	 * @param y1 The uppermost y-coordinate of the key.
+	 * @param whiteKeyWidth The width of white keys in a piano.
+	 * @param whiteKeyHeight The height of white keys in a piano.
+	 * @param blackKeyWidth The width of black keys in a piano.
+	 * @param blackKeyHeight The height of black keys in a piano.
+	 * @return
+	 */
+	private static Polygon initWhiteKey(int pitch, float x1, float y1,
+			float whiteKeyWidth, float whiteKeyHeight, float blackKeyWidth, float blackKeyHeight) {
+		boolean leftNeighborIsBlack = Instrument.isBlackKey(pitch-1);
+		boolean rightNeighborIsBlack = Instrument.isBlackKey(pitch+1);
 		
 		float x2 = x1 + blackKeyWidth/2f;
 		float x3 = x1 + whiteKeyWidth - blackKeyWidth/2f;
@@ -72,6 +95,9 @@ public class Piano extends Rect implements Instrument {
 		}	
 	}
 	
+	/**
+	 * Initializes the shapes representing piano keys.
+	 */
 	private void initKeys() {
 		//dependent parameters
 		int numKeys = numOctaves * 12;
@@ -98,14 +124,14 @@ public class Piano extends Rect implements Instrument {
 				if (getWidth() > getHeight()) {
 					blackKeys[k++] = new Rect(x1 + whiteKeyWidth - blackKeyWidth/2f, y1, 
 							                  blackKeyWidth, blackKeyHeight, PApplet.CORNER);	
-					if (!facePositive) {
+					if (!faceDown) {
 						blackKeys[k-1].translate(0, whiteKeyHeight-blackKeyHeight);
 					}
 				}
 				else {
 					blackKeys[k++] = new Rect(x1, y1 + whiteKeyHeight - blackKeyHeight/2f, 
 			                                  blackKeyWidth, blackKeyHeight, PApplet.CORNER);
-					if (!facePositive) {
+					if (!faceDown) {
 						blackKeys[k-1].translate(whiteKeyWidth-blackKeyWidth, 0);
 					}
 				}
@@ -122,12 +148,17 @@ public class Piano extends Rect implements Instrument {
 		}
 	}
 	
+	@Override
 	public void display(PApplet pa) {
-		drawWhiteKeys(pa);			
+		displayWhiteKeys(pa);			
 		drawBlackKeys(pa);
 	}
 	
-	private void drawWhiteKeys(PApplet pa) {
+	/**
+	 * Draws all the white keys.
+	 * @param pa The PApplet to draw to.
+	 */
+	private void displayWhiteKeys(PApplet pa) {
 		pa.strokeWeight(1);
 		pa.stroke(100);
 		pa.fill(255);
@@ -136,6 +167,10 @@ public class Piano extends Rect implements Instrument {
 		}
 	}
 	
+	/**
+	 * Draws all the black keys.
+	 * @param pa The PApplet to draw to.
+	 */
 	private void drawBlackKeys(PApplet pa) {
 		pa.strokeWeight(1);
 		pa.stroke(100);
@@ -145,6 +180,9 @@ public class Piano extends Rect implements Instrument {
 		}
 	}
 	
+	/**
+	 * Sets the width of the piano's area (which is a rectangle).
+	 */
 	public void setWidth(float width) {
 		super.setWidth(width);
 		if (numOctaves > 0) {
@@ -152,6 +190,9 @@ public class Piano extends Rect implements Instrument {
 		}
 	}
 	
+	/**
+	 * Sets the height of the piano's area (which is a rectangle).
+	 */
 	public void setHeight(float height) {
 		super.setHeight(height);
 		if (numOctaves > 0) {
@@ -159,37 +200,69 @@ public class Piano extends Rect implements Instrument {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return The number of octaves the piano spans.
+	 */
 	public int getNumOctaves() {
 		return numOctaves;
 	}
 	
+	/**
+	 * 
+	 * @return The number of keys in this particular piano.
+	 */
 	public int numKeys() {
 		return keys.length;
 	}
 	
+	/**
+	 * 
+	 * @return The width of white keys in this piano.
+	 */
 	public float getWhiteKeyWidth() {
 		return whiteKeys[0].getWidth();
 	}
 	
+	/**
+	 * 
+	 * @return The height of white keys in this piano.
+	 */
 	public float getWhiteKeyHeight() {
 		return whiteKeys[0].getHeight();
 	}
 	
+	/**
+	 * 
+	 * @return The width of black keys in this piano.
+	 */
 	public float getBlackKeyWidth() {
 		return blackKeys[0].getWidth();
 	}
 	
+	/**
+	 * 
+	 * @return The height of black keys in this piano.
+	 */
 	public float getBlackKeyHeight() {
 		return blackKeys[0].getHeight();
 	}
 	
-	public boolean getFacePositive() {
-		return facePositive;
+	/**
+	 * 
+	 * @return True, if this piano faces down. False, if this piano faces up.
+	 */
+	public boolean doesFaceDown() {
+		return faceDown;
 	}
 	
-	public void setFacePositive(boolean value) {
-		if (facePositive != value) {
-			facePositive = value;
+	/**
+	 * Sets whether or not the piano faces down.
+	 * @param value If true, the piano faces down. If false, the piano faces up.
+	 */
+	public void setToFaceDown(boolean value) {
+		if (faceDown != value) {
+			faceDown = value;
 			initKeys();
 		}
 	}
@@ -199,7 +272,7 @@ public class Piano extends Rect implements Instrument {
 	 * @param i
 	 * @return
 	 */
-	public Shape getShapeAtNoteIndex(int i) {
+	public Shape pitchToShape(int i) {
 		i = PhasesPApplet.remainder(i, keys.length);
 		return keys[i].clone();
 	}

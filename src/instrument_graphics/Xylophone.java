@@ -6,11 +6,21 @@ import geom.Shape;
 import phases.PhasesPApplet;
 import processing.core.PApplet;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 public class Xylophone implements Instrument {
 	private final int numOctaves;
 	private final int numBars;
 	private final Shape[] bars;
 	
+	/**
+	 * 
+	 * @param numOctaves The number of octaves the xylophone spans.
+	 * @param r The area in which the xylophone is situated.
+	 */
 	public Xylophone(int numOctaves, Rect r) {
 		this.numOctaves = numOctaves;
 		this.numBars = numOctaves * 12;
@@ -46,6 +56,7 @@ public class Xylophone implements Instrument {
 	    }
 	}
 	
+	
 	private Shape makeWhiteBar(int barIndex, float x1, float y1, float barWidth, float barHeight, float widthBetweenBars, float prevBarHeight, float nextBarHeight) {
 	    boolean leftNeighborIsBlack = Instrument.isBlackKey(barIndex-1);
 	    boolean rightNeighborIsBlack = Instrument.isBlackKey(barIndex+1);
@@ -72,7 +83,7 @@ public class Xylophone implements Instrument {
 	}
 
 	@Override
-	public Shape getShapeAtNoteIndex(int index) {
+	public Shape pitchToShape(int index) {
 		index = PhasesPApplet.remainder(index, bars.length);
 		return bars[index].clone();
 	}
@@ -87,11 +98,23 @@ public class Xylophone implements Instrument {
 	    }
 	}
 	
+	/**
+	 * Computes the height of the nth bar in a xylophone with a given unit bar height.
+	 * @param n The index of the bar in a xylophone.
+	 * @param unitBarHeight The unit bar height.
+	 * @return
+	 */
 	private static float barHeight(int n, float unitBarHeight) {
 	    float ratio = 1 / (float)Math.sqrt(Math.pow(nroot(2, 12), n));
 	    return ratio * unitBarHeight;
 	}
 	
+	/**
+	 * Computes the nth root of x.
+	 * @param x
+	 * @param n
+	 * @return
+	 */
 	private static float nroot(float x, float n) {
 	    return (float)Math.pow(x, 1 / n);
 	}

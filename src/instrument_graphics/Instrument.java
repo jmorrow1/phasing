@@ -4,9 +4,30 @@ import geom.Shape;
 import phases.PhasesPApplet;
 import processing.core.PApplet;
 
+/**
+ * Gives a graphical representation of a musical instrument.
+ * 
+ * @author James Morrow
+ *
+ */
 public interface Instrument {
-	public Shape getShapeAtNoteIndex(int index);
+	/**
+	 * Gives the shape on the instrument cooresponding to the given the pitch value.
+	 * If the given pitch is out of the instrument's range,
+	 * the pitch will be wrapped into range before being used. That way, the method always
+	 * returns a shape and never returns a null pointer.
+	 * 
+	 * @param pitchValue The integer value of the pitch.
+	 * @return The shape associated with the given pitch value.
+	 */
+	public Shape pitchToShape(int pitchValue);
+	
+	/**
+	 * Displays the instrument to the given PApplet.
+	 * @param pa The PApplet to which the instrument is drawn.
+	 */
 	public void display(PApplet pa);
+	
 	/**
 	 *
 	 * @param midiPitch The midi pitch value

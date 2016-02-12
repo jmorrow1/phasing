@@ -2,6 +2,13 @@ package phases;
 
 import processing.data.JSONObject;
 
+/**
+ * A data container of information related to the player. More specifically:
+ * --> data that determines what the player has and hasn't unlocked.
+ * 
+ * @author James Morrow
+ *
+ */
 public class PlayerInfo {
 	public float minutesSpentWithMusician, minutesSpentWithPhaseShifter, minutesSpentWithLiveScorer;
 	public int nextMusicianUnlockIndex, nextPhaseShifterUnlockIndex, nextLiveScorerUnlockIndex;

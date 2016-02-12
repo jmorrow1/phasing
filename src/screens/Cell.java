@@ -8,6 +8,11 @@ import phases.PhasesPApplet;
 import phases.Phrase;
 import processing.core.PApplet;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 class Cell {
 	private Rect rect;
 	private PhrasePicture phrasePicture;

@@ -45,11 +45,6 @@ public class LiveScorer extends View {
 	public ModInt scoreMode = new ModInt(0, numScoreModes, scoreModeName);
 	public ModInt noteGraphic = new ModInt(0, numNoteGraphicSet2s, noteGraphicSet2Name);
 	public ModInt colorScheme = new ModInt(1, numColorSchemes, colorSchemeName);
-	
-	@Override
-	public int numOptions() {
-		return 4;
-	}
 
 	public LiveScorer(Rect rect, int opacity, PhasesPApplet pa) {
 		super(rect, opacity, pa);
@@ -94,19 +89,19 @@ public class LiveScorer extends View {
 		//this helps make it such that a quarter note is drawn as a circle when the stroke cap is round:
 		roundStrokeCapSurplus = pixelsPerWholeNote/8f;
 		
-		onEnter();
+		respondToChangeInSettings();
 	}
 	
 	@Override
-	public void recalibrate(float notept1, float notept2) {
+	public void wakeUp(float notept1, float notept2) {
 		dataPts1.clear();
 		dataPts2.clear();
-		readerA.calibrate(notept1);
-		readerB.calibrate(notept2);
+		readerA.wakeUp(notept1);
+		readerB.wakeUp(notept2);
 	}
 	
 	@Override
-	public void updateState() {
+	public void respondToChangeInSettings() {
 		boolean scoreModeChanged = ((scoreMode.toInt() == MOVE_NOTES && x != 0 && y != 0) || 
 				                    (scoreMode.toInt() == MOVE_SPAWN_POINT && x == 0 && y == 0));
 		
@@ -127,12 +122,7 @@ public class LiveScorer extends View {
 	}
 	
 	@Override
-	public void onEnter() {
-		updateState();
-	}
-	
-	@Override
-	public void update(float dNotept1, float dNotept2, int sign) {
+	public void update(float dNotept1, float dNotept2) {
 		pa.pushMatrix();
 		
 		pa.translate(getCenx(), getCeny());

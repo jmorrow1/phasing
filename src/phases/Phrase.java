@@ -154,6 +154,10 @@ public class Phrase implements JSONable {
 		}
 	}
 	
+	/**
+	 * Constructs a phrase from a JSONObject.
+	 * @param json A JSONObject representing the phrase.
+	 */
 	public Phrase(JSONObject json) {
 		if (json.hasKey("gridPitches") && json.hasKey("gridDynamics") && json.hasKey("gridArts") && 
 				json.hasKey("gridPans") && json.hasKey("cellTypes")) {
@@ -367,13 +371,6 @@ public class Phrase implements JSONable {
 		scArraysUpToDate = true;
 	}
 	
-	public boolean containsNonRests() {
-		for (int i=0; i<this.getNumNotes(); i++) {
-			if (this.getSCDynamic(i) > 0) return true;
-		}
-		return false;
-	}
-	
 	/**
 	 * Searches the phrase and returns the lowest value MIDI pitch in the phrase.
 	 * Rests don't count as having a pitch, so they're excluded from the search.
@@ -465,9 +462,16 @@ public class Phrase implements JSONable {
 		return scPans[i];
 	}
 	
-	public float getPercentDurationOfSCIndex(int index) {
+	/**
+	 * It looks up the note at the given scIndex. Then it looks up the start time of that note.
+	 * It compares that start time to the total duration of the phrase and returns that ratio.
+	 * 
+	 * @param scIndex The index of the desired note.
+	 * @return The ratio between the note's start time and the total duration of the phrase.
+	 */
+	public float getPercentDurationOfSCIndex(int scIndex) {
 		if (!scArraysUpToDate) updateSCValues();
-		return scIndexToPercentDuration[index];
+		return scIndexToPercentDuration[scIndex];
 	}
 	
 	/**
@@ -610,6 +614,10 @@ public class Phrase implements JSONable {
 		return unitDuration;
 	}
 
+	/**
+	 *
+	 * @return A string representation of the cellTypes array.
+	 */
 	public String cellTypesToString() {
 		String s = "";
 		for (int i=0; i<cellTypes.length; i++) {

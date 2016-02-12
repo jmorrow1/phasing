@@ -8,7 +8,8 @@ import processing.data.JSONArray;
 import processing.data.JSONObject;
 
 /**
- * 
+ * This file gives the type JSONable, which is something that can be converted to a JSONObject.
+ * This file also defines utilities for reading and writing JSON data.
  * @author James Morrow
  *
  */

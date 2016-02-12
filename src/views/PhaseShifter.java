@@ -40,11 +40,6 @@ public class PhaseShifter extends View {
 	public ModInt noteGraphic = new ModInt(0, numNoteGraphicSet1s, noteGraphicSet1Name);
 	public ModInt plotPitchMode = new ModInt(0, numWaysOfPlottingPitchOrNot, plotPitchModeName);
 	public ModInt colorScheme = new ModInt(1, numColorSchemes, colorSchemeName);
-	
-	@Override
-	public int numOptions() {
-		return 6;
-	}
 
 	public PhaseShifter(Rect rect, int opacity, PhasesPApplet pa) {
 		super(rect, opacity, pa);
@@ -58,9 +53,7 @@ public class PhaseShifter extends View {
 		maxRadius = 200;
 		
 		initPhraseReaders();
-	}
-	
-	public void onEnter() {
+		
 		initData();
 	}
 	
@@ -100,7 +93,7 @@ public class PhaseShifter extends View {
 	}
 
 	@Override
-	public void update(float dNotept1, float dNotept2, int sign) {
+	public void update(float dNotept1, float dNotept2) {
 		readerA.update(dNotept1);
 		readerB.update(dNotept2);
 		
@@ -117,9 +110,9 @@ public class PhaseShifter extends View {
 	}
 	
 	@Override
-	public void recalibrate(float notept1, float notept2) {
-		readerA.calibrate(notept1);
-		readerB.calibrate(notept2);
+	public void wakeUp(float notept1, float notept2) {
+		readerA.wakeUp(notept1);
+		readerB.wakeUp(notept2);
 	}
 	
 	public void updateNormalTransforms(float dNotept1, float dNotept2) {
