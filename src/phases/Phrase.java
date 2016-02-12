@@ -1,10 +1,10 @@
 package phases;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 import arb.soundcipher.SCScore;
 import processing.core.PApplet;
+import processing.data.JSONObject;
 
 /**
  * Manages two representations of a musical phrase.
@@ -30,7 +30,7 @@ import processing.core.PApplet;
  * @author James Morrow
  *
  */
-public class Phrase implements Serializable {
+public class Phrase implements JSONable {
 	//note types (for grid notation version of phrase data)
 	public static final int NOTE_START = 0, NOTE_SUSTAIN = 1, REST = 2;
 	
@@ -142,6 +142,7 @@ public class Phrase implements Serializable {
 			this.gridArts = Arrays.copyOf(phrase.gridArts, phrase.gridArts.length);
 			this.gridPans = Arrays.copyOf(phrase.gridPans, phrase.gridPans.length);
 			this.cellTypes = Arrays.copyOf(phrase.cellTypes, phrase.cellTypes.length);
+			scArraysUpToDate = false;
 		}
 		else {
 			gridPitches = new float[] {};
@@ -151,8 +152,36 @@ public class Phrase implements Serializable {
 			cellTypes = new int[] {};
 			scArraysUpToDate = false;
 		}
-		
-		updateSCValues();
+	}
+	
+	public Phrase(JSONObject json) {
+		if (json.hasKey("gridPitches") && json.hasKey("gridDynamics") && json.hasKey("gridArts") && 
+				json.hasKey("gridPans") && json.hasKey("cellTypes")) {
+			gridPitches = Util.toFloatArray(json.getJSONArray("gridPitches"));
+			gridDynamics = Util.toFloatArray(json.getJSONArray("gridDynamics"));
+			gridArts = Util.toFloatArray(json.getJSONArray("gridArts"));
+			gridPans = Util.toFloatArray(json.getJSONArray("gridPans"));
+			cellTypes = Util.toIntArray(json.getJSONArray("cellTypes"));
+			scArraysUpToDate = false;
+		}
+		else {
+			gridPitches = new float[] {};
+			gridDynamics = new float[] {};
+			gridArts = new float[] {};
+			gridPans = new float[] {};
+			cellTypes = new int[] {};
+			scArraysUpToDate = false;
+		}
+	}
+	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+		json.setJSONArray("gridPitches", Util.jsonify(gridPitches));
+		json.setJSONArray("gridDynamics", Util.jsonify(gridDynamics));
+		json.setJSONArray("gridArts", Util.jsonify(gridArts));
+		json.setJSONArray("gridPans", Util.jsonify(gridPans));
+		json.setJSONArray("cellTypes", Util.jsonify(cellTypes));
+		return json;
 	}
 	
 	/**

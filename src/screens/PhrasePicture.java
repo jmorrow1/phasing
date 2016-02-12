@@ -1,39 +1,74 @@
 package screens;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import geom.Polygon;
 import geom.Rect;
+import phases.JSONable;
 import phases.PhasesPApplet;
 import phases.Phrase;
 import processing.core.PApplet;
+import processing.data.JSONObject;
 
-public class PhrasePicture implements Serializable {
+public class PhrasePicture implements JSONable {
 	//phrase
 	private Phrase phrase;
 	
-	//style info
-	private static final int CIRCLE=0, DIAMOND=1, SQUARE=2;
-	private DrawNote drawNoteFunc, drawRestFunc, addVertexFunc;
+	//style data
+	private DrawNote drawNoteFunc, drawRestFunc;
 	private float blendAmt;
+	
+	//style parameters
+	private static final int CIRCLE=0, DIAMOND=1, SQUARE=2;
+	private final DrawNote addVertexFunc = new AddVertex();
+	private final Style drawStyle = pa -> { pa.noStroke(); pa.fill(pa.getBlendedColor(blendAmt)); };
+	private final Style restStyle = pa -> { pa.stroke(pa.getBlendedColor(blendAmt)); pa.fill(255); };
+	
+	/**************************
+	 ***** Initialization *****
+	 **************************/
 	
 	public PhrasePicture(Phrase phrase, PhasesPApplet pa) {
 		this.phrase = phrase;
 		this.blendAmt = pa.random(1);
 		int noteStyleType = pa.floor(pa.random(3));
 		
-		Style drawStyle = () -> { pa.noStroke(); pa.fill(pa.getBlendedColor(blendAmt)); };
-		Style restStyle = () -> { pa.stroke(pa.getBlendedColor(blendAmt)); pa.fill(255); };
-		
+		initDrawNoteFuncs(noteStyleType);
+	}
+	
+	public PhrasePicture(JSONObject json) {
+		this.phrase = json.hasKey("phrase") ? new Phrase(json.getJSONObject("phrase")) : new Phrase();
+		this.blendAmt = json.getFloat("blendAmt");
+		initDrawNoteFuncs(json.getInt("noteStyleType", CIRCLE));
+	}
+	
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+		json.setJSONObject("phrase", phrase.toJSON());
+		json.setFloat("blendAmt", blendAmt);
+		json.setInt("noteStyleType", noteStyleType());
+		return json;
+	}
+	
+	private void initDrawNoteFuncs(int noteStyleType) {
 		switch (noteStyleType) {
 			case CIRCLE : drawNoteFunc = new DrawCircle(drawStyle); drawRestFunc = new DrawCircle(restStyle); break;
 			case DIAMOND : drawNoteFunc = new DrawDiamond(drawStyle); drawRestFunc = new DrawDiamond(restStyle); break;
-			case SQUARE : drawNoteFunc = new DrawSquare(drawStyle); drawRestFunc = new DrawSquare(restStyle); break;                                             
+			case SQUARE : drawNoteFunc = new DrawSquare(drawStyle); drawRestFunc = new DrawSquare(restStyle); break;
+			default : initDrawNoteFuncs(CIRCLE); break;
 		}
-		addVertexFunc = new AddVertex();
 	}
+	
+	private int noteStyleType() {
+		if (drawNoteFunc instanceof DrawCircle) return CIRCLE;
+		if (drawNoteFunc instanceof DrawDiamond) return DIAMOND;
+		if (drawNoteFunc instanceof DrawSquare) return SQUARE;
+		return 0;
+	}
+	
+	/*******************
+	 ***** Drawing *****
+	 *******************/
 	
 	protected void draw(Rect rect, PhasesPApplet pa) {
 		//draw lines between notes
@@ -72,15 +107,19 @@ public class PhrasePicture implements Serializable {
 		}
 	}
 	
-	protected Phrase getPhrase() {
-		return phrase;
+	/*************************
+	 ***** Styling Notes *****
+	 *************************/
+	
+	private interface Style {
+		void apply(PhasesPApplet pa);
 	}
 	
-	private interface Style extends Serializable {
-		void apply();
-	}
+	/*********************************
+	 ***** Ways of Drawing Notes *****
+	 *********************************/
 	
-	private interface DrawNote extends Serializable {
+	private interface DrawNote {
 		void draw(float x, float y, float r, PhasesPApplet pa);
 	}
 	
@@ -92,7 +131,7 @@ public class PhrasePicture implements Serializable {
 		}
 		
 		public void draw(float x, float y, float r, PhasesPApplet pa) {
-			style.apply();
+			style.apply(pa);
 			pa.ellipseMode(pa.RADIUS); 
 			pa.ellipse(x, y, r, r);
 		}
@@ -104,8 +143,9 @@ public class PhrasePicture implements Serializable {
 		DrawDiamond(Style style) {
 			this.style = style;
 		}
+		
 		public void draw(float x, float y, float r, PhasesPApplet pa) {
-			style.apply();
+			style.apply(pa);
 			r *= 1.25f;
 			Polygon.drawPolygon(x, y, r, r, 4, 0, pa);
 		}
@@ -119,7 +159,7 @@ public class PhrasePicture implements Serializable {
 		}
 		
 		public void draw(float x, float y, float r, PhasesPApplet pa) {
-			style.apply();
+			style.apply(pa);
 			r *= 1.25f;
 			Polygon.drawPolygon(x, y, r, r, 4, pa.QUARTER_PI, pa);
 		}
@@ -129,5 +169,13 @@ public class PhrasePicture implements Serializable {
 		public void draw(float x, float y, float r, PhasesPApplet pa) {
 			pa.vertex(x, y);
 		}
+	}
+	
+	/*******************************
+	 ***** Getters and Setters *****
+	 *******************************/
+	
+	protected Phrase getPhrase() {
+		return phrase;
 	}
 }

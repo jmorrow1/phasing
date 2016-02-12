@@ -1,17 +1,13 @@
 package screens;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import geom.Rect;
+import phases.JSONable.Util;
 import phases.PhasesPApplet;
-import phases.Phrase;
 import processing.core.PApplet;
+import processing.data.JSONArray;
 
 public class PhraseRepository extends Screen {
 	private ArrayList<Cell> cells = new ArrayList<Cell>();
@@ -27,13 +23,10 @@ public class PhraseRepository extends Screen {
 		
 		populateCellsWithRandomPhrases();
 		
-		/*File file = new File(pa.saveFolderPath + "phrases" + ".ser");
-		if (file.exists()) {
-			ArrayList<PhrasePicture> phrasePictures = readPhrases(file);
-			assignPhrasesToCells(phrasePictures);
-		}*/
+		//ArrayList<PhrasePicture> phrasePictures = readPhrasePictures(new File(pa.saveFolderPath + "phrases" + ".json"));
+		//assignPhrasesToCells(phrasePictures);
 		
-		//writeToFile(Cell.toPhraseList(cells), "phrases");
+		writePhrasePictures(Cell.toPhraseList(cells), "phrases");
 	}
 	
 	/****************************
@@ -41,39 +34,35 @@ public class PhraseRepository extends Screen {
 	 ****************************/
 	
 	/**
-	 * Takes an Arraylist of PhrasePictures, serializes it, and writes it to a file with the directory given
+	 * Takes an Arraylist of PhrasePictures, jsonifies it, and writes it to a file with the directory given
 	 * by the PhasesPApplet field, saveFolderPath.
 	 * 
 	 * @param phrases The ArrayList of phrases.
 	 * @param name The name of the file.
 	 */
-	private void writeToFile(ArrayList<PhrasePicture> phrases, String name) {
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(pa.saveFolderPath + name + ".ser")));
-			oos.writeObject(phrases);
-			oos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	private void writePhrasePictures(ArrayList<PhrasePicture> phrasePictures, String name) {
+		JSONArray json = Util.jsonify(phrasePictures);
+		pa.saveJSONArray(json, pa.saveFolderPath + name + ".json");
 	}
 	
 	/**
-	 * Takes a file and tries to deserialize it and construct an ArrayList<PhrasePicture> from it.
+	 * Takes a file, tries to read it as a json array, and tries to construct an ArrayList<PhrasePicture> from it.
 	 * If it fails, it will return an empty ArrayList<PhrasePicture>.
 	 * 
 	 * @param file The file.
 	 * @return An ArrayList<PhrasePicture>.
 	 */
-	private ArrayList<PhrasePicture> readPhrases(File file) {
-		try {
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
-			ArrayList<PhrasePicture> phrases = (ArrayList<PhrasePicture>) ois.readObject();
-			ois.close();
-			return phrases;
-		} catch (IOException | ClassNotFoundException | ClassCastException e) {
-			e.printStackTrace();
-			return new ArrayList<PhrasePicture>();
+	private ArrayList<PhrasePicture> readPhrasePictures(File file) {
+		ArrayList<PhrasePicture> phrasePictures = new ArrayList<PhrasePicture>();
+		
+		if (file.exists()) {
+			JSONArray json = pa.loadJSONArray(file);
+			for (int i=0; i<json.size(); i++) {
+				phrasePictures.add(new PhrasePicture(json.getJSONObject(i)));
+			}
 		}
+		
+		return phrasePictures;
 	}
 	
 	/**************************

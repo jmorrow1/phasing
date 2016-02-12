@@ -154,10 +154,10 @@ public class PhasesPApplet extends PApplet {
 		//create screens
 		presenter = new Presenter(this);
 		editor = new Editor(this);
-		//phraseRepo = new PhraseRepository(this);
+		phraseRepo = new PhraseRepository(this);
 		
 		//setup current screen
-		currentScreen = editor;
+		currentScreen = phraseRepo;
 		
 		if (currentScreen == editor) {
 			changeScreenButton.setCaptionLabel("Rehearse");
