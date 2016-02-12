@@ -153,10 +153,10 @@ public class PhasesPApplet extends PApplet {
 		//create screens
 		presenter = new Presenter(this);
 		editor = new Editor(this);
-		phraseRepo = new PhraseRepository(this);
+		//phraseRepo = new PhraseRepository(this);
 		
 		//setup current screen
-		currentScreen = phraseRepo;
+		currentScreen = editor;
 		
 		if (currentScreen == editor) {
 			changeScreenButton.setCaptionLabel("Rehearse");
@@ -240,47 +240,54 @@ public class PhasesPApplet extends PApplet {
 	 * @return The generated phrase.
 	 */
 	public Phrase generatePhraseFromTemplates(final String[] templates, final Scale scale, int octave) {
-		final String template = templates[(int)random(templates.length)];
-	    int pitchOffset = octave * 12;
+		//choose template
+		final int REST = -1; 
+		String template = templates[(int)random(templates.length)];
 		HashMap<Character, Integer> map = new HashMap<Character, Integer>();
 		
-		int[] shuffledScale = new int[2*scale.size()];
-		for (int i=0; i<scale.size(); i++) {
-			shuffledScale[i] = scale.getNoteValue(i);
+		//init set of pitch choices
+		int numPitchesNeeded = numUniqueChars(template);
+		int numOctavesNeeded = ceil((float)numPitchesNeeded / (float)scale.size());
+		println("numPitchesNeeded: " + numPitchesNeeded + ", numOctavesNeeded: " + numOctavesNeeded);
+		int[] shuffledScale = new int[numOctavesNeeded*scale.size()];
+		for (int i=0; i<shuffledScale.length; i++) {
+			shuffledScale[i] = scale.getNoteValue(i % scale.size()) + 12*(i / scale.size()) + octave*12;
 		}
-		for (int i=0; i<scale.size(); i++) {
-			shuffledScale[i + scale.size()] = scale.getNoteValue(i) + 12;
-		}
+		//shuffledScale[shuffledScale.length-1] = REST;
 		shuffle(shuffledScale);
 		
+		//init phrase components
 		float[] pitches = new float[template.length()];
 		float[] dynamics = new float[template.length()];
 		int[] cellTypes = new int[template.length()];
 		
 		int j=0; //loops through pitch choices
-		
-		for (int i=0; i<template.length(); i++) {
+		for (int i=0; i<template.length(); i++) { //loops through template
 			char c = template.charAt(i);
 			if (!map.containsKey(c)) {
-				int pitch = shuffledScale[j] + pitchOffset;
-				
-				//increment j
+				int pitch = shuffledScale[j];
 				j++;
-				if (j == shuffledScale.length) {
-					j=0;
-					octave += 1;
-					pitchOffset += 12;
-					shuffle(shuffledScale);
-				}
-
 				map.put(c, pitch);
 			}
-			pitches[i] = map.get(c);
-			dynamics[i] = 50;
-			cellTypes[i] = Phrase.NOTE_START;
+			int pitch = map.get(c);
+			pitches[i] = pitch;
+			dynamics[i] = (pitch == REST) ? 0 : 50;
+			cellTypes[i] = (pitch == REST) ? Phrase.REST : Phrase.NOTE_START;
 		}
 		
 		return new Phrase(pitches, dynamics, cellTypes);
+	}
+	
+	private int numUniqueChars(String s) {
+		String uniqueChars = "";
+		
+		for (int i=0; i<s.length(); i++) {
+			if (!uniqueChars.contains("" + s.charAt(i))) {
+				uniqueChars += s.charAt(i);
+			}
+		}
+		
+		return uniqueChars.length();
 	}
 	
 	/**

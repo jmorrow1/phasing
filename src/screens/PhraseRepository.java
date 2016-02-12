@@ -26,7 +26,6 @@ public class PhraseRepository extends Screen {
 		}
 		
 		populateCellsWithRandomPhrases();
-		cells.get(0).getPhrase().setGridDynamic(0, 0);
 		
 		/*File file = new File(pa.saveFolderPath + "phrases" + ".ser");
 		if (file.exists()) {

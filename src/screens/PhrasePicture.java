@@ -66,7 +66,7 @@ public class PhrasePicture implements Serializable {
 				drawNote.draw(x, y, radius, pa);
 			}
 			else {
-				drawRest.draw(x, y, radius, pa);
+				drawRest.draw(x, pa.lerp(y1, y2, 0.5f), radius, pa);
 			}
 			x += dx;
 		}
