@@ -2,6 +2,7 @@ package views;
 
 import geom.Rect;
 import instrument_graphics.Instrument;
+import instrument_graphics.InstrumentPlayer;
 import instrument_graphics.Piano;
 import instrument_graphics.Xylophone;
 import phases.ModInt;

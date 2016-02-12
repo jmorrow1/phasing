@@ -212,7 +212,7 @@ public class PhasesPApplet extends PApplet {
 	 * @return The generated phrase.
 	 */
 	public Phrase generateReichLikePhrase(final Scale scale) {
-		return generateReichLikePhrase(scale, 5, true);
+		return generateReichLikePhrase(scale, 5, (random(1) < 0.5f) ? true : false);
 	}
 	
 	/**

@@ -57,9 +57,7 @@ public class PhraseReader {
 			noteIndex = (noteIndex+1) % phrase.getNumNotes();
 			noteTimeTillNextNote = noteTimeTillNextNote + phrase.getSCDuration(noteIndex);
 			try {
-				if (phrase.getSCDynamic(noteIndex) > 0) {
-					callback.invoke(callee, this);
-				}
+				callback.invoke(callee, this);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
