@@ -2,6 +2,11 @@ package icons;
 
 import phases.PhasesPApplet;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 public class TransformIcon implements Icon {
     private final int transformType;
   

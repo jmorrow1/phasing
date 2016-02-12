@@ -2,6 +2,11 @@ package icons;
 
 import phases.PhasesPApplet;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 public class ScoreModeIcon implements Icon {
     private final int mode;
     

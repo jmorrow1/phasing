@@ -2,6 +2,11 @@ package icons;
 
 import phases.PhasesPApplet;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 public class ShowActiveNoteIcon implements Icon {
     private final int showState;
   

@@ -4,6 +4,11 @@ import geom.Point;
 import phases.PhasesPApplet;
 import processing.core.PApplet;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 public class SineWaveIcon implements Icon {
 	private final int mode;
 	private final static int maxNumPts = 12;

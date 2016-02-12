@@ -3,6 +3,7 @@ package screens;
 import java.io.File;
 import java.util.ArrayList;
 
+import controlP5.ControlP5;
 import geom.Rect;
 import phases.JSONable.Util;
 import phases.PhasesPApplet;
@@ -20,13 +21,16 @@ public class PhraseRepository extends Screen {
 				constructCells(new Rect(50, 75, 725, 550, pa.CORNERS), 4, 3);
 				break;
 		}
-		
-		populateCellsWithRandomPhrases();
-		
-		//ArrayList<PhrasePicture> phrasePictures = readPhrasePictures(new File(pa.saveFolderPath + "phrases" + ".json"));
-		//assignPhrasesToCells(phrasePictures);
-		
-		writePhrasePictures(Cell.toPhraseList(cells), "phrases");
+			
+		File phrasesFile = new File(pa.saveFolderPath + "phrases" + ".json");
+		if (phrasesFile.exists()) {
+			ArrayList<PhrasePicture> phrasePictures = readPhrasePictures(phrasesFile);
+			assignPhrasesToCells(phrasePictures);
+		}
+		else {
+			populateCellsWithRandomPhrases();
+			writePhrasePictures(Cell.toPhraseList(cells), "phrases");
+		}
 	}
 	
 	/****************************

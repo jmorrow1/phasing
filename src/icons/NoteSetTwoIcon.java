@@ -3,6 +3,11 @@ package icons;
 import phases.PhasesPApplet;
 import processing.core.PApplet;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 public class NoteSetTwoIcon implements Icon {
 	private final int noteType;
     

@@ -2,6 +2,11 @@ package icons;
 
 import phases.PhasesPApplet;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 public class SuperimposedOrSeparatedIcon implements Icon {
     private final int superimposed;
   

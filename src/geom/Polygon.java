@@ -100,7 +100,7 @@ public class Polygon extends Shape {
 	}
 	
 	/**
-	 * Copy constructor
+	 * Copy constructor. Does a deep copy.
 	 * @param poly Polygon to copy
 	 */
 	public Polygon(Polygon poly) {

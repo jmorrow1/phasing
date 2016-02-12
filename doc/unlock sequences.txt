@@ -20,8 +20,6 @@ Phase Shifter
 	(8) Transformation Variable, ROTATE
 	(9) SINE_WAVE
 	(10) FIXED (camera)
-	
-
 
 Live Scorer
 	(0) Color Scheme Variable (all values), Score Mode Variable (all values), Note Graphic Variable (dots), not a sine wave

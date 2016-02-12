@@ -102,14 +102,8 @@ public class PhasesPApplet extends PApplet {
 	public void setup() {
 		saveFolderPath = sketchPath() + "\\save\\";
 		//init colors
-		colorMode(HSB, 360, 100, 100, 100);
-		int color1 = color(0, 60, 90);
-		int color1Bold = color(0, 100, 90);
-		int color2 = color(240, 60, 90);
-		int color2Bold = color(240, 100, 90);
-		colorMode(RGB, 255, 255, 255, 255);
-		colorScheme = new ColorScheme(color1, color2, color1Bold, color2Bold);
-		
+		initColorScheme();
+		//initSimpleColorScheme();
 		
 		//init font variables
 		pfont12 = loadFont("DejaVuSans-12.vlw");
@@ -172,6 +166,29 @@ public class PhasesPApplet extends PApplet {
 		colorController(changeScreenButton);
 		
 		currentScreen.onEnter();
+	}
+	
+	private void initColorScheme() {
+		colorMode(HSB, 360, 100, 100, 100);
+		int color1 = color(0, 60, 90);
+		int color1Bold = color(0, 100, 90);
+		int color2 = color(240, 60, 90);
+		int color2Bold = color(240, 100, 90);
+		colorMode(RGB, 255, 255, 255, 255);
+		colorScheme = new ColorScheme(color1, color2, color1Bold, color2Bold);
+	}
+	
+	private void initSimpleColorScheme() {
+		int r = (int)random(255);
+		int g = (int)random(255);
+		int b = (int)random(255);
+		
+		int color1 = color(r, g, b, 150);
+		int color1Bold = color(r, g, b, 255);
+		int color2 = color(100);
+		int color2Bold = color(0);
+		
+		colorScheme = new ColorScheme(color1, color2, color1Bold, color2Bold);
 	}
 	
 	/**************************

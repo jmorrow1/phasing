@@ -3,6 +3,11 @@ package icons;
 import phases.PhasesPApplet;
 import processing.core.PApplet;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 public class ViewTypeIcon implements Icon {
 	private final int viewType;
 	

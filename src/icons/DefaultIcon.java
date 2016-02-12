@@ -3,6 +3,11 @@ package icons;
 import geom.Polygon;
 import phases.PhasesPApplet;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 public class DefaultIcon implements Icon {
 	private final int num;
 	
