@@ -1,6 +1,6 @@
 package screens;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -21,7 +21,6 @@ import icons.TransformIcon;
 import icons.ViewTypeIcon;
 import phases.ModInt;
 import phases.PhasesPApplet;
-import phases.PlayerInfo;
 import processing.core.PApplet;
 import processing.data.JSONObject;
 import soundcipher.SCScorePlus;
@@ -43,7 +42,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private final float minutesPerMillisecond = 1f / 60000f;
 	
 	// unlock sequences (in terms of minutes to unlock thing 1, minutes to unlock thing 2, etc.)
-	private PlayerInfo playerInfo;
 	private final float[] musicianUnlockSeq = {0.5f, 1, 4};
 	private final float[] phaseShifterUnlockSeq = {1, 3, 5, 8, 11, 14, 17, 20, 25, 30};
 	private final float[] liveScorerUnlockSeq = {4, 8};
@@ -89,18 +87,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 */
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
-		
-		String playerInfoFileName = pa.saveFolderPath + "playerInfo.json";
-		File playerInfoFile = new File(playerInfoFileName);
-		if (playerInfoFile.exists()) {
-			JSONObject json = pa.loadJSONObject(playerInfoFileName);
-			playerInfo = new PlayerInfo(json);
-		}
-		else {
-			playerInfo = new PlayerInfo(false);
-			pa.saveJSONObject(playerInfo.toJSON(), playerInfoFileName);
-			
-		}
 	}
 	
 	/*************************************
@@ -172,9 +158,9 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		int dt = t - prev_t;
 		prev_t = t;
 		switch (viewType.toInt()) {
-			case MUSICIAN : playerInfo.minutesSpentWithMusician += dt * minutesPerMillisecond; break;
-			case PHASE_SHIFTER : playerInfo.minutesSpentWithPhaseShifter += dt * minutesPerMillisecond; break;
-			case LIVE_SCORER : playerInfo.minutesSpentWithLiveScorer += dt * minutesPerMillisecond; break;
+			case MUSICIAN : pa.playerInfo.minutesSpentWithMusician += dt * minutesPerMillisecond; break;
+			case PHASE_SHIFTER : pa.playerInfo.minutesSpentWithPhaseShifter += dt * minutesPerMillisecond; break;
+			case LIVE_SCORER : pa.playerInfo.minutesSpentWithLiveScorer += dt * minutesPerMillisecond; break;
 		}
 	}
 
@@ -352,30 +338,34 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		boolean unlockedSomething = false;
 		
 		if (viewType.toInt() == MUSICIAN && 
-				playerInfo.nextMusicianUnlockIndex < musicianUnlockSeq.length &&
-				musicianUnlockSeq[playerInfo.nextMusicianUnlockIndex] <= playerInfo.minutesSpentWithMusician) {
+				pa.playerInfo.nextMusicianUnlockIndex < musicianUnlockSeq.length &&
+				musicianUnlockSeq[pa.playerInfo.nextMusicianUnlockIndex] <= pa.playerInfo.minutesSpentWithMusician) {
 			setupIconLists();
-			playerInfo.nextMusicianUnlockIndex++;
+			pa.playerInfo.nextMusicianUnlockIndex++;
 			unlockedSomething = true;
 		}
 		else if (viewType.toInt() == PHASE_SHIFTER &&
-				playerInfo.nextPhaseShifterUnlockIndex < phaseShifterUnlockSeq.length &&
-				phaseShifterUnlockSeq[playerInfo.nextPhaseShifterUnlockIndex] <= playerInfo.minutesSpentWithPhaseShifter) {
+				pa.playerInfo.nextPhaseShifterUnlockIndex < phaseShifterUnlockSeq.length &&
+				phaseShifterUnlockSeq[pa.playerInfo.nextPhaseShifterUnlockIndex] <= pa.playerInfo.minutesSpentWithPhaseShifter) {
 			setupIconLists();
-			playerInfo.nextPhaseShifterUnlockIndex++;
+			pa.playerInfo.nextPhaseShifterUnlockIndex++;
 			unlockedSomething = true;
 		}
 		else if (viewType.toInt() == LIVE_SCORER && 
-			playerInfo.nextLiveScorerUnlockIndex < liveScorerUnlockSeq.length &&
-			liveScorerUnlockSeq[playerInfo.nextLiveScorerUnlockIndex] <= playerInfo.minutesSpentWithLiveScorer) {
+			pa.playerInfo.nextLiveScorerUnlockIndex < liveScorerUnlockSeq.length &&
+			liveScorerUnlockSeq[pa.playerInfo.nextLiveScorerUnlockIndex] <= pa.playerInfo.minutesSpentWithLiveScorer) {
 			setupIconLists();
-			playerInfo.nextLiveScorerUnlockIndex++;
+			pa.playerInfo.nextLiveScorerUnlockIndex++;
 			unlockedSomething = true;
 		}
 		
 		if (unlockedSomething) {
-			JSONObject json = playerInfo.toJSON();
-			pa.saveJSONObject(json, pa.saveFolderPath);
+			JSONObject json = pa.playerInfo.toJSON();
+			try {
+				pa.saveJSONObject(json, pa.saveFolderPath);
+			} catch (RuntimeException e) {
+				pa.print(e.toString());
+			}
 		}
 	}
 	
@@ -503,10 +493,10 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private int getIconAvailability(String name) {
 		switch (name) {
 			case viewTypeName:
-				if (playerInfo.minutesSpentWithMusician + playerInfo.minutesSpentWithPhaseShifter > 25f) {
+				if (pa.playerInfo.minutesSpentWithMusician + pa.playerInfo.minutesSpentWithPhaseShifter > 25f) {
 					return 3;
 				}
-				else if (playerInfo.minutesSpentWithMusician > 2f) {
+				else if (pa.playerInfo.minutesSpentWithMusician > 2f) {
 					return 2;
 				}
 				else {
@@ -530,21 +520,21 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private int getMusicianIconAvailability(String name) {
 		switch (name) {
 			case colorSchemeName:
-				if (playerInfo.minutesSpentWithMusician > musicianUnlockSeq[0]) {
+				if (pa.playerInfo.minutesSpentWithMusician > musicianUnlockSeq[0]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case superimposedOrSeparatedName:
-				if (playerInfo.minutesSpentWithMusician > musicianUnlockSeq[1]) {
+				if (pa.playerInfo.minutesSpentWithMusician > musicianUnlockSeq[1]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case instrumentName:
-				if (playerInfo.minutesSpentWithMusician > musicianUnlockSeq[2]) {
+				if (pa.playerInfo.minutesSpentWithMusician > musicianUnlockSeq[2]) {
 					return 2;
 				}
 				else {
@@ -565,50 +555,50 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			case colorSchemeName: 
 				return 2;
 			case activeNoteModeName:
-				if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[3]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[3]) {
 					return 3;
 				}
-				else if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[0]) {
+				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[0]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case noteGraphicSet1Name:
-				if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[8]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[8]) {
 					return 5;
 				}
-				else if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[6]) {
+				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[6]) {
 					return 4;
 				}
-				else if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[2]) {
+				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[2]) {
 					return 3;
 				}
-				else if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[1]) {
+				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[1]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case cameraModeName:
-				if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[9]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[9]) {
 					return 3;
 				}
-				if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[4]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[4]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case plotPitchModeName:
-				if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[5]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[5]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case transformationName:
-				if (playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[7]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[7]) {
 					return 2;
 				}
 				else {
@@ -631,14 +621,14 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			case scoreModeName:
 				return numScoreModes;
 			case noteGraphicSet2Name:
-				if (playerInfo.minutesSpentWithLiveScorer > liveScorerUnlockSeq[0]) {
+				if (pa.playerInfo.minutesSpentWithLiveScorer > liveScorerUnlockSeq[0]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case sineWaveName:
-				if (playerInfo.minutesSpentWithLiveScorer > liveScorerUnlockSeq[1]) {
+				if (pa.playerInfo.minutesSpentWithLiveScorer > liveScorerUnlockSeq[1]) {
 					return 2;
 				}
 				else {

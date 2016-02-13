@@ -1,6 +1,3 @@
-Literal -> abstract
-Abstract -> literal
-
 Musician
 	(0) monochrome, piano, superimposed
 	(1) Color Scheme Variable, DIACHROME
@@ -26,3 +23,10 @@ Live Scorer
 	(1) RECTS
 	(2) Sine Wave Variable, IS_SINE_WAVE (also: Sine Wave value for Phase Shifter's Note Graphic Variable)
 	
+Editor
+	(1) play button
+	(2) root menu
+	(3) scale menu
+	(4) beats per minute
+	(5) difference
+	(6) plus / minus buttons + scrollbar

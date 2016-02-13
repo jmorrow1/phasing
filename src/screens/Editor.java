@@ -30,9 +30,12 @@ import soundcipher.SoundCipherPlus;
  *
  */
 public class Editor extends Screen {
+	//time
+	private long prev_t;
+	private long timeEntered;
+	
 	//playback
 	private SoundCipherPlus livePlayer;
-	private long prev_t;
 	private float notept = 0;
 	
 	//animation
@@ -62,10 +65,11 @@ public class Editor extends Screen {
 	private final static int BPM_1 = 1, BPM_DIFFERENCE = 2;
 	private int maxPhaseDifferenceAmplitude = 10;
 	private ControlP5 cp5;
-	private Toggle playStop;
+	private Toggle playToggle;
 	private Slider bpmSlider, bpmDifferenceSlider;
 	private DropdownList rootMenu, scaleMenu;
 	private Scrollbar hScrollbar;
+	private Button subNoteButton, addNoteButton;
 	private String rootLabel, scaleLabel;
 	private boolean rootMenuOpen, scaleMenuOpen;
 	
@@ -105,7 +109,6 @@ public class Editor extends Screen {
 		cp5 = new ControlP5(pa);
 		cp5.setAutoDraw(false);
 		setupControllers();
-		cp5.hide();
 	}
 	
 	/****************************
@@ -156,12 +159,11 @@ public class Editor extends Screen {
 				                                     sliderHeight);
 		
 		//play stop toggle
-		playStop = cp5.addToggle("play")
-				      .setPosition(pa.width - 50, pa.changeScreenButtonY2 - 35)
-					  .setSize(35, 35)
-					  .plugTo(this)
-					  .setView(new ControllerView<Toggle>() {
-			
+		playToggle = cp5.addToggle("play")
+				        .setPosition(pa.width - 50, pa.changeScreenButtonY2 - 35)
+					    .setSize(35, 35)
+					    .plugTo(this)
+					    .setView(new ControllerView<Toggle>() {
 						    @Override
 							public void display(PGraphics pg, Toggle t) {
 						    	if (t.getValue() == 0) {
@@ -194,7 +196,7 @@ public class Editor extends Screen {
 							   
 					   })
 					   ;
-		colorController(playStop);
+		colorController(playToggle);
 		
 		//horizontal scrollbar
 		hScrollbar = new Scrollbar(cp5, "hScrollbar", PApplet.min(rowSize, pa.phrase.getGridRowSize()), pa.phrase.getGridRowSize());
@@ -205,20 +207,56 @@ public class Editor extends Screen {
 	    colorController(hScrollbar);
 	    
 		//add buttons that flank the scrollbar and control the adding and removing of notes from the phrase
-	    Button leftArrow = cp5.addButton("decreasePhraseLength")
-						      .setPosition(gridFrame.getX1(), pa.height - 30f)
-						      .setSize(24, 24)
-						      .setView(new PlusMinusButtonView(false))
-						      .plugTo(this)
-						      ;
-	    colorController(leftArrow);
-		Button rightArrow = cp5.addButton("increasePhraseLength")
-						       .setPosition(gridFrame.getX2() - 24, pa.height - 30f)
-						       .setSize(24, 24)
-						       .setView(new PlusMinusButtonView(true))
-						       .plugTo(this)
-						       ;
-	    colorController(rightArrow);
+	    subNoteButton = cp5.addButton("decreasePhraseLength")
+						    .setPosition(gridFrame.getX1(), pa.height - 30f)
+						    .setSize(24, 24)
+						    .setView(new PlusMinusButtonView(false))
+						    .plugTo(this)
+						    ;
+	    colorController(subNoteButton);
+		addNoteButton = cp5.addButton("increasePhraseLength")
+						   .setPosition(gridFrame.getX2() - 24, pa.height - 30f)
+						   .setSize(24, 24)
+						   .setView(new PlusMinusButtonView(true))
+						   .plugTo(this)
+						   ;
+	    colorController(addNoteButton);
+	    cp5.hide();
+	    hideAllControllers();
+	}
+	
+	private void hideAllControllers() {
+		hScrollbar.hide();
+		addNoteButton.hide();
+		subNoteButton.hide();
+		bpmDifferenceSlider.hide();
+		bpmSlider.hide();
+		scaleMenu.hide();	
+		rootMenu.hide();
+		playToggle.hide();
+	}
+	
+	private void showUnlockedControllers() {
+		if (pa.playerInfo.numEditorVisits >= 1) {
+			playToggle.show();
+			if (pa.playerInfo.numEditorVisits >= 2) {
+				rootMenu.show();
+				if (pa.playerInfo.numEditorVisits >= 3) {
+					scaleMenu.show();
+					if (pa.playerInfo.numEditorVisits >= 4) {
+						bpmSlider.show();
+						if (pa.playerInfo.numEditorVisits >= 5) {
+							bpmDifferenceSlider.show();
+							if (pa.playerInfo.numEditorVisits >= 6) {
+								hScrollbar.show();
+								addNoteButton.show();
+								subNoteButton.show();
+							}
+						}
+					}
+				}
+			}
+		}	
 	}
 
 	private int getSliderWidth() {
@@ -353,7 +391,6 @@ public class Editor extends Screen {
 			livePlayer.stop();
 		}
 		else {
-			prev_t = System.currentTimeMillis();
 			livePlayer.tempo(pa.getBPM1());
 			activeNoteIndex = NOT_APPLICABLE;
 		}
@@ -378,13 +415,19 @@ public class Editor extends Screen {
 	@Override
 	public void onEnter() {
 		cp5.show();
+		showUnlockedControllers();
 		drawToolbar();
 		drawBody();
+		timeEntered = System.currentTimeMillis();
 	}
 	
 	@Override
 	public void onExit() {
 		cp5.hide();
+		pa.println("visit time: " + (System.currentTimeMillis() - timeEntered));
+		if (System.currentTimeMillis() - timeEntered > 10000) {
+			pa.playerInfo.numEditorVisits++;
+		}
 	}
 	
 	/********************************
@@ -546,7 +589,7 @@ public class Editor extends Screen {
 	
 	@Override
 	public void draw() {
-		if (playStop.getValue() != 0) {
+		if (playToggle.getValue() != 0) {
 			long dt = System.currentTimeMillis() - prev_t;
 			prev_t = System.currentTimeMillis();
 			livePlayer.update(dt * pa.getBPMS1());

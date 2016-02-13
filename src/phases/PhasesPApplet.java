@@ -1,5 +1,6 @@
 package phases;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -71,6 +72,9 @@ public class PhasesPApplet extends PApplet {
 	//save folder location
 	public String saveFolderPath;
 	
+	//player
+	public PlayerInfo playerInfo;
+	
 	/****************
 	***** Setup *****
 	*****************/
@@ -123,19 +127,10 @@ public class PhasesPApplet extends PApplet {
 		changeScreenButton.getCaptionLabel().setFont(pfont18);
 		
 		//load scales
-		try {
-			int i=0;
-			Files.walk(Paths.get("src/data/scales")).forEach(filePath -> {
-				if (filePath.toString().endsWith(".json")) {
-					JSONObject json = loadJSONObject(filePath.toString());
-					ScaleSet ss = new ScaleSet(json);
-					scaleSets.put(ss.getName(), ss);
-					scaleTypes.add(ss.getName());
-				}
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		loadScales();
+		
+		//load player info
+		initPlayerInfo(true);
 		
 		//create default phrase
 		int n = Phrase.NOTE_START;
@@ -166,6 +161,35 @@ public class PhasesPApplet extends PApplet {
 		colorController(changeScreenButton);
 		
 		currentScreen.onEnter();
+	}
+	
+	private void loadScales() {
+		try {
+			int i=0;
+			Files.walk(Paths.get("src/data/scales")).forEach(filePath -> {
+				if (filePath.toString().endsWith(".json")) {
+					JSONObject json = loadJSONObject(filePath.toString());
+					ScaleSet ss = new ScaleSet(json);
+					scaleSets.put(ss.getName(), ss);
+					scaleTypes.add(ss.getName());
+				}
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void initPlayerInfo(boolean loadFile) {
+		String playerInfoFileName = saveFolderPath + "playerInfo.json";
+		File playerInfoFile = new File(playerInfoFileName);
+		if (loadFile && playerInfoFile.exists()) {
+			JSONObject json = loadJSONObject(playerInfoFileName);
+			playerInfo = new PlayerInfo(json);
+		}
+		else {
+			playerInfo = new PlayerInfo(true);
+			saveJSONObject(playerInfo.toJSON(), playerInfoFileName);
+		}
 	}
 	
 	private void initColorScheme() {

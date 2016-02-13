@@ -1,8 +1,9 @@
 {
-  "minutesSpentWithPhaseShifter": 10000,
-  "nextLiveScorerUnlockIndex": 1000,
-  "nextPhaseShifterUnlockIndex": 1000,
-  "nextMusicianUnlockIndex": 1000,
-  "minutesSpentWithMusician": 10000,
-  "minutesSpentWithLiveScorer": 10000
+  "minutesSpentWithPhaseShifter": 0,
+  "nextLiveScorerUnlockIndex": 0,
+  "nextPhaseShifterUnlockIndex": 0,
+  "numEditorVisits": 0,
+  "nextMusicianUnlockIndex": 0,
+  "minutesSpentWithMusician": 0,
+  "minutesSpentWithLiveScorer": 0
 }
