@@ -1,4 +1,4 @@
-package phases;
+package phasing;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

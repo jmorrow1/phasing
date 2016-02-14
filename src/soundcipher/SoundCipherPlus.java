@@ -4,8 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import arb.soundcipher.SoundCipher;
-import phases.Phrase;
-import phases.PhraseReader;
+import phasing.Phrase;
+import phasing.PhraseReader;
 import processing.core.PApplet;
 
 /**

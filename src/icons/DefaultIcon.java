@@ -1,7 +1,7 @@
 package icons;
 
 import geom.Polygon;
-import phases.PhasesPApplet;
+import phasing.PhasesPApplet;
 
 /**
  * 

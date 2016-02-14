@@ -3,7 +3,7 @@ package views;
 import java.util.Arrays;
 
 import geom.Rect;
-import phases.PhasesPApplet;
+import phasing.PhasesPApplet;
 
 /**
  * 

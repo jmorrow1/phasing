@@ -5,9 +5,9 @@ import java.util.Random;
 
 import geom.Polygon;
 import geom.Rect;
-import phases.JSONable;
-import phases.PhasesPApplet;
-import phases.Phrase;
+import phasing.JSONable;
+import phasing.PhasesPApplet;
+import phasing.Phrase;
 import processing.core.PApplet;
 import processing.data.JSONObject;
 

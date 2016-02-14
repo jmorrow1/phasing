@@ -1,7 +1,7 @@
 package icons;
 
 import geom.Point;
-import phases.PhasesPApplet;
+import phasing.PhasesPApplet;
 import processing.core.PApplet;
 
 /**

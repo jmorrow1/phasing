@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import controlP5.Button;
 import controlP5.ControlP5;
 import geom.Rect;
-import phases.PhasesPApplet;
-import phases.Phrase;
+import phasing.PhasesPApplet;
+import phasing.Phrase;
 
 /**
  * 

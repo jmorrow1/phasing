@@ -4,10 +4,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import geom.Rect;
+import phasing.ModInt;
+import phasing.PhasesPApplet;
+import phasing.PhraseReader;
 import geom.CurvedRect;
-import phases.ModInt;
-import phases.PhasesPApplet;
-import phases.PhraseReader;
 import processing.core.PApplet;
 
 public class PhaseShifter extends View {

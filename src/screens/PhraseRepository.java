@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import controlP5.ControlP5;
 import geom.Rect;
-import phases.PhasesPApplet;
+import phasing.PhasesPApplet;
 import processing.core.PApplet;
 import processing.data.JSONObject;
 

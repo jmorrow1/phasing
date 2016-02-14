@@ -1,6 +1,6 @@
 package icons;
 
-import phases.PhasesPApplet;
+import phasing.PhasesPApplet;
 
 /**
  * 

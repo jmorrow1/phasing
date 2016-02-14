@@ -1,4 +1,4 @@
-package phases;
+package phasing;
 
 import java.util.Arrays;
 
@@ -71,8 +71,13 @@ public class Scale {
 	
 	public String getNoteNameByPitchValue(int pitchValue) {
 		int i = this.getIndexOfNoteValue(pitchValue);
-		i %= this.size();
-		return noteNames[i];
+		if (i != -1) {
+			i %= this.size();
+			return noteNames[i];
+		}
+		else {
+			return "?";
+		}
 	}
 	
 	/**

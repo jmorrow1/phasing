@@ -1,4 +1,4 @@
-package phases;
+package phasing;
 
 import processing.core.PApplet;
 

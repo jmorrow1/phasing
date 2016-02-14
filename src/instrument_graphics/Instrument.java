@@ -1,7 +1,7 @@
 package instrument_graphics;
 
 import geom.Shape;
-import phases.PhasesPApplet;
+import phasing.PhasesPApplet;
 import processing.core.PApplet;
 
 /**

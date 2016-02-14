@@ -1,4 +1,4 @@
-package phases;
+package phasing;
 
 import java.util.ArrayList;
 import java.util.Arrays;

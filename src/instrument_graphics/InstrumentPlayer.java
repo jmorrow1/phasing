@@ -1,8 +1,8 @@
 package instrument_graphics;
 
 import geom.Shape;
-import phases.Phrase;
-import phases.PhraseReader;
+import phasing.Phrase;
+import phasing.PhraseReader;
 import processing.core.PApplet;
 
 /**

@@ -5,9 +5,9 @@ import instrument_graphics.Instrument;
 import instrument_graphics.InstrumentPlayer;
 import instrument_graphics.Piano;
 import instrument_graphics.Xylophone;
-import phases.ModInt;
-import phases.PhasesPApplet;
-import phases.PhraseReader;
+import phasing.ModInt;
+import phasing.PhasesPApplet;
+import phasing.PhraseReader;
 import processing.core.PApplet;
 
 public class Musician extends View {

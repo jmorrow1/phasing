@@ -4,9 +4,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import geom.Rect;
-import phases.ModInt;
-import phases.PhasesPApplet;
-import phases.PhraseReader;
+import phasing.ModInt;
+import phasing.PhasesPApplet;
+import phasing.PhraseReader;
 import processing.core.PApplet;
 
 public class LiveScorer extends View {

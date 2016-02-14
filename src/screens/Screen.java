@@ -1,6 +1,6 @@
 package screens;
 
-import phases.PhasesPApplet;
+import phasing.PhasesPApplet;
 import processing.event.MouseEvent;
 
 /**

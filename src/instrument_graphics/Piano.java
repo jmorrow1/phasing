@@ -4,7 +4,7 @@ import geom.Point;
 import geom.Polygon;
 import geom.Rect;
 import geom.Shape;
-import phases.PhasesPApplet;
+import phasing.PhasesPApplet;
 import processing.core.PApplet;
 
 /**

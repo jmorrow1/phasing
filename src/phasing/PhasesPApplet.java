@@ -1,4 +1,4 @@
-package phases;
+package phasing;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,6 +86,11 @@ public class PhasesPApplet extends PApplet {
 		setSize(screenSizeMode);
 	}
 	
+	/**
+	 * Sets the size of the canvas/window according to a given integer code.
+	 * 
+	 * @param screenSizeMode An integer code that represents a screen size.
+	 */
 	private void setSize(int screenSizeMode) {
 		switch (screenSizeMode) {
 			case _800x600 : size(800, 600); break;
@@ -163,6 +168,10 @@ public class PhasesPApplet extends PApplet {
 		currentScreen.onEnter();
 	}
 	
+	/**
+	 * Looks at all the JSON files in the data/scales folder and tries to translate them into
+	 * scale sets, which go into the PhasesPApplet member variable "scaleSets".
+	 */
 	private void loadScales() {
 		try {
 			int i=0;
@@ -192,6 +201,9 @@ public class PhasesPApplet extends PApplet {
 		}
 	}
 	
+	/**
+	 * Initializes a red / blue color scheme.
+	 */
 	private void initColorScheme() {
 		colorMode(HSB, 360, 100, 100, 100);
 		int color1 = color(0, 60, 90);
@@ -202,6 +214,9 @@ public class PhasesPApplet extends PApplet {
 		colorScheme = new ColorScheme(color1, color2, color1Bold, color2Bold);
 	}
 	
+	/**
+	 * Initializes a color scheme composed of a random color and a gray.
+	 */
 	private void initSimpleColorScheme() {
 		int r = (int)random(255);
 		int g = (int)random(255);

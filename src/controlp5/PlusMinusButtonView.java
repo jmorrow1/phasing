@@ -2,7 +2,7 @@ package controlp5;
 
 import controlP5.Button;
 import controlP5.ControllerView;
-import phases.PhasesPApplet;
+import phasing.PhasesPApplet;
 import processing.core.PGraphics;
 
 /**
