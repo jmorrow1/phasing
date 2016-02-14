@@ -130,7 +130,7 @@ public class PhasesPApplet extends PApplet {
 		loadScales();
 		
 		//load player info
-		initPlayerInfo(true);
+		initPlayerInfo(false);
 		
 		//create default phrase
 		int n = Phrase.NOTE_START;
@@ -158,7 +158,7 @@ public class PhasesPApplet extends PApplet {
 			changeScreenButton.setCaptionLabel("Go Back");
 		}
 		
-		colorController(changeScreenButton);
+		colorButtonShowLabel(changeScreenButton);
 		
 		currentScreen.onEnter();
 	}
@@ -376,9 +376,9 @@ public class PhasesPApplet extends PApplet {
 	***** ControlP5 Style *****
 	***************************/
 	
-	private void colorController(Controller c) {
-		c.setColorCaptionLabel(color(255));
-	    c.setColorValueLabel(color(255));
+	public static void colorButtonShowLabel(Controller c) {
+		c.setColorCaptionLabel(0xffffffff);
+	    c.setColorValueLabel(0xffffffff);
 		c.setColorBackground(getColor1());
 		c.setColorActive(getColor1Bold());
 		c.setColorForeground(getColor1Bold());

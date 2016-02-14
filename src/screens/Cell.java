@@ -1,12 +1,12 @@
 package screens;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
+import controlP5.Button;
+import controlP5.ControlP5;
 import geom.Rect;
 import phases.PhasesPApplet;
 import phases.Phrase;
-import processing.core.PApplet;
 
 /**
  * 
@@ -16,10 +16,39 @@ import processing.core.PApplet;
 class Cell {
 	private Rect rect;
 	private PhrasePicture phrasePicture;
+	private Button loadButton;
+	private static int nextID = (int)'a';
 	
-	protected Cell(Rect rect) {
+	/**************************
+	 ***** Initialization *****
+	 **************************/
+	
+	protected Cell(Rect rect, ControlP5 cp5) {
 		this.rect = rect;
+		
+		initLoadButton(cp5);
 	}
+	
+	private void initLoadButton(ControlP5 cp5) {
+		float x1 = rect.getX1();
+		float y1 = rect.getY1() + 0.9f * rect.getHeight();
+		float width = 0.4f * rect.getWidth();
+		float height = 0.1f * rect.getHeight();
+		this.loadButton = cp5.addButton((char)nextID + " load")
+						     .setLabel("Load")
+						     .setPosition(x1, y1)
+						     .setSize((int)width, (int)height)
+						     .plugTo(this);
+						     ;
+		//TODO: Make label be displayed as upper and lower case characters.
+		//TODO: Fix font blurriness.
+		PhasesPApplet.colorButtonShowLabel(loadButton);
+		nextID++;
+	}
+	
+	/*******************
+	 ***** Drawing *****
+	 *******************/
 	
 	protected void draw(PhasesPApplet pa) {
 		pa.noFill();
@@ -31,6 +60,10 @@ class Cell {
 			phrasePicture.draw(rect, pa);
 		}
 	}
+	
+	/*******************
+	 ***** Utility *****
+	 *******************/
 	
 	/**
 	 * Takes an ArrayList<Cell>, extracts its PhrasePictures, and puts those in an ArrayList.

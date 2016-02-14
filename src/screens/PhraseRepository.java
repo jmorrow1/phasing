@@ -1,16 +1,14 @@
 package screens;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import controlP5.ControlP5;
 import geom.Rect;
-import phases.JSONable.Util;
 import phases.PhasesPApplet;
 import processing.core.PApplet;
-import processing.data.JSONArray;
 import processing.data.JSONObject;
 
 public class PhraseRepository extends Screen {
@@ -20,8 +18,13 @@ public class PhraseRepository extends Screen {
 	//cells
 	private ArrayList<Cell> cells = new ArrayList<Cell>();
 	
+	//controlp5
+	private ControlP5 cp5;
+	
 	public PhraseRepository(PhasesPApplet pa) {
 		super(pa);
+		
+		cp5 = new ControlP5(pa);
 		
 		switch (pa.screenSizeMode) {
 			case PhasesPApplet._800x600 :
@@ -50,6 +53,8 @@ public class PhraseRepository extends Screen {
 				e.printStackTrace();
 			}
 		}
+		
+		cp5.hide();
 	}
 	
 	/******************
@@ -81,7 +86,7 @@ public class PhraseRepository extends Screen {
 		for (int j=0; j<colSize; j++) {
 			float x1 = box.getCenx() - cellSize*0.5f*rowSize;
 			for (int i=0; i<rowSize; i++) {
-				cells.add(new Cell(new Rect(x1, y1, cellSize, cellSize, pa.CORNER)));
+				cells.add(new Cell(new Rect(x1, y1, cellSize, cellSize, pa.CORNER), cp5));
 				x1 += cellSize;
 			}
 			y1 += cellSize;
@@ -102,10 +107,12 @@ public class PhraseRepository extends Screen {
 
 	@Override
 	public void onEnter() {
+		cp5.show();
 	}
 
 	@Override
 	public void onExit() {
+		cp5.hide();
 	}
 	
 	/*******************
