@@ -5,7 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import controlP5.Button;
 import controlP5.ControlP5;
+import controlp5.TriangleButtonView;
 import geom.Rect;
 import phasing.PhasesPApplet;
 import phasing.PhrasePicture;
@@ -21,12 +23,41 @@ public class PhraseRepository extends Screen {
 	
 	//controlp5
 	private ControlP5 cp5;
+	private Button pageLeftButton, pageRightButton;
+	
+	/**************************
+	 ***** Initialization *****
+	 **************************/
 	
 	public PhraseRepository(PhasesPApplet pa) {
 		super(pa);
 		
 		cp5 = new ControlP5(pa);
-		
+		initCells();
+		initDirectionalButtons();
+		cp5.hide();
+	}
+	
+	private void initDirectionalButtons() {
+		int size = 40;
+		pageLeftButton = initDirectionalButton("pageLeft", 10, pa.height - size - 5, size, pa.PI);
+		pageRightButton = initDirectionalButton("pageRight", pa.width - size - 10, pa.height - size - 5, size, 0);
+		pageLeftButton.hide();
+		pageRightButton.hide();
+	}
+	
+	private Button initDirectionalButton(String name, int x1, int y1, int size, float angle) {
+		Button b = cp5.addButton(name)
+			          .setPosition(x1, y1)
+			          .setSize(size, size)
+			          .setView(new TriangleButtonView(angle, 0.7f*pa.PI))
+			          .plugTo(this)
+	                  ;  
+		pa.colorButtonHideLabel(b);
+		return b;
+	}
+	
+	private void initCells() {
 		switch (pa.screenSizeMode) {
 			case PhasesPApplet._800x600 :
 				constructCells(new Rect(50, 75, 725, 550, pa.CORNERS), 4, 3);
@@ -54,18 +85,12 @@ public class PhraseRepository extends Screen {
 				e.printStackTrace();
 			}
 		}
-		
-		cp5.hide();
 	}
-	
-	/**************************
-	 ***** Initialization *****
-	 **************************/
 	
 	private void assignPhrasesToCells(ArrayList<PhrasePicture> phrasePictures) {
 		int end = PApplet.min(cells.size(), phrasePictures.size());
-		for (int i=0; i<end; i++) {
-			cells.get(i).setPhrasePicture(phrasePictures.get(i));
+		for (int i=1; i<end; i++) {
+			cells.get(i).setPhrasePicture(phrasePictures.get(i-1));
 		}
 	}
 	

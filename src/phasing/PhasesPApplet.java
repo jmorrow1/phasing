@@ -414,8 +414,15 @@ public class PhasesPApplet extends PApplet {
 		c.setColorCaptionLabel(0xffffffff);
 	    c.setColorValueLabel(0xffffffff);
 		c.setColorBackground(getColor1());
+		c.setColorForeground(getColor1());
 		c.setColorActive(getColor1Bold());
-		c.setColorForeground(getColor1Bold());
+		
+	}
+	
+	public void colorButtonHideLabel(Button b) {
+		b.setColorBackground(color(255));
+	    b.setColorForeground(getColor1());
+	    b.setColorActive(getColor1Bold());
 	}
 	
 	/**********************************

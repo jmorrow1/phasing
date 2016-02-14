@@ -92,8 +92,8 @@ public class PhrasePicture implements JSONable {
 		float x = x1;
 		float dx = (x2 - x1) / phrase.getNumNotes();
 				
-		float y2 = pa.lerp(rect.getY2(), rect.getY1(), 0.1f);
-		float y1 = pa.lerp(rect.getY1(), rect.getY2(), 0.1f);
+		float y2 = pa.lerp(rect.getY2(), rect.getY1(), 0.15f);
+		float y1 = pa.lerp(rect.getY1(), rect.getY2(), 0.15f);
 		
 		float radius = 0.025f * rect.getHeight();
 		

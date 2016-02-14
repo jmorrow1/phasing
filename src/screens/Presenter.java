@@ -146,7 +146,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			          .setView(new TriangleButtonView(headAngle, 0.75f*pa.TWO_PI))
 			          .plugTo(this)
 			          ;
-		colorButton(b);
+		pa.colorButtonHideLabel(b);
 		return b;
 	}
 	
@@ -244,16 +244,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private void repositionDirectionalButtons() {
 		upButton.setPosition(directionalButtonX1(activeIconIndex), upButton.getPosition()[1]);
 		downButton.setPosition(directionalButtonX1(activeIconIndex), downButton.getPosition()[1]);
-	}
-	
-	/***************************
-	 ***** ControlP5 Style *****
-	 ***************************/
-	
-	private void colorButton(Button b) {
-		b.setColorBackground(pa.color(255));
-	    b.setColorForeground(pa.getColor1());
-	    b.setColorActive(pa.getColor1Bold());
 	}
 	
 	/*************************************

@@ -3,6 +3,7 @@ package screens;
 import java.util.ArrayList;
 
 import controlP5.Button;
+import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import geom.Rect;
 import phasing.PhasesPApplet;
@@ -48,6 +49,14 @@ class Cell {
 		nextID++;
 	}
 	
+	/*******************************
+	 ***** ControlP5 Callbacks *****
+	 *******************************/
+	
+	public void controlEvent(ControlEvent e) {
+		
+	}
+	
 	/*******************
 	 ***** Drawing *****
 	 *******************/
@@ -60,6 +69,10 @@ class Cell {
 		
 		if (hasPhrase()) {
 			phrasePicture.draw(rect, pa);
+			String name = phrasePicture.getName();
+			pa.textAlign(pa.CENTER, pa.TOP);
+			pa.fill(0);
+			pa.text(name, rect.getCenx(), rect.getY1());
 		}
 	}
 	
