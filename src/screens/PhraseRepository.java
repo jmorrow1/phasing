@@ -1,16 +1,23 @@
 package screens;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import controlP5.ControlP5;
 import geom.Rect;
 import phases.JSONable.Util;
 import phases.PhasesPApplet;
 import processing.core.PApplet;
 import processing.data.JSONArray;
+import processing.data.JSONObject;
 
 public class PhraseRepository extends Screen {
+	//variable for testing
+	private boolean populateCellsWithRandomPhrases = false;
+	
+	//cells
 	private ArrayList<Cell> cells = new ArrayList<Cell>();
 	
 	public PhraseRepository(PhasesPApplet pa) {
@@ -21,52 +28,39 @@ public class PhraseRepository extends Screen {
 				constructCells(new Rect(50, 75, 725, 550, pa.CORNERS), 4, 3);
 				break;
 		}
-			
-		File phrasesFile = new File(pa.saveFolderPath + "phrases" + ".json");
-		if (phrasesFile.exists()) {
-			ArrayList<PhrasePicture> phrasePictures = readPhrasePictures(phrasesFile);
-			assignPhrasesToCells(phrasePictures);
-		}
-		else {
-			populateCellsWithRandomPhrases();
-			writePhrasePictures(Cell.toPhraseList(cells), "phrases");
-		}
-	}
-	
-	/****************************
-	 ***** Saving / Loading *****
-	 ****************************/
-	
-	/**
-	 * Takes an Arraylist of PhrasePictures, jsonifies it, and writes it to a file with the directory given
-	 * by the PhasesPApplet field, saveFolderPath.
-	 * 
-	 * @param phrases The ArrayList of phrases.
-	 * @param name The name of the file.
-	 */
-	private void writePhrasePictures(ArrayList<PhrasePicture> phrasePictures, String name) {
-		JSONArray json = Util.jsonify(phrasePictures);
-		pa.saveJSONArray(json, pa.saveFolderPath + name + ".json");
-	}
-	
-	/**
-	 * Takes a file, tries to read it as a json array, and tries to construct an ArrayList<PhrasePicture> from it.
-	 * If it fails, it will return an empty ArrayList<PhrasePicture>.
-	 * 
-	 * @param file The file.
-	 * @return An ArrayList<PhrasePicture>.
-	 */
-	private ArrayList<PhrasePicture> readPhrasePictures(File file) {
-		ArrayList<PhrasePicture> phrasePictures = new ArrayList<PhrasePicture>();
 		
-		if (file.exists()) {
-			JSONArray json = pa.loadJSONArray(file);
-			for (int i=0; i<json.size(); i++) {
-				phrasePictures.add(new PhrasePicture(json.getJSONObject(i)));
+		//create new phrase pictures:
+		if (populateCellsWithRandomPhrases) {
+			populateCellsWithRandomPhrases();
+			writePhrasePictures(Cell.toPhraseList(cells));
+		}
+		//load phrase pictures:
+		else {
+			try {
+				ArrayList<PhrasePicture> phrasePictures = new ArrayList<PhrasePicture>();
+				Files.walk(Paths.get(pa.saveFolderPath + "phrases\\")).forEach(filePath -> {
+					if (filePath.toString().endsWith(".json")) {
+						JSONObject json = pa.loadJSONObject(filePath.toString());
+						phrasePictures.add(new PhrasePicture(json));
+					}
+				});
+				assignPhrasesToCells(phrasePictures);
+			}
+			catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
-		
-		return phrasePictures;
+	}
+	
+	/******************
+	 ***** Saving *****
+	 ******************/
+	
+	private void writePhrasePictures(ArrayList<PhrasePicture> phrasePictures) {
+		for (int i=0; i<phrasePictures.size(); i++) {
+			PhrasePicture p = phrasePictures.get(i);
+			pa.saveJSONObject(p.toJSON(), pa.saveFolderPath + "phrases\\" + p.getName() + ".json");
+		}
 	}
 	
 	/**************************
@@ -95,8 +89,10 @@ public class PhraseRepository extends Screen {
 	}
 	
 	private void populateCellsWithRandomPhrases() {
+		int x = (int)'a';
 		for (Cell c : cells) {
-			c.setPhrasePicture(new PhrasePicture(pa.generateReichLikePhrase(pa.scale), pa));
+			c.setPhrasePicture(new PhrasePicture(pa.generateReichLikePhrase(pa.scale), "" + (char)x, pa));
+			x++;
 		}
 	}
 	

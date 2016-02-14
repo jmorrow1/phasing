@@ -1,6 +1,7 @@
 package screens;
 
 import java.io.Serializable;
+import java.util.Random;
 
 import geom.Polygon;
 import geom.Rect;
@@ -13,6 +14,9 @@ import processing.data.JSONObject;
 public class PhrasePicture implements JSONable {
 	//phrase
 	private Phrase phrase;
+	
+	//name
+	private String name;
 	
 	//style data
 	private DrawNote drawNoteFunc, drawRestFunc;
@@ -28,17 +32,18 @@ public class PhrasePicture implements JSONable {
 	 ***** Initialization *****
 	 **************************/
 	
-	public PhrasePicture(Phrase phrase, PhasesPApplet pa) {
+	public PhrasePicture(Phrase phrase, String name, PhasesPApplet pa) {
 		this.phrase = phrase;
+		this.name = name;
 		this.blendAmt = pa.random(1);
 		int noteStyleType = pa.floor(pa.random(3));
-		
 		initDrawNoteFuncs(noteStyleType);
 	}
 	
 	public PhrasePicture(JSONObject json) {
 		this.phrase = json.hasKey("phrase") ? new Phrase(json.getJSONObject("phrase")) : new Phrase();
-		this.blendAmt = json.getFloat("blendAmt");
+		this.blendAmt = json.getFloat("blendAmt", (float)Math.random());
+		this.name = json.getString("name", "?");
 		initDrawNoteFuncs(json.getInt("noteStyleType", CIRCLE));
 	}
 	
@@ -47,6 +52,7 @@ public class PhrasePicture implements JSONable {
 		json.setJSONObject("phrase", phrase.toJSON());
 		json.setFloat("blendAmt", blendAmt);
 		json.setInt("noteStyleType", noteStyleType());
+		json.setString("name", name);
 		return json;
 	}
 	
@@ -177,5 +183,13 @@ public class PhrasePicture implements JSONable {
 	
 	protected Phrase getPhrase() {
 		return phrase;
+	}
+	
+	protected String getName() {
+		return name;
+	}
+	
+	protected void setName(String name) {
+		this.name = name;
 	}
 }
