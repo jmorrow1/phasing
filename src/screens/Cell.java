@@ -38,6 +38,7 @@ class Cell {
 						     .setLabel("Load")
 						     .setPosition(x1, y1)
 						     .setSize((int)width, (int)height)
+						     .setId(-1)
 						     .plugTo(this);
 						     ;
 		//TODO: Make label be displayed as upper and lower case characters.

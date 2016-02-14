@@ -1,9 +1,12 @@
 package screens;
 
-import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import controlP5.Button;
+import controlP5.ControlEvent;
+import controlP5.ControlP5;
+import controlp5.TriangleButtonView;
 import geom.Rect;
 import icons.CameraIcon;
 import icons.ColorSchemeIcon;
@@ -77,8 +80,16 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	// icon parameters
 	private float iconRadius = 25;
 	private float icon_dx = iconRadius * 2.25f;
-	private float iconStartX = 0.25f * iconRadius;
-	private float iconStartY = pa.height - 2.25f * iconRadius;
+	private float iconStartX1 = 0.75f * iconRadius;
+	private float iconStartY1 = pa.height - 2.75f * iconRadius;
+	
+	//controlp5
+	private ControlP5 cp5;
+	private Button upButton, downButton;
+	
+	/**************************
+	 ***** Initialization *****
+	 **************************/
 
 	/**
 	 * 
@@ -87,14 +98,17 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 */
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
+		
+		initViews();
+		
+		cp5 = new ControlP5(pa);
+		initDirectionalButtons();
 	}
 	
-	/*************************************
-	 ***** Enter/Exit Event Handling *****
-	 *************************************/
-	
-	@Override
-	public void onEnter() {
+	/**
+	 * Initializes an instance of each view type.
+	 */
+	private void initViews() {
 		musicianView = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		phaseShifterView = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		liveScorerView = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
@@ -103,7 +117,152 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			case PHASE_SHIFTER : view = phaseShifterView; break;
 			case LIVE_SCORER : view = liveScorerView; break;
 		}
-
+	}
+	
+	/**
+	 * Initializes the directional buttons.
+	 */
+	private void initDirectionalButtons() {
+		float buttonX1 = directionalButtonX1(0);
+		float iconCeny = iconStartY1 + iconRadius/2f;
+		int buttonRadius = (int)(iconRadius/2f);
+		upButton = consDirectionalButton(buttonX1, iconCeny - iconRadius - 4, buttonRadius, -pa.HALF_PI, "iconUp");
+		downButton = consDirectionalButton(buttonX1, iconCeny + iconRadius + 4, buttonRadius, pa.HALF_PI, "iconDown");
+	}
+	
+	/**
+	 * Constructs a directional button and returns it.
+	 * 
+	 * @param x1 The leftmost x-coordinate of the button.
+	 * @param y1 The uppermost y-coordinate of the button.
+	 * @param radius The radius of the button.
+	 * @param headAngle The angle (in radians) of the heading.
+	 * @param name The name of the button (which ControlP5 will use for callbacks).
+	 * @return
+	 */
+	private Button consDirectionalButton(float x1, float y1, int radius, float headAngle, String name) {
+		Button b = cp5.addButton(name)
+			          .setPosition(x1, y1)
+			          .setSize(2*radius, 2*radius)
+			          .setView(new TriangleButtonView(headAngle, 0.75f*pa.TWO_PI))
+			          .plugTo(this)
+			          ;
+		colorButton(b);
+		return b;
+	}
+	
+	/***********************************
+	 ***** Navigation Menu Control *****
+	 ***********************************/
+	
+	/**
+	 * This method can be triggered by ControlP5 (as a callback) and by the presenter itself.
+	 * 
+	 * Moves the activeVar up, if it can.
+	 * Changes the icon being displayed at the activeIconIndex accordingly.
+	 * Checks to see if the view type needs to be changes and changes it if it does.
+	 */
+	public void iconUp() {
+		ModInt activeVar = variables.get(activeIconIndex);
+		int availability = this.getIconAvailability(activeVar.getName());
+		int newValue = PhasesPApplet.remainder(activeVar.toInt() - 1, availability);
+		activeVar.setValue(newValue);
+		view.respondToChangeInSettings();
+		checkViewType();
+	}
+	
+	/**
+	 * This method can be triggered by ControlP5 (as a callback) and by the Presenter itself.
+	 * 
+	 * Moves the activeVar down, if it can.
+	 * Changes the icon being displayed at the activeIconIndex accordingly.
+	 * Checks to see if the view type needs to be changes and changes it if it does.
+	 */
+	public void iconDown() {
+		ModInt activeVar = variables.get(activeIconIndex);
+		int availability = this.getIconAvailability(activeVar.getName());
+		int newValue = PhasesPApplet.remainder(activeVar.toInt() + 1, availability);
+		activeVar.setValue(newValue);
+		view.respondToChangeInSettings();
+		checkViewType();
+	}
+	
+	/**
+	 * Moves the activeIconIndex right.
+	 * Messages the directional buttons to reposition themselves according to the new activeIconIndex.
+	 */
+	public void iconRight() {
+		activeIconIndex = (activeIconIndex + 1) % iconLists.size();
+		repositionDirectionalButtons();
+	}
+	
+	/**
+	 * Moves the activeIconIndex left.
+	 * Messages the directional buttons to reposition themselves according to the new activeIconIndex.
+	 */
+	public void iconLeft() {
+		activeIconIndex = PhasesPApplet.remainder(activeIconIndex - 1, iconLists.size());
+		repositionDirectionalButtons();
+	}
+	
+	/**
+	 * Checks if the view should change type.
+	 * If it should, the method changes the view type accordingly.
+	 */
+	public void checkViewType() {
+		View newView = null;
+		switch (viewType.toInt()) {
+			case MUSICIAN:
+				newView = musicianView;
+				break;
+			case PHASE_SHIFTER:
+				newView = phaseShifterView;
+				break;
+			case LIVE_SCORER:
+				newView = liveScorerView;
+				break;
+		}
+		if (view != newView) {
+			view = newView;
+			view.wakeUp(computeNotept1(), computeNotept2());
+			setupIconLists();
+		}
+	}
+	
+	/**
+	 * Gives where the x-coordinate of a directional button that's associated with an icon at a given index 
+	 * (whether or not there's actually an icon there) would be.
+	 * @param index The index of the icon.
+	 * @return The x-coordinate of a directional button associated with an icon.
+	 */
+	private float directionalButtonX1(int index) {
+		return iconCenx(index) - iconRadius/2f;
+	}
+	
+	/**
+	 * Repositions the up and down buttons according to the activeIconIndex.
+	 */
+	private void repositionDirectionalButtons() {
+		upButton.setPosition(directionalButtonX1(activeIconIndex), upButton.getPosition()[1]);
+		downButton.setPosition(directionalButtonX1(activeIconIndex), downButton.getPosition()[1]);
+	}
+	
+	/***************************
+	 ***** ControlP5 Style *****
+	 ***************************/
+	
+	private void colorButton(Button b) {
+		b.setColorBackground(pa.color(255));
+	    b.setColorForeground(pa.getColor1());
+	    b.setColorActive(pa.getColor1Bold());
+	}
+	
+	/*************************************
+	 ***** Enter/Exit Event Handling *****
+	 *************************************/
+	
+	@Override
+	public void onEnter() {
 		pa.phrase.addToScore(player1, 0, 0, 0);
 		pa.phrase.addToScore(player2, 0, 0, 0);
 		player1.tempo(pa.getBPM1());
@@ -147,7 +306,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		pa.background(255);
 		animateView();
 		drawNavigationMenu();
-		
 	}
 	
 	/**
@@ -169,16 +327,14 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 */
 	private void drawNavigationMenu() {
 		if (iconLists.size() > 0) {
-			float x = iconStartX;
-			float y = iconStartY;
+			float iconCeny = iconStartY1 + iconRadius;
 			
 			//draw icons
 			for (int i = 0; i < iconLists.size(); i++) {
 				int j = variables.get(i).toInt();
 				Icon[] iconList = iconLists.get(i);
 				Icon icon = iconList[j];
-				icon.draw(x + iconRadius, y + iconRadius, iconRadius, pa);
-				x += icon_dx;
+				icon.draw(iconCenx(i), iconCeny, iconRadius, pa);
 			}
 			
 			// draw box around active icon
@@ -186,8 +342,17 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			pa.strokeWeight(3);
 			pa.stroke(pa.getColor1());
 			pa.rectMode(pa.CORNER);
-			pa.rect(iconStartX + activeIconIndex * icon_dx, iconStartY, 2*iconRadius, 2*iconRadius);
+			pa.rect(iconStartX1 + activeIconIndex * icon_dx, iconStartY1, 2*iconRadius, 2*iconRadius);
 		}	
+	}
+	
+	/**
+	 * Gives the center x-coordinate of the icon at the given index (whether or not an icon actually exists there).
+	 * @param index 
+	 * @returnThe center x-coordinate of the icon.
+	 */
+	private float iconCenx(int index) {
+		return iconStartX1 + index * icon_dx + iconRadius;
 	}
 	
 	/**
@@ -199,9 +364,9 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 * @return
 	 */
 	private int iconIndexTouches(int x, int y) {
-		float iconEndX = iconStartX + icon_dx*iconLists.size() + 2*iconRadius;
-		if (iconStartX-iconRadius <= x && x <= iconEndX && iconStartY <= y && y <= iconStartY + 2*iconRadius) {
-			return (int)((x - iconStartX) / icon_dx);
+		float iconEndX = iconStartX1 + icon_dx*iconLists.size() + 2*iconRadius;
+		if (iconStartX1-iconRadius <= x && x <= iconEndX && iconStartY1 <= y && y <= iconStartY1 + 2*iconRadius) {
+			return (int)((x - iconStartX1) / icon_dx);
 		}
 		else {
 			return -1;
@@ -280,39 +445,13 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	public void keyPressed() {
 		if (pa.key == pa.CODED) {
 			if (pa.keyCode == pa.LEFT) {
-				activeIconIndex = PhasesPApplet.remainder(activeIconIndex - 1, iconLists.size());
+				iconLeft();
 			} else if (pa.keyCode == pa.RIGHT) {
-				activeIconIndex = (activeIconIndex + 1) % iconLists.size();
+				iconRight();
 			} else if (pa.keyCode == pa.UP) {
-				ModInt activeVar = variables.get(activeIconIndex);
-				int availability = this.getIconAvailability(activeVar.getName());
-				int newValue = PhasesPApplet.remainder(activeVar.toInt() - 1, availability);
-				activeVar.setValue(newValue);
-				view.respondToChangeInSettings();
+				iconUp();
 			} else if (pa.keyCode == pa.DOWN) {
-				ModInt activeVar = variables.get(activeIconIndex);
-				int availability = this.getIconAvailability(activeVar.getName());
-				int newValue = PhasesPApplet.remainder(activeVar.toInt() + 1, availability);
-				activeVar.setValue(newValue);
-				view.respondToChangeInSettings();
-			}
-
-			View newView = null;
-			switch (viewType.toInt()) {
-			case MUSICIAN:
-				newView = musicianView;
-				break;
-			case PHASE_SHIFTER:
-				newView = phaseShifterView;
-				break;
-			case LIVE_SCORER:
-				newView = liveScorerView;
-				break;
-			}
-			if (view != newView) {
-				view = newView;
-				view.wakeUp(computeNotept1(), computeNotept2());
-				setupIconLists();
+				iconDown();
 			}
 		}
 	}
@@ -322,6 +461,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		int iconIndex = iconIndexTouches(pa.mouseX, pa.mouseY);
 		if (iconIndex != -1) {
 			activeIconIndex = iconIndex;
+			repositionDirectionalButtons();
 		}
 	}
 	
