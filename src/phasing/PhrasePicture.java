@@ -1,13 +1,10 @@
-package screens;
+package phasing;
 
 import java.io.Serializable;
 import java.util.Random;
 
 import geom.Polygon;
 import geom.Rect;
-import phasing.JSONable;
-import phasing.PhasesPApplet;
-import phasing.Phrase;
 import processing.core.PApplet;
 import processing.data.JSONObject;
 
@@ -76,7 +73,7 @@ public class PhrasePicture implements JSONable {
 	 ***** Drawing *****
 	 *******************/
 	
-	protected void draw(Rect rect, PhasesPApplet pa) {
+	public void draw(Rect rect, PhasesPApplet pa) {
 		//draw lines between notes
 		pa.strokeWeight(1);
 		pa.stroke(pa.getBlendedColor(blendAmt));
@@ -89,7 +86,7 @@ public class PhrasePicture implements JSONable {
 		iterateNotes(drawNoteFunc, drawRestFunc, rect, pa);
 	}
 	
-	protected void iterateNotes(DrawNote drawNote, DrawNote drawRest, Rect rect, PhasesPApplet pa) {
+	public void iterateNotes(DrawNote drawNote, DrawNote drawRest, Rect rect, PhasesPApplet pa) {
 		float x1 = pa.lerp(rect.getX1(), rect.getX2(), 0.1f);
 		float x2 = pa.lerp(rect.getX2(), rect.getX1(), 0.1f);
 		float x = x1;
@@ -181,15 +178,15 @@ public class PhrasePicture implements JSONable {
 	 ***** Getters and Setters *****
 	 *******************************/
 	
-	protected Phrase getPhrase() {
+	public Phrase getPhrase() {
 		return phrase;
 	}
 	
-	protected String getName() {
+	public String getName() {
 		return name;
 	}
 	
-	protected void setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 }

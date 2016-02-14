@@ -98,11 +98,10 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 */
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
-		
-		initViews();
-		
+		initViews();	
 		cp5 = new ControlP5(pa);
 		initDirectionalButtons();
+		cp5.hide();
 	}
 	
 	/**
@@ -287,12 +286,16 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		setupIconLists();
 		
 		activeIconIndex = 0;
+		
+		cp5.show();
 	}
 	
 	@Override
 	public void onExit() {
 		player1.stop();
 		player2.stop();
+		pa.savePlayerInfo();
+		cp5.hide();
 	}
 	
 	/******************************
@@ -472,14 +475,14 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 	}
 	
-	/*******************************
-	 ***** Icon Initialization *****
-	 *******************************/
+	/********************************
+	 ***** Icon Unlock Handling *****
+	 ********************************/
 	
 	/**
-	 * First, it checks if new icons have been unlocked for the active view type.
-	 * If so, it calls setupIconLists(), which refreshes the state of the icon lists.
-	 * Also, it updates the save file associated with the player.
+	 * First, it checks if a new icons has been unlocked for the active view type.
+	 * If there's been a new unlock, it calls setupIconLists(), which refreshes the state of the icon lists.
+	 * If there's been a new unlock, it updates the player info save file.
 	 */
 	private void checkUnlocks() {
 		boolean unlockedSomething = false;
@@ -507,14 +510,13 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 		
 		if (unlockedSomething) {
-			JSONObject json = pa.playerInfo.toJSON();
-			try {
-				pa.saveJSONObject(json, pa.saveFolderPath);
-			} catch (RuntimeException e) {
-				pa.print(e.toString());
-			}
+			pa.savePlayerInfo();
 		}
 	}
+	
+	/*******************************
+	 ***** Icon Initialization *****
+	 *******************************/
 	
 	/**
 	 * Adds all the unlocked view type icons to the container called "iconLists", which stores all the icons that are currently available to the player.

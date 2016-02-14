@@ -151,7 +151,7 @@ public class PhasesPApplet extends PApplet {
 		phraseRepo = new PhraseRepository(this);
 		
 		//setup current screen
-		currentScreen = presenter;
+		currentScreen = phraseRepo;
 		
 		if (currentScreen == editor) {
 			changeScreenButton.setCaptionLabel("Rehearse");
@@ -198,6 +198,25 @@ public class PhasesPApplet extends PApplet {
 		else {
 			playerInfo = new PlayerInfo(true);
 			saveJSONObject(playerInfo.toJSON(), playerInfoFileName);
+		}
+	}
+	
+	/**
+	 * Saves the player info to a file in the save folder.
+	 */
+	public void savePlayerInfo() {
+		JSONObject json = playerInfo.toJSON();
+		try {
+			saveJSONObject(json, saveFolderPath);
+		} catch (RuntimeException e) {
+			print(e.toString());
+		}
+	}
+	
+	public void writePhrasePictures(ArrayList<PhrasePicture> phrasePictures) {
+		for (int i=0; i<phrasePictures.size(); i++) {
+			PhrasePicture p = phrasePictures.get(i);
+			saveJSONObject(p.toJSON(), saveFolderPath + "phrases\\" + p.getName() + ".json");
 		}
 	}
 	

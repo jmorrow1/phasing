@@ -427,7 +427,9 @@ public class Editor extends Screen {
 		pa.println("visit time: " + (System.currentTimeMillis() - timeEntered));
 		if (System.currentTimeMillis() - timeEntered > 10000) {
 			pa.playerInfo.numEditorVisits++;
+			pa.savePlayerInfo();
 		}
+		
 	}
 	
 	/********************************

@@ -7,6 +7,7 @@ import controlP5.ControlP5;
 import geom.Rect;
 import phasing.PhasesPApplet;
 import phasing.Phrase;
+import phasing.PhrasePicture;
 
 /**
  * 

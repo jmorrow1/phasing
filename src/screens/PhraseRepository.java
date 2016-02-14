@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import controlP5.ControlP5;
 import geom.Rect;
 import phasing.PhasesPApplet;
+import phasing.PhrasePicture;
 import processing.core.PApplet;
 import processing.data.JSONObject;
 
@@ -35,7 +36,7 @@ public class PhraseRepository extends Screen {
 		//create new phrase pictures:
 		if (populateCellsWithRandomPhrases) {
 			populateCellsWithRandomPhrases();
-			writePhrasePictures(Cell.toPhraseList(cells));
+			pa.writePhrasePictures(Cell.toPhraseList(cells));
 		}
 		//load phrase pictures:
 		else {
@@ -55,17 +56,6 @@ public class PhraseRepository extends Screen {
 		}
 		
 		cp5.hide();
-	}
-	
-	/******************
-	 ***** Saving *****
-	 ******************/
-	
-	private void writePhrasePictures(ArrayList<PhrasePicture> phrasePictures) {
-		for (int i=0; i<phrasePictures.size(); i++) {
-			PhrasePicture p = phrasePictures.get(i);
-			pa.saveJSONObject(p.toJSON(), pa.saveFolderPath + "phrases\\" + p.getName() + ".json");
-		}
 	}
 	
 	/**************************
