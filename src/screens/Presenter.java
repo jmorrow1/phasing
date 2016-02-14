@@ -359,13 +359,15 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 * If the given (x,y) position lies within the area in which an icon is being displayed, the index of that icon is returned.
 	 * If the given (x,y) position does not lie within the area in which an icon is being displayed, -1 is returned.
 	 * 
+	 * The hit box is actually a bit taller than the space the icon takes up, which is on purpose.
+	 * 
 	 * @param x The x-coordinate in pixels.
 	 * @param y The y-coordinate in pixels.
 	 * @return
 	 */
 	private int iconIndexTouches(int x, int y) {
 		float iconEndX = iconStartX1 + icon_dx*iconLists.size() + 2*iconRadius;
-		if (iconStartX1-iconRadius <= x && x <= iconEndX && iconStartY1 <= y && y <= iconStartY1 + 2*iconRadius) {
+		if (iconStartX1-iconRadius <= x && x <= iconEndX && iconStartY1 - iconRadius <= y && y <= iconStartY1 + 3f*iconRadius) {
 			return (int)((x - iconStartX1) / icon_dx);
 		}
 		else {
@@ -444,14 +446,19 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	@Override
 	public void keyPressed() {
 		if (pa.key == pa.CODED) {
-			if (pa.keyCode == pa.LEFT) {
-				iconLeft();
-			} else if (pa.keyCode == pa.RIGHT) {
-				iconRight();
-			} else if (pa.keyCode == pa.UP) {
-				iconUp();
-			} else if (pa.keyCode == pa.DOWN) {
-				iconDown();
+			switch (pa.keyCode) {
+				case PApplet.LEFT : iconLeft(); break;
+				case PApplet.RIGHT : iconRight(); break;
+				case PApplet.UP : iconUp(); break;
+				case PApplet.DOWN : iconDown(); break;
+			}
+		}
+		else {
+			switch (pa.key) {
+				case 'a' : iconLeft(); break;
+				case 'd' : iconRight(); break;
+				case 'w' : iconUp(); break;
+				case 's' : iconDown(); break;
 			}
 		}
 	}
