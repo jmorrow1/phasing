@@ -52,6 +52,10 @@ public class Phrase implements JSONable {
 	//other
 	protected float[] scIndexToPercentDuration;
 	
+	/**************************
+	 ***** Initialization *****
+	 **************************/
+	
 	/**
 	 * Constructs an empty phrase.
 	 */
@@ -176,6 +180,8 @@ public class Phrase implements JSONable {
 			cellTypes = new int[] {};
 			scArraysUpToDate = false;
 		}
+		
+		unitDuration = json.getFloat("unitDuration", unitDuration);
 	}
 	
 	public JSONObject toJSON() {
@@ -185,8 +191,27 @@ public class Phrase implements JSONable {
 		json.setJSONArray("gridArts", Util.jsonify(gridArts));
 		json.setJSONArray("gridPans", Util.jsonify(gridPans));
 		json.setJSONArray("cellTypes", Util.jsonify(cellTypes));
+		json.setFloat("unitDuration", unitDuration);
 		return json;
 	}
+	
+	/**
+	 * Performs a deep copy of the give phrase's fields to this phrase's fields.
+	 * @param phrase The phrase to copy from.
+	 */
+	public void set(Phrase phrase) {
+		this.gridPitches = Arrays.copyOf(phrase.gridPitches, phrase.gridPitches.length);
+		this.gridDynamics = Arrays.copyOf(phrase.gridDynamics, phrase.gridDynamics.length);
+		this.gridArts = Arrays.copyOf(phrase.gridArts, phrase.gridArts.length);
+		this.gridPans = Arrays.copyOf(phrase.gridPans, phrase.gridPans.length);
+		this.cellTypes = Arrays.copyOf(phrase.cellTypes, phrase.cellTypes.length);
+		this.unitDuration = phrase.unitDuration;
+		scArraysUpToDate = false;
+	}
+	
+	/*****************************
+	 ***** Grid Manipulation *****
+	 *****************************/
 	
 	/**
 	 * Adds a new cell to the tail end of the grid, which is a rest by default.
@@ -214,59 +239,9 @@ public class Phrase implements JSONable {
 		}
 	}
 	
-	
-	/**
-	 * Sets a cell with the given grid data.
-	 * @param i
-	 * @param pitch
-	 * @param dynamic
-	 * @param noteType
-	 * @return
-	 */
-	public boolean setCell(int i, float pitch, float dynamic, int noteType) {
-		return setCell(i, pitch, dynamic, noteType, defaultArt, defaultPan);
-	}
-	
-	/**
-	 * Sets a cell with the given grid data.
-	 * @param i
-	 * @param pitch
-	 * @param dynamic
-	 * @param noteType
-	 * @param art
-	 * @param pan
-	 * @return
-	 */
-	public boolean setCell(int i, float pitch, float dynamic, int noteType, float art, float pan) {
-		if (0 <= i && i < getGridRowSize()) {
-			boolean success = setNoteType(i, noteType);
-			if (!success) {
-				return false;
-			}
-			gridPitches[i] = pitch;
-			gridDynamics[i] = dynamic;
-			gridArts[i] = art;
-			gridPans[i] = pan;
-			scArraysUpToDate = false;
-			return true;
-		}
-		else {
-			System.err.println("Index out of bounds in method setNote(" + i + ") in Phrase");
-			return false;
-		}
-	}
-	
-	/**
-	 * Applies a pan value to every cell and sets the new default pan value.
-	 * @param pan The pan value
-	 */
-	public void panPhrase(float pan) {
-		defaultPan = pan;
-		for (int i=0; i<gridPans.length; i++) {
-			gridPans[i] = pan;
-		}
-		scArraysUpToDate = false;
-	}
+	/**************************
+	 ***** To SoundCipher *****
+	 **************************/
 	
 	/**
 	 * Adds this object's phrase information to an SCScore object (a soundcipher utility).
@@ -282,6 +257,10 @@ public class Phrase implements JSONable {
 		score.empty();
 		score.addPhrase(startBeat, channel, instrument, scPitches, scDynamics, scDurations, scArts, scPans);
 	}
+
+	/****************************
+	 ***** State Management *****
+	 ****************************/
 	
 	/**
 	 * Updates the data fields associated with the phrase's soundcipher representation
@@ -370,6 +349,23 @@ public class Phrase implements JSONable {
 		
 		scArraysUpToDate = true;
 	}
+	
+	/*******************************
+	 ***** Getters and Setters ***** 
+	 *******************************/
+	
+	/**
+	 * Applies a pan value to every cell and sets the new default pan value.
+	 * @param pan The pan value
+	 */
+	public void panPhrase(float pan) {
+		defaultPan = pan;
+		for (int i=0; i<gridPans.length; i++) {
+			gridPans[i] = pan;
+		}
+		scArraysUpToDate = false;
+	}
+	
 	
 	/**
 	 * Searches the phrase and returns the lowest value MIDI pitch in the phrase.
@@ -522,6 +518,47 @@ public class Phrase implements JSONable {
 	}
 	
 	/**
+	 * Sets a cell with the given grid data.
+	 * @param i
+	 * @param pitch
+	 * @param dynamic
+	 * @param noteType
+	 * @return
+	 */
+	public boolean setCell(int i, float pitch, float dynamic, int noteType) {
+		return setCell(i, pitch, dynamic, noteType, defaultArt, defaultPan);
+	}
+	
+	/**
+	 * Sets a cell with the given grid data.
+	 * @param i
+	 * @param pitch
+	 * @param dynamic
+	 * @param noteType
+	 * @param art
+	 * @param pan
+	 * @return
+	 */
+	public boolean setCell(int i, float pitch, float dynamic, int noteType, float art, float pan) {
+		if (0 <= i && i < getGridRowSize()) {
+			boolean success = setNoteType(i, noteType);
+			if (!success) {
+				return false;
+			}
+			gridPitches[i] = pitch;
+			gridDynamics[i] = dynamic;
+			gridArts[i] = art;
+			gridPans[i] = pan;
+			scArraysUpToDate = false;
+			return true;
+		}
+		else {
+			System.err.println("Index out of bounds in method setNote(" + i + ") in Phrase");
+			return false;
+		}
+	}
+	
+	/**
 	 * Sets the cell type value. If successful, it returns true.
 	 * For some inputs, the method will not rewrite the cell type value and will return false.
 	 * For example, it does not make sense to put a note sustain after a rest. A note cannot be sustained if it hasn't been started.
@@ -613,6 +650,10 @@ public class Phrase implements JSONable {
 	public float getUnitDuration() {
 		return unitDuration;
 	}
+	
+	/*********************
+	 ***** To String *****
+	 *********************/
 
 	/**
 	 *

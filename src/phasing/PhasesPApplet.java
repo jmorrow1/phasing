@@ -41,6 +41,7 @@ public class PhasesPApplet extends PApplet {
 	
 	//active music variables
 	public Phrase phrase;
+	public PhrasePicture phrasePicture;
 	public Scale scale;
 	private float bpm1 = 60;
 	private float bpms1 = bpm1 / 60000f;
@@ -137,13 +138,10 @@ public class PhasesPApplet extends PApplet {
 		//load player info
 		initPlayerInfo(false);
 		
-		//create default phrase
-		int n = Phrase.NOTE_START;
-		/*phrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
-				            new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
-				            new int[] {n, n, n, n, n, n, n, n, n, n, n, n});*/
+		//create phrase
 		scale = getRandomScale();
 		phrase = generateReichLikePhrase(scale);
+		phrasePicture = new PhrasePicture(phrase, "Current Phrase", this);
 	
 		//create screens
 		presenter = new Presenter(this);
@@ -213,7 +211,11 @@ public class PhasesPApplet extends PApplet {
 		}
 	}
 	
-	public void writePhrasePictures(ArrayList<PhrasePicture> phrasePictures) {
+	/**
+	 * Saves a list of phrase pictures to the phrases subfolder in the save folder.
+	 * @param phrasePictures
+	 */
+	public void savePhrasePictures(ArrayList<PhrasePicture> phrasePictures) {
 		for (int i=0; i<phrasePictures.size(); i++) {
 			PhrasePicture p = phrasePictures.get(i);
 			saveJSONObject(p.toJSON(), saveFolderPath + "phrases\\" + p.getName() + ".json");
@@ -261,9 +263,20 @@ public class PhasesPApplet extends PApplet {
 		return color;
 	}
 	
-	/***********************************
-	***** Random Phrase Generation *****
-	************************************/	
+	/****************************
+	***** Phrase Generation *****
+	*****************************/	
+	
+	/**
+	 * 
+	 * @return The score from Steve Reich's Piano Phase (1967)
+	 */
+	public Phrase pianoPhase() {
+		int n = Phrase.NOTE_START;
+		return phrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
+	                               new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
+	                               new int[] {n, n, n, n, n, n, n, n, n, n, n, n});
+	}
 	
 	/**
 	 * 
@@ -414,9 +427,8 @@ public class PhasesPApplet extends PApplet {
 		c.setColorCaptionLabel(0xffffffff);
 	    c.setColorValueLabel(0xffffffff);
 		c.setColorBackground(getColor1());
-		c.setColorForeground(getColor1());
-		c.setColorActive(getColor1Bold());
-		
+		c.setColorForeground(getColor1Bold());
+		c.setColorActive(getColor1Bold());	
 	}
 	
 	public void colorButtonHideLabel(Button b) {

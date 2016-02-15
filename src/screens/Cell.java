@@ -16,19 +16,34 @@ import phasing.PhrasePicture;
  *
  */
 class Cell {
-	private Rect rect;
-	private PhrasePicture phrasePicture;
-	private Button loadButton;
+	//class-scope
 	private static int nextID = (int)'a';
+	private final static int LOAD = -1;
+	
+	//outside world
+	private PhasesPApplet pa;
+	private PhraseRepository phraseRepo;
+	
+	//dimensions
+	private Rect rect;
+	
+	//phrase picture (optional)
+	private PhrasePicture phrasePicture;
+	
+	//other data
+	private Button loadButton;
 	
 	/**************************
 	 ***** Initialization *****
 	 **************************/
 	
-	protected Cell(Rect rect, ControlP5 cp5) {
+	protected Cell(boolean hasLoadButton, Rect rect, ControlP5 cp5, PhraseRepository phraseRepo, PhasesPApplet pa) {
 		this.rect = rect;
-		
-		initLoadButton(cp5);
+		if (hasLoadButton) {
+			initLoadButton(cp5);
+		}
+		this.phraseRepo = phraseRepo;
+		this.pa = pa;
 	}
 	
 	private void initLoadButton(ControlP5 cp5) {
@@ -40,7 +55,7 @@ class Cell {
 						     .setLabel("Load")
 						     .setPosition(x1, y1)
 						     .setSize((int)width, (int)height)
-						     .setId(-1)
+						     .setId(LOAD)
 						     .plugTo(this);
 						     ;
 		//TODO: Make label be displayed as upper and lower case characters.
@@ -54,7 +69,11 @@ class Cell {
 	 *******************************/
 	
 	public void controlEvent(ControlEvent e) {
-		
+		switch (e.getId()) {
+			case LOAD :
+				if (phrasePicture != null) pa.phrase.set(phrasePicture.getPhrase());
+				break;
+		}
 	}
 	
 	/*******************
@@ -73,6 +92,10 @@ class Cell {
 			pa.textAlign(pa.CENTER, pa.TOP);
 			pa.fill(0);
 			pa.text(name, rect.getCenx(), rect.getY1());
+			if (loadButton != null) loadButton.show();
+		}
+		else {
+			if (loadButton != null) loadButton.hide();
 		}
 	}
 	

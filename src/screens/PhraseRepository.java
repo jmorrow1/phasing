@@ -67,7 +67,7 @@ public class PhraseRepository extends Screen {
 		//create new phrase pictures:
 		if (populateCellsWithRandomPhrases) {
 			populateCellsWithRandomPhrases();
-			pa.writePhrasePictures(Cell.toPhraseList(cells));
+			pa.savePhrasePictures(Cell.toPhraseList(cells));
 		}
 		//load phrase pictures:
 		else {
@@ -89,6 +89,9 @@ public class PhraseRepository extends Screen {
 	
 	private void assignPhrasesToCells(ArrayList<PhrasePicture> phrasePictures) {
 		int end = PApplet.min(cells.size(), phrasePictures.size());
+		if (end > 0) {
+			cells.get(0).setPhrasePicture(pa.phrasePicture);
+		}
 		for (int i=1; i<end; i++) {
 			cells.get(i).setPhrasePicture(phrasePictures.get(i-1));
 		}
@@ -101,7 +104,12 @@ public class PhraseRepository extends Screen {
 		for (int j=0; j<colSize; j++) {
 			float x1 = box.getCenx() - cellSize*0.5f*rowSize;
 			for (int i=0; i<rowSize; i++) {
-				cells.add(new Cell(new Rect(x1, y1, cellSize, cellSize, pa.CORNER), cp5));
+				if (i == 0 && j == 0) {
+					cells.add(new Cell(false, new Rect(x1, y1, cellSize, cellSize, pa.CORNER), cp5, this, pa));
+				}
+				else {
+					cells.add(new Cell(true, new Rect(x1, y1, cellSize, cellSize, pa.CORNER), cp5, this, pa));
+				}
 				x1 += cellSize;
 			}
 			y1 += cellSize;
@@ -115,6 +123,14 @@ public class PhraseRepository extends Screen {
 			x++;
 		}
 	}
+	
+	/*************************************
+	 *************************************
+	 *************************************/
+	
+	/*protected void moveTo2ndPosition(Cell c) {
+		
+	}*/
 	
 	/*************************************
 	 ***** Enter/Exit Event Handling *****
