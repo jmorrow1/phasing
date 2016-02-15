@@ -17,8 +17,8 @@ import phasing.PhrasePicture;
  */
 class Cell {
 	//class-scope
-	private static int nextID = (int)'a';
-	private final static int LOAD = -1;
+	private static int nextId = (int)'a';
+	private final static int LOAD = -1, GENERATE_PHRASE = -2;
 	
 	//outside world
 	private PhasesPApplet pa;
@@ -32,6 +32,7 @@ class Cell {
 	
 	//other data
 	private Button loadButton;
+	private Button generateButton;
 	
 	/**************************
 	 ***** Initialization *****
@@ -51,7 +52,7 @@ class Cell {
 		float y1 = rect.getY1() + 0.9f * rect.getHeight();
 		float width = 0.4f * rect.getWidth();
 		float height = 0.1f * rect.getHeight();
-		this.loadButton = cp5.addButton((char)nextID + " load")
+		this.loadButton = cp5.addButton((char)nextId + " load")
 						     .setLabel("Load")
 						     .setPosition(x1, y1)
 						     .setSize((int)width, (int)height)
@@ -61,7 +62,21 @@ class Cell {
 		//TODO: Make label be displayed as upper and lower case characters.
 		//TODO: Fix font blurriness.
 		PhasesPApplet.colorButtonShowLabel(loadButton);
-		nextID++;
+		nextId++;
+	}
+	
+	private void initGenerateButton(ControlP5 cp5) {
+		float width = 0.75f * rect.getWidth();
+		float height = 0.25f * rect.getHeight();
+		float x1 = rect.getCenx() - width/2f;
+		float y1 = rect.getCeny() - height/2f;
+		this.generateButton = cp5.addButton("Generate Phrase")
+				                 .setPosition(x1, y1)
+				                 .setSize((int)width, (int)height)
+				                 .setId(GENERATE_PHRASE)
+				                 .plugTo(this)
+				                 ;
+		PhasesPApplet.colorButtonShowLabel(generateButton);
 	}
 	
 	/*******************************
@@ -93,9 +108,11 @@ class Cell {
 			pa.fill(0);
 			pa.text(name, rect.getCenx(), rect.getY1());
 			if (loadButton != null) loadButton.show();
+			if (generateButton != null) generateButton.hide();
 		}
 		else {
 			if (loadButton != null) loadButton.hide();
+			if (generateButton != null) generateButton.show();
 		}
 	}
 	

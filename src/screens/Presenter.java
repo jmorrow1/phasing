@@ -277,6 +277,8 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		
 		activeIconIndex = 0;
 		
+		repositionDirectionalButtons();
+		
 		cp5.show();
 	}
 	

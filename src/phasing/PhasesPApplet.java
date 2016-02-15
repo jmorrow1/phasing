@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +42,7 @@ public class PhasesPApplet extends PApplet {
 	public Phrase currentPhrase;
 	public PhrasePicture currentPhrasePicture;
 	public Scale currentScale;
+	public ArrayList<PhrasePicture> phrasePictures;
 	private float bpm1 = 60;
 	private float bpms1 = bpm1 / 60000f;
 	private float bpm2 = 60.5f;
@@ -154,6 +154,11 @@ public class PhasesPApplet extends PApplet {
 			currentPhrasePicture = new PhrasePicture(currentPhrase, "Current Phrase", this);
 			saveCurrentPhrasePicture();
 		}
+		
+		boolean phrasePicturesLoaded = loadPhrasePictures();
+		if (!phrasePicturesLoaded) {
+			phrasePictures = new ArrayList<PhrasePicture>();
+		}
 	
 		//create screens
 		presenter = new Presenter(this);
@@ -161,7 +166,7 @@ public class PhasesPApplet extends PApplet {
 		phraseRepo = new PhraseRepository(this);
 		
 		//setup current screen
-		currentScreen = editor;
+		currentScreen = phraseRepo;
 		
 		if (currentScreen == editor) {
 			changeScreenButton.setCaptionLabel("Rehearse");
@@ -241,13 +246,8 @@ public class PhasesPApplet extends PApplet {
 			try {
 				JSONObject json = loadJSONObject(file);
 				currentPhrasePicture = new PhrasePicture(json);
-				if (currentPhrasePicture.hasPhrase()) {
-					currentPhrase = currentPhrasePicture.getPhrase();
-					return true;
-				}
-				else {
-					return false;
-				}
+				currentPhrase = currentPhrasePicture.getPhrase();
+				return true;
 			}
 			catch (RuntimeException e) {
 				e.printStackTrace();
@@ -301,17 +301,6 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
-	 * Saves a list of phrase pictures to the phrases subfolder in the save folder.
-	 * @param phrasePictures
-	 */
-	public void savePhrasePictures(ArrayList<PhrasePicture> phrasePictures) {
-		for (int i=0; i<phrasePictures.size(); i++) {
-			PhrasePicture p = phrasePictures.get(i);
-			saveJSONObject(p.toJSON(), saveFolderPath + "phrases\\" + p.getName() + ".json");
-		}
-	}
-	
-	/**
 	 * Tries to initialize the current scale variable by loading the appropriate file.
 	 * @return True, if it succeeds. False, if it fails.
 	 */
@@ -339,6 +328,40 @@ public class PhasesPApplet extends PApplet {
 		saveJSONObject(currentScale.toJSON(), saveFolderPath + "\\Current Scale.json");
 	}
 	
+	/**
+	 * Saves the phrase pictures to the phrases subfolder in the save folder.
+	 * @param phrasePictures
+	 */
+	public void savePhrasePictures() {
+		for (int i=0; i<phrasePictures.size(); i++) {
+			PhrasePicture p = phrasePictures.get(i);
+			saveJSONObject(p.toJSON(), saveFolderPath + "phrases\\" + p.getName() + ".json");
+		}
+	}
+	
+	/**
+	 * Loads the phrase pictures from the phrases subfolder in the save folder,
+	 * except for any file named "Current Phrase".
+	 * 
+	 * @return True, if it succeeds. False, if it fails. 
+	 */
+	public boolean loadPhrasePictures() {
+		try {
+			phrasePictures = new ArrayList<PhrasePicture>();
+			Files.walk(Paths.get(saveFolderPath + "phrases\\")).forEach(filePath -> {
+				if (filePath.toString().endsWith(".json") &&
+						!filePath.toString().equals(saveFolderPath + "phrases\\Current phrase.json")) {
+					JSONObject json = loadJSONObject(filePath.toString());
+					phrasePictures.add(new PhrasePicture(json));
+				}
+			});
+			return true;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 	
 	/****************************
 	***** Phrase Generation *****
@@ -363,6 +386,19 @@ public class PhasesPApplet extends PApplet {
 		String type = scaleTypes.get((int)random(scaleTypes.size()));
 		ScaleSet s = scaleSets.get(type);
 		return s.getScale((int)random(s.numScales()));
+	}
+	
+	/**
+	 * Generates a phrase that has the property of being like the phrase in Steve Reich's Piano Phase
+	 * in this sense: every pitch in the phrase occurs periodically.
+	 * 
+	 * A phasing process over a phrase like this as opposed to a generic phrase results in a
+	 * greater frequence of unisons (two notes of the same pitch playing at the same time).
+	 * 
+	 * @return The generated phrase.
+	 */
+	public Phrase generateReichLikePhrase() {
+		return generateReichLikePhrase(getRandomScale());
 	}
 	
 	/**

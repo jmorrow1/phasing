@@ -13,6 +13,7 @@ public class PhrasePicture implements JSONable {
 	private Phrase phrase;
 	
 	//name
+	private static int nextId = (int)'a';
 	private String name;
 	
 	//style data
@@ -28,6 +29,10 @@ public class PhrasePicture implements JSONable {
 	/**************************
 	 ***** Initialization *****
 	 **************************/
+	
+	public PhrasePicture(Phrase phrase, PhasesPApplet pa) {
+		this(phrase, "" + (char)nextId++, pa);
+	}
 	
 	public PhrasePicture(Phrase phrase, String name, PhasesPApplet pa) {
 		this.phrase = phrase;
@@ -177,10 +182,6 @@ public class PhrasePicture implements JSONable {
 	/*******************************
 	 ***** Getters and Setters *****
 	 *******************************/
-	
-	public boolean hasPhrase() {
-		return phrase != null;
-	}
 	
 	public Phrase getPhrase() {
 		return phrase;

@@ -1,8 +1,5 @@
 package screens;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import controlP5.Button;
@@ -12,11 +9,10 @@ import geom.Rect;
 import phasing.PhasesPApplet;
 import phasing.PhrasePicture;
 import processing.core.PApplet;
-import processing.data.JSONObject;
 
 public class PhraseRepository extends Screen {
 	//variable for testing
-	private boolean populateCellsWithRandomPhrases = false;
+	private boolean populateCellsWithRandomPhrases = true;
 	
 	//cells
 	private ArrayList<Cell> cells = new ArrayList<Cell>();
@@ -64,32 +60,24 @@ public class PhraseRepository extends Screen {
 				break;
 		}
 		
-		//TODO: move this file loading code to PhasesPApplet
-		//create new phrase pictures:
 		if (populateCellsWithRandomPhrases) {
-			populateCellsWithRandomPhrases();
-			pa.savePhrasePictures(Cell.toPhraseList(cells));
+			generateRandomPhrasePictures(cells.size()-2);
 		}
-		//load phrase pictures:
-		else {
-			try {
-				ArrayList<PhrasePicture> phrasePictures = new ArrayList<PhrasePicture>();
-				Files.walk(Paths.get(pa.saveFolderPath + "phrases\\")).forEach(filePath -> {
-					if (filePath.toString().endsWith(".json")) {
-						JSONObject json = pa.loadJSONObject(filePath.toString());
-						phrasePictures.add(new PhrasePicture(json));
-					}
-				});
-				assignPhrasesToCells(phrasePictures);
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
+		
+		assignPhrasesToCells(pa.phrasePictures);
+	}
+	
+	private void generateRandomPhrasePictures(int n) {
+		pa.phrasePictures.clear();
+		for (int i=0; i<n; i++) {
+			PhrasePicture p = new PhrasePicture(pa.generateReichLikePhrase(), pa);
+			pa.phrasePictures.add(p);
 		}
+		pa.savePhrasePictures();
 	}
 	
 	private void assignPhrasesToCells(ArrayList<PhrasePicture> phrasePictures) {
-		int end = PApplet.min(cells.size(), phrasePictures.size());
+		int end = PApplet.min(cells.size(), phrasePictures.size()+1);
 		if (end > 0) {
 			cells.get(0).setPhrasePicture(pa.currentPhrasePicture);
 		}
@@ -114,14 +102,6 @@ public class PhraseRepository extends Screen {
 				x1 += cellSize;
 			}
 			y1 += cellSize;
-		}
-	}
-	
-	private void populateCellsWithRandomPhrases() {
-		int x = (int)'a';
-		for (Cell c : cells) {
-			c.setPhrasePicture(new PhrasePicture(pa.generateReichLikePhrase(pa.currentScale), "" + (char)x, pa));
-			x++;
 		}
 	}
 	
