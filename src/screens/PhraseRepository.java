@@ -16,6 +16,7 @@ public class PhraseRepository extends Screen {
 	
 	//cells
 	private ArrayList<Cell> cells = new ArrayList<Cell>();
+	private PhrasePicture derivativePhrasePicture;
 	
 	//controlp5
 	private ControlP5 cp5;
@@ -105,13 +106,26 @@ public class PhraseRepository extends Screen {
 		}
 	}
 	
-	/*************************************
-	 *************************************
-	 *************************************/
+	/*******************************
+	 ***** Interface with Cell *****
+	 *******************************/
 	
-	/*protected void moveTo2ndPosition(Cell c) {
-		
-	}*/
+	protected void load(PhrasePicture phrasePicture) {
+		pa.currentPhrase.set(phrasePicture.getPhrase());
+		derivativePhrasePicture = phrasePicture;
+		int i = indexOf(derivativePhrasePicture);
+		pa.playerInfo.derivativePhraseIndex = i;
+		pa.savePlayerInfo();
+	}
+	
+	private int indexOf(PhrasePicture phrasePicture) {
+		for (int i=0; i<cells.size(); i++) {
+			if (cells.get(i).getPhrasePicture() == phrasePicture) {
+				return i;
+			}
+		}
+		return -1;
+	}
 	
 	/*************************************
 	 ***** Enter/Exit Event Handling *****
@@ -120,11 +134,18 @@ public class PhraseRepository extends Screen {
 	@Override
 	public void onEnter() {
 		cp5.show();
+		int i = pa.playerInfo.derivativePhraseIndex;
+		if (i != -1 && cells.size() > i) {
+			derivativePhrasePicture = cells.get(i).getPhrasePicture();
+		}
 	}
 
 	@Override
 	public void onExit() {
 		cp5.hide();
+		int i = indexOf(derivativePhrasePicture);
+		pa.playerInfo.derivativePhraseIndex = i;
+		pa.savePlayerInfo();
 	}
 	
 	/*******************

@@ -60,10 +60,10 @@ class Cell {
 						     .setSize((int)width, (int)height)
 						     .setId(LOAD)
 						     .plugTo(this);
-						     ;
-		//TODO: Make label be displayed as upper and lower case characters.			     
+						     ;	     
 		//TODO: Fix font blurriness.
 		loadButton.getCaptionLabel().setFont(pa.pfont12);
+		loadButton.getCaptionLabel().toUpperCase(false);
 		PhasesPApplet.colorButtonShowLabel(loadButton);
 		
 	}
@@ -81,6 +81,7 @@ class Cell {
 				                 .plugTo(this)
 				                 ;
 		generateButton.getCaptionLabel().setFont(pa.pfont12);
+		generateButton.getCaptionLabel().toUpperCase(false);
 		PhasesPApplet.colorButtonShowLabel(generateButton);
 	}
 	
@@ -91,7 +92,9 @@ class Cell {
 	public void controlEvent(ControlEvent e) {
 		switch (e.getId()) {
 			case LOAD :
-				if (phrasePicture != null) pa.currentPhrase.set(phrasePicture.getPhrase());
+				if (phrasePicture != null) {
+					phraseRepo.load(this.phrasePicture);
+				}
 				break;
 			case GENERATE_PHRASE :
 				phrasePicture = new PhrasePicture(pa.generateReichLikePhrase(), pa);
