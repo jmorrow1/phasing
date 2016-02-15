@@ -38,11 +38,13 @@ class Cell {
 	 ***** Initialization *****
 	 **************************/
 	
-	protected Cell(boolean hasLoadButton, Rect rect, ControlP5 cp5, PhraseRepository phraseRepo, PhasesPApplet pa) {
+	protected Cell(boolean isLoader, Rect rect, ControlP5 cp5, PhraseRepository phraseRepo, PhasesPApplet pa) {
 		this.rect = rect;
-		if (hasLoadButton) {
+		if (isLoader) {
 			initLoadButton(cp5);
 		}
+		initGenerateButton(cp5);
+		nextId++;
 		this.phraseRepo = phraseRepo;
 		this.pa = pa;
 	}
@@ -59,10 +61,11 @@ class Cell {
 						     .setId(LOAD)
 						     .plugTo(this);
 						     ;
-		//TODO: Make label be displayed as upper and lower case characters.
+		//TODO: Make label be displayed as upper and lower case characters.			     
 		//TODO: Fix font blurriness.
+		loadButton.getCaptionLabel().setFont(pa.pfont12);
 		PhasesPApplet.colorButtonShowLabel(loadButton);
-		nextId++;
+		
 	}
 	
 	private void initGenerateButton(ControlP5 cp5) {
@@ -70,12 +73,14 @@ class Cell {
 		float height = 0.25f * rect.getHeight();
 		float x1 = rect.getCenx() - width/2f;
 		float y1 = rect.getCeny() - height/2f;
-		this.generateButton = cp5.addButton("Generate Phrase")
+		this.generateButton = cp5.addButton("Generate Phrase " + (char)nextId)
+				                 .setLabel("Generate Phrase")
 				                 .setPosition(x1, y1)
 				                 .setSize((int)width, (int)height)
 				                 .setId(GENERATE_PHRASE)
 				                 .plugTo(this)
 				                 ;
+		generateButton.getCaptionLabel().setFont(pa.pfont12);
 		PhasesPApplet.colorButtonShowLabel(generateButton);
 	}
 	
@@ -87,6 +92,9 @@ class Cell {
 		switch (e.getId()) {
 			case LOAD :
 				if (phrasePicture != null) pa.currentPhrase.set(phrasePicture.getPhrase());
+				break;
+			case GENERATE_PHRASE :
+				phrasePicture = new PhrasePicture(pa.generateReichLikePhrase(), pa);
 				break;
 		}
 	}
