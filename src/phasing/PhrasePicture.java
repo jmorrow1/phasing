@@ -178,6 +178,10 @@ public class PhrasePicture implements JSONable {
 	 ***** Getters and Setters *****
 	 *******************************/
 	
+	public boolean hasPhrase() {
+		return phrase != null;
+	}
+	
 	public Phrase getPhrase() {
 		return phrase;
 	}

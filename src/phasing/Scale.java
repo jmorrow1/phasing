@@ -11,15 +11,17 @@ import processing.data.JSONObject;
  * @author James Morrow
  *
  */
-public class Scale {
+public class Scale implements JSONable {
 	private final String name;
 	private final String className;
 	private final String[] noteNames;
 	private final int[] noteValues;
+	private final JSONObject json;
 	
 	/**
 	 * Constructs a Scale from a JSONObject containing a name, an array of note names, and an array of note values.
 	 * @param json The JSONObject
+	 * @param className The name of the class this scale belongs to ("Major", for instance).
 	 */
 	public Scale(JSONObject json, String className) {
 		name = json.getString("name");
@@ -34,6 +36,20 @@ public class Scale {
 			noteValues[i] = jNoteValues.getInt(i);
 		}
 		this.className = className;
+		this.json = json;
+	}
+	
+	/**
+	 * Constructs a Scale from a JSONObject containing a name, an array of note names, and an array of note values.
+	 * @param json The JSONObject
+	 */
+	public Scale(JSONObject json) {
+		this (json, json.getString("className", "?"));
+	}
+	
+	public JSONObject toJSON() {
+		json.setString("className", className);
+		return json;
 	}
 	
 	/**

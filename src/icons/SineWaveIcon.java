@@ -21,7 +21,7 @@ public class SineWaveIcon implements Icon {
 	public void draw(float x, float y, float radius, PhasesPApplet pa) {
 		final float amp = radius*0.6f;
 		final float halfWidth = radius*0.75f;
-		final int numPts = pa.min(pa.phrase.getNumNotes(), maxNumPts);
+		final int numPts = pa.min(pa.currentPhrase.getNumNotes(), maxNumPts);
 		
 		pa.stroke(0);
 		pa.strokeWeight(radius/7.5f);
@@ -38,10 +38,10 @@ public class SineWaveIcon implements Icon {
     		}
 		}
 		else if (mode == IS_NOT_SINE_WAVE) {
-			final float minPitch = pa.phrase.minPitch();
-			final float maxPitch = pa.phrase.maxPitch();
+			final float minPitch = pa.currentPhrase.minPitch();
+			final float maxPitch = pa.currentPhrase.maxPitch();
 			for (int i=0; i<numPts; i++) {
-				float pty = (minPitch != maxPitch) ? y + pa.map(pa.phrase.getSCPitch(i), maxPitch, minPitch, -amp, amp) : y;
+				float pty = (minPitch != maxPitch) ? y + pa.map(pa.currentPhrase.getSCPitch(i), maxPitch, minPitch, -amp, amp) : y;
 				pa.point(ptx, pty);
 				ptx += dx;
 			}

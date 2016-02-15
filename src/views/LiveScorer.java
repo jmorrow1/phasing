@@ -52,8 +52,8 @@ public class LiveScorer extends View {
 		//phrase readers
 		try {
 			Method callback = LiveScorer.class.getMethod("plotNote", PhraseReader.class);
-			readerA = new PhraseReader(pa.phrase, ONE_ID, this, callback);
-			readerB = new PhraseReader(pa.phrase, TWO_ID, this, callback);
+			readerA = new PhraseReader(pa.currentPhrase, ONE_ID, this, callback);
+			readerB = new PhraseReader(pa.currentPhrase, TWO_ID, this, callback);
 		} catch (NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 		}
@@ -63,14 +63,14 @@ public class LiveScorer extends View {
 		y = 0;
 		
 		//labels of y-axis
-		ys = new float[pa.phrase.getNumNotes()];
+		ys = new float[pa.currentPhrase.getNumNotes()];
 		halfWidth = this.getWidth() * 0.5f;
 		halfHeight = this.getHeight() * 0.3f;
-		float minPitch = pa.phrase.minPitch();
-		float maxPitch = pa.phrase.maxPitch();
+		float minPitch = pa.currentPhrase.minPitch();
+		float maxPitch = pa.currentPhrase.maxPitch();
 		for (int i=0; i<ys.length; i++) {
 			if (minPitch != maxPitch) {
-				ys[i] = PApplet.map(pa.phrase.getSCPitch(i), minPitch, maxPitch, halfHeight, -halfHeight);
+				ys[i] = PApplet.map(pa.currentPhrase.getSCPitch(i), minPitch, maxPitch, halfHeight, -halfHeight);
 			}
 			else {
 				ys[i] = PApplet.lerp(minPitch, maxPitch, 0.5f);
@@ -202,19 +202,19 @@ public class LiveScorer extends View {
 			float notept = -1;
 			
 			if (reader.getId() == ONE_ID) {
-				durationAcc1 = (noteIndex == 0) ? 0 : durationAcc1 + pa.phrase.getSCDuration(noteIndex-1);
+				durationAcc1 = (noteIndex == 0) ? 0 : durationAcc1 + pa.currentPhrase.getSCDuration(noteIndex-1);
 				notept = durationAcc1;
 			}
 			else if (reader.getId() == TWO_ID) {
-				durationAcc2 = (noteIndex == 0) ? 0 : durationAcc2 + pa.phrase.getSCDuration(noteIndex-1);
+				durationAcc2 = (noteIndex == 0) ? 0 : durationAcc2 + pa.currentPhrase.getSCDuration(noteIndex-1);
 				notept = durationAcc2;
 			}
 			
 			float angle1 = PApplet.map(notept,
-					                   0, pa.phrase.getTotalDuration(),
+					                   0, pa.currentPhrase.getTotalDuration(),
 					                   0, PApplet.TWO_PI);
-			float angle2 = PApplet.map(notept+pa.phrase.getSCDuration(noteIndex),
-									   0, pa.phrase.getTotalDuration(),
+			float angle2 = PApplet.map(notept+pa.currentPhrase.getSCDuration(noteIndex),
+									   0, pa.currentPhrase.getTotalDuration(),
 									   0, PApplet.TWO_PI);
 			
 			y1 = y + PApplet.sin(angle1)*halfHeight;
@@ -226,16 +226,16 @@ public class LiveScorer extends View {
 		}
 		
 		dataPts.add(new DataPoint(x, y1,
-                	x + pixelsPerWholeNote*pa.phrase.getSCDuration(noteIndex), y2,
+                	x + pixelsPerWholeNote*pa.currentPhrase.getSCDuration(noteIndex), y2,
                 	noteIndex, opacity));
 	}
 	
 	private float noteIndexToY(int noteIndex) {
-		float minPitch = pa.phrase.minPitch();
-		float maxPitch = pa.phrase.maxPitch();
+		float minPitch = pa.currentPhrase.minPitch();
+		float maxPitch = pa.currentPhrase.maxPitch();
 
 		if (minPitch != maxPitch) {
-			return y + pa.map(pa.phrase.getSCPitch(noteIndex), minPitch, maxPitch, halfHeight, -halfHeight);
+			return y + pa.map(pa.currentPhrase.getSCPitch(noteIndex), minPitch, maxPitch, halfHeight, -halfHeight);
 		}
 		else {
 			return y + pa.lerp(minPitch, maxPitch, 0.5f);

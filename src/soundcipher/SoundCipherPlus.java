@@ -48,7 +48,7 @@ public class SoundCipherPlus extends SoundCipher {
 	
 	/**
 	 * Plays the phrase at the rate determined by the dNotept variable.
-	 * @param phrase
+	 * @param currentPhrase
 	 * @param dNotept
 	 */
 	public void update(float dNotept) {

@@ -40,9 +40,9 @@ public class PhasesPApplet extends PApplet {
 	private static Map<String, ScaleSet> scaleSets = new HashMap<String, ScaleSet>();
 	
 	//active music variables
-	public Phrase phrase;
-	public PhrasePicture phrasePicture;
-	public Scale scale;
+	public Phrase currentPhrase;
+	public PhrasePicture currentPhrasePicture;
+	public Scale currentScale;
 	private float bpm1 = 60;
 	private float bpms1 = bpm1 / 60000f;
 	private float bpm2 = 60.5f;
@@ -134,14 +134,26 @@ public class PhasesPApplet extends PApplet {
 		
 		//load scales
 		loadScales();
+		boolean currentScaleLoaded = loadCurrentScale();
+		if (!currentScaleLoaded) {
+			currentScale = getRandomScale();
+			saveCurrentScale();
+		}
 		
 		//load player info
-		initPlayerInfo(false);
+		boolean playerInfoLoaded = loadPlayerInfo();
+		if (!playerInfoLoaded) {
+			playerInfo = new PlayerInfo(true);
+			savePlayerInfo();
+		}
 		
 		//create phrase
-		scale = getRandomScale();
-		phrase = generateReichLikePhrase(scale);
-		phrasePicture = new PhrasePicture(phrase, "Current Phrase", this);
+		boolean currentPhraseLoaded = loadCurrentPhrasePicture();
+		if (!currentPhraseLoaded) {
+			currentPhrase = generateReichLikePhrase(currentScale);
+			currentPhrasePicture = new PhrasePicture(currentPhrase, "Current Phrase", this);
+			saveCurrentPhrasePicture();
+		}
 	
 		//create screens
 		presenter = new Presenter(this);
@@ -149,7 +161,7 @@ public class PhasesPApplet extends PApplet {
 		phraseRepo = new PhraseRepository(this);
 		
 		//setup current screen
-		currentScreen = phraseRepo;
+		currentScreen = editor;
 		
 		if (currentScreen == editor) {
 			changeScreenButton.setCaptionLabel("Rehearse");
@@ -164,62 +176,6 @@ public class PhasesPApplet extends PApplet {
 		colorButtonShowLabel(changeScreenButton);
 		
 		currentScreen.onEnter();
-	}
-	
-	/**
-	 * Looks at all the JSON files in the data/scales folder and tries to translate them into
-	 * scale sets, which go into the PhasesPApplet member variable "scaleSets".
-	 */
-	private void loadScales() {
-		try {
-			int i=0;
-			Files.walk(Paths.get("src/data/scales")).forEach(filePath -> {
-				if (filePath.toString().endsWith(".json")) {
-					JSONObject json = loadJSONObject(filePath.toString());
-					ScaleSet ss = new ScaleSet(json);
-					scaleSets.put(ss.getName(), ss);
-					scaleTypes.add(ss.getName());
-				}
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void initPlayerInfo(boolean loadFile) {
-		String playerInfoFileName = saveFolderPath + "playerInfo.json";
-		File playerInfoFile = new File(playerInfoFileName);
-		if (loadFile && playerInfoFile.exists()) {
-			JSONObject json = loadJSONObject(playerInfoFileName);
-			playerInfo = new PlayerInfo(json);
-		}
-		else {
-			playerInfo = new PlayerInfo(true);
-			saveJSONObject(playerInfo.toJSON(), playerInfoFileName);
-		}
-	}
-	
-	/**
-	 * Saves the player info to a file in the save folder.
-	 */
-	public void savePlayerInfo() {
-		JSONObject json = playerInfo.toJSON();
-		try {
-			saveJSONObject(json, saveFolderPath);
-		} catch (RuntimeException e) {
-			print(e.toString());
-		}
-	}
-	
-	/**
-	 * Saves a list of phrase pictures to the phrases subfolder in the save folder.
-	 * @param phrasePictures
-	 */
-	public void savePhrasePictures(ArrayList<PhrasePicture> phrasePictures) {
-		for (int i=0; i<phrasePictures.size(); i++) {
-			PhrasePicture p = phrasePictures.get(i);
-			saveJSONObject(p.toJSON(), saveFolderPath + "phrases\\" + p.getName() + ".json");
-		}
 	}
 	
 	/**
@@ -251,17 +207,138 @@ public class PhasesPApplet extends PApplet {
 		colorScheme = new ColorScheme(color1, color2, color1Bold, color2Bold);
 	}
 	
-	/**************************
-	***** Color Loading *******
-	***************************/
+	/****************************
+	 ***** Saving / Loading *****
+	 ****************************/
 	
-	public int loadColor(JSONObject json) {
-		pushStyle();
-		colorMode(HSB, 360, 100, 100, 100);
-		int color = color(json.getInt("hue"), json.getInt("saturation"), json.getInt("brightness"), json.getInt("opacity"));
-		popStyle();
-		return color;
+	/**
+	 * Looks at all the JSON files in the data/scales folder and tries to translate them into
+	 * scale sets, which go into the PhasesPApplet member variable "scaleSets".
+	 */
+	private void loadScales() {
+		try {
+			int i=0;
+			Files.walk(Paths.get("src/data/scales")).forEach(filePath -> {
+				if (filePath.toString().endsWith(".json")) {
+					JSONObject json = loadJSONObject(filePath.toString());
+					ScaleSet ss = new ScaleSet(json);
+					scaleSets.put(ss.getName(), ss);
+					scaleTypes.add(ss.getName());
+				}
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
+	
+	/**
+	 * Tries to initialize the current phrase and current phrase picture by loading the appropriate file.
+	 * @return True, if it succeeds. False if it fails.
+	 */
+	private boolean loadCurrentPhrasePicture() {
+		File file = new File(saveFolderPath + "phrases\\Current Phrase.json");
+		if (file.exists()) {
+			try {
+				JSONObject json = loadJSONObject(file);
+				currentPhrasePicture = new PhrasePicture(json);
+				if (currentPhrasePicture.hasPhrase()) {
+					currentPhrase = currentPhrasePicture.getPhrase();
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+			catch (RuntimeException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Saves the phrase picture of the current phrase to the phrases subfolder in the save folder.
+	 */
+	public void saveCurrentPhrasePicture() {
+		saveJSONObject(currentPhrasePicture.toJSON(), saveFolderPath + "phrases\\" + currentPhrasePicture.getName() + ".json");
+	}
+	
+	/**
+	 * Tries to initialize the playerInfo variable by loading the appropriate file.
+	 * @return True, if it succeeds. False if it fails.
+	 */
+	private boolean loadPlayerInfo() {
+		String playerInfoFileName = saveFolderPath + "playerInfo.json";
+		File playerInfoFile = new File(playerInfoFileName);
+		if (playerInfoFile.exists()) {
+			try {
+				JSONObject json = loadJSONObject(playerInfoFileName);
+				playerInfo = new PlayerInfo(json);
+				return true;
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Saves the player info to a file in the save folder.
+	 */
+	public void savePlayerInfo() {
+		JSONObject json = playerInfo.toJSON();
+		try {
+			saveJSONObject(json, saveFolderPath + "playerInfo.json");
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Saves a list of phrase pictures to the phrases subfolder in the save folder.
+	 * @param phrasePictures
+	 */
+	public void savePhrasePictures(ArrayList<PhrasePicture> phrasePictures) {
+		for (int i=0; i<phrasePictures.size(); i++) {
+			PhrasePicture p = phrasePictures.get(i);
+			saveJSONObject(p.toJSON(), saveFolderPath + "phrases\\" + p.getName() + ".json");
+		}
+	}
+	
+	/**
+	 * Tries to initialize the current scale variable by loading the appropriate file.
+	 * @return True, if it succeeds. False, if it fails.
+	 */
+	public boolean loadCurrentScale() {
+		File file = new File(saveFolderPath + "\\Current Scale.json");
+		if (file.exists()) {
+			try {
+				JSONObject json = loadJSONObject(file);
+				currentScale = new Scale(json);
+				return true;
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Saves the current scale to the save folder.
+	 */
+	public void saveCurrentScale() {
+		saveJSONObject(currentScale.toJSON(), saveFolderPath + "\\Current Scale.json");
+	}
+	
 	
 	/****************************
 	***** Phrase Generation *****
@@ -273,7 +350,7 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public Phrase pianoPhase() {
 		int n = Phrase.NOTE_START;
-		return phrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
+		return currentPhrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
 	                               new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
 	                               new int[] {n, n, n, n, n, n, n, n, n, n, n, n});
 	}

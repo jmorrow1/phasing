@@ -86,7 +86,7 @@ public class Editor extends Screen {
 		//init playback variables
 		try {
 			Method callback = Editor.class.getMethod("animate", SoundCipherPlus.class);
-			livePlayer = new SoundCipherPlus(pa, pa.phrase, this, callback);
+			livePlayer = new SoundCipherPlus(pa, pa.currentPhrase, this, callback);
 		} catch (NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 		}
@@ -110,7 +110,7 @@ public class Editor extends Screen {
 		cp5.setAutoDraw(false);
 		setupControllers();
 	}
-	
+
 	/****************************
 	 ***** Controller Setup *****
 	 ****************************/
@@ -126,13 +126,13 @@ public class Editor extends Screen {
 			    .setBarHeight(menuItemHeight)
 			    .close()
 			    ;
-		rootMenu.setLabel(pa.scale.getName());
+		rootMenu.setLabel(pa.currentScale.getName());
 		colorController(rootMenu);
 		formatLabel(rootMenu);
 		rootLabel = rootMenu.getLabel();
 		
 		scaleMenu = new DropdownListPlus(cp5, "Scale");
-		scaleMenu.setPosition(rootMenu.getPosition()[0] +  rootMenu.getWidth() + controller_dx,
+		scaleMenu.setPosition(rootMenu.getPosition()[0] + rootMenu.getWidth() + controller_dx,
 				              pa.changeScreenButtonY2 - menuItemHeight)
 		         .setSize(130, menuItemHeight*(pa.scaleTypes.size()+1))
 				 .addItems(pa.scaleTypes)
@@ -140,7 +140,7 @@ public class Editor extends Screen {
 				 .setBarHeight(menuItemHeight)
 				 .close()
 				 ;
-		scaleMenu.setLabel(pa.scale.getClassName());
+		scaleMenu.setLabel(pa.currentScale.getClassName());
 		colorController(scaleMenu);
 		formatLabel(scaleMenu);
 		scaleLabel = scaleMenu.getLabel();
@@ -199,7 +199,7 @@ public class Editor extends Screen {
 		colorController(playToggle);
 		
 		//horizontal scrollbar
-		hScrollbar = new Scrollbar(cp5, "hScrollbar", PApplet.min(rowSize, pa.phrase.getGridRowSize()), pa.phrase.getGridRowSize());
+		hScrollbar = new Scrollbar(cp5, "hScrollbar", PApplet.min(rowSize, pa.currentPhrase.getGridRowSize()), pa.currentPhrase.getGridRowSize());
 	    hScrollbar.setPosition(gridFrame.getX1() + 40, pa.height - 25f)
 			      .setSize((int)gridFrame.getWidth() - 80, 15)
 			      .plugTo(this)
@@ -344,26 +344,26 @@ public class Editor extends Screen {
 	 ********************************/
 	
 	public void decreasePhraseLength(ControlEvent e) {
-		pa.phrase.removeLastCell();
-		if (pa.phrase.getGridRowSize() <= rowSize) {
-			hScrollbar.setNumTickMarks(pa.phrase.getGridRowSize());
-			hScrollbar.setTicksPerScroller(pa.phrase.getGridRowSize());
+		pa.currentPhrase.removeLastCell();
+		if (pa.currentPhrase.getGridRowSize() <= rowSize) {
+			hScrollbar.setNumTickMarks(pa.currentPhrase.getGridRowSize());
+			hScrollbar.setTicksPerScroller(pa.currentPhrase.getGridRowSize());
 		}
 		else {
-			hScrollbar.setNumTickMarks(pa.phrase.getGridRowSize());
+			hScrollbar.setNumTickMarks(pa.currentPhrase.getGridRowSize());
 			hScrollbar.setTicksPerScroller(rowSize);
 		}
 		drawBody();		
 	}
 	
 	public void increasePhraseLength(ControlEvent e) {
-		pa.phrase.appendCell();
-		if (pa.phrase.getGridRowSize() <= rowSize) {
-			hScrollbar.setNumTickMarks(pa.phrase.getGridRowSize());
-			hScrollbar.setTicksPerScroller(pa.phrase.getGridRowSize());
+		pa.currentPhrase.appendCell();
+		if (pa.currentPhrase.getGridRowSize() <= rowSize) {
+			hScrollbar.setNumTickMarks(pa.currentPhrase.getGridRowSize());
+			hScrollbar.setTicksPerScroller(pa.currentPhrase.getGridRowSize());
 		}
 		else {
-			hScrollbar.setNumTickMarks(pa.phrase.getGridRowSize());
+			hScrollbar.setNumTickMarks(pa.currentPhrase.getGridRowSize());
 			hScrollbar.setTicksPerScroller(rowSize);
 		}
 		drawBody();
@@ -429,7 +429,8 @@ public class Editor extends Screen {
 			pa.playerInfo.numEditorVisits++;
 			pa.savePlayerInfo();
 		}
-		
+		pa.saveCurrentPhrasePicture();
+		pa.saveCurrentScale();
 	}
 	
 	/********************************
@@ -452,11 +453,11 @@ public class Editor extends Screen {
 			startIndexOfUserDrawnNote = indexMousePressed;
 			if (!rootMenu.isInside() && !scaleMenu.isInside()) {
 				if (pa.mouseButton == pa.LEFT && !shiftClick()) {
-					boolean success = pa.phrase.setCell(indexMousePressed, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
+					boolean success = pa.currentPhrase.setCell(indexMousePressed, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
 					if (success && 
-							indexMousePressed+1 < pa.phrase.getGridRowSize() &&
-							pa.phrase.getNoteType(indexMousePressed+1) == Phrase.NOTE_SUSTAIN) {
-						pa.phrase.setNoteType(indexMousePressed+1, Phrase.NOTE_START);
+							indexMousePressed+1 < pa.currentPhrase.getGridRowSize() &&
+							pa.currentPhrase.getNoteType(indexMousePressed+1) == Phrase.NOTE_SUSTAIN) {
+						pa.currentPhrase.setNoteType(indexMousePressed+1, Phrase.NOTE_START);
 					}
 					if (success) {
 						drawState = DRAWING_NOTE;
@@ -465,7 +466,7 @@ public class Editor extends Screen {
 				}
 				else if ( (pa.mouseButton == pa.RIGHT || shiftClick())) {
 					drawState = DRAWING_REST;
-					if (pitchMousePressed == pa.phrase.getGridPitch(indexMousePressed)) {
+					if (pitchMousePressed == pa.currentPhrase.getGridPitch(indexMousePressed)) {
 						drawRest(indexMousePressed, pitchMousePressed);
 					}
 				}
@@ -483,12 +484,12 @@ public class Editor extends Screen {
 	}
 	
 	private void drawRest(int index, int pitch) {
-		boolean success = pa.phrase.setCell(index, pitch, defaultDynamic(), Phrase.REST);
-		pa.phrase.setNoteType(index, Phrase.REST);
+		boolean success = pa.currentPhrase.setCell(index, pitch, defaultDynamic(), Phrase.REST);
+		pa.currentPhrase.setNoteType(index, Phrase.REST);
 		if (success) {
-			if (index+1 < pa.phrase.getGridRowSize() && 
-					pa.phrase.getNoteType(index+1) == Phrase.NOTE_SUSTAIN) {
-				pa.phrase.setNoteType(index+1, Phrase.NOTE_START);
+			if (index+1 < pa.currentPhrase.getGridRowSize() && 
+					pa.currentPhrase.getNoteType(index+1) == Phrase.NOTE_SUSTAIN) {
+				pa.currentPhrase.setNoteType(index+1, Phrase.NOTE_START);
 			}
 			drawBody();
 			
@@ -508,20 +509,20 @@ public class Editor extends Screen {
 			int newPitch = mouseToPitch();
 			if (newPitch == pitchMousePressed) {
 				if (newIndex > indexMousePressed) {
-					if (newIndex+1 < pa.phrase.getGridRowSize() &&
-							(pa.phrase.getNoteType(newIndex) == Phrase.NOTE_SUSTAIN ||
-							 pa.phrase.getNoteType(newIndex) == Phrase.NOTE_START) &&
-							pa.phrase.getNoteType(newIndex+1) == Phrase.NOTE_SUSTAIN) {
-						pa.phrase.setNoteType(newIndex+1, Phrase.NOTE_START);
+					if (newIndex+1 < pa.currentPhrase.getGridRowSize() &&
+							(pa.currentPhrase.getNoteType(newIndex) == Phrase.NOTE_SUSTAIN ||
+							 pa.currentPhrase.getNoteType(newIndex) == Phrase.NOTE_START) &&
+							pa.currentPhrase.getNoteType(newIndex+1) == Phrase.NOTE_SUSTAIN) {
+						pa.currentPhrase.setNoteType(newIndex+1, Phrase.NOTE_START);
 						indexMousePressed++;
 					}
-					pa.phrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_SUSTAIN);
+					pa.currentPhrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_SUSTAIN);
 					drawBody();
 				}
 				else if (newIndex < indexMousePressed && newIndex < startIndexOfUserDrawnNote) {
-					pa.phrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
-					if (newIndex+1 < pa.phrase.getGridRowSize()) {
-						pa.phrase.setCell(newIndex+1, pitchMousePressed, defaultDynamic(), Phrase.NOTE_SUSTAIN);
+					pa.currentPhrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
+					if (newIndex+1 < pa.currentPhrase.getGridRowSize()) {
+						pa.currentPhrase.setCell(newIndex+1, pitchMousePressed, defaultDynamic(), Phrase.NOTE_SUSTAIN);
 						indexMousePressed++;
 					}
 					startIndexOfUserDrawnNote = newIndex;
@@ -535,7 +536,7 @@ public class Editor extends Screen {
 		else if (drawState == DRAWING_REST && mouseIntersectsGrid()) {
 			int index = mouseToIndex();
 			int pitch = mouseToPitch();
-			if (0 <= index && index < pa.phrase.getGridRowSize() && pitch == pa.phrase.getGridPitch(index)) {
+			if (0 <= index && index < pa.currentPhrase.getGridRowSize() && pitch == pa.currentPhrase.getGridPitch(index)) {
 				drawRest(index, pitch);
 			}
 		}
@@ -568,7 +569,7 @@ public class Editor extends Screen {
 	 */
 	private int mouseToPitch() {
 		int pitchIndex = (int)pa.map(pa.mouseY, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys);
-		return pa.scale.getNoteValue(pitchIndex) + minOctave*12;
+		return pa.currentScale.getNoteValue(pitchIndex) + minOctave*12;
 	}
 	
 	/*********************************
@@ -577,11 +578,11 @@ public class Editor extends Screen {
 
 	private int yToPitch(float y) {
 		int pitchIndex = (int)pa.map(y + cellHeight/2f, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys);
-		return pa.scale.getNoteValue(pitchIndex) + minOctave*12;
+		return pa.currentScale.getNoteValue(pitchIndex) + minOctave*12;
 	}
 	
 	private float pitchToY(int pitch) {
-		int pitchIndex = pa.scale.getIndexOfNoteValue(pitch - minOctave*12) + 1;
+		int pitchIndex = pa.currentScale.getIndexOfNoteValue(pitch - minOctave*12) + 1;
 		return pa.map(pitchIndex, 0, numKeys, gridFrame.getY2(), gridFrame.getY1());
 	}
 	
@@ -680,9 +681,9 @@ public class Editor extends Screen {
 		
 		pa.translate(-hScrollbar.getLowTick() * cellWidth, 0);
 		
-		for (int i=0; i<pa.phrase.getNumNotes(); i++) {
-			float numCellsWide = pa.phrase.getSCDuration(i) / pa.phrase.getUnitDuration();
-			if (pa.phrase.getSCDynamic(i) != 0) {
+		for (int i=0; i<pa.currentPhrase.getNumNotes(); i++) {
+			float numCellsWide = pa.currentPhrase.getSCDuration(i) / pa.currentPhrase.getUnitDuration();
+			if (pa.currentPhrase.getSCDynamic(i) != 0) {
 				if (i == activeNoteIndex) {
 					pa.fill(activeColor);
 				}
@@ -690,7 +691,7 @@ public class Editor extends Screen {
 					pa.fill(inactiveColor);
 				}
 				
-				int pitch = pa.phrase.getSCPitch(i);
+				int pitch = pa.currentPhrase.getSCPitch(i);
 				float y = pitchToY(pitch);
 				pa.rect(x, y, cellWidth*numCellsWide, cellHeight);
 			}
@@ -711,7 +712,7 @@ public class Editor extends Screen {
 		pa.stroke(color);
 		
 		//vertical lines
-		int numQuarterNotes = (int)(pa.phrase.getTotalDuration() / 0.25f) - hScrollbar.getLowTick();
+		int numQuarterNotes = (int)(pa.currentPhrase.getTotalDuration() / 0.25f) - hScrollbar.getLowTick();
 		float x = gridFrame.getX1() + cellWidth;
 		for (int i=0; i<numQuarterNotes; i++) {
 			pa.line(x, gridFrame.getY1(), x, gridFrame.getY2());
@@ -731,18 +732,18 @@ public class Editor extends Screen {
 	}
 	
 	private void updateGrid(Scale newScale) {
-		float[] ys = new float[pa.phrase.getGridRowSize()];
-		for (int i=0; i<pa.phrase.getGridRowSize(); i++) {
-			int pitch = (int)pa.phrase.getGridPitch(i);
+		float[] ys = new float[pa.currentPhrase.getGridRowSize()];
+		for (int i=0; i<pa.currentPhrase.getGridRowSize(); i++) {
+			int pitch = (int)pa.currentPhrase.getGridPitch(i);
 			ys[i] = pitchToY(pitch);
 		}
 
-		pa.scale = newScale;
+		pa.currentScale = newScale;
 		
-		for (int i=0; i<pa.phrase.getGridRowSize(); i++) {
-			if (pa.phrase.getGridPitch(i) > 0) {
+		for (int i=0; i<pa.currentPhrase.getGridRowSize(); i++) {
+			if (pa.currentPhrase.getGridPitch(i) > 0) {
 				int pitch = yToPitch(ys[i]);
-				pa.phrase.setGridPitch(i, pitch);
+				pa.currentPhrase.setGridPitch(i, pitch);
 			}
 		}
 	}
@@ -760,14 +761,14 @@ public class Editor extends Screen {
 		pa.textSize(16);
 		//for (int i=pitchOffset; i<numKeys+pitchOffset; i++) {
 		for (int i=0; i<numKeys; i++) {
-			int iModScaleSize = i % pa.scale.size();
-			int noteValueMod12 = pa.scale.getNoteValue(iModScaleSize) % 12;
+			int iModScaleSize = i % pa.currentScale.size();
+			int noteValueMod12 = pa.currentScale.getNoteValue(iModScaleSize) % 12;
 			int keyColor = keyColors[noteValueMod12];
 			pa.fill(keyColor);
 			pa.rect(gridFrame.getX1(), y, cellWidth, cellHeight);
 			
 			if (labelPianoKeys) {
-				String noteName = pa.scale.getNoteNameByIndex(iModScaleSize);
+				String noteName = pa.currentScale.getNoteNameByIndex(iModScaleSize);
 				int inverseKeyColor = (keyColor == W) ? B : W;
 				pa.fill(inverseKeyColor);
 				pa.text(noteName, gridFrame.getX1(), y, cellWidth, cellHeight);

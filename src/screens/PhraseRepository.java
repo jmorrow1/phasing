@@ -64,6 +64,7 @@ public class PhraseRepository extends Screen {
 				break;
 		}
 		
+		//TODO: move this file loading code to PhasesPApplet
 		//create new phrase pictures:
 		if (populateCellsWithRandomPhrases) {
 			populateCellsWithRandomPhrases();
@@ -90,7 +91,7 @@ public class PhraseRepository extends Screen {
 	private void assignPhrasesToCells(ArrayList<PhrasePicture> phrasePictures) {
 		int end = PApplet.min(cells.size(), phrasePictures.size());
 		if (end > 0) {
-			cells.get(0).setPhrasePicture(pa.phrasePicture);
+			cells.get(0).setPhrasePicture(pa.currentPhrasePicture);
 		}
 		for (int i=1; i<end; i++) {
 			cells.get(i).setPhrasePicture(phrasePictures.get(i-1));
@@ -119,7 +120,7 @@ public class PhraseRepository extends Screen {
 	private void populateCellsWithRandomPhrases() {
 		int x = (int)'a';
 		for (Cell c : cells) {
-			c.setPhrasePicture(new PhrasePicture(pa.generateReichLikePhrase(pa.scale), "" + (char)x, pa));
+			c.setPhrasePicture(new PhrasePicture(pa.generateReichLikePhrase(pa.currentScale), "" + (char)x, pa));
 			x++;
 		}
 	}

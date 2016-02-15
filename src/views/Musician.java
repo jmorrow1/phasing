@@ -116,20 +116,20 @@ public class Musician extends View {
 
 	private void initInstrumentPlayers() {	
 		if (superimposedOrSeparated.toInt() == SUPERIMPOSED) {
-			playerA = new InstrumentPlayer(instrumentAB, pa.phrase);
-			playerB = new InstrumentPlayer(instrumentAB, pa.phrase);
+			playerA = new InstrumentPlayer(instrumentAB, pa.currentPhrase);
+			playerB = new InstrumentPlayer(instrumentAB, pa.currentPhrase);
 		}
 		else {
-			playerA = new InstrumentPlayer(instrumentA, pa.phrase);
-			playerB = new InstrumentPlayer(instrumentB, pa.phrase);
+			playerA = new InstrumentPlayer(instrumentA, pa.currentPhrase);
+			playerB = new InstrumentPlayer(instrumentB, pa.currentPhrase);
 		}
 	}
 	
 	private void initPhraseReaders() {
 		try {
-			readerA = new PhraseReader(pa.phrase, -1, playerA,
+			readerA = new PhraseReader(pa.currentPhrase, -1, playerA,
 					                   InstrumentPlayer.class.getMethod("setActiveKey", PhraseReader.class));
-			readerB = new PhraseReader(pa.phrase, -1, playerB,
+			readerB = new PhraseReader(pa.currentPhrase, -1, playerB,
 					                   InstrumentPlayer.class.getMethod("setActiveKey", PhraseReader.class));
 
 		} catch (NoSuchMethodException | SecurityException e) {

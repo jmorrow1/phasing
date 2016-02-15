@@ -252,8 +252,8 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	
 	@Override
 	public void onEnter() {
-		pa.phrase.addToScore(player1, 0, 0, 0);
-		pa.phrase.addToScore(player2, 0, 0, 0);
+		pa.currentPhrase.addToScore(player1, 0, 0, 0);
+		pa.currentPhrase.addToScore(player2, 0, 0, 0);
 		player1.tempo(pa.getBPM1());
 		player2.tempo(pa.getBPM2());
 		player1.repeat(-1);
@@ -373,7 +373,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 * @return The position of player1 along the duration of the phrase it is playing.
 	 */
 	private float computeNotept1() {
-		return PApplet.map(player1.getTickPosition(), 0, player1.getTickLength(), 0, pa.phrase.getTotalDuration());
+		return PApplet.map(player1.getTickPosition(), 0, player1.getTickLength(), 0, pa.currentPhrase.getTotalDuration());
 	}
 
 	/**
@@ -381,7 +381,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 * @return The position of player2 along the duration of the phrase it is playing.
 	 */
 	private float computeNotept2() {
-		return PApplet.map(player2.getTickPosition(), 0, player2.getTickLength(), 0, pa.phrase.getTotalDuration());
+		return PApplet.map(player2.getTickPosition(), 0, player2.getTickLength(), 0, pa.currentPhrase.getTotalDuration());
 	}
 
 	/**
@@ -396,11 +396,11 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		float dNotept2 = notept2 - prev_notept2;
 
 		if (dNotept1 < 0) {
-			dNotept1 += pa.phrase.getTotalDuration();
+			dNotept1 += pa.currentPhrase.getTotalDuration();
 		}
 
 		if (dNotept2 < 0) {
-			dNotept2 += pa.phrase.getTotalDuration();
+			dNotept2 += pa.currentPhrase.getTotalDuration();
 		}
 
 		// smoothing:

@@ -71,7 +71,7 @@ class Cell {
 	public void controlEvent(ControlEvent e) {
 		switch (e.getId()) {
 			case LOAD :
-				if (phrasePicture != null) pa.phrase.set(phrasePicture.getPhrase());
+				if (phrasePicture != null) pa.currentPhrase.set(phrasePicture.getPhrase());
 				break;
 		}
 	}

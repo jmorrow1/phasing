@@ -59,8 +59,8 @@ public class PhaseShifter extends View {
 	
 	private void initData() {
 		dataPoints.clear();
-		for (int i=0; i<=pa.phrase.getNumNotes(); i++) {
-			if (pa.phrase.getSCDynamic(i % pa.phrase.getNumNotes()) > 0) {
+		for (int i=0; i<=pa.currentPhrase.getNumNotes(); i++) {
+			if (pa.currentPhrase.getSCDynamic(i % pa.currentPhrase.getNumNotes()) > 0) {
 				dataPoints.add(new DataPoint(i));
 			}
 		}
@@ -74,8 +74,8 @@ public class PhaseShifter extends View {
 	private void initPhraseReaders() {
 		try {
 			Method callback = PhaseShifter.class.getMethod("changeActiveNote", PhraseReader.class);
-			readerA = new PhraseReader(pa.phrase, ONE_ID, this, callback);
-			readerB = new PhraseReader(pa.phrase, TWO_ID, this, callback);
+			readerA = new PhraseReader(pa.currentPhrase, ONE_ID, this, callback);
+			readerB = new PhraseReader(pa.currentPhrase, TWO_ID, this, callback);
 
 		} catch (NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
@@ -125,8 +125,8 @@ public class PhaseShifter extends View {
 			dNotept2 = 0;
 		}
 		
-		normalTransform1 += PApplet.map(dNotept2, 0, pa.phrase.getTotalDuration(), 0, 1);
-		normalTransform2 += PApplet.map(dNotept1, 0, pa.phrase.getTotalDuration(), 0, 1);
+		normalTransform1 += PApplet.map(dNotept2, 0, pa.currentPhrase.getTotalDuration(), 0, 1);
+		normalTransform2 += PApplet.map(dNotept1, 0, pa.currentPhrase.getTotalDuration(), 0, 1);
 		normalTransform1 %= 1;
 		normalTransform2 %= 1;
 	}
@@ -158,8 +158,8 @@ public class PhaseShifter extends View {
 			
 			int i=0; //loops through notes in phrase
 			int j=0; //loops through data points
-			while (i < pa.phrase.getNumNotes()) {
-				if (pa.phrase.getSCDynamic(i) > 0) {
+			while (i < pa.currentPhrase.getNumNotes()) {
+				if (pa.currentPhrase.getSCDynamic(i) > 0) {
 					if ( (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE) && i == activeNote) {
 						styleNoteGraphics(activeColor);
 						drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
@@ -316,16 +316,16 @@ public class PhaseShifter extends View {
 		final CurvedRect curvedRect, sectorAlt;
 		
 		DataPoint(int i) {
-			float normalStart = (i == pa.phrase.getNumNotes()) ? 1 : pa.phrase.getPercentDurationOfSCIndex(i);
-			i %= pa.phrase.getNumNotes();
-			float normalWidth = pa.phrase.getSCDuration(i) / pa.phrase.getTotalDuration();
+			float normalStart = (i == pa.currentPhrase.getNumNotes()) ? 1 : pa.currentPhrase.getPercentDurationOfSCIndex(i);
+			i %= pa.currentPhrase.getNumNotes();
+			float normalWidth = pa.currentPhrase.getSCDuration(i) / pa.currentPhrase.getTotalDuration();
 			tx = pa.map(normalStart, 0, 1, -halfWidth, halfWidth);
-			ty = pa.map(pa.phrase.getSCPitch(i), pa.phrase.minPitch(), pa.phrase.maxPitch(), halfHeight, -halfHeight);
+			ty = pa.map(pa.currentPhrase.getSCPitch(i), pa.currentPhrase.minPitch(), pa.currentPhrase.maxPitch(), halfHeight, -halfHeight);
 			twidth = normalWidth * width;
 			theta1 = pa.map(normalStart, 0, 1, 0, pa.TWO_PI);
 			theta2 = pa.map(normalWidth, 0, 1, 0, pa.TWO_PI) + theta1;
-			pitchName = pa.scale.getNoteNameByPitchValue(pa.phrase.getSCPitch(i));
-			radius = pa.map(pa.phrase.getSCPitch(i), pa.phrase.minPitch(), pa.phrase.maxPitch(), minRadius, maxRadius);
+			pitchName = pa.currentScale.getNoteNameByPitchValue(pa.currentPhrase.getSCPitch(i));
+			radius = pa.map(pa.currentPhrase.getSCPitch(i), pa.currentPhrase.minPitch(), pa.currentPhrase.maxPitch(), minRadius, maxRadius);
 			rx = pa.cos(theta1 - pa.HALF_PI) * radius;
 			ry = pa.sin(theta1 - pa.HALF_PI) * radius;
 			rxAlt = pa.cos(theta1 - pa.HALF_PI)*pa.lerp(minRadius, maxRadius, 0.5f);
