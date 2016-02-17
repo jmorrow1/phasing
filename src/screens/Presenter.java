@@ -252,6 +252,8 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	
 	@Override
 	public void onEnter() {
+		initViews();
+		
 		pa.currentPhrase.addToScore(player1, 0, 0, 0);
 		pa.currentPhrase.addToScore(player2, 0, 0, 0);
 		player1.tempo(pa.getBPM1());
