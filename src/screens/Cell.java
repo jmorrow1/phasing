@@ -18,7 +18,7 @@ import phasing.PhrasePicture;
 class Cell {
 	//class-scope
 	private static int nextId = (int)'a';
-	private final static int LOAD = -1, GENERATE = -2, COPY = -3;
+	private final static int LOAD = -1, GENERATE = -2, COPY = -3, NEW = -4;
 	
 	//outside world
 	private PhasesPApplet pa;
@@ -31,6 +31,7 @@ class Cell {
 	private Button copyButton;
 	private Button loadButton;
 	private Button generateButton;
+	private Button newPhraseButton;
 	
 	/**************************
 	 ***** Initialization *****
@@ -39,14 +40,15 @@ class Cell {
 	protected Cell(Rect rect, ControlP5 cp5, PhraseRepository phraseRepo, PhasesPApplet pa) {
 		this.rect = rect;
 		initLoadButton(cp5);
-		initOverwriteButton(cp5);
+		initCopyButton(cp5);
 		initGenerateButton(cp5);
+		initNewPhraseButton(cp5);
 		nextId++;
 		this.phraseRepo = phraseRepo;
 		this.pa = pa;
 	}
 	
-	private void initOverwriteButton(ControlP5 cp5) {
+	private void initCopyButton(ControlP5 cp5) {
 		float x1 = rect.getX1();
 		float y1 = rect.getY1() + 0.9f * rect.getHeight();
 		float width = 0.4f * rect.getWidth();
@@ -86,7 +88,7 @@ class Cell {
 		float width = 0.75f * rect.getWidth();
 		float height = 0.25f * rect.getHeight();
 		float x1 = rect.getCenx() - width/2f;
-		float y1 = rect.getCeny() - height/2f;
+		float y1 = rect.getY2() - height - 0.2f * rect.getHeight();	
 		this.generateButton = cp5.addButton("Generate Phrase " + (char)nextId)
 				                 .setLabel("Generate Phrase")
 				                 .setPosition(x1, y1)
@@ -97,6 +99,23 @@ class Cell {
 		generateButton.getCaptionLabel().setFont(pa.pfont12);
 		generateButton.getCaptionLabel().toUpperCase(false);
 		PhasesPApplet.colorButtonShowLabel(generateButton);
+	}
+	
+	private void initNewPhraseButton(ControlP5 cp5) {
+		float width = 0.75f * rect.getWidth();
+		float height = 0.25f * rect.getHeight();
+		float x1 = rect.getCenx() - width/2f;
+		float y1 = rect.getY1() + 0.2f * rect.getHeight();
+		this.newPhraseButton = cp5.addButton("New Blank Phrase " + (char)nextId)
+				                  .setLabel("New Blank Phrase")
+				                  .setPosition(x1, y1)
+				                  .setSize((int)width, (int)height)
+				                  .setId(NEW)
+				                  .plugTo(this)
+				                  ;
+		newPhraseButton.getCaptionLabel().setFont(pa.pfont12);
+		newPhraseButton.getCaptionLabel().toUpperCase(false);
+		PhasesPApplet.colorButtonShowLabel(newPhraseButton);
 	}
 	
 	/*******************************
@@ -110,6 +129,9 @@ class Cell {
 				break;
 			case LOAD :
 				phraseRepo.load(this);
+				break;
+			case NEW :
+				phraseRepo.newPhrase();
 				break;
 			case GENERATE :
 				phraseRepo.generate();
@@ -134,9 +156,11 @@ class Cell {
 		loadButton.hide();
 		if (showGenerateButton) {
 			generateButton.show();
+			newPhraseButton.show();
 		}
 		else {
 			generateButton.hide();
+			newPhraseButton.hide();
 		}
 	}
 	
@@ -160,46 +184,6 @@ class Cell {
 			loadButton.show();
 		}
 		generateButton.hide();
+		newPhraseButton.hide();
 	}
-	
-	/*******************
-	 ***** Utility *****
-	 *******************/
-	
-	/**
-	 * Takes an ArrayList<Cell>, extracts its PhrasePictures, and puts those in an ArrayList.
-	 * Then it returns the ArrayList of PhrasePictures.
-	 * 
-	 * @param cells The ArrayList<Cell>.
-	 * @return The ArrayList<PhrasePicture>.
-	 */
-	/*public static ArrayList<PhrasePicture> toPhraseList(ArrayList<Cell> cells) {
-		ArrayList<PhrasePicture> phraseList = new ArrayList<PhrasePicture>();
-		for (Cell c : cells) {
-			if (c.hasPhrase()) {
-				phraseList.add(c.getPhrasePicture());
-			}
-		}
-		return phraseList;
-	}*/
-
-	/*******************************
-	 ***** Getters and Setters *****
-	 *******************************/
-	
-	/*protected boolean hasPhrase() {
-		return phrasePicture != null;
-	}
-	
-	protected void setPhrasePicture(PhrasePicture phrasePicture) {
-		this.phrasePicture = phrasePicture;
-	}
-	
-	protected PhrasePicture getPhrasePicture() {
-		return phrasePicture;
-	}
-	
-	protected Phrase getPhrase() {
-		return phrasePicture.getPhrase();
-	}*/
 }

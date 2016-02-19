@@ -64,8 +64,6 @@ public class PhraseRepository extends Screen {
 		if (populateCellsWithRandomPhrases) {
 			generateRandomPhrasePictures(cells.size()-2);
 		}
-		
-		//assignPhrasesToCells(pa.phrasePictures);
 	}
 	
 	private void generateRandomPhrasePictures(int n) {
@@ -76,13 +74,6 @@ public class PhraseRepository extends Screen {
 		}
 		pa.savePhrasePictures();
 	}
-	
-	/*private void assignPhrasesToCells(ArrayList<PhrasePicture> phrasePictures) {
-		int end = PApplet.min(cells.size(), phrasePictures.size());
-		for (int i=0; i<end; i++) {
-			cells.get(i).setPhrasePicture(phrasePictures.get(i));
-		}
-	}*/
 	
 	private void constructCells(Rect box, int rowSize, int colSize) {
 		float cellSize = pa.min(box.getWidth() / rowSize, box.getHeight() / colSize);
@@ -110,18 +101,24 @@ public class PhraseRepository extends Screen {
 		}
 	}
 	
-	protected void generate() {
-		pa.currentPhrase = pa.generateReichLikePhrase();
-		pa.currentPhrasePicture = new PhrasePicture(pa.currentPhrase, pa);
-		pa.phrasePictures.add(pa.currentPhrasePicture);
-	}
-	
 	protected void load(Cell cell) {
 		int i = cells.indexOf(cell);
 		if (i < pa.phrasePictures.size()) {
 			pa.currentPhrasePicture = pa.phrasePictures.get(i);
 			pa.currentPhrase = pa.currentPhrasePicture.getPhrase();
 		}
+	}
+	
+	protected void newPhrase() {
+		pa.currentPhrase = new Phrase();
+		pa.currentPhrasePicture = new PhrasePicture(pa.currentPhrase, pa);
+		pa.phrasePictures.add(pa.currentPhrasePicture);
+	}
+	
+	protected void generate() {
+		pa.currentPhrase = pa.generateReichLikePhrase();
+		pa.currentPhrasePicture = new PhrasePicture(pa.currentPhrase, pa);
+		pa.phrasePictures.add(pa.currentPhrasePicture);
 	}
 	
 	/*************************************
