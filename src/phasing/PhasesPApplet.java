@@ -101,7 +101,19 @@ public class PhasesPApplet extends PApplet {
 			case _1024x768 : size(1024, 768); break;
 			case _1280x800 : size(1280, 800); break;
 			case _1280x1024 : size(1280, 1024); break;
-		}
+		}	
+	}
+	
+	private void initStaticVariables() {
+		//init font variables
+		pfont12 = loadFont("DejaVuSans-12.vlw");
+		pfont18 = loadFont("DejaVuSans-18.vlw");
+		pfont42 = loadFont("DejaVuSans-42.vlw");
+		musicFont = loadFont("MaestroWide-48.vlw");
+		
+		//init colors
+		initColorScheme();
+		//initSimpleColorScheme();
 	}
 	
 	/**
@@ -111,16 +123,9 @@ public class PhasesPApplet extends PApplet {
 	 * Sets the current screen.
 	 */
 	public void setup() {
-		saveFolderPath = sketchPath() + "\\save\\";
-		//init colors
-		initColorScheme();
-		//initSimpleColorScheme();
+		initStaticVariables();
 		
-		//init font variables
-		pfont12 = loadFont("DejaVuSans-12.vlw");
-		pfont18 = loadFont("DejaVuSans-18.vlw");
-		pfont42 = loadFont("DejaVuSans-42.vlw");
-		musicFont = loadFont("MaestroWide-48.vlw");
+		saveFolderPath = sketchPath() + "\\save\\";
 		
 		//init controlp5
 	    cp5 = new ControlP5(this);
@@ -148,7 +153,7 @@ public class PhasesPApplet extends PApplet {
 			savePlayerInfo();
 		}
 		
-		//create phrase
+		//init current phrase
 		boolean currentPhraseLoaded = loadCurrentPhrasePicture();
 		if (!currentPhraseLoaded) {
 			currentPhrase = generateReichLikePhrase(currentScale);
@@ -156,6 +161,7 @@ public class PhasesPApplet extends PApplet {
 			saveCurrentPhrasePicture();
 		}
 		
+		//init phrase picture list
 		boolean phrasePicturesLoaded = loadPhrasePictures();
 		if (!phrasePicturesLoaded) {
 			phrasePictures = new ArrayList<PhrasePicture>();

@@ -11,10 +11,12 @@ import phasing.Phrase;
 import phasing.PhrasePicture;
 import processing.core.PApplet;
 
-public class PhraseRepository extends Screen {
-	//variable for testing
-	private boolean populateCellsWithRandomPhrases;
-	
+/**
+ * 
+ * @author James Morrow
+ *
+ */
+public class PhraseRepository extends Screen implements CellEventHandler {
 	//cells
 	private ArrayList<Cell> cells = new ArrayList<Cell>();
 	
@@ -26,6 +28,10 @@ public class PhraseRepository extends Screen {
 	 ***** Initialization *****
 	 **************************/
 	
+	/**
+	 * 
+	 * @param pa The PApplet to draw to.
+	 */
 	public PhraseRepository(PhasesPApplet pa) {
 		super(pa);
 		
@@ -35,15 +41,28 @@ public class PhraseRepository extends Screen {
 		cp5.hide();
 	}
 	
+	/**
+	 * Initializes the buttons that turn the page.
+	 */
 	private void initDirectionalButtons() {
 		int size = 40;
-		pageLeftButton = initDirectionalButton("pageLeft", 10, pa.height - size - 5, size, pa.PI);
-		pageRightButton = initDirectionalButton("pageRight", pa.width - size - 10, pa.height - size - 5, size, 0);
+		pageLeftButton = consDirectionalButton("pageLeft", 10, pa.height - size - 5, size, pa.PI);
+		pageRightButton = consDirectionalButton("pageRight", pa.width - size - 10, pa.height - size - 5, size, 0);
 		pageLeftButton.hide();
 		pageRightButton.hide();
 	}
 	
-	private Button initDirectionalButton(String name, int x1, int y1, int size, float angle) {
+	/**
+	 * Intended for constructing a page-left or page-right button.
+	 * 
+	 * @param name The button's name.
+	 * @param x1 The leftmost x-coordinate of the button.
+	 * @param y1 The topmost y-coordinate of the button.
+	 * @param size The width and height of the button.
+	 * @param angle The heading (where it's pointing) of the button, in terms of radians.
+	 * @return The newly constructed button.
+	 */
+	private Button consDirectionalButton(String name, int x1, int y1, int size, float angle) {
 		Button b = cp5.addButton(name)
 			          .setPosition(x1, y1)
 			          .setSize(size, size)
@@ -54,35 +73,32 @@ public class PhraseRepository extends Screen {
 		return b;
 	}
 	
+	/**
+	 * Initialzes the list of cells.
+	 */
 	private void initCells() {
 		switch (pa.screenSizeMode) {
 			case PhasesPApplet._800x600 :
-				constructCells(new Rect(50, 75, 725, 550, pa.CORNERS), 4, 3);
+				initCells(new Rect(50, 75, 725, 550, pa.CORNERS), 4, 3);
 				break;
 		}
-		
-		if (populateCellsWithRandomPhrases) {
-			generateRandomPhrasePictures(cells.size()-2);
-		}
 	}
 	
-	private void generateRandomPhrasePictures(int n) {
-		pa.phrasePictures.clear();
-		for (int i=0; i<n; i++) {
-			PhrasePicture p = new PhrasePicture(pa.generateReichLikePhrase(), pa);
-			pa.phrasePictures.add(p);
-		}
-		pa.savePhrasePictures();
-	}
-	
-	private void constructCells(Rect box, int rowSize, int colSize) {
+	/**
+	 * Initializes the list of cells.
+	 * 
+	 * @param box The size of a cell.
+	 * @param rowSize The number of cells in a row.
+	 * @param colSize The number of cells in a column.
+	 */
+	private void initCells(Rect box, int rowSize, int colSize) {
 		float cellSize = pa.min(box.getWidth() / rowSize, box.getHeight() / colSize);
 		
 		float y1 = box.getCeny() - cellSize*0.5f*colSize;
 		for (int j=0; j<colSize; j++) {
 			float x1 = box.getCenx() - cellSize*0.5f*rowSize;
 			for (int i=0; i<rowSize; i++) {
-				cells.add(new Cell(new Rect(x1, y1, cellSize, cellSize, pa.CORNER), cp5, this, pa));
+				cells.add(new Cell(new Rect(x1, y1, cellSize, cellSize, pa.CORNER), cp5, this));
 				x1 += cellSize;
 			}
 			y1 += cellSize;
@@ -93,15 +109,15 @@ public class PhraseRepository extends Screen {
 	 ***** Interface with Cell *****
 	 *******************************/
 	
-	protected void copy(Cell cell) {
+	public void copy(Cell cell) {
 		int i = cells.indexOf(cell);
 		if (i < pa.phrasePictures.size()) {
 			PhrasePicture p = pa.phrasePictures.get(i);
 			pa.phrasePictures.add(i+1, new PhrasePicture(p));
 		}
 	}
-	
-	protected void load(Cell cell) {
+
+	public void load(Cell cell) {
 		int i = cells.indexOf(cell);
 		if (i < pa.phrasePictures.size()) {
 			pa.currentPhrasePicture = pa.phrasePictures.get(i);
@@ -109,13 +125,13 @@ public class PhraseRepository extends Screen {
 		}
 	}
 	
-	protected void newPhrase() {
+	public void newPhrase() {
 		pa.currentPhrase = new Phrase();
 		pa.currentPhrasePicture = new PhrasePicture(pa.currentPhrase, pa);
 		pa.phrasePictures.add(pa.currentPhrasePicture);
 	}
 	
-	protected void generate() {
+	public void generatePhrase() {
 		pa.currentPhrase = pa.generateReichLikePhrase();
 		pa.currentPhrasePicture = new PhrasePicture(pa.currentPhrase, pa);
 		pa.phrasePictures.add(pa.currentPhrasePicture);
