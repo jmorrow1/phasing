@@ -39,6 +39,7 @@ public class PhasesPApplet extends PApplet {
 	private static Map<String, ScaleSet> scaleSets = new HashMap<String, ScaleSet>();
 	
 	//active music variables
+	//TODO: make currentPhrase and currentPhrasePicture private
 	public Phrase currentPhrase;
 	public PhrasePicture currentPhrasePicture;
 	public Scale currentScale;
@@ -350,7 +351,7 @@ public class PhasesPApplet extends PApplet {
 			phrasePictures = new ArrayList<PhrasePicture>();
 			Files.walk(Paths.get(saveFolderPath + "phrases\\")).forEach(filePath -> {
 				if (filePath.toString().endsWith(".json") &&
-						!filePath.toString().equals(saveFolderPath + "phrases\\Current phrase.json")) {
+						!filePath.toString().equals(saveFolderPath + "phrases\\Current Phrase.json")) {
 					JSONObject json = loadJSONObject(filePath.toString());
 					phrasePictures.add(new PhrasePicture(json));
 				}

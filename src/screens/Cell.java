@@ -18,7 +18,7 @@ import phasing.PhrasePicture;
 class Cell {
 	//class-scope
 	private static int nextId = (int)'a';
-	private final static int LOAD = -1, GENERATE_PHRASE = -2;
+	private final static int LOAD = -1, GENERATE = -2, COPY = -3;
 	
 	//outside world
 	private PhasesPApplet pa;
@@ -26,11 +26,9 @@ class Cell {
 	
 	//dimensions
 	private Rect rect;
-	
-	//phrase picture (optional)
-	private PhrasePicture phrasePicture;
-	
-	//other data
+
+	//buttons
+	private Button copyButton;
 	private Button loadButton;
 	private Button generateButton;
 	
@@ -38,15 +36,31 @@ class Cell {
 	 ***** Initialization *****
 	 **************************/
 	
-	protected Cell(boolean isLoader, Rect rect, ControlP5 cp5, PhraseRepository phraseRepo, PhasesPApplet pa) {
+	protected Cell(Rect rect, ControlP5 cp5, PhraseRepository phraseRepo, PhasesPApplet pa) {
 		this.rect = rect;
-		if (isLoader) {
-			initLoadButton(cp5);
-		}
+		initLoadButton(cp5);
+		initOverwriteButton(cp5);
 		initGenerateButton(cp5);
 		nextId++;
 		this.phraseRepo = phraseRepo;
 		this.pa = pa;
+	}
+	
+	private void initOverwriteButton(ControlP5 cp5) {
+		float x1 = rect.getX1();
+		float y1 = rect.getY1() + 0.9f * rect.getHeight();
+		float width = 0.4f * rect.getWidth();
+		float height = 0.1f * rect.getHeight();
+		this.copyButton = cp5.addButton((char)nextId + " copy")
+				                  .setLabel("Copy")
+			                      .setPosition(x1, y1)
+			                      .setSize((int)width, (int)height)
+			                      .setId(COPY)
+			                      .plugTo(this);
+			                      ;
+        copyButton.getCaptionLabel().setFont(pa.pfont12);
+        copyButton.getCaptionLabel().toUpperCase(false);
+  		PhasesPApplet.colorButtonShowLabel(copyButton);
 	}
 	
 	private void initLoadButton(ControlP5 cp5) {
@@ -77,7 +91,7 @@ class Cell {
 				                 .setLabel("Generate Phrase")
 				                 .setPosition(x1, y1)
 				                 .setSize((int)width, (int)height)
-				                 .setId(GENERATE_PHRASE)
+				                 .setId(GENERATE)
 				                 .plugTo(this)
 				                 ;
 		generateButton.getCaptionLabel().setFont(pa.pfont12);
@@ -91,13 +105,14 @@ class Cell {
 	
 	public void controlEvent(ControlEvent e) {
 		switch (e.getId()) {
-			case LOAD :
-				if (phrasePicture != null) {
-					phraseRepo.load(this.phrasePicture);
-				}
+			case COPY :
+				phraseRepo.copy(this);
 				break;
-			case GENERATE_PHRASE :
-				phrasePicture = new PhrasePicture(pa.generateReichLikePhrase(), pa);
+			case LOAD :
+				phraseRepo.load(this);
+				break;
+			case GENERATE :
+				phraseRepo.generate();
 				break;
 		}
 	}
@@ -106,25 +121,45 @@ class Cell {
 	 ***** Drawing *****
 	 *******************/
 	
-	protected void draw(PhasesPApplet pa) {
+	private void drawBorder(boolean isCurrentPhrase, PhasesPApplet pa) {
 		pa.noFill();
 		pa.strokeWeight(1);
-		pa.stroke(150);
-		rect.display(pa);
-		
-		if (hasPhrase()) {
-			phrasePicture.draw(rect, pa);
-			String name = phrasePicture.getName();
-			pa.textAlign(pa.CENTER, pa.TOP);
-			pa.fill(0);
-			pa.text(name, rect.getCenx(), rect.getY1());
-			if (loadButton != null) loadButton.show();
-			if (generateButton != null) generateButton.hide();
+		pa.stroke(isCurrentPhrase ? 0 : 150);
+		pa.rect(rect.getX1(), rect.getY1(), rect.getWidth() - 1, rect.getHeight() - 1);
+	}
+	
+	protected void draw(boolean showGenerateButton, PhasesPApplet pa) {
+		drawBorder(false, pa);
+		copyButton.hide();
+		loadButton.hide();
+		if (showGenerateButton) {
+			generateButton.show();
 		}
 		else {
-			if (loadButton != null) loadButton.hide();
-			if (generateButton != null) generateButton.show();
+			generateButton.hide();
 		}
+	}
+	
+	protected void draw(PhrasePicture phrasePicture, PhasesPApplet pa) {
+		boolean isCurrentPhrase = phrasePicture == pa.currentPhrasePicture;
+		drawBorder(isCurrentPhrase, pa);
+		
+		phrasePicture.draw(rect, pa);
+		
+		String name = phrasePicture.getName();
+		pa.textAlign(pa.CENTER, pa.TOP);
+		pa.fill(0);
+		pa.text(name, rect.getCenx(), rect.getY1());
+		
+		if (isCurrentPhrase) {
+			copyButton.show();
+			loadButton.hide();
+		}
+		else {
+			copyButton.hide();
+			loadButton.show();
+		}
+		generateButton.hide();
 	}
 	
 	/*******************
@@ -138,7 +173,7 @@ class Cell {
 	 * @param cells The ArrayList<Cell>.
 	 * @return The ArrayList<PhrasePicture>.
 	 */
-	public static ArrayList<PhrasePicture> toPhraseList(ArrayList<Cell> cells) {
+	/*public static ArrayList<PhrasePicture> toPhraseList(ArrayList<Cell> cells) {
 		ArrayList<PhrasePicture> phraseList = new ArrayList<PhrasePicture>();
 		for (Cell c : cells) {
 			if (c.hasPhrase()) {
@@ -146,13 +181,13 @@ class Cell {
 			}
 		}
 		return phraseList;
-	}
+	}*/
 
 	/*******************************
 	 ***** Getters and Setters *****
 	 *******************************/
 	
-	protected boolean hasPhrase() {
+	/*protected boolean hasPhrase() {
 		return phrasePicture != null;
 	}
 	
@@ -166,5 +201,5 @@ class Cell {
 	
 	protected Phrase getPhrase() {
 		return phrasePicture.getPhrase();
-	}
+	}*/
 }

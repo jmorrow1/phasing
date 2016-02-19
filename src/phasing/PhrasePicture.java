@@ -9,12 +9,15 @@ import processing.core.PApplet;
 import processing.data.JSONObject;
 
 public class PhrasePicture implements JSONable {
+	//class-scope
+	private static int nextId = (int)'a';
+	
 	//phrase
 	private Phrase phrase;
 	
 	//name
-	private static int nextId = (int)'a';
 	private String name;
+	private int nextCopyId = 1;
 	
 	//style data
 	private DrawNote drawNoteFunc, drawRestFunc;
@@ -40,6 +43,13 @@ public class PhrasePicture implements JSONable {
 		this.blendAmt = pa.random(1);
 		int noteStyleType = pa.floor(pa.random(3));
 		initDrawNoteFuncs(noteStyleType);
+	}
+	
+	public PhrasePicture(PhrasePicture phrasePicture) {
+		this.phrase = new Phrase(phrasePicture.phrase);
+		this.name = new String(phrasePicture.name + phrasePicture.nextCopyId++); //TODO: make name assignment a bit more robust here
+		this.blendAmt = phrasePicture.blendAmt;
+		this.initDrawNoteFuncs(phrasePicture.noteStyleType());
 	}
 	
 	public PhrasePicture(JSONObject json) {

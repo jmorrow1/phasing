@@ -7,12 +7,13 @@ import controlP5.ControlP5;
 import controlp5.TriangleButtonView;
 import geom.Rect;
 import phasing.PhasesPApplet;
+import phasing.Phrase;
 import phasing.PhrasePicture;
 import processing.core.PApplet;
 
 public class PhraseRepository extends Screen {
 	//variable for testing
-	private boolean populateCellsWithRandomPhrases = true;
+	private boolean populateCellsWithRandomPhrases;
 	
 	//cells
 	private ArrayList<Cell> cells = new ArrayList<Cell>();
@@ -64,7 +65,7 @@ public class PhraseRepository extends Screen {
 			generateRandomPhrasePictures(cells.size()-2);
 		}
 		
-		assignPhrasesToCells(pa.phrasePictures);
+		//assignPhrasesToCells(pa.phrasePictures);
 	}
 	
 	private void generateRandomPhrasePictures(int n) {
@@ -76,15 +77,12 @@ public class PhraseRepository extends Screen {
 		pa.savePhrasePictures();
 	}
 	
-	private void assignPhrasesToCells(ArrayList<PhrasePicture> phrasePictures) {
-		int end = PApplet.min(cells.size(), phrasePictures.size()+1);
-		if (end > 0) {
-			cells.get(0).setPhrasePicture(pa.currentPhrasePicture);
+	/*private void assignPhrasesToCells(ArrayList<PhrasePicture> phrasePictures) {
+		int end = PApplet.min(cells.size(), phrasePictures.size());
+		for (int i=0; i<end; i++) {
+			cells.get(i).setPhrasePicture(phrasePictures.get(i));
 		}
-		for (int i=1; i<end; i++) {
-			cells.get(i).setPhrasePicture(phrasePictures.get(i-1));
-		}
-	}
+	}*/
 	
 	private void constructCells(Rect box, int rowSize, int colSize) {
 		float cellSize = pa.min(box.getWidth() / rowSize, box.getHeight() / colSize);
@@ -93,12 +91,7 @@ public class PhraseRepository extends Screen {
 		for (int j=0; j<colSize; j++) {
 			float x1 = box.getCenx() - cellSize*0.5f*rowSize;
 			for (int i=0; i<rowSize; i++) {
-				if (i == 0 && j == 0) {
-					cells.add(new Cell(false, new Rect(x1, y1, cellSize, cellSize, pa.CORNER), cp5, this, pa));
-				}
-				else {
-					cells.add(new Cell(true, new Rect(x1, y1, cellSize, cellSize, pa.CORNER), cp5, this, pa));
-				}
+				cells.add(new Cell(new Rect(x1, y1, cellSize, cellSize, pa.CORNER), cp5, this, pa));
 				x1 += cellSize;
 			}
 			y1 += cellSize;
@@ -109,19 +102,26 @@ public class PhraseRepository extends Screen {
 	 ***** Interface with Cell *****
 	 *******************************/
 	
-	protected void load(PhrasePicture phrasePicture) {
-		pa.currentPhrase.set(phrasePicture.getPhrase());
-		int i = indexOf(phrasePicture);
-		pa.savePlayerInfo();
+	protected void copy(Cell cell) {
+		int i = cells.indexOf(cell);
+		if (i < pa.phrasePictures.size()) {
+			PhrasePicture p = pa.phrasePictures.get(i);
+			pa.phrasePictures.add(i+1, new PhrasePicture(p));
+		}
 	}
 	
-	private int indexOf(PhrasePicture phrasePicture) {
-		for (int i=0; i<cells.size(); i++) {
-			if (cells.get(i).getPhrasePicture() == phrasePicture) {
-				return i;
-			}
+	protected void generate() {
+		pa.currentPhrase = pa.generateReichLikePhrase();
+		pa.currentPhrasePicture = new PhrasePicture(pa.currentPhrase, pa);
+		pa.phrasePictures.add(pa.currentPhrasePicture);
+	}
+	
+	protected void load(Cell cell) {
+		int i = cells.indexOf(cell);
+		if (i < pa.phrasePictures.size()) {
+			pa.currentPhrasePicture = pa.phrasePictures.get(i);
+			pa.currentPhrase = pa.currentPhrasePicture.getPhrase();
 		}
-		return -1;
 	}
 	
 	/*************************************
@@ -147,8 +147,17 @@ public class PhraseRepository extends Screen {
 	public void draw() {
 		pa.background(255);
 		
-		for (Cell c : cells) {
-			c.draw(pa);
+		for (int i=0; i<cells.size(); i++) {
+			Cell c = cells.get(i);
+			if (i < pa.phrasePictures.size()) {
+				c.draw(pa.phrasePictures.get(i), pa);
+			}
+			else if (i == pa.phrasePictures.size()) {
+				c.draw(true, pa);
+			}
+			else {
+				c.draw(false, pa);
+			}
 		}
 	}
 }
