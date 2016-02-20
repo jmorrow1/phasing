@@ -54,32 +54,34 @@ public class Musician extends View {
 	
 	@Override
 	public void update(float dNotept1, float dNotept2) {
-		readerA.update(dNotept1);
-		readerB.update(dNotept2);	
-		
-		if (superimposedOrSeparated.toInt() == SUPERIMPOSED) {
-			instrumentAB.display(pa);
+		if (pa.currentPhrase.getNumNotes() > 0) {
+			readerA.update(dNotept1);
+			readerB.update(dNotept2);	
+			
+			if (superimposedOrSeparated.toInt() == SUPERIMPOSED) {
+				instrumentAB.display(pa);
+			}
+			else {
+				instrumentA.display(pa);
+				instrumentB.display(pa);
+			}
+			
+			pa.noStroke();
+			if (colorScheme.toInt() == DIACHROMATIC) {
+				pa.fill(pa.getColor1(), opacity);
+			}
+			else {
+				pa.fill(0, opacity);
+			}
+			playerA.draw(pa);
+			if (colorScheme.toInt() == DIACHROMATIC) {
+				pa.fill(pa.getColor2(), opacity);
+			}
+			else {
+				pa.fill(0, opacity);
+			}
+			playerB.draw(pa);
 		}
-		else {
-			instrumentA.display(pa);
-			instrumentB.display(pa);
-		}
-		
-		pa.noStroke();
-		if (colorScheme.toInt() == DIACHROMATIC) {
-			pa.fill(pa.getColor1(), opacity);
-		}
-		else {
-			pa.fill(0, opacity);
-		}
-		playerA.draw(pa);
-		if (colorScheme.toInt() == DIACHROMATIC) {
-			pa.fill(pa.getColor2(), opacity);
-		}
-		else {
-			pa.fill(0, opacity);
-		}
-		playerB.draw(pa);
 	}
 	
 	private void initInstruments() {

@@ -60,7 +60,8 @@ public class PhaseShifter extends View {
 	private void initData() {
 		dataPoints.clear();
 		for (int i=0; i<=pa.currentPhrase.getNumNotes(); i++) {
-			if (pa.currentPhrase.getSCDynamic(i % pa.currentPhrase.getNumNotes()) > 0) {
+			if (pa.currentPhrase.getNumNotes() > 0 && 
+					pa.currentPhrase.getSCDynamic(i % pa.currentPhrase.getNumNotes()) > 0) {
 				dataPoints.add(new DataPoint(i));
 			}
 		}
@@ -94,19 +95,20 @@ public class PhaseShifter extends View {
 
 	@Override
 	public void update(float dNotept1, float dNotept2) {
-		readerA.update(dNotept1);
-		readerB.update(dNotept2);
+		if (pa.currentPhrase.getNumNotes() > 0) {
+			readerA.update(dNotept1);
+			readerB.update(dNotept2);
+			
+			pa.pushMatrix();
+			
+			pa.translate(this.getCenx(), this.getCeny());
+			updateNormalTransforms(dNotept1, dNotept2);
 		
-		
-		pa.pushMatrix();
-		
-		pa.translate(this.getCenx(), this.getCeny());
-		updateNormalTransforms(dNotept1, dNotept2);
-
-		drawPhraseGraphic(activeNote1, 1);
-		drawPhraseGraphic(activeNote2, 2);
-		
-		pa.popMatrix();
+			drawPhraseGraphic(activeNote1, 1);
+			drawPhraseGraphic(activeNote2, 2);
+			
+			pa.popMatrix();
+		}
 	}
 	
 	@Override
@@ -116,19 +118,21 @@ public class PhaseShifter extends View {
 	}
 	
 	public void updateNormalTransforms(float dNotept1, float dNotept2) {
-		if (cameraMode.toInt() == RELATIVE_TO_1) {
-			dNotept2 = (dNotept2 - dNotept1);
-			dNotept1 = 0;
+		if (pa.currentPhrase.getTotalDuration() != 0) {
+			if (cameraMode.toInt() == RELATIVE_TO_1) {
+				dNotept2 = (dNotept2 - dNotept1);
+				dNotept1 = 0;
+			}
+			else if (cameraMode.toInt() == RELATIVE_TO_2) {
+				dNotept1 = (dNotept1 - dNotept2);
+				dNotept2 = 0;
+			}
+			
+			normalTransform1 += PApplet.map(dNotept2, 0, pa.currentPhrase.getTotalDuration(), 0, 1);
+			normalTransform2 += PApplet.map(dNotept1, 0, pa.currentPhrase.getTotalDuration(), 0, 1);
+			normalTransform1 %= 1;
+			normalTransform2 %= 1;
 		}
-		else if (cameraMode.toInt() == RELATIVE_TO_2) {
-			dNotept1 = (dNotept1 - dNotept2);
-			dNotept2 = 0;
-		}
-		
-		normalTransform1 += PApplet.map(dNotept2, 0, pa.currentPhrase.getTotalDuration(), 0, 1);
-		normalTransform2 += PApplet.map(dNotept1, 0, pa.currentPhrase.getTotalDuration(), 0, 1);
-		normalTransform1 %= 1;
-		normalTransform2 %= 1;
 	}
 
 	private void transform(int playerNum) {

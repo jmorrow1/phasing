@@ -72,10 +72,12 @@ public class PhraseReader {
 		noteIndex = -1;
 		noteTimeTillNextNote = -notept;
 		
-		while (noteTimeTillNextNote <= 0) {
-			noteIndex = (noteIndex+1) % phrase.getNumNotes();
-			noteTimeTillNextNote += phrase.getSCDuration(noteIndex);
-		}		
+		if (phrase.getNumNotes() > 0) {
+			while (noteTimeTillNextNote <= 0) {
+				noteIndex = (noteIndex+1) % phrase.getNumNotes();
+				noteTimeTillNextNote += phrase.getSCDuration(noteIndex);
+			}
+		}
 	}
 	
 	/**

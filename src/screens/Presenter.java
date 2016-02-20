@@ -377,6 +377,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 * @return The position of player1 along the duration of the phrase it is playing.
 	 */
 	private float computeNotept1() {
+		if (pa.currentPhrase.getTotalDuration() == 0) return 0;
 		return PApplet.map(player1.getTickPosition(), 0, player1.getTickLength(), 0, pa.currentPhrase.getTotalDuration());
 	}
 
@@ -385,6 +386,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 * @return The position of player2 along the duration of the phrase it is playing.
 	 */
 	private float computeNotept2() {
+		if (pa.currentPhrase.getTotalDuration() == 0) return 0;
 		return PApplet.map(player2.getTickPosition(), 0, player2.getTickLength(), 0, pa.currentPhrase.getTotalDuration());
 	}
 
@@ -431,6 +433,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		prev_notept2 = notept2;
 
 		view.update(dNotept1, dNotept2);
+
 		if (view != phaseShifterView) {
 			phaseShifterView.updateNormalTransforms(dNotept1, dNotept2);
 		}

@@ -129,7 +129,7 @@ public class PhasesPApplet extends PApplet {
 		
 		//init controlp5
 	    cp5 = new ControlP5(this);
-		
+
 		//init change screen button
 		changeScreenButton = cp5.addButton("changeScreen")
 							    .setPosition(changeScreenButtonX2 - 125, changeScreenButtonY2 - 40)
@@ -927,7 +927,6 @@ public class PhasesPApplet extends PApplet {
 	 * @param bpm1
 	 */
 	public void setBPM1(float bpm1) {
-		bpm1 = constrain(bpm1, MIN_BPM, MAX_BPM);
 		this.bpm1 = bpm1;
 		this.bpms1 = bpm1 / 60000f;
 	}
@@ -937,7 +936,6 @@ public class PhasesPApplet extends PApplet {
 	 * @param bpm2
 	 */
 	public void setBPM2(float bpm2) {
-		bpm2 = constrain(bpm2, MIN_BPM, MAX_BPM);
 		this.bpm2 = bpm2;
 		this.bpms2 = bpm2 / 60000f;
 	}

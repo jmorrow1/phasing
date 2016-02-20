@@ -123,29 +123,31 @@ public class LiveScorer extends View {
 	
 	@Override
 	public void update(float dNotept1, float dNotept2) {
-		pa.pushMatrix();
-		
-		pa.translate(getCenx(), getCeny());
-		
-		readerA.update(dNotept1);
-		readerB.update(dNotept2);
-		
-		float dx = -dNotept1 * pixelsPerWholeNote;
-		
-		drawDataPoints(dataPts1, (colorScheme.toInt() == MONOCHROMATIC) ? 0 : pa.getColor1());
-		drawDataPoints(dataPts2, (colorScheme.toInt() == MONOCHROMATIC) ? 0 : pa.getColor2());
-		
-		pa.popMatrix();
-		
-		if (scoreMode.toInt() == MOVE_NOTES) {
-			scroll(dx, dataPts1);
-			scroll(dx, dataPts2);
+		if (pa.currentPhrase.getNumNotes() > 0) {
+			pa.pushMatrix();
+			
+			pa.translate(getCenx(), getCeny());
+			
+			readerA.update(dNotept1);
+			readerB.update(dNotept2);
+			
+			float dx = -dNotept1 * pixelsPerWholeNote;
+			
+			drawDataPoints(dataPts1, (colorScheme.toInt() == MONOCHROMATIC) ? 0 : pa.getColor1());
+			drawDataPoints(dataPts2, (colorScheme.toInt() == MONOCHROMATIC) ? 0 : pa.getColor2());
+			
+			pa.popMatrix();
+			
+			if (scoreMode.toInt() == MOVE_NOTES) {
+				scroll(dx, dataPts1);
+				scroll(dx, dataPts2);
+			}
+			else if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
+				moveSpawnPoint(-dx, getHeight() * 0.3f + NOTE_SIZE);
+			}
+			fade(dataPts1);
+			fade(dataPts2);
 		}
-		else if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
-			moveSpawnPoint(-dx, getHeight() * 0.3f + NOTE_SIZE);
-		}
-		fade(dataPts1);
-		fade(dataPts2);
 	}
 	
 	private void drawDataPoints(ArrayList<DataPoint> dataPts, int color) {

@@ -303,7 +303,7 @@ public class Editor extends Screen {
 		return addBPMSlider("beatsPerMinute", "Beats Per Minute", BPM_1,
 			                x, y, w, h,
 			                pa.getBPM1(),
-			                1, 100,
+			                11, 100,
 			                1,
 			                (floatingPoint) -> "" + PApplet.round(floatingPoint));
 	}

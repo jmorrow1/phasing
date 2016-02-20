@@ -75,6 +75,10 @@ public class Scrollbar extends Controller<Scrollbar> {
      * This makes the Scrollbar's geometrical data self-consistent and consistent with the rest of the data fields.
      */
     private void updateGeometricalData() {
+    	if (ticksPerScroller == 0 && ticksPerTrack == 0) {
+			ticksPerScroller = 1;
+			ticksPerTrack = 1;
+		}
     	if (getWidth() >= getHeight()) {
 	        scrollerLength = PApplet.map(ticksPerScroller, 0, ticksPerTrack, 0, getWidth());
 	        scrollerLow = PApplet.map(currentTick, 0, ticksPerTrack, 0, getWidth());
