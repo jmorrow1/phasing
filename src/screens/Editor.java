@@ -418,6 +418,8 @@ public class Editor extends Screen {
 		drawToolbar();
 		drawBody();
 		timeEntered = System.currentTimeMillis();
+		prev_t = System.currentTimeMillis();
+		playToggle.setValue(false);
 	}
 	
 	@Override
@@ -435,6 +437,12 @@ public class Editor extends Screen {
 	/********************************
 	 ***** Input Event Handling *****
 	 ********************************/
+	
+	public void keyPressed() {
+		if (pa.key == ' ') {
+			playToggle.setState(!playToggle.getState());
+		}
+	}
 	
 	private boolean shiftClick() {
 		return pa.keyPressed && pa.key == pa.CODED && pa.keyCode == pa.SHIFT && pa.mousePressed && (pa.mouseButton == pa.LEFT || pa.mouseButton == pa.RIGHT);
@@ -594,10 +602,10 @@ public class Editor extends Screen {
 	public void draw() {
 		if (playToggle.getValue() != 0) {
 			long dt = System.currentTimeMillis() - prev_t;
-			prev_t = System.currentTimeMillis();
 			livePlayer.update(dt * pa.getBPMS1());
 			drawBody();
 		}
+		prev_t = System.currentTimeMillis();
 		
 		drawToolbar();
 	}
