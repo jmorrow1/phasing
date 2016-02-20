@@ -53,7 +53,12 @@ public class Scrollbar extends Controller<Scrollbar> {
                 pg.rect(0, 0, s.getWidth(), s.getHeight());
                 
                 //scroller
-                pg.fill(s.getColor().getForeground());
+                if (s.isMouseOver()) {
+                	pg.fill(s.getColor().getActive());
+                }
+                else {
+                	pg.fill(s.getColor().getForeground());
+                }
                 pg.rectMode(pg.CORNERS);
                 if (s.getWidth() >= s.getHeight()) {
                 	pg.rect(scrollerLow, 0, scrollerHigh, s.getHeight());
@@ -158,6 +163,8 @@ public class Scrollbar extends Controller<Scrollbar> {
         setValue(scrollerLow);
     }
     
+    
+    
     @Override
     public void onDrag() {
         if (draggingScroller) {
@@ -204,8 +211,7 @@ public class Scrollbar extends Controller<Scrollbar> {
      * @param sign The value of the mouse scrolle event
      */
     public void myOnScroll(int sign) {
-    	int dTick = -sign;
-    	currentTick = PApplet.constrain(currentTick+dTick, 0, ticksPerTrack - ticksPerScroller);
+    	currentTick = PApplet.constrain(currentTick+sign, 0, ticksPerTrack - ticksPerScroller);
     	updateGeometricalData();
     }
 

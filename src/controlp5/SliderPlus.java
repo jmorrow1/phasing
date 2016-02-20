@@ -1,10 +1,9 @@
 package controlp5;
 
 import controlP5.ControlP5;
-import controlP5.ControllerGroup;
 import controlP5.Slider;
 import phasing.FloatFormatter;
-import processing.core.PApplet;
+import phasing.PhasesPApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
 
@@ -35,7 +34,7 @@ public class SliderPlus extends Slider {
 	public void draw(final PGraphics pg) {
 		pg.pushMatrix();
 		pg.translate(x(position) , y(position));
-		_myControllerView.display(pg , this);
+		_myControllerView.display(pg, this);
 
 		//draw white rect under caption label
 		pg.fill(255);

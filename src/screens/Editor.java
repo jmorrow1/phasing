@@ -170,16 +170,15 @@ public class Editor extends Screen {
 						    		//draw white rect under play button
 									pg.rectMode(pg.CORNER);
 									pg.fill(255);
-									pg.stroke(255);
+									pg.noStroke();
 									pg.rect(0, 0, t.getWidth(), t.getHeight());
 						    	}
 						    	
+						    	pg.noStroke();
 								if (t.isMouseOver()) {
-									pg.stroke(0);
 									pg.fill(t.getColor().getForeground());
 								}
 								else {
-									pg.stroke(0);
 									pg.fill(t.getColor().getBackground());
 								}
 								
@@ -286,7 +285,7 @@ public class Editor extends Screen {
 		}
 		else if (c instanceof Slider || c instanceof Scrollbar) {
 			c.setColorBackground(pa.lerpColor(pa.getColor1(), pa.color(255), 0.3f));
-		    c.setColorActive(pa.getColor1());
+		    c.setColorActive(pa.getColor1Bold());
 		    c.setColorForeground(pa.getColor1());
 		}
 		else if (c instanceof Button) {
@@ -443,6 +442,7 @@ public class Editor extends Screen {
 	
 	public void mouseWheel(MouseEvent event) {
 		hScrollbar.myOnScroll(event.getCount());
+		drawBody();
 	}
 	
 	public void mousePressed() {

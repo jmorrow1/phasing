@@ -173,7 +173,7 @@ public class PhasesPApplet extends PApplet {
 		phraseRepo = new PhraseRepository(this);
 		
 		//setup current screen
-		currentScreen = phraseRepo;
+		currentScreen = editor;
 		
 		if (currentScreen == editor) {
 			changeScreenButton.setCaptionLabel("Rehearse");
@@ -196,9 +196,9 @@ public class PhasesPApplet extends PApplet {
 	private void initColorScheme() {
 		colorMode(HSB, 360, 100, 100, 100);
 		int color1 = color(0, 60, 90);
-		int color1Bold = color(0, 100, 90);
+		int color1Bold = color(0, 90, 90);
 		int color2 = color(240, 60, 90);
-		int color2Bold = color(240, 100, 90);
+		int color2Bold = color(240, 90, 90);
 		colorMode(RGB, 255, 255, 255, 255);
 		colorScheme = new ColorScheme(color1, color2, color1Bold, color2Bold);
 	}
