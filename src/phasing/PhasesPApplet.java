@@ -197,10 +197,12 @@ public class PhasesPApplet extends PApplet {
 		colorMode(HSB, 360, 100, 100, 100);
 		int color1 = color(0, 60, 90);
 		int color1Bold = color(0, 90, 90);
+		int color1VeryBold = color(0, 100, 100);
 		int color2 = color(240, 60, 90);
 		int color2Bold = color(240, 90, 90);
+		int color2VeryBold = color(240, 100, 100);
 		colorMode(RGB, 255, 255, 255, 255);
-		colorScheme = new ColorScheme(color1, color2, color1Bold, color2Bold);
+		colorScheme = new ColorScheme(color1, color2, color1Bold, color2Bold, color1VeryBold, color2VeryBold);
 	}
 	
 	/**
@@ -216,7 +218,7 @@ public class PhasesPApplet extends PApplet {
 		int color2 = color(100);
 		int color2Bold = color(0);
 		
-		colorScheme = new ColorScheme(color1, color2, color1Bold, color2Bold);
+		colorScheme = new ColorScheme(color1, color2, color1Bold, color2Bold, color1Bold, color2Bold);
 	}
 	
 	/****************************
@@ -842,6 +844,14 @@ public class PhasesPApplet extends PApplet {
 	
 	/**
 	 * 
+	 * @return The very bold version of color 1 of the program-wide color scheme
+	 */
+	public static int getColor1VeryBold() {
+		return colorScheme.color1VeryBold;
+	}
+	
+	/**
+	 * 
 	 * @return color 2 of the program-wide color scheme
 	 */
 	public static int getColor2() {
@@ -854,6 +864,14 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public static int getColor2Bold() {
 		return colorScheme.color2Bold;
+	}
+	
+	/**
+	 * 
+	 * @return The very bold version of color 2 of the program-wide color scheme
+	 */
+	public static int getColor2VeryBold() {
+		return colorScheme.color2VeryBold;
 	}
 	
 	/**
@@ -947,15 +965,19 @@ public class PhasesPApplet extends PApplet {
 	 *
 	 */
 	private class ColorScheme {
-		final int color1, color2, color1Bold, color2Bold, blendedColor, blendedColorBold;
+		final int color1, color2, color1Bold, color2Bold, color1VeryBold, color2VeryBold;
+		final int blendedColor, blendedColorVeryBold, blendedColorBold;
 
-		ColorScheme(int color1, int color2, int color1Bold, int color2Bold) {
+		ColorScheme(int color1, int color2, int color1Bold, int color2Bold, int color1VeryBold, int color2VeryBold) {
 			this.color1 = color1;
 			this.color2 = color2;
 			this.color1Bold = color1Bold;
 			this.color2Bold = color2Bold;
+			this.color1VeryBold = color1VeryBold;
+			this.color2VeryBold = color2VeryBold;
 			blendedColor = lerpColor(color1, color2, 0.5f);
 			blendedColorBold = lerpColor(color1Bold, color2Bold, 0.5f);
+			blendedColorVeryBold = lerpColor(color1VeryBold, color2VeryBold, 0.5f);
 		}
 	}
 }
