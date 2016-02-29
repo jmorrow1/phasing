@@ -30,6 +30,9 @@ import screens.Screen;
  *
  */
 public class PhasesPApplet extends PApplet {
+	//size
+	public static int area;
+	
 	//music parameters
 	public static final float MIN_BPM = 1, MAX_BPM = 100;
 	
@@ -68,7 +71,7 @@ public class PhasesPApplet extends PApplet {
 	private Button changeScreenButton;
 	
 	//screen size
-	public static final int _800x600 = 0, _1366x768 = 1, _1920x1080 = 2, _1024x768 = 3, _1280x800 = 4, _1280x1024 = 5;
+	public static final int _800x600 = 0, _1366x768 = 1, _1024x768 = 2, _1280x800 = 3, _1920x1080 = 4, _1280x1024 = 5;
 	public int screenSizeMode = _800x600;
 	
 	//save folder location
@@ -84,7 +87,7 @@ public class PhasesPApplet extends PApplet {
 	/**
 	 * Sets up the size of the canvas/window
 	 */
-	public void settings() {
+	public void settings() {	
 		setSize(screenSizeMode);
 	}
 	
@@ -110,7 +113,7 @@ public class PhasesPApplet extends PApplet {
 		pfont18 = loadFont("DejaVuSans-18.vlw");
 		pfont42 = loadFont("DejaVuSans-42.vlw");
 		musicFont = loadFont("MaestroWide-48.vlw");
-		
+		area = width * height;
 		//init colors
 		initColorScheme();
 		//initSimpleColorScheme();
@@ -123,6 +126,7 @@ public class PhasesPApplet extends PApplet {
 	 * Sets the current screen.
 	 */
 	public void setup() {
+		surface.setResizable(true);
 		initStaticVariables();
 		
 		saveFolderPath = sketchPath() + "\\save\\";
@@ -173,7 +177,7 @@ public class PhasesPApplet extends PApplet {
 		phraseRepo = new PhraseRepository(this);
 		
 		//setup current screen
-		currentScreen = editor;
+		currentScreen = presenter;
 		
 		if (currentScreen == editor) {
 			changeScreenButton.setCaptionLabel("Rehearse");
@@ -383,8 +387,8 @@ public class PhasesPApplet extends PApplet {
 	public Phrase pianoPhase() {
 		int n = Phrase.NOTE_START;
 		return currentPhrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
-	                               new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
-	                               new int[] {n, n, n, n, n, n, n, n, n, n, n, n});
+	                                      new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
+	                                      new int[] {n, n, n, n, n, n, n, n, n, n, n, n});
 	}
 	
 	/**
@@ -804,6 +808,10 @@ public class PhasesPApplet extends PApplet {
 	/******************************
 	***** Getters and Setters *****
 	******************************/
+	
+	public void resize(int width, int height) {
+		surface.setSize(width, height);
+	}
 	
 	public Scale getScale(String root, String scaleName) {
 		for (String name : scaleTypes) {

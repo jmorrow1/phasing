@@ -36,8 +36,8 @@ public class LiveScorer extends View {
 	private float pixelsPerWholeNote;
 	private final int ONE_ID = 1, TWO_ID = 2;
 	private int startingPitch = 0;
-	private float fadeRate = 0.15f;
-	private final float NOTE_SIZE = 20;
+	private float fadeRate;
+	private final float NOTE_SIZE;
 	private float roundStrokeCapSurplus;
 	
 	//options:
@@ -48,6 +48,12 @@ public class LiveScorer extends View {
 
 	public LiveScorer(Rect rect, int opacity, PhasesPApplet pa) {
 		super(rect, opacity, pa);
+		
+		//TODO: Make dependent on width of screen
+		fadeRate = 0.15f;
+		
+		//TODO: Make dependent on screen size
+		NOTE_SIZE = 20;
 		
 		//phrase readers
 		try {

@@ -81,7 +81,10 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private float iconRadius = 25;
 	private float icon_dx = iconRadius * 2.25f;
 	private float iconStartX1 = 0.75f * iconRadius;
-	private float iconStartY1 = pa.height - 2.75f * iconRadius;
+	//private float iconStartY1 = pa.height - 2.75f * iconRadius;
+	private float iconStartY1() {
+		return pa.height - 2.75f * iconRadius;
+	}
 	
 	//controlp5
 	private ControlP5 cp5;
@@ -123,10 +126,10 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 */
 	private void initDirectionalButtons() {
 		float buttonX1 = directionalButtonX1(0);
-		float iconCeny = iconStartY1 + iconRadius/2f;
+		
 		int buttonRadius = (int)(iconRadius/2f);
-		upButton = consDirectionalButton(buttonX1, iconCeny - iconRadius - 4, buttonRadius, -pa.HALF_PI, "iconUp");
-		downButton = consDirectionalButton(buttonX1, iconCeny + iconRadius + 4, buttonRadius, pa.HALF_PI, "iconDown");
+		upButton = consDirectionalButton(buttonX1, upButtonY1(), buttonRadius, -pa.HALF_PI, "iconUp");
+		downButton = consDirectionalButton(buttonX1, downButtonY1(), buttonRadius, pa.HALF_PI, "iconDown");
 	}
 	
 	/**
@@ -153,6 +156,36 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	/***********************************
 	 ***** Navigation Menu Control *****
 	 ***********************************/
+	
+	/**
+	 * Gives where the x-coordinate of a directional button that's associated with an icon at a given index 
+	 * (whether or not there's actually an icon there) would be.
+	 * @param index The index of the icon.
+	 * @return The x-coordinate of a directional button associated with an icon.
+	 */
+	private float directionalButtonX1(int index) {
+		return iconCenx(index) - iconRadius/2f;
+	}
+	
+	private float upButtonY1() {
+		return iconCenY() - iconRadius - 4;
+	}
+	
+	private float downButtonY1() {
+		return iconCenY() + iconRadius + 4;
+	}
+	
+	private float iconCenY() {
+		return iconStartY1() + iconRadius/2f;
+	}
+	
+	/**
+	 * Repositions the up and down buttons according to the activeIconIndex.
+	 */
+	private void repositionDirectionalButtons() {
+		upButton.setPosition(directionalButtonX1(activeIconIndex), upButtonY1());
+		downButton.setPosition(directionalButtonX1(activeIconIndex), downButtonY1());
+	}
 	
 	/**
 	 * This method can be triggered by ControlP5 (as a callback) and by the presenter itself.
@@ -226,24 +259,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			view.wakeUp(computeNotept1(), computeNotept2());
 			setupIconLists();
 		}
-	}
-	
-	/**
-	 * Gives where the x-coordinate of a directional button that's associated with an icon at a given index 
-	 * (whether or not there's actually an icon there) would be.
-	 * @param index The index of the icon.
-	 * @return The x-coordinate of a directional button associated with an icon.
-	 */
-	private float directionalButtonX1(int index) {
-		return iconCenx(index) - iconRadius/2f;
-	}
-	
-	/**
-	 * Repositions the up and down buttons according to the activeIconIndex.
-	 */
-	private void repositionDirectionalButtons() {
-		upButton.setPosition(directionalButtonX1(activeIconIndex), upButton.getPosition()[1]);
-		downButton.setPosition(directionalButtonX1(activeIconIndex), downButton.getPosition()[1]);
 	}
 	
 	/*************************************
@@ -324,7 +339,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 */
 	private void drawNavigationMenu() {
 		if (iconLists.size() > 0) {
-			float iconCeny = iconStartY1 + iconRadius;
+			float iconCeny = iconStartY1() + iconRadius;
 			
 			//draw icons
 			for (int i = 0; i < iconLists.size(); i++) {
@@ -339,7 +354,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			pa.strokeWeight(3);
 			pa.stroke(pa.getColor1());
 			pa.rectMode(pa.CORNER);
-			pa.rect(iconStartX1 + activeIconIndex * icon_dx, iconStartY1, 2*iconRadius, 2*iconRadius);
+			pa.rect(iconStartX1 + activeIconIndex * icon_dx, iconStartY1(), 2*iconRadius, 2*iconRadius);
 		}	
 	}
 	
@@ -364,6 +379,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 */
 	private int iconIndexTouches(int x, int y) {
 		float iconEndX = iconStartX1 + icon_dx*iconLists.size() + 2*iconRadius;
+		float iconStartY1 = iconStartY1();
 		if (iconStartX1-iconRadius <= x && x <= iconEndX && iconStartY1 - iconRadius <= y && y <= iconStartY1 + 3f*iconRadius) {
 			return (int)((x - iconStartX1) / icon_dx);
 		}
@@ -444,7 +460,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 ********************************/
 
 	@Override
-	public void keyPressed() {
+	public void keyPressed() {		
 		if (pa.key == pa.CODED) {
 			switch (pa.keyCode) {
 				case PApplet.LEFT : iconLeft(); break;
@@ -460,6 +476,12 @@ public class Presenter extends Screen implements ViewVariableInfo {
 				case 'w' : iconUp(); break;
 				case 's' : iconDown(); break;
 			}
+		}
+		
+		//for a test of how things look when resized:
+		switch (pa.key) {
+			case '1' : pa.resize(pa.width, pa.height+1); repositionDirectionalButtons(); break;
+			case '2' : pa.resize(pa.width+1, pa.height); repositionDirectionalButtons(); break;
 		}
 	}
 

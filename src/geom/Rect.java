@@ -10,6 +10,7 @@ import processing.core.PApplet;
  */
 public class Rect extends Shape {
     private float x1, y1, width, height;
+    private float area;
     
     /**
      * Copy constructor
@@ -20,6 +21,7 @@ public class Rect extends Shape {
     	this.y1 = rect.y1;
     	this.width = rect.width;
     	this.height = rect.height;
+    	area = width * height;
     }
     
     /**
@@ -66,6 +68,7 @@ public class Rect extends Shape {
             this.width = c - a;
             this.height = d - b;
         }
+        area = width * height;
     }
     
     /**
@@ -75,52 +78,6 @@ public class Rect extends Shape {
     public void display(PApplet pa) {
         pa.rectMode(pa.CORNER);
         pa.rect(x1, y1, width, height);
-    }
-    
-    /**
-     * Displays the rect, wrapping it to the specified x-range if it is partially within the x-range.
-     * @param pa The PApplet to draw to
-     * @param x1 The minimum x-coordinate of the range
-     * @param x2 The minimum x-coordinate of the range
-     */
-    public void displayHorizontallyWrapped(PApplet pa, float x1, float x2) {
-    	pa.rectMode(pa.CORNER);
-    	if (this.x1 < x1 && this.getX2() > x1) {
-    		float surplusWidth = x1 - this.x1;
-    		pa.rect(x1, this.y1, this.width-surplusWidth, this.height);
-    		pa.rect(x2 - surplusWidth, this.y1, surplusWidth, this.height);
-    	}
-    	else if (this.getX2() > x2 && this.getX1() < x2) {
-    		float surplusWidth = this.getX2() - x2;
-    		pa.rect(this.x1, this.y1, this.width-surplusWidth, this.height);
-    		pa.rect(x1, this.y1, surplusWidth, this.height);
-    	}
-    	else {
-    		display(pa);
-    	}
-    }
-    
-    /**
-     * Displays the rect, wrapping it to the specified y-range if it is partially within the y-range.
-     * @param pa The PApplet to draw to
-     * @param y1 The minimum y-coordinate of the range
-     * @param y2 The minimum y-coordinate of the range
-     */
-    public void displayVerticallyWrapped(PApplet pa, float y1, float y2) {
-    	pa.rectMode(pa.CORNER);
-    	if (this.y1 < y1 && this.getY2() > y1) {
-    		float surplusHeight = y1 - this.y1;
-    		pa.rect(this.x1, y1, this.width, this.height-surplusHeight);
-    		pa.rect(this.x1, y2 - surplusHeight, this.width, surplusHeight);
-    	}
-    	else if (this.getY2() > y2 && this.getY1() < y2) {
-    		float surplusHeight = this.getY2() - y2;
-    		pa.rect(this.x1, this.y1, this.width, this.height-surplusHeight);
-    		pa.rect(this.x1, y1, this.width, surplusHeight);
-    	}
-    	else {
-    		display(pa);
-    	}
     }
     
     /**
@@ -174,10 +131,19 @@ public class Rect extends Shape {
 		return x1 + width/2f;
 	}
 	
+	/**
+	 * 
+	 * @return The center of this rectangle.
+	 */
 	public Point getCenter() {
 		return new Point(getCenx(), getCeny());
 	}
 	
+	/**
+	 * 
+	 * @param x The new center x-coordinate for this rectangle.
+	 * @param y The new center y-coordinate for this rectangle.
+	 */
 	public void setCenter(float x, float y) {
 		translate(x - getCenx(), y - getCeny());
 	}
@@ -220,6 +186,7 @@ public class Rect extends Shape {
 	 */
 	public void setWidth(float width) {
 		this.width = width;
+		area = width * height;
 	}
 
 	/**
@@ -236,6 +203,15 @@ public class Rect extends Shape {
 	 */
 	public void setHeight(float height) {
 		this.height = height;
+		area = width * height;
+	}
+	
+	/**
+	 * 
+	 * @return The area of the rect
+	 */
+	public float getArea() {
+		return area;
 	}
 	
 	@Override

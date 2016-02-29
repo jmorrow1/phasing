@@ -29,6 +29,7 @@ public class PhaseShifter extends View {
 	private int activeNote1, activeNote2;
 	
 	//geometrical data:
+	private final int FONT_SIZE = 42;
 	private final static int DOT_RADIUS = 10;
 	private ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
 	private ArrayList<DataConnection> dataConnections = new ArrayList<DataConnection>();
@@ -49,8 +50,12 @@ public class PhaseShifter extends View {
 		height = this.getHeight()*0.5f;
 		halfWidth = width*0.5f;
 		halfHeight = height*0.5f;
-		minRadius = 100;
-		maxRadius = 200;
+		
+		//TODO: incorporate the number of notes into this calculation (the more notes the larger the radius)
+		//TODO: incorporate a radius cap or ramp off into this calculation
+		
+		maxRadius = pa.min(pa.lerp(getHeight(), getWidth(), 0.2f) * 0.3f, pa.height/2f - FONT_SIZE/2f);
+		minRadius = maxRadius / 2;
 		
 		initPhraseReaders();
 		
@@ -377,7 +382,7 @@ public class PhaseShifter extends View {
 	}
 	
 	private void drawSymbol(String s, float x, float y) {
-		pa.textSize(42);
+		pa.textSize(FONT_SIZE);
 		pa.textFont(pa.pfont42);
 		pa.text(s.charAt(0), x, y);
 		

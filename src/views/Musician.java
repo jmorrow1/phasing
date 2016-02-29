@@ -85,8 +85,8 @@ public class Musician extends View {
 	}
 	
 	private void initInstruments() {
-		initPianos(0.75f*this.getWidth(), 60);
-		initXylophones(0.75f*this.getWidth(), 150);
+		initPianos(0.75f*this.getWidth(), 0.075f*this.getWidth());
+		initXylophones(0.75f*this.getWidth(), 0.175f*this.getWidth());
 	}
 	
 	private void assignInstruments() {
@@ -106,8 +106,8 @@ public class Musician extends View {
 	
 	private void initXylophones(float width, float height) {
 		xylophoneAB = new Xylophone(3, new Rect(this.getCenx(), this.getCeny(), width, height, PApplet.CENTER));
-		xylophoneA = new Xylophone(3, new Rect(this.getCenx(), this.getCeny() - height, width, height, PApplet.CENTER));
-		xylophoneB = new Xylophone(3, new Rect(this.getCenx(), this.getCeny() + height, width, height, PApplet.CENTER));
+		xylophoneA = new Xylophone(3, new Rect(this.getCenx(), this.getCeny() - height*0.66f, width, height, PApplet.CENTER));
+		xylophoneB = new Xylophone(3, new Rect(this.getCenx(), this.getCeny() + height*0.66f, width, height, PApplet.CENTER));
 	}
 	
 	private void initPianos(float width, float height) {
