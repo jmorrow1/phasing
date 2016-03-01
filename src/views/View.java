@@ -37,10 +37,14 @@ public abstract class View extends Rect implements ViewVariableInfo {
 	
 	/**
 	 * Updates the view.
+	 * @param dt The number of milliseconds that have passed since the last update() invocation.
 	 * @param dNotept1 The amount of time passed since the last update, in terms of how much music player 1 played.
 	 * @param dNotept2 The amount of time passed since the last update, in terms of how much music player 2 played.
 	 */
-	public abstract void update(float dNotept1, float dNotept2);
+	public abstract void update(int dt, float dNotept1, float dNotept2);
 	
+	/**
+	 * Allows the view to change its state in response to a change in one of its option variables.
+	 */
 	public void respondToChangeInSettings() {}
 }

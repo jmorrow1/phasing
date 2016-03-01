@@ -9,6 +9,12 @@ import phasing.PhasesPApplet;
 import phasing.PhraseReader;
 import processing.core.PApplet;
 
+/**
+ * The LiveScorer View type. It listens for note events and every time it receives one, it adds a new note to a plot of pitch/time.
+ * 
+ * @author James Morrow
+ *
+ */
 public class LiveScorer extends View {
 	//phrase readers:
 	private PhraseReader readerA, readerB;
@@ -36,7 +42,6 @@ public class LiveScorer extends View {
 	private float pixelsPerWholeNote;
 	private final int ONE_ID = 1, TWO_ID = 2;
 	private int startingPitch = 0;
-	private float fadeRate;
 	private final float NOTE_SIZE;
 	private float roundStrokeCapSurplus;
 	
@@ -46,11 +51,14 @@ public class LiveScorer extends View {
 	public ModInt noteGraphic = new ModInt(0, numNoteGraphicSet2s, noteGraphicSet2Name);
 	public ModInt colorScheme = new ModInt(1, numColorSchemes, colorSchemeName);
 
+	/**
+	 * 
+	 * @param rect The area in which to draw (usually just the entirety of the window).
+	 * @param opacity The opacity of notes.
+	 * @param pa The PhasesPApplet instance.
+	 */
 	public LiveScorer(Rect rect, int opacity, PhasesPApplet pa) {
 		super(rect, opacity, pa);
-		
-		//TODO: Make dependent on width of screen
-		fadeRate = 0.15f;
 		
 		//TODO: Make dependent on screen size
 		NOTE_SIZE = 20;
@@ -128,7 +136,7 @@ public class LiveScorer extends View {
 	}
 	
 	@Override
-	public void update(float dNotept1, float dNotept2) {
+	public void update(int dt, float dNotept1, float dNotept2) {
 		if (pa.currentPhrase.getNumNotes() > 0) {
 			pa.pushMatrix();
 			
@@ -151,19 +159,28 @@ public class LiveScorer extends View {
 			else if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
 				moveSpawnPoint(-dx, getHeight() * 0.3f + NOTE_SIZE);
 			}
-			fade(dataPts1);
-			fade(dataPts2);
+			fade(dataPts1, dt);
+			fade(dataPts2, dt);
 		}
 	}
 	
+	/**
+	 * Draws the given list of data points with the given color.
+	 * @param dataPts The list of data points.
+	 * @param color The color.
+	 */
 	private void drawDataPoints(ArrayList<DataPoint> dataPts, int color) {
-		//draw data points
-		for (int i=0; i<dataPts.size(); i++) {			
-			DataPoint pt = dataPts.get(i);
+		for (DataPoint pt : dataPts) {
 			pt.display(color);
 		}
 	}
 	
+	/**
+	 * Translates a list of data points horizontally by the given dx.
+	 * 
+	 * @param dx The amount of translation.
+	 * @param dataPts The list of data points to translate.
+	 */
 	private void scroll(float dx, ArrayList<DataPoint> dataPts) {
 		//translate data points	
 		for (DataPoint pt : dataPts) {
@@ -176,13 +193,33 @@ public class LiveScorer extends View {
 		}
 	}
 	
-	private void fade(ArrayList<DataPoint> dataPts) {
-		//fade data points
+	/**
+	 * Fades away a list of data points by the fade rate, which is specified by a helper method fadeAmt(dt).
+	 * @param dataPts The list of data points.
+	 * @param dt The number of milliseconds since the last update() invocation.
+	 */
+	private void fade(ArrayList<DataPoint> dataPts, int dt) {
 		for (DataPoint pt : dataPts) {
-			pt.opacity -= fadeRate;
+			pt.opacity -= fadeAmt(dt);
 		}
 	}
 	
+	/**
+	 * @param dt The number of milliseconds since the last update() invocation.
+	 * @return The amount to decrease opacity by given that dt milliseconds have passed.
+	 */
+	private float fadeAmt(int dt) {
+		//TODO: Make dependent on width of screen
+		//TODO: Make dependent on whether the score mode is MOVE_SPAWN_POINT or MOVE_NOTES
+		return 0.01f * dt;
+	}
+	
+	/**
+	 * Translates the note spawn point by (dx,dy).
+	 * 
+	 * @param dx The number of pixels to move the spawn point horizontally.
+	 * @param dy The number of pixels to move the spawn point vertically.
+	 */
 	private void moveSpawnPoint(float dx, float dy) {
 		if (x < spawnX2) {
 			x += dx;
@@ -198,7 +235,10 @@ public class LiveScorer extends View {
 		}
 	}
 
-	//callback:
+	/**
+	 * Callback from the PhraseReader. When the PhraseReader reads a new note it calls this method to plot that note.
+	 * @param reader The PhraseReader invoking the callback.
+	 */
 	public void plotNote(PhraseReader reader) {
 		int noteIndex = reader.getNoteIndex();
 		ArrayList<DataPoint> dataPts = (reader.getId() == ONE_ID) ? dataPts1 : dataPts2;
@@ -234,10 +274,16 @@ public class LiveScorer extends View {
 		}
 		
 		dataPts.add(new DataPoint(x, y1,
-                	x + pixelsPerWholeNote*pa.currentPhrase.getSCDuration(noteIndex), y2,
-                	noteIndex, opacity));
+                	x + pixelsPerWholeNote*pa.currentPhrase.getSCDuration(noteIndex),
+                	opacity));
 	}
 	
+	/**
+	 * Looks up a note given its index and maps its pitch to a y-coordinate.
+	 * 
+	 * @param noteIndex The index of the note to the Phrase.
+	 * @return The y-coordinate.
+	 */
 	private float noteIndexToY(int noteIndex) {
 		float minPitch = pa.currentPhrase.minPitch();
 		float maxPitch = pa.currentPhrase.maxPitch();
@@ -250,25 +296,45 @@ public class LiveScorer extends View {
 		}
 	}
 	
-	class DataPoint {
-		float startX, startY, endX, endY;
-		int noteIndex;
+	/**
+	 * A single note in the pitch/time plot of notes, with a start point, an end point, an opacity, and an index to the Phrase.
+	 * 
+	 * @author James Morrow
+	 *
+	 */
+	private class DataPoint {
+		float startX, startY, endX;
 		float opacity;
 		
-		DataPoint(float startX, float startY, float endX, float endY, int noteIndex, float opacity) {
+		/**
+		 * 
+		 * @param startX The x-coordinate (an image of time) at which the note starts.
+		 * @param startY The y-coordinate (an image of pitch) of the note.
+		 * @param endX The x-coordinate (an image of time) at which the note ends.
+		 * @param opacity
+		 */
+		private DataPoint(float startX, float startY, float endX, float opacity) {
 			this.startX = startX;
 			this.startY = startY;
 			this.endX = endX;
-			this.endY = endY;
-			this.noteIndex = noteIndex;
 			this.opacity = opacity;
 		}
 		
+		/**
+		 * Translates the note by (dx,0).
+		 * 
+		 * @param dx The number of pixels to translate the note horizontally.
+		 */
 		void translate(float dx) {
 			startX += dx;
 			endX += dx;
 		}
 		
+		/**
+		 * Displays the note with the given color.
+		 * 
+		 * @param color
+		 */
 		void display(int color) {
 			pa.stroke(color, opacity);
 			pa.strokeWeight(NOTE_SIZE);

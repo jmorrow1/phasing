@@ -11,17 +11,17 @@ import processing.core.PApplet;
  * @author James Morrow
  *
  */
-public class Xylophone implements Instrument {
+public class Marimba implements Instrument {
 	private final int numOctaves;
 	private final int numBars;
 	private final Shape[] bars;
 	
 	/**
 	 * 
-	 * @param numOctaves The number of octaves the xylophone spans.
-	 * @param r The area in which the xylophone is situated.
+	 * @param numOctaves The number of octaves the marimba spans.
+	 * @param r The area in which the marimba is situated.
 	 */
-	public Xylophone(int numOctaves, Rect r) {
+	public Marimba(int numOctaves, Rect r) {
 		this.numOctaves = numOctaves;
 		this.numBars = numOctaves * 12;
 		int numWhiteBars = numOctaves * 7;
@@ -99,8 +99,8 @@ public class Xylophone implements Instrument {
 	}
 	
 	/**
-	 * Computes the height of the nth bar in a xylophone with a given unit bar height.
-	 * @param n The index of the bar in a xylophone.
+	 * Computes the height of the nth bar in a marimba with a given unit bar height.
+	 * @param n The index of the bar in a marimba.
 	 * @param unitBarHeight The unit bar height.
 	 * @return
 	 */

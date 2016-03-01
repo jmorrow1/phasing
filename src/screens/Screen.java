@@ -22,6 +22,11 @@ public abstract class Screen {
 	}
 	
 	/**
+	 * Responds to the event of a change in the screen size.
+	 */
+	public abstract void resized();
+	
+	/**
 	 * Method that responds to mouse pressed events.
 	 */
 	public void mousePressed() {}

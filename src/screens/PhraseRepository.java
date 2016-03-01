@@ -69,7 +69,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 			          .setView(new TriangleButtonView(angle, 0.7f*pa.PI))
 			          .plugTo(this)
 	                  ;  
-		pa.colorButtonHideLabel(b);
+		pa.colorControllerHideLabel(b);
 		return b;
 	}
 	
@@ -137,9 +137,12 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		pa.phrasePictures.add(pa.currentPhrasePicture);
 	}
 	
-	/*************************************
-	 ***** Enter/Exit Event Handling *****
-	 *************************************/
+	/*********************************
+	 ***** Screen Event Handling *****
+	 *********************************/
+	
+	@Override
+	public void resized() {}
 
 	@Override
 	public void onEnter() {

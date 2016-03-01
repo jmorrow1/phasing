@@ -10,6 +10,12 @@ import phasing.PhraseReader;
 import geom.CurvedRect;
 import processing.core.PApplet;
 
+/**
+ * The PhaseShifter View type. It show two identical plots of notes that are phase-shifted with respect to one another.
+ * 
+ * @author James Morrow
+ *
+ */
 public class PhaseShifter extends View {
 	//starting pitch:
 	private int startingPitch=0;
@@ -42,6 +48,12 @@ public class PhaseShifter extends View {
 	public ModInt plotPitchMode = new ModInt(0, numWaysOfPlottingPitchOrNot, plotPitchModeName);
 	public ModInt colorScheme = new ModInt(1, numColorSchemes, colorSchemeName);
 
+	/**
+	 * 
+	 * @param rect The area in which to draw (usually just the entirety of the window).
+	 * @param opacity The opacity of notes.
+	 * @param pa The PhasesPApplet instance.
+	 */
 	public PhaseShifter(Rect rect, int opacity, PhasesPApplet pa) {
 		super(rect, opacity, pa);
 		this.pa = pa;
@@ -52,7 +64,6 @@ public class PhaseShifter extends View {
 		halfHeight = height*0.5f;
 		
 		//TODO: incorporate the number of notes into this calculation (the more notes the larger the radius)
-		//TODO: incorporate a radius cap or ramp off into this calculation
 		
 		maxRadius = pa.min(pa.lerp(getHeight(), getWidth(), 0.2f) * 0.3f, pa.height/2f - FONT_SIZE/2f);
 		minRadius = maxRadius / 2;
@@ -61,6 +72,7 @@ public class PhaseShifter extends View {
 		
 		initData();
 	}
+	
 	
 	private void initData() {
 		dataPoints.clear();
@@ -99,7 +111,7 @@ public class PhaseShifter extends View {
 	}
 
 	@Override
-	public void update(float dNotept1, float dNotept2) {
+	public void update(int dt, float dNotept1, float dNotept2) {
 		if (pa.currentPhrase.getNumNotes() > 0) {
 			readerA.update(dNotept1);
 			readerB.update(dNotept2);
@@ -244,14 +256,21 @@ public class PhaseShifter extends View {
 		pa.endShape();
 	}
 	
-	class DataConnection {
+	/**
+	 * Container for positioning data regarding connections between note graphics (used when the noteGraphic is CONNECTED_DOTS).
+	 * This is so the data doesn't have to be recalculated every time its used, which is every frame when the noteGraphic is CONNECTED_DOTS.
+	 * 
+	 * @author James Morrow
+	 *
+	 */
+	private class DataConnection {
 		//specific to connected dots:
 		float tx1, ty1, tx2, ty2;
 		float tx1Alt, ty1Alt, tx2Alt, ty2Alt;
 		float rx1, ry1, rx2, ry2;
 		float rx1Alt, ry1Alt, rx2Alt, ry2Alt;
 		
-		DataConnection(DataPoint d, DataPoint e) {
+		private DataConnection(DataPoint d, DataPoint e) {
 			float lineDist = pa.dist(d.tx, d.ty, e.tx, e.ty);
 			float amt = (DOT_RADIUS / lineDist);
 			
@@ -313,7 +332,14 @@ public class PhaseShifter extends View {
 		}
 	}
 	
-	class DataPoint {
+	/**
+	 * Container for the positions of note graphics.
+	 * This is so the data doesn't have to be recalculated every time its used, which is every frame.
+	 *  
+	 * @author James Morrow
+	 *
+	 */
+	private class DataPoint {
 		final float tx, ty, twidth;
 		final float txAlt, tyAlt;
 		final float rx, ry, theta1, theta2, radius;
@@ -324,7 +350,7 @@ public class PhaseShifter extends View {
 		final static int sectorThickness = 20;
 		final CurvedRect curvedRect, sectorAlt;
 		
-		DataPoint(int i) {
+		private DataPoint(int i) {
 			float normalStart = (i == pa.currentPhrase.getNumNotes()) ? 1 : pa.currentPhrase.getPercentDurationOfSCIndex(i);
 			i %= pa.currentPhrase.getNumNotes();
 			float normalWidth = pa.currentPhrase.getSCDuration(i) / pa.currentPhrase.getTotalDuration();

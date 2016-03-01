@@ -72,7 +72,7 @@ class Cell {
 			                      ;
         copyButton.getCaptionLabel().setFont(PhasesPApplet.pfont12);
         copyButton.getCaptionLabel().toUpperCase(false);
-  		PhasesPApplet.colorButtonShowLabel(copyButton);
+  		PhasesPApplet.colorControllerShowingLabel(copyButton);
 	}
 	
 	/**
@@ -96,7 +96,7 @@ class Cell {
 		//TODO: Fix font blurriness.
 		loadButton.getCaptionLabel().setFont(PhasesPApplet.pfont12);
 		loadButton.getCaptionLabel().toUpperCase(false);
-		PhasesPApplet.colorButtonShowLabel(loadButton);
+		PhasesPApplet.colorControllerShowingLabel(loadButton);
 		
 	}
 	
@@ -120,7 +120,7 @@ class Cell {
 				                 ;
 		generateButton.getCaptionLabel().setFont(PhasesPApplet.pfont12);
 		generateButton.getCaptionLabel().toUpperCase(false);
-		PhasesPApplet.colorButtonShowLabel(generateButton);
+		PhasesPApplet.colorControllerShowingLabel(generateButton);
 	}
 	
 	/**
@@ -142,7 +142,7 @@ class Cell {
 				                  ;
 		newPhraseButton.getCaptionLabel().setFont(PhasesPApplet.pfont12);
 		newPhraseButton.getCaptionLabel().toUpperCase(false);
-		PhasesPApplet.colorButtonShowLabel(newPhraseButton);
+		PhasesPApplet.colorControllerShowingLabel(newPhraseButton);
 	}
 	
 	/*******************************

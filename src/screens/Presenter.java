@@ -41,7 +41,7 @@ import views.ViewVariableInfo;
  */
 public class Presenter extends Screen implements ViewVariableInfo {
 	// real time
-	private int prev_t; //milliseconds
+	private int dt, prev_t; //milliseconds
 	private final float minutesPerMillisecond = 1f / 60000f;
 	
 	// unlock sequences (in terms of minutes to unlock thing 1, minutes to unlock thing 2, etc.)
@@ -149,7 +149,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			          .setView(new TriangleButtonView(headAngle, 0.75f*pa.TWO_PI))
 			          .plugTo(this)
 			          ;
-		pa.colorButtonHideLabel(b);
+		pa.colorControllerHideLabel(b);
 		return b;
 	}
 	
@@ -167,14 +167,26 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		return iconCenx(index) - iconRadius/2f;
 	}
 	
+	/**
+	 * Gives the upper y-coordinate of up-pointing directional buttons.
+	 * @return The upper y-coordinate of up-pointing directional buttons.
+	 */
 	private float upButtonY1() {
 		return iconCenY() - iconRadius - 4;
 	}
 	
+	/**
+	 * Gives the upper y-coordinate of down-pointing directional buttons.
+	 * @return The upper y-coordinate of down-pointing directional buttons.
+	 */
 	private float downButtonY1() {
 		return iconCenY() + iconRadius + 4;
 	}
 	
+	/**
+	 * 
+	 * @return The center y-coordinate of icons.
+	 */
 	private float iconCenY() {
 		return iconStartY1() + iconRadius/2f;
 	}
@@ -261,9 +273,14 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 	}
 	
-	/*************************************
-	 ***** Enter/Exit Event Handling *****
-	 *************************************/
+	/*********************************
+	 ***** Screen Event Handling *****
+	 *********************************/
+	
+	@Override
+	public void resized() {
+		repositionDirectionalButtons();
+	}
 	
 	@Override
 	public void onEnter() {
@@ -325,7 +342,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 */
 	private void updateTime() {
 		int t = pa.millis();
-		int dt = t - prev_t;
+		dt = t - prev_t;
 		prev_t = t;
 		switch (viewType.toInt()) {
 			case MUSICIAN : pa.playerInfo.minutesSpentWithMusician += dt * minutesPerMillisecond; break;
@@ -448,7 +465,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		prev_notept1 = notept1;
 		prev_notept2 = notept2;
 
-		view.update(dNotept1, dNotept2);
+		view.update(dt, dNotept1, dNotept2);
 
 		if (view != phaseShifterView) {
 			phaseShifterView.updateNormalTransforms(dNotept1, dNotept2);
@@ -476,12 +493,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 				case 'w' : iconUp(); break;
 				case 's' : iconDown(); break;
 			}
-		}
-		
-		//for a test of how things look when resized:
-		switch (pa.key) {
-			case '1' : pa.resize(pa.width, pa.height+1); repositionDirectionalButtons(); break;
-			case '2' : pa.resize(pa.width+1, pa.height); repositionDirectionalButtons(); break;
 		}
 	}
 

@@ -30,6 +30,9 @@ import screens.Screen;
  *
  */
 public class PhasesPApplet extends PApplet {
+	// testing
+	public static final boolean testResizing = true;
+	
 	//size
 	public static int area;
 	
@@ -107,6 +110,9 @@ public class PhasesPApplet extends PApplet {
 		}	
 	}
 	
+	/**
+	 * Initializes all of the class's static variables.
+	 */
 	private void initStaticVariables() {
 		//init font variables
 		pfont12 = loadFont("DejaVuSans-12.vlw");
@@ -126,8 +132,8 @@ public class PhasesPApplet extends PApplet {
 	 * Sets the current screen.
 	 */
 	public void setup() {
-		surface.setResizable(true);
 		initStaticVariables();
+		surface.setResizable(true);
 		
 		saveFolderPath = sketchPath() + "\\save\\";
 		
@@ -177,7 +183,7 @@ public class PhasesPApplet extends PApplet {
 		phraseRepo = new PhraseRepository(this);
 		
 		//setup current screen
-		currentScreen = presenter;
+		currentScreen = editor;
 		
 		if (currentScreen == editor) {
 			changeScreenButton.setCaptionLabel("Rehearse");
@@ -189,7 +195,7 @@ public class PhasesPApplet extends PApplet {
 			changeScreenButton.setCaptionLabel("Go Back");
 		}
 		
-		colorButtonShowLabel(changeScreenButton);
+		colorControllerShowingLabel(changeScreenButton);
 		
 		currentScreen.onEnter();
 	}
@@ -549,15 +555,23 @@ public class PhasesPApplet extends PApplet {
 	***** ControlP5 Style *****
 	***************************/
 	
-	public static void colorButtonShowLabel(Controller c) {
-		c.setColorCaptionLabel(0xffffffff);
-	    c.setColorValueLabel(0xffffffff);
-		c.setColorBackground(getColor1());
-		c.setColorForeground(getColor1Bold());
-		c.setColorActive(getColor1Bold());	
+	/**
+	 * Gives the default coloring for labeled buttons to the given button.
+	 * @param b The given button.
+	 */
+	public static void colorControllerShowingLabel(Button b) {
+		b.setColorCaptionLabel(0xffffffff);
+	    b.setColorValueLabel(0xffffffff);
+		b.setColorBackground(getColor1());
+		b.setColorForeground(getColor1Bold());
+		b.setColorActive(getColor1Bold());	
 	}
 	
-	public void colorButtonHideLabel(Button b) {
+	/**
+	 * Gives the default coloring for unlabeled buttons to the given button.
+	 * @param b The given button.
+	 */
+	public void colorControllerHideLabel(Button b) {
 		b.setColorBackground(color(255));
 	    b.setColorForeground(getColor1());
 	    b.setColorActive(getColor1Bold());
@@ -636,6 +650,12 @@ public class PhasesPApplet extends PApplet {
 	 * Sends key pressed events to the current screen.
 	 */
 	public void keyPressed() {
+		if (testResizing) {
+			switch (key) {
+				case '1' : resize(width, height+1); break;
+				case '2' : resize(width+1, height); break;
+			}
+		}
 		currentScreen.keyPressed();
 	}
 	
@@ -646,6 +666,9 @@ public class PhasesPApplet extends PApplet {
 		currentScreen.keyReleased();
 	}
 	
+	/**
+	 * Sends mouse wheel events to the current screen.
+	 */
 	public void mouseWheel(MouseEvent event) {
 		currentScreen.mouseWheel(event);
 	}
@@ -809,10 +832,25 @@ public class PhasesPApplet extends PApplet {
 	***** Getters and Setters *****
 	******************************/
 	
-	public void resize(int width, int height) {
+	/**
+	 * Resizes the window according to the given width and height.
+	 * Then informs the current screen of that the window was resized.
+	 * 
+	 * @param width The new width of the window.
+	 * @param height The new height of the window.
+	 */
+	private void resize(int width, int height) {
 		surface.setSize(width, height);
+		currentScreen.resized();
 	}
 	
+	/**
+	 * Returns the scale matching the given root name and scale name, or null if no scale matches.
+	 * 
+	 * @param root The name of the root (e.g. "A", "Bb", ...).
+	 * @param scaleName The name of the scale (e.g. "Major", "Minor Pentatonic", ...).
+	 * @return The matching scale, or null if no scale matches.
+	 */
 	public Scale getScale(String root, String scaleName) {
 		for (String name : scaleTypes) {
 			if (name.equals(scaleName)) {
@@ -830,8 +868,25 @@ public class PhasesPApplet extends PApplet {
 		return null;
 	}
 	
-	private static boolean noteNamesAreEquivalent(String root, String scaleRootName) {
-		return (scaleRootName.length() > 1 && root.contains(scaleRootName)) || root.equals(scaleRootName);
+	/**
+	 * Helper to recognize the equivalence between two strings that refer to the same pitch.
+	 * 
+	 * The first string, doubleName, should be one of two things. If it represents a note with an accidental--
+	 * for example "A#"--then it will refer to both names i.e. "A#/Bb". If it represents a note without
+	 * an accidental--"C" for example-- then it simply be "C".
+	 * 
+	 * The second string should only ever contain one name. So it could equal to "A#". It could equal "Bb".
+	 * But it could not equal "A#/Bb".
+	 * 
+	 * @param doubleName 
+	 * @param singleName
+	 * 
+	 * @return True, if the two strings represent equivalent pitches, false otherwise.
+	 */
+	private static boolean noteNamesAreEquivalent(String doubleName, String singleName) {
+		println("rootName1: " + doubleName);
+		println("rootName2: " + singleName);
+		return (singleName.length() > 1 && doubleName.contains(singleName)) || doubleName.equals(singleName);
 	}
 	
 	/**

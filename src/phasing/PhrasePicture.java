@@ -8,6 +8,12 @@ import geom.Rect;
 import processing.core.PApplet;
 import processing.data.JSONObject;
 
+/**
+ * Represents a phrase with styling information that helps determine how to depict the phrase as a picture.
+ * 
+ * @author James Morrow
+ *
+ */
 public class PhrasePicture implements JSONable {
 	//class-scope
 	private static int nextId = (int)'a';
@@ -33,10 +39,23 @@ public class PhrasePicture implements JSONable {
 	 ***** Initialization *****
 	 **************************/
 	
+	/**
+	 * Constructs a PhrasePicture for the given Phrase whose styling information will be randomly generated.
+	 * It will automatically be assigned a unique name.
+	 * 
+	 * @param phrase The Phrase.
+	 * @param pa The source of randomness for initializing styling information.
+	 */
 	public PhrasePicture(Phrase phrase, PhasesPApplet pa) {
 		this(phrase, "" + (char)nextId++, pa);
 	}
 	
+	/**
+	 * Constructs a PhrasePicture for the given Phrase whose styling information will be randomly generated.
+	 * @param phrase The Phrase.
+	 * @param name The identifier of the PhrasePicture.
+	 * @param pa The source of randomness for initializing styling information.
+	 */
 	public PhrasePicture(Phrase phrase, String name, PhasesPApplet pa) {
 		this.phrase = phrase;
 		this.name = name;
@@ -45,13 +64,23 @@ public class PhrasePicture implements JSONable {
 		initDrawNoteFuncs(noteStyleType);
 	}
 	
+	/**
+	 * Copy constructor. Copies the given PhrasePicture's Phrase and styling information but not its name.
+	 * 
+	 * @param phrasePicture The PhrasePicture to copy.
+	 */
 	public PhrasePicture(PhrasePicture phrasePicture) {
 		this.phrase = new Phrase(phrasePicture.phrase);
-		this.name = new String(phrasePicture.name + phrasePicture.nextCopyId++); //TODO: make name assignment a bit more robust here
+		this.name = new String(phrasePicture.name + phrasePicture.nextCopyId++); //TODO: As this is written now, this name could collide with another name.
 		this.blendAmt = phrasePicture.blendAmt;
 		this.initDrawNoteFuncs(phrasePicture.noteStyleType());
 	}
 	
+	/**
+	 * Constructor for making a PhrasePicture from a JSONObject.
+	 * 
+	 * @param json A JSONObject representing a PhrasePicture.
+	 */
 	public PhrasePicture(JSONObject json) {
 		this.phrase = json.hasKey("phrase") ? new Phrase(json.getJSONObject("phrase")) : new Phrase();
 		this.blendAmt = json.getFloat("blendAmt", (float)Math.random());
@@ -68,6 +97,11 @@ public class PhrasePicture implements JSONable {
 		return json;
 	}
 	
+	/**
+	 * Initializes the functions for drawing notes and rests.
+	 * 
+	 * @param noteStyleType The code that determines which functions are initialized.
+	 */
 	private void initDrawNoteFuncs(int noteStyleType) {
 		switch (noteStyleType) {
 			case CIRCLE : drawNoteFunc = new DrawCircle(drawStyle); drawRestFunc = new DrawCircle(restStyle); break;
@@ -77,6 +111,10 @@ public class PhrasePicture implements JSONable {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return The code (CIRCLE, DIAMOND, or SQUARE) that represents the type of draw note function this object uses.
+	 */
 	private int noteStyleType() {
 		if (drawNoteFunc instanceof DrawCircle) return CIRCLE;
 		if (drawNoteFunc instanceof DrawDiamond) return DIAMOND;
@@ -88,6 +126,12 @@ public class PhrasePicture implements JSONable {
 	 ***** Drawing *****
 	 *******************/
 	
+	/**
+	 * Draws the Phrase within the given rect to the given PApplet.
+	 * 
+	 * @param rect The area in which to draw the Phrase.
+	 * @param pa The PhasesPApplet to draw to and get color scheme information from.
+	 */
 	public void draw(Rect rect, PhasesPApplet pa) {
 		//draw lines between notes
 		pa.strokeWeight(1);
@@ -101,7 +145,15 @@ public class PhrasePicture implements JSONable {
 		iterateNotes(drawNoteFunc, drawRestFunc, rect, pa);
 	}
 	
-	public void iterateNotes(DrawNote drawNote, DrawNote drawRest, Rect rect, PhasesPApplet pa) {
+	/**
+	 * Iterates through the notes and rests in the phrase, performing the draw note function on notes and the draw rest function on rests as it goes.
+	 * 
+	 * @param drawNote The function used to draw notes.
+	 * @param drawRest The function used to draw rests.
+	 * @param rect The area in which to draw the Phrase's notes.
+	 * @param pa The PApplet to draw to.
+	 */
+	private void iterateNotes(DrawNote drawNote, DrawNote drawRest, Rect rect, PhasesPApplet pa) {
 		float x1 = pa.lerp(rect.getX1(), rect.getX2(), 0.1f);
 		float x2 = pa.lerp(rect.getX2(), rect.getX1(), 0.1f);
 		float x = x1;
@@ -129,6 +181,12 @@ public class PhrasePicture implements JSONable {
 	 ***** Styling Notes *****
 	 *************************/
 	
+	/**
+	 * Changes a PhasesPApplet state in order to change the way it styles graphics (such as changes in fill color, stroke color, etc.).
+	 * 
+	 * @author James Morrow
+	 *
+	 */
 	private interface Style {
 		void apply(PhasesPApplet pa);
 	}
@@ -137,10 +195,22 @@ public class PhrasePicture implements JSONable {
 	 ***** Ways of Drawing Notes *****
 	 *********************************/
 	
+	/**
+	 * Draws a shape to a coordinate in space (x,y) with a radius r to a PhasesPApplet pa.
+	 * 
+	 * @author James Morrow
+	 *
+	 */
 	private interface DrawNote {
 		void draw(float x, float y, float r, PhasesPApplet pa);
 	}
 	
+	/**
+	 * Draws a circle with some style.
+	 * 
+	 * @author James Morrow
+	 *
+	 */
 	private class DrawCircle implements DrawNote {
 		Style style;
 		
@@ -155,6 +225,12 @@ public class PhrasePicture implements JSONable {
 		}
 	}
 	
+	/**
+	 * Draws a diamond with some style.
+	 * 
+	 * @author James Morrow
+	 *
+	 */
 	private class DrawDiamond implements DrawNote {
 		Style style;
 		
@@ -169,6 +245,12 @@ public class PhrasePicture implements JSONable {
 		}
 	}
 	
+	/**
+	 * Draws a square with some style.
+	 * 
+	 * @author James Morrow
+	 *
+	 */
 	private class DrawSquare implements DrawNote {
 		Style style;
 		
@@ -183,6 +265,12 @@ public class PhrasePicture implements JSONable {
 		}
 	}
 	
+	/**
+	 * Calls pa.vertex(x,y) on the PhasesPApplet pa.
+	 * 
+	 * @author James Morrow
+	 *
+	 */
 	private class AddVertex implements DrawNote {
 		public void draw(float x, float y, float r, PhasesPApplet pa) {
 			pa.vertex(x, y);
@@ -193,14 +281,27 @@ public class PhrasePicture implements JSONable {
 	 ***** Getters and Setters *****
 	 *******************************/
 	
+	/**
+	 * 
+	 * @return The phrase this PhrasePicture contains.
+	 */
 	public Phrase getPhrase() {
 		return phrase;
 	}
 	
+	/**
+	 * 
+	 * @return The name of this PhrasePicture.
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * Sets the name of this PhrasePicture.
+	 * 
+	 * @param name The new name.
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}

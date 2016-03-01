@@ -407,9 +407,12 @@ public class Editor extends Screen {
 		activeNoteIndex = livePlayer.getNoteIndex();
 	}
 	
-	/*************************************
-	 ***** Enter/Exit Event Handling *****
-	 *************************************/
+	/*********************************
+	 ***** Screen Event Handling *****
+	 *********************************/
+	
+	@Override
+	public void resized() {}
 
 	@Override
 	public void onEnter() {

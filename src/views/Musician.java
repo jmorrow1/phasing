@@ -4,19 +4,25 @@ import geom.Rect;
 import instrument_graphics.Instrument;
 import instrument_graphics.InstrumentPlayer;
 import instrument_graphics.Piano;
-import instrument_graphics.Xylophone;
+import instrument_graphics.Marimba;
 import phasing.ModInt;
 import phasing.PhasesPApplet;
 import phasing.PhraseReader;
 import processing.core.PApplet;
 
+/**
+ * The Musician View type. It animates an Instrument graphic so it looks like the instrument is being played.
+ * 
+ * @author James Morrow
+ *
+ */
 public class Musician extends View {
 	//phrase readers:
 	private PhraseReader readerA, readerB;
 	
 	//instruments:
 	private Piano pianoA, pianoB, pianoAB;
-	private Xylophone xylophoneA, xylophoneB, xylophoneAB;
+	private Marimba marimbaA, marimbaB, marimbaAB;
 	private Instrument instrumentA, instrumentB, instrumentAB;
 	
 	//players:
@@ -38,6 +44,12 @@ public class Musician extends View {
 		readerB.setCallee(playerB);
 	}
 	
+	/**
+	 * 
+	 * @param rect The area in which to draw (usually just the entirety of the window).
+	 * @param opacity The opacity of notes.
+	 * @param pa The PhasesPApplet instance.
+	 */
 	public Musician(Rect rect, int opacity, PhasesPApplet pa) {
 		super(rect, opacity, pa);
 		initInstruments();
@@ -53,7 +65,7 @@ public class Musician extends View {
 	}
 	
 	@Override
-	public void update(float dNotept1, float dNotept2) {
+	public void update(int dt, float dNotept1, float dNotept2) {
 		if (pa.currentPhrase.getNumNotes() > 0) {
 			readerA.update(dNotept1);
 			readerB.update(dNotept2);	
@@ -84,11 +96,17 @@ public class Musician extends View {
 		}
 	}
 	
+	/**
+	 * Initializes all instruments.
+	 */
 	private void initInstruments() {
 		initPianos(0.75f*this.getWidth(), 0.075f*this.getWidth());
-		initXylophones(0.75f*this.getWidth(), 0.175f*this.getWidth());
+		initMarimbas(0.75f*this.getWidth(), 0.175f*this.getWidth());
 	}
 	
+	/**
+	 * Assigns instruments to variables accordinate to what the "instrument" option is set to.
+	 */
 	private void assignInstruments() {
 		switch (instrument.toInt()) {
 			case PIANO:
@@ -97,25 +115,38 @@ public class Musician extends View {
 				instrumentAB = pianoAB;
 				break;
 			case XYLOPHONE:
-				instrumentA = xylophoneA;
-				instrumentB = xylophoneB;
-				instrumentAB = xylophoneAB;
+				instrumentA = marimbaA;
+				instrumentB = marimbaB;
+				instrumentAB = marimbaAB;
 				break;
 		}
 	}
 	
-	private void initXylophones(float width, float height) {
-		xylophoneAB = new Xylophone(3, new Rect(this.getCenx(), this.getCeny(), width, height, PApplet.CENTER));
-		xylophoneA = new Xylophone(3, new Rect(this.getCenx(), this.getCeny() - height*0.66f, width, height, PApplet.CENTER));
-		xylophoneB = new Xylophone(3, new Rect(this.getCenx(), this.getCeny() + height*0.66f, width, height, PApplet.CENTER));
+	/**
+	 * Initializes all marimbas.
+	 * @param width The width for each marimba.
+	 * @param height The height for each marimba.
+	 */
+	private void initMarimbas(float width, float height) {
+		marimbaAB = new Marimba(3, new Rect(this.getCenx(), this.getCeny(), width, height, PApplet.CENTER));
+		marimbaA = new Marimba(3, new Rect(this.getCenx(), this.getCeny() - height*0.66f, width, height, PApplet.CENTER));
+		marimbaB = new Marimba(3, new Rect(this.getCenx(), this.getCeny() + height*0.66f, width, height, PApplet.CENTER));
 	}
 	
+	/**
+	 * Initializes all pianos.
+	 * @param width The width for each piano.
+	 * @param height The height for each piano.
+	 */
 	private void initPianos(float width, float height) {
 		pianoAB = new Piano(4, new Rect(this.getCenx(), this.getCeny(), width, height, PApplet.CENTER), true, pa.color(255));
 		pianoA = new Piano(4, new Rect(this.getCenx(), this.getCeny() - height, width, height, PApplet.CENTER), true, pa.color(255));	
 		pianoB = new Piano(4, new Rect(this.getCenx(), this.getCeny() + height, width, height, PApplet.CENTER), true, pa.color(255));
 	}
 
+	/**
+	 * Initializes the InstrumentPlayers, the things that animate the instruments.
+	 */
 	private void initInstrumentPlayers() {	
 		if (superimposedOrSeparated.toInt() == SUPERIMPOSED) {
 			playerA = new InstrumentPlayer(instrumentAB, pa.currentPhrase);
@@ -127,6 +158,9 @@ public class Musician extends View {
 		}
 	}
 	
+	/**
+	 * Initializes the PhraseReaders, the things that send events to the InstrumentPlayers whenever new notes are read.
+	 */
 	private void initPhraseReaders() {
 		try {
 			readerA = new PhraseReader(pa.currentPhrase, -1, playerA,
