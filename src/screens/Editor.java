@@ -437,6 +437,16 @@ public class Editor extends Screen {
 		pa.saveCurrentScale();
 	}
 	
+	@Override
+	public void onPause() {
+		//TODO: if playing, pause.
+	}
+	
+	@Override
+	public void onResume() {
+		//TODO: if was playing, resume.
+	}
+	
 	/********************************
 	 ***** Input Event Handling *****
 	 ********************************/

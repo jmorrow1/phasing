@@ -61,14 +61,21 @@ public abstract class Screen {
 	/**
 	 * Method that responds to the event of this screen becoming inactive.
 	 */
-	public abstract void onExit();
+	public abstract void onExit();	
+	/**
+	 * Method that responds to the event of a pause.
+	 */
+	public abstract void onPause();
+	/**
+	 * Method that responds to the event of resuming a pause.
+	 */
+	public abstract void onResume();
 	/**
 	 * Method that updates and draws things to the PhasesPApplet.
 	 */
 	public abstract void draw();
-	
 	/**
-	 * Method that does things while the application is paused.
+	 * Method that makes the screen do things while the application is paused.
 	 */
-	public abstract void drawWhilePaused();
+	public void drawWhilePaused() {}
 }

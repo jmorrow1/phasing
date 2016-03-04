@@ -324,6 +324,15 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		cp5.hide();
 	}
 	
+	@Override
+	public void onPause() {
+		//TODO bookmark place in music and stop playing
+	}
+	
+	public void onResume() {
+		//TODO resume music at bookmarked place
+	}
+	
 	/******************************
 	 ***** Drawing and Update *****
 	 ******************************/

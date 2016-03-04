@@ -13,8 +13,8 @@ import controlP5.Button;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlP5.Controller;
-import controlP5.Toggle;
 import geom.Polygon;
+import geom.Rect;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
@@ -38,15 +38,12 @@ public class PhasesPApplet extends PApplet {
 	//phrase picture name generator
 	public static NameGenerator phrasePictureNameGenerator;
 	
-	//size
-	public static int area;
-	
 	//music parameters
 	public static final float MIN_BPM = 1, MAX_BPM = 100;
 	
 	//all music variables
 	public final static String[] roots = new String[] {"A", "A#/Bb", "B", "C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab"};
-	public static ArrayList<String> scaleTypes = new ArrayList<String>();
+	public final static ArrayList<String> scaleTypes = new ArrayList<String>();
 	private static Map<String, ScaleSet> scaleSets = new HashMap<String, ScaleSet>();
 	
 	//active music variables
@@ -63,6 +60,8 @@ public class PhasesPApplet extends PApplet {
 	private Presenter presenter;
 	private Editor editor;
 	private PhraseRepository phraseRepo;
+	private PauseMenu pauseMenu;
+	private boolean pause;
 	
 	//active screen
 	private Screen currentScreen;
@@ -78,9 +77,6 @@ public class PhasesPApplet extends PApplet {
 	private Button changeScreenButton;
 	private Button pauseButton;
 	
-	//pause menu
-	private boolean pause;
-	
 	//screen size
 	public static final int _800x600 = 0, _1366x768 = 1, _1024x768 = 2, _1280x800 = 3, _1920x1080 = 4, _1280x1024 = 5;
 	public int screenSizeMode = _800x600;
@@ -91,9 +87,9 @@ public class PhasesPApplet extends PApplet {
 	//player
 	public PlayerInfo playerInfo;
 	
-	/****************
-	***** Setup *****
-	*****************/
+	/*****************
+	 ***** Setup *****
+	 *****************/
 	
 	/**
 	 * Sets up the size of the canvas/window
@@ -127,7 +123,6 @@ public class PhasesPApplet extends PApplet {
 		pfont18 = loadFont("DejaVuSans-18.vlw");
 		pfont42 = loadFont("DejaVuSans-42.vlw");
 		musicFont = loadFont("MaestroWide-48.vlw");
-		area = width * height;
 		
 		//init colors
 		initColorScheme();
@@ -136,11 +131,7 @@ public class PhasesPApplet extends PApplet {
 		//init save folder path
 		saveFolderPath = sketchPath() + "\\save\\";
 		
-		//init phrase picture list
-		boolean phrasePicturesLoaded = loadPhrasePictures();
-		if (!phrasePicturesLoaded) {
-			phrasePictures = new ArrayList<PhrasePicture>();
-		}
+		initPhrasePictures();
 		
 		//init name generator, excluding names given by phrasePictures
 		phrasePictureNameGenerator = new NameGenerator(PhrasePicture.getNames(phrasePictures));
@@ -168,6 +159,13 @@ public class PhasesPApplet extends PApplet {
 		initPauseButton();
 	}
 	
+	private void initPhrasePictures() {
+		boolean phrasePicturesLoaded = loadPhrasePictures();
+		if (!phrasePicturesLoaded) {
+			phrasePictures = new ArrayList<PhrasePicture>();
+		}
+	}
+	
 	/**
 	 * Initializes the screens.
 	 */
@@ -175,6 +173,7 @@ public class PhasesPApplet extends PApplet {
 		presenter = new Presenter(this);
 		editor = new Editor(this);
 		phraseRepo = new PhraseRepository(this);
+		pauseMenu = new PauseMenu(new Rect(width/2, height/2, 0.8f*width, 0.8f*height, CENTER), this);
 	}
 	
 	/**
@@ -431,9 +430,9 @@ public class PhasesPApplet extends PApplet {
 		}
 	}
 	
-	/****************************
-	***** Phrase Generation *****
-	*****************************/	
+	/*****************************
+	 ***** Phrase Generation *****
+	 *****************************/	
 	
 	/**
 	 * 
@@ -600,9 +599,9 @@ public class PhasesPApplet extends PApplet {
 		xs[j] = xs_i;
 	}
 	
-	/**************************
-	***** ControlP5 Style *****
-	***************************/
+	/***************************
+	 ***** ControlP5 Style *****
+	 ***************************/
 	
 	/**
 	 * Gives the default coloring for labeled buttons to the given controller.
@@ -626,9 +625,9 @@ public class PhasesPApplet extends PApplet {
 	    b.setColorActive(getColor1Bold());
 	}
 	
-	/**********************************
-	***** Callback from ControlP5 *****
-	***********************************/
+	/***********************************
+	 ***** Callback from ControlP5 *****
+	 ***********************************/
 	
 	/**
 	 * Callback from ControlP5.
@@ -661,9 +660,9 @@ public class PhasesPApplet extends PApplet {
 		pause = !pause;
 	}
 	
-	/********************
-	***** Draw Loop *****
-	*********************/
+	/*********************
+	 ***** Draw Loop *****
+	 *********************/
 	
 	/**
 	 * Sends a message to the current screen to draw itself.
@@ -674,39 +673,60 @@ public class PhasesPApplet extends PApplet {
 		}
 		else {
 			currentScreen.drawWhilePaused();
+			pauseMenu.draw(this);
 		}
 	}
 	
-	/*******************************
-	***** Input Event Handling *****
-	********************************/
+	/********************************
+	 ***** Input Event Handling *****
+	 ********************************/
 	
 	/**
 	 * Sends mouse pressed events to the current screen.
 	 */
 	public void mousePressed() {
-		currentScreen.mousePressed();
+		if (!pause) {
+			currentScreen.mousePressed();
+		}
+		else {
+			pauseMenu.mousePressed();
+		}
 	}
 	
 	/**
 	 * Sends mouse released events to the current screen.
 	 */
 	public void mouseReleased() {
-		currentScreen.mouseReleased();
+		if (!pause) {
+			currentScreen.mouseReleased();
+		}
+		else {
+			pauseMenu.mouseReleased();
+		}
 	}
 	
 	/**
 	 * Sends mouse dragged events to the current screen.
 	 */
 	public void mouseDragged() {
-		currentScreen.mouseDragged();
+		if (!pause) {
+			currentScreen.mouseDragged();
+		}
+		else {
+			pauseMenu.mouseDragged();
+		}
 	}
 	
 	/**
 	 * Sends mouse moved events to the current screen.
 	 */
 	public void mouseMoved() {
-		currentScreen.mouseMoved();
+		if (!pause) {
+			currentScreen.mouseMoved();
+		}
+		else {
+			pauseMenu.mouseMoved();
+		}
 	}
 	
 	/**
@@ -719,26 +739,38 @@ public class PhasesPApplet extends PApplet {
 				case '2' : resize(width+1, height); break;
 			}
 		}
-		currentScreen.keyPressed();
+		if (!pause) {
+			currentScreen.keyPressed();
+		}
+		else {
+			pauseMenu.keyPressed();
+		}
 	}
 	
 	/**
 	 * Sends key released events to the current screen.
 	 */
 	public void keyReleased() {
-		currentScreen.keyReleased();
+		if (!pause) {
+			currentScreen.keyReleased();
+		}
+		else {
+			pauseMenu.keyReleased();
+		}
 	}
 	
 	/**
 	 * Sends mouse wheel events to the current screen.
 	 */
 	public void mouseWheel(MouseEvent event) {
-		currentScreen.mouseWheel(event);
+		if (!pause) {
+			currentScreen.mouseWheel(event);
+		}
 	}
 	
-	/***********************************************
-	***** Extended Primitive Drawing Functions *****
-	************************************************/
+	/************************************************
+	 ***** Extended Primitive Drawing Functions *****
+	 ************************************************/
 	
 	/**
 	 * Draws an arrow head from two lines (which looks like this: >).
@@ -843,9 +875,9 @@ public class PhasesPApplet extends PApplet {
 		}
 	}
 	
-	/****************************
-	***** Utility Functions *****
-	*****************************/
+	/*****************************
+	 ***** Utility Functions *****
+	 *****************************/
 	
 	//TODO: implement this function
 	public static void phraseToMidiFile(String location, String name) {
@@ -891,9 +923,9 @@ public class PhasesPApplet extends PApplet {
 		else return denom - ((-num) % denom);
 	}
 	
-	/******************************
-	***** Getters and Setters *****
-	******************************/
+	/*******************************
+	 ***** Getters and Setters *****
+	 ******************************/
 	
 	/**
 	 * Resizes the window according to the given width and height.
@@ -1088,11 +1120,12 @@ public class PhasesPApplet extends PApplet {
 	 * @author James Morrow
 	 *
 	 */
+	//TODO: Make ColorSchemes possess a light version of each color (color 1, color 2, and the blended color)
 	private class ColorScheme {
 		final int color1, color2, color1Bold, color2Bold, color1VeryBold, color2VeryBold;
 		final int blendedColor, blendedColorVeryBold, blendedColorBold;
 
-		ColorScheme(int color1, int color2, int color1Bold, int color2Bold, int color1VeryBold, int color2VeryBold) {
+		private ColorScheme(int color1, int color2, int color1Bold, int color2Bold, int color1VeryBold, int color2VeryBold) {
 			this.color1 = color1;
 			this.color2 = color2;
 			this.color1Bold = color1Bold;

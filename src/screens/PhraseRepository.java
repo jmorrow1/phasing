@@ -216,6 +216,12 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		pa.savePlayerInfo();
 	}
 	
+	@Override
+	public void onPause() {}
+	
+	@Override
+	public void onResume() {}
+	
 	/*******************
 	 ***** Drawing *****
 	 *******************/
