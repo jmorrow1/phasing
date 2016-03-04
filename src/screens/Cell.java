@@ -18,7 +18,7 @@ import phasing.PhrasePicture;
 class Cell {
 	//class-scope
 	private static int nextId = (int)'a';
-	private final static int LOAD = -1, GENERATE = -2, COPY = -3, NEW = -4;
+	private final static int LOAD = -1, GENERATE = -2, COPY = -3, NEW = -4, DELETE = -5;
 	
 	//outside world
 	private CellEventHandler eventHandler;
@@ -29,6 +29,7 @@ class Cell {
 	//buttons
 	private Button copyButton;
 	private Button loadButton;
+	private Button deleteButton;
 	private Button generateButton;
 	private Button newPhraseButton;
 	
@@ -48,6 +49,7 @@ class Cell {
 		initCopyButton(cp5);
 		initGenerateButton(cp5);
 		initNewPhraseButton(cp5);
+		initDeleteButton(cp5);
 		nextId++;
 		this.eventHandler = phraseRepo;
 	}
@@ -82,7 +84,7 @@ class Cell {
 	 * @param cp5 The ControlP5 instance to add the button to.
 	 */
 	private void initLoadButton(ControlP5 cp5) {
-		float x1 = rect.getX1();
+		float x1 = rect.getX1() + 0.5f;
 		float y1 = rect.getY1() + 0.9f * rect.getHeight();
 		float width = 0.4f * rect.getWidth();
 		float height = 0.1f * rect.getHeight();
@@ -97,7 +99,28 @@ class Cell {
 		loadButton.getCaptionLabel().setFont(PhasesPApplet.pfont12);
 		loadButton.getCaptionLabel().toUpperCase(false);
 		PhasesPApplet.colorControllerShowingLabel(loadButton);
-		
+	}
+	
+	/**
+	 * Initializes a "Delete" button. This is intended to delete a phrase picture.
+	 * 
+	 * @param cp5 The ControlP5 instance to add the button to.
+	 */
+	private void initDeleteButton(ControlP5 cp5) {
+		float width = 0.4f * rect.getWidth();
+		float height = 0.1f * rect.getHeight();
+		float x1 = rect.getX2() - width - 1;
+		float y1 = rect.getY1() + 0.9f * rect.getHeight();
+		this.deleteButton = cp5.addButton("Delete " + (char)nextId)
+				               .setLabel("Delete")
+				               .setPosition(x1, y1)
+				               .setSize((int)width, (int)height)
+				               .setId(DELETE)
+				               .plugTo(this)
+				               ;
+		deleteButton.getCaptionLabel().setFont(PhasesPApplet.pfont12);
+		deleteButton.getCaptionLabel().toUpperCase(false);
+		PhasesPApplet.colorControllerShowingLabel(deleteButton);
 	}
 	
 	/**
@@ -163,6 +186,9 @@ class Cell {
 			case GENERATE :
 				eventHandler.generatePhrase();
 				break;
+			case DELETE:
+				eventHandler.delete(this);
+				break;
 		}
 	}
 	
@@ -192,6 +218,7 @@ class Cell {
 	 */
 	protected void draw(boolean showNewPhraseButtons, PhasesPApplet pa) {
 		drawBorder(false, pa);
+		deleteButton.hide();
 		copyButton.hide();
 		loadButton.hide();
 		if (showNewPhraseButtons) {
@@ -221,6 +248,7 @@ class Cell {
 		pa.fill(0);
 		pa.text(name, rect.getCenx(), rect.getY1());
 		
+		deleteButton.show();
 		if (isCurrentPhrase) {
 			copyButton.show();
 			loadButton.hide();

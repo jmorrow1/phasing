@@ -24,6 +24,13 @@ interface CellEventHandler {
 	public void load(Cell cell);
 	
 	/**
+	 * Deletes the PhrasePicture associated with the given cell.
+	 * 
+	 * @param cell
+	 */
+	public void delete(Cell cell);
+	
+	/**
 	 * Makes a blank new PhrasePicture and adds it to the end of a list.
 	 */
 	public void newPhrase();

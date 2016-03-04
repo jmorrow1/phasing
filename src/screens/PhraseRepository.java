@@ -3,13 +3,13 @@ package screens;
 import java.util.ArrayList;
 
 import controlP5.Button;
+import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlp5.TriangleButtonView;
 import geom.Rect;
 import phasing.PhasesPApplet;
 import phasing.Phrase;
 import phasing.PhrasePicture;
-import processing.core.PApplet;
 
 /**
  * 
@@ -19,6 +19,9 @@ import processing.core.PApplet;
 public class PhraseRepository extends Screen implements CellEventHandler {
 	//cells
 	private ArrayList<Cell> cells = new ArrayList<Cell>();
+	
+	//current page number
+	private int currPageNum;
 	
 	//controlp5
 	private ControlP5 cp5;
@@ -106,35 +109,91 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	}
 	
 	/*******************************
-	 ***** Interface with Cell *****
+	 ***** ControlP5 Callbacks *****
 	 *******************************/
 	
+	/**
+	 * Callback for when pageLeftButton receives an event.
+	 * @param e
+	 */
+	public void pageLeft(ControlEvent e) {
+		currPageNum--;
+		updatePageButtonStates();
+	}
+	
+	/**
+	 * Callback for when pageRightButton receives an event.
+	 * @param e
+	 */
+	public void pageRight(ControlEvent e) {
+		currPageNum++;
+		updatePageButtonStates();
+	}
+	
+	/****************************
+	 ***** CellEventHandler *****
+	 ****************************/
+	
 	public void copy(Cell cell) {
-		int i = cells.indexOf(cell);
+		int i = cells.indexOf(cell) + currPageNum*cells.size();
 		if (i < pa.phrasePictures.size()) {
 			PhrasePicture p = pa.phrasePictures.get(i);
-			pa.phrasePictures.add(i+1, new PhrasePicture(p));
+			addPhrasePicture(i+1, new PhrasePicture(p));
 		}
 	}
 
 	public void load(Cell cell) {
-		int i = cells.indexOf(cell);
+		int i = cells.indexOf(cell) + currPageNum*cells.size();
 		if (i < pa.phrasePictures.size()) {
 			pa.currentPhrasePicture = pa.phrasePictures.get(i);
 			pa.currentPhrase = pa.currentPhrasePicture.getPhrase();
 		}
 	}
 	
+	public void delete(Cell cell) {
+		int i = cells.indexOf(cell);
+		if (i != -1) {
+			removePhrasePicture(i + currPageNum*cells.size());
+		}
+	}
+	
 	public void newPhrase() {
 		pa.currentPhrase = new Phrase();
 		pa.currentPhrasePicture = new PhrasePicture(pa.currentPhrase, pa);
-		pa.phrasePictures.add(pa.currentPhrasePicture);
+		addPhrasePicture(pa.currentPhrasePicture);
 	}
 	
 	public void generatePhrase() {
 		pa.currentPhrase = pa.generateReichLikePhrase();
 		pa.currentPhrasePicture = new PhrasePicture(pa.currentPhrase, pa);
-		pa.phrasePictures.add(pa.currentPhrasePicture);
+		addPhrasePicture(pa.currentPhrasePicture);
+	}
+	
+	/**
+	 * Removes a PhrasePicture from the list and sets whether the page buttons are hidden or shown.
+	 * @param i
+	 */
+	private void removePhrasePicture(int i) {
+		pa.phrasePictures.remove(i);
+		updatePageButtonStates();
+	}
+	
+	/**
+	 * Adds a PhrasePicture to the end of the list and sets whether the page buttons are hidden or shown.
+	 * @param p
+	 */
+	private void addPhrasePicture(PhrasePicture p) {
+		addPhrasePicture(pa.phrasePictures.size(), p);
+	}
+	
+	/**
+	 * Adds a PhrasePicture to the list and sets whether the page buttons are hidden or shown.
+	 * @param i
+	 * @param p
+	 */
+	private void addPhrasePicture(int i, PhrasePicture p) {
+		pa.phrasePictures.add(i, p);
+		updatePageButtonStates();
 	}
 	
 	/*********************************
@@ -147,6 +206,8 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	@Override
 	public void onEnter() {
 		cp5.show();
+		currPageNum = 0;
+		updatePageButtonStates();
 	}
 
 	@Override
@@ -158,22 +219,45 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	/*******************
 	 ***** Drawing *****
 	 *******************/
-
+	
+	/**
+	 * Sets whether the left and right page buttons are hidden or shown.
+	 */
+	private void updatePageButtonStates() {
+		if (currPageNum > 0) {
+			pageLeftButton.show();
+		}
+		else {
+			pageLeftButton.hide();
+		}
+		
+		if (pa.phrasePictures.size() - currPageNum*cells.size() >= this.cells.size()) {
+			pageRightButton.show();
+		}
+		else {
+			pageRightButton.hide();
+		}
+	}
+	
 	@Override
 	public void draw() {
 		pa.background(255);
 		
-		for (int i=0; i<cells.size(); i++) {
+		int i = 0;
+		int j = currPageNum*cells.size();
+		while (i < cells.size()) {
 			Cell c = cells.get(i);
-			if (i < pa.phrasePictures.size()) {
-				c.draw(pa.phrasePictures.get(i), pa);
+			if (j < pa.phrasePictures.size()) {
+				c.draw(pa.phrasePictures.get(j), pa);
 			}
-			else if (i == pa.phrasePictures.size()) {
+			else if (j == pa.phrasePictures.size()) {
 				c.draw(true, pa);
 			}
 			else {
 				c.draw(false, pa);
 			}
+			i++;
+			j++;
 		}
 	}
 }
