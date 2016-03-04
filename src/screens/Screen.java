@@ -63,7 +63,12 @@ public abstract class Screen {
 	 */
 	public abstract void onExit();
 	/**
-	 * Method that draws things to the PhasesPApplet.
+	 * Method that updates and draws things to the PhasesPApplet.
 	 */
 	public abstract void draw();
+	
+	/**
+	 * Method that does things while the application is paused.
+	 */
+	public abstract void drawWhilePaused();
 }

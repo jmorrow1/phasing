@@ -240,6 +240,11 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	}
 	
 	@Override
+	public void drawWhilePaused() {
+		
+	}
+	
+	@Override
 	public void draw() {
 		pa.background(255);
 		

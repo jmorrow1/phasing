@@ -597,9 +597,14 @@ public class Editor extends Screen {
 		return pa.map(pitchIndex, 0, numKeys, gridFrame.getY2(), gridFrame.getY1());
 	}
 	
-	/*******************
-	 ***** Drawing *****
-	 *******************/
+	/******************************
+	 ***** Drawing and Update *****
+	 ******************************/
+	
+	@Override
+	public void drawWhilePaused() {
+		prev_t = System.currentTimeMillis();
+	}
 	
 	@Override
 	public void draw() {

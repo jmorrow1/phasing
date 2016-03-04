@@ -327,6 +327,13 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	/******************************
 	 ***** Drawing and Update *****
 	 ******************************/
+	
+	@Override
+	public void drawWhilePaused() {
+		int t = pa.millis();
+		dt = t - prev_t;
+		prev_t = t;
+	}
 
 	@Override
 	public void draw() {

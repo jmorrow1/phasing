@@ -13,6 +13,7 @@ import controlP5.Button;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlP5.Controller;
+import controlP5.Toggle;
 import geom.Polygon;
 import processing.core.PApplet;
 import processing.core.PFont;
@@ -32,9 +33,9 @@ import util.NameGenerator;
  */
 public class PhasesPApplet extends PApplet {
 	// testing
-	public static final boolean testResizing = true;
+	public static final boolean testResizing = false;
 	
-	//name generator
+	//phrase picture name generator
 	public static NameGenerator phrasePictureNameGenerator;
 	
 	//size
@@ -72,16 +73,20 @@ public class PhasesPApplet extends PApplet {
 	public int changeScreenButtonY2 = 50;
 	public int changeScreenButtonX2 = 135;
 	
-	//gui
+	//controlp5
 	private ControlP5 cp5;
 	private Button changeScreenButton;
+	private Button pauseButton;
+	
+	//pause menu
+	private boolean pause;
 	
 	//screen size
 	public static final int _800x600 = 0, _1366x768 = 1, _1024x768 = 2, _1280x800 = 3, _1920x1080 = 4, _1280x1024 = 5;
 	public int screenSizeMode = _800x600;
 	
 	//save folder location
-	public String saveFolderPath; //TODO: Phase out
+	public String saveFolderPath; //TODO: Phase this variable out
 	
 	//player
 	public PlayerInfo playerInfo;
@@ -150,48 +155,74 @@ public class PhasesPApplet extends PApplet {
 	public void setup() {
 		initStaticVariables();
 		surface.setResizable(true);
-		
-		//init controlp5
 	    cp5 = new ControlP5(this);
-
-		//init change screen button
-		changeScreenButton = cp5.addButton("changeScreen")
-							    .setPosition(changeScreenButtonX2 - 125, changeScreenButtonY2 - 40)
-							    .setSize(125, 40)
-							    ;
-		changeScreenButton.getCaptionLabel().toUpperCase(false);
-		changeScreenButton.getCaptionLabel().setFont(pfont18);
+		initCurrentScale();		
+		initPlayerInfo();		
+		initCurrentPhrase();
+		initScreens();
 		
-		//load scales
+		currentScreen = presenter;
+		currentScreen.onEnter();
+		
+		initChangeScreenButton();
+		initPauseButton();
+	}
+	
+	/**
+	 * Initializes the screens.
+	 */
+	private void initScreens() {
+		presenter = new Presenter(this);
+		editor = new Editor(this);
+		phraseRepo = new PhraseRepository(this);
+	}
+	
+	/**
+	 * Initializes the playerInfo.
+	 */
+	private void initPlayerInfo() {
+		boolean playerInfoLoaded = loadPlayerInfo();
+		if (!playerInfoLoaded) {
+			playerInfo = new PlayerInfo(true);
+			savePlayerInfo();
+		}
+	}
+	
+	/**
+	 * Initializes the currentScale.
+	 */
+	private void initCurrentScale() {
 		loadScales();
 		boolean currentScaleLoaded = loadCurrentScale();
 		if (!currentScaleLoaded) {
 			currentScale = getRandomScale();
 			saveCurrentScale();
 		}
-		
-		//load player info
-		boolean playerInfoLoaded = loadPlayerInfo();
-		if (!playerInfoLoaded) {
-			playerInfo = new PlayerInfo(true);
-			savePlayerInfo();
-		}
-		
-		//init current phrase
+	}
+	
+	/**
+	 * Initializes the currentPhrase.
+	 */
+	private void initCurrentPhrase() {
 		boolean currentPhraseLoaded = loadCurrentPhrasePicture();
 		if (!currentPhraseLoaded) {
 			currentPhrase = generateReichLikePhrase(currentScale);
 			currentPhrasePicture = new PhrasePicture(currentPhrase, "Current Phrase", this);
 			saveCurrentPhrasePicture();
 		}
+	}
 	
-		//create screens
-		presenter = new Presenter(this);
-		editor = new Editor(this);
-		phraseRepo = new PhraseRepository(this);
-		
-		//setup current screen
-		currentScreen = phraseRepo;
+	/**
+	 * Initializes the changeScreenButton.
+	 */
+	private void initChangeScreenButton() {
+		changeScreenButton = cp5.addButton("changeScreen")
+			                    .setPosition(changeScreenButtonX2 - 125, changeScreenButtonY2 - 40)
+			                    .setSize(125, 40)
+			                    ;
+		changeScreenButton.getCaptionLabel().toUpperCase(false);
+		changeScreenButton.getCaptionLabel().setFont(pfont18);
+		colorControllerShowingLabel(changeScreenButton);
 		
 		if (currentScreen == editor) {
 			changeScreenButton.setCaptionLabel("Rehearse");
@@ -202,10 +233,20 @@ public class PhasesPApplet extends PApplet {
 		else if (currentScreen == phraseRepo) {
 			changeScreenButton.setCaptionLabel("Go Back");
 		}
-		
-		colorControllerShowingLabel(changeScreenButton);
-		
-		currentScreen.onEnter();
+	}
+	
+	/**
+	 * Initializes the pauseButton;
+	 */
+	private void initPauseButton() {
+		pauseButton = cp5.addButton("pause")
+				         .setLabel("Pause")
+				         .setPosition(width - 110, 10)
+				         .setSize(100, 10)
+				         ;
+		pauseButton.getCaptionLabel().toUpperCase(false);
+		pauseButton.getCaptionLabel().setFont(pfont12);
+		colorControllerShowingLabel(pauseButton);
 	}
 	
 	/**
@@ -564,15 +605,15 @@ public class PhasesPApplet extends PApplet {
 	***************************/
 	
 	/**
-	 * Gives the default coloring for labeled buttons to the given button.
-	 * @param b The given button.
+	 * Gives the default coloring for labeled buttons to the given controller.
+	 * @param c The given controller.
 	 */
-	public static void colorControllerShowingLabel(Button b) {
-		b.setColorCaptionLabel(0xffffffff);
-	    b.setColorValueLabel(0xffffffff);
-		b.setColorBackground(getColor1());
-		b.setColorForeground(getColor1Bold());
-		b.setColorActive(getColor1Bold());	
+	public static void colorControllerShowingLabel(Controller c) {
+		c.setColorCaptionLabel(0xffffffff);
+	    c.setColorValueLabel(0xffffffff);
+		c.setColorBackground(getColor1());
+		c.setColorForeground(getColor1Bold());
+		c.setColorActive(getColor1Bold());	
 	}
 	
 	/**
@@ -590,8 +631,8 @@ public class PhasesPApplet extends PApplet {
 	***********************************/
 	
 	/**
-	 * Callback from ControlP5
-	 * Controls changing the screen from Presentation screen to Editor screen and vice versa
+	 * Callback from ControlP5.
+	 * Controls changing the screen from Presentation screen to Editor screen and vice versa.
 	 * @param e
 	 */
 	public void changeScreen(ControlEvent e) {
@@ -611,6 +652,15 @@ public class PhasesPApplet extends PApplet {
 		currentScreen.onEnter();
 	}
 	
+	/**
+	 * Callback from ControlP5.
+	 * Controls whether or not the pause menu is displayed.
+	 * @param e
+	 */
+	public void pause(ControlEvent e) {
+		pause = !pause;
+	}
+	
 	/********************
 	***** Draw Loop *****
 	*********************/
@@ -619,7 +669,12 @@ public class PhasesPApplet extends PApplet {
 	 * Sends a message to the current screen to draw itself.
 	 */
 	public void draw() {
-		currentScreen.draw();
+		if (!pause) {
+			currentScreen.draw();
+		}
+		else {
+			currentScreen.drawWhilePaused();
+		}
 	}
 	
 	/*******************************
@@ -892,8 +947,6 @@ public class PhasesPApplet extends PApplet {
 	 * @return True, if the two strings represent equivalent pitches, false otherwise.
 	 */
 	private static boolean noteNamesAreEquivalent(String doubleName, String singleName) {
-		println("rootName1: " + doubleName);
-		println("rootName2: " + singleName);
 		return (singleName.length() > 1 && doubleName.contains(singleName)) || doubleName.equals(singleName);
 	}
 	
