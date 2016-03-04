@@ -67,7 +67,12 @@ public class NameGenerator {
 	 * @return
 	 */
 	public String getUniqueNameFrom(String name) {
-		return null;
+		int i = 1;
+		while (names.contains(name + i)) {
+			i++;
+		}
+		addNameToExclude(name + i);
+		return name + i;
 	}
 	
 	/**
