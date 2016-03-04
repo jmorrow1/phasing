@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import processing.data.JSONArray;
 import processing.data.JSONObject;
+import util.JSONable;
 
 /**
  * Data container for a musical scale.

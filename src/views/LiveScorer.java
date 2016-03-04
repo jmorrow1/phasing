@@ -4,10 +4,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import geom.Rect;
-import phasing.ModInt;
 import phasing.PhasesPApplet;
 import phasing.PhraseReader;
 import processing.core.PApplet;
+import util.ModInt;
 
 /**
  * The LiveScorer View type. It listens for note events and every time it receives one, it adds a new note to a plot of pitch/time.

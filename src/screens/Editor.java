@@ -15,7 +15,6 @@ import controlp5.PlusMinusButtonView;
 import controlp5.Scrollbar;
 import controlp5.SliderPlus;
 import geom.Rect;
-import phasing.FloatFormatter;
 import phasing.PhasesPApplet;
 import phasing.Phrase;
 import phasing.Scale;
@@ -23,6 +22,7 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.event.MouseEvent;
 import soundcipher.SoundCipherPlus;
+import util.FloatFormatter;
 
 /**
  * Provides an editor in which the user can create and edit musical phrases for the Presenter screen.

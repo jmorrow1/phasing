@@ -4,11 +4,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import geom.Rect;
-import phasing.ModInt;
 import phasing.PhasesPApplet;
 import phasing.PhraseReader;
 import geom.CurvedRect;
 import processing.core.PApplet;
+import util.ModInt;
 
 /**
  * The PhaseShifter View type. It show two identical plots of notes that are phase-shifted with respect to one another.

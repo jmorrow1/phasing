@@ -1,5 +1,6 @@
-package phasing;
+package util;
 
+import phasing.PhasesPApplet;
 import processing.core.PApplet;
 
 /**

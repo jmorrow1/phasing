@@ -5,10 +5,10 @@ import instrument_graphics.Instrument;
 import instrument_graphics.InstrumentPlayer;
 import instrument_graphics.Piano;
 import instrument_graphics.Marimba;
-import phasing.ModInt;
 import phasing.PhasesPApplet;
 import phasing.PhraseReader;
 import processing.core.PApplet;
+import util.ModInt;
 
 /**
  * The Musician View type. It animates an Instrument graphic so it looks like the instrument is being played.

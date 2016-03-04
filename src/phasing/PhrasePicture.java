@@ -6,6 +6,7 @@ import geom.Polygon;
 import geom.Rect;
 import processing.core.PApplet;
 import processing.data.JSONObject;
+import util.JSONable;
 
 /**
  * Represents a phrase with styling information that helps determine how to depict the phrase as a picture.

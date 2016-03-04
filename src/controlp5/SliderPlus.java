@@ -2,10 +2,10 @@ package controlp5;
 
 import controlP5.ControlP5;
 import controlP5.Slider;
-import phasing.FloatFormatter;
 import phasing.PhasesPApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
+import util.FloatFormatter;
 
 /**
  * A subclass of ControlP5's Slider that overrides Slider's draw method in order to draw text on top of and above the slider.

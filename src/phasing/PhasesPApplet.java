@@ -23,6 +23,7 @@ import screens.Editor;
 import screens.PhraseRepository;
 import screens.Presenter;
 import screens.Screen;
+import util.NameGenerator;
 
 /**
  * 

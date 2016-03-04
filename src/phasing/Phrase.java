@@ -5,6 +5,7 @@ import java.util.Arrays;
 import arb.soundcipher.SCScore;
 import processing.core.PApplet;
 import processing.data.JSONObject;
+import util.JSONable;
 
 /**
  * Manages two representations of a musical phrase.
