@@ -1,7 +1,6 @@
 package phasing;
 
-import java.io.Serializable;
-import java.util.Random;
+import java.util.ArrayList;
 
 import geom.Polygon;
 import geom.Rect;
@@ -15,15 +14,11 @@ import processing.data.JSONObject;
  *
  */
 public class PhrasePicture implements JSONable {
-	//class-scope
-	private static int nextId = (int)'a';
-	
 	//phrase
 	private Phrase phrase;
 	
 	//name
 	private String name;
-	private int nextCopyId = 1;
 	
 	//style data
 	private DrawNote drawNoteFunc, drawRestFunc;
@@ -47,7 +42,7 @@ public class PhrasePicture implements JSONable {
 	 * @param pa The source of randomness for initializing styling information.
 	 */
 	public PhrasePicture(Phrase phrase, PhasesPApplet pa) {
-		this(phrase, "" + (char)nextId++, pa);
+		this(phrase, pa.phrasePictureNameGenerator.getUniqueName(), pa);
 	}
 	
 	/**
@@ -71,7 +66,7 @@ public class PhrasePicture implements JSONable {
 	 */
 	public PhrasePicture(PhrasePicture phrasePicture) {
 		this.phrase = new Phrase(phrasePicture.phrase);
-		this.name = new String(phrasePicture.name + phrasePicture.nextCopyId++); //TODO: As this is written now, this name could collide with another name.
+		this.name = PhasesPApplet.phrasePictureNameGenerator.getUniqueNameFrom(phrasePicture.name);
 		this.blendAmt = phrasePicture.blendAmt;
 		this.initDrawNoteFuncs(phrasePicture.noteStyleType());
 	}
@@ -303,6 +298,25 @@ public class PhrasePicture implements JSONable {
 	 * @param name The new name.
 	 */
 	public void setName(String name) {
+		PhasesPApplet.phrasePictureNameGenerator.removeNameFromExcluded(this.name);
 		this.name = name;
+		PhasesPApplet.phrasePictureNameGenerator.addNameToExclude(this.name);
+	}
+	
+	/*****************************
+	 ***** Utility Functions *****
+	 *****************************/
+	
+	/**
+	 * Takes an ArrayList of PhrasePictures and returns an array of the names of the PhrasePictures.
+	 * @param phrasePictures
+	 * @return
+	 */
+	public static String[] getNames(ArrayList<PhrasePicture> phrasePictures) {
+		String[] names = new String[phrasePictures.size()];
+		for (int i=0; i<names.length; i++) {
+			names[i] = phrasePictures.get(i).getName();
+		}
+		return names;
 	}
 }

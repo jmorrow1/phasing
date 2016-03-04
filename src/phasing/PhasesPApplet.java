@@ -33,6 +33,9 @@ public class PhasesPApplet extends PApplet {
 	// testing
 	public static final boolean testResizing = true;
 	
+	//name generator
+	public static NameGenerator phrasePictureNameGenerator;
+	
 	//size
 	public static int area;
 	
@@ -45,7 +48,6 @@ public class PhasesPApplet extends PApplet {
 	private static Map<String, ScaleSet> scaleSets = new HashMap<String, ScaleSet>();
 	
 	//active music variables
-	//TODO: make currentPhrase and currentPhrasePicture private
 	public Phrase currentPhrase;
 	public PhrasePicture currentPhrasePicture;
 	public Scale currentScale;
@@ -78,7 +80,7 @@ public class PhasesPApplet extends PApplet {
 	public int screenSizeMode = _800x600;
 	
 	//save folder location
-	public String saveFolderPath;
+	public String saveFolderPath; //TODO: Phase out
 	
 	//player
 	public PlayerInfo playerInfo;
@@ -120,9 +122,22 @@ public class PhasesPApplet extends PApplet {
 		pfont42 = loadFont("DejaVuSans-42.vlw");
 		musicFont = loadFont("MaestroWide-48.vlw");
 		area = width * height;
+		
 		//init colors
 		initColorScheme();
 		//initSimpleColorScheme();
+		
+		//init save folder path
+		saveFolderPath = sketchPath() + "\\save\\";
+		
+		//init phrase picture list
+		boolean phrasePicturesLoaded = loadPhrasePictures();
+		if (!phrasePicturesLoaded) {
+			phrasePictures = new ArrayList<PhrasePicture>();
+		}
+		
+		//init name generator, excluding names given by phrasePictures
+		phrasePictureNameGenerator = new NameGenerator(PhrasePicture.getNames(phrasePictures));
 	}
 	
 	/**
@@ -134,8 +149,6 @@ public class PhasesPApplet extends PApplet {
 	public void setup() {
 		initStaticVariables();
 		surface.setResizable(true);
-		
-		saveFolderPath = sketchPath() + "\\save\\";
 		
 		//init controlp5
 	    cp5 = new ControlP5(this);
@@ -169,12 +182,6 @@ public class PhasesPApplet extends PApplet {
 			currentPhrase = generateReichLikePhrase(currentScale);
 			currentPhrasePicture = new PhrasePicture(currentPhrase, "Current Phrase", this);
 			saveCurrentPhrasePicture();
-		}
-		
-		//init phrase picture list
-		boolean phrasePicturesLoaded = loadPhrasePictures();
-		if (!phrasePicturesLoaded) {
-			phrasePictures = new ArrayList<PhrasePicture>();
 		}
 	
 		//create screens
