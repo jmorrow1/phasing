@@ -48,6 +48,10 @@ public class PhaseShifter extends View {
 	public ModInt plotPitchMode = new ModInt(0, numWaysOfPlottingPitchOrNot, plotPitchModeName);
 	public ModInt colorScheme = new ModInt(1, numColorSchemes, colorSchemeName);
 
+	/**************************
+	 ***** Initialization *****
+	 **************************/
+	
 	/**
 	 * 
 	 * @param rect The area in which to draw (usually just the entirety of the window).
@@ -100,6 +104,21 @@ public class PhaseShifter extends View {
 		}
 	}
 	
+	/**************************
+	 ***** Event Handling *****
+	 **************************/
+	
+	@Override
+	public void screenResized() {
+		
+	}
+	
+	@Override
+	public void wakeUp(float notept1, float notept2) {
+		readerA.wakeUp(notept1);
+		readerB.wakeUp(notept2);
+	}
+	
 	//callback:
 	public void changeActiveNote(PhraseReader reader) {
 		if (reader.getId() == ONE_ID) {
@@ -109,6 +128,10 @@ public class PhaseShifter extends View {
 			activeNote2 = reader.getNoteIndex();
 		}
 	}
+	
+	/******************
+	 ***** Update *****
+	 ******************/
 
 	@Override
 	public void update(int dt, float dNotept1, float dNotept2) {
@@ -126,12 +149,6 @@ public class PhaseShifter extends View {
 			
 			pa.popMatrix();
 		}
-	}
-	
-	@Override
-	public void wakeUp(float notept1, float notept2) {
-		readerA.wakeUp(notept1);
-		readerB.wakeUp(notept2);
 	}
 	
 	public void updateNormalTransforms(float dNotept1, float dNotept2) {
@@ -256,6 +273,78 @@ public class PhaseShifter extends View {
 		pa.endShape();
 	}
 	
+	private void styleNoteGraphics(int color) {
+		switch (noteGraphic.toInt()) {
+			case SYMBOLS:
+			case DOTS1:
+			case CONNECTED_DOTS:
+			case RECTS_OR_SECTORS:
+				pa.noStroke();
+				pa.fill(color);
+				break;
+		}
+	}
+	
+	private void drawSymbol(String s, float x, float y) {
+		pa.textSize(FONT_SIZE);
+		pa.textFont(pa.pfont42);
+		pa.text(s.charAt(0), x, y);
+		
+		x += pa.textWidth(s.charAt(0))/2f + 5;
+		y += pa.textDescent();
+		
+		if (s.length() > 1) {
+			pa.textSize(18);
+			pa.textFont(pa.pfont18);
+			pa.text(s.charAt(1), x, y);
+		}
+	}
+	
+	private void drawNoteGraphic(DataPoint d, DataPoint e) {
+		if (noteGraphic.toInt()== SYMBOLS) {
+			pa.pushMatrix();
+				pa.translate(d.x(), d.y());
+				if (transformation.toInt() == ROTATE) {
+					pa.rotate(d.theta1);
+				}
+				drawSymbol(d.pitchName, 0, 0);
+				if (transformation.toInt() == TRANSLATE) {
+					drawSymbol(d.pitchName, width, 0);
+					drawSymbol(d.pitchName, -width, 0);
+				}
+			pa.popMatrix();
+		}
+		else if (noteGraphic.toInt() == DOTS1 || noteGraphic.toInt() == CONNECTED_DOTS) {
+			float d_x = d.x();
+			float d_y = d.y();
+					
+			pa.ellipseMode(pa.CENTER);
+			pa.ellipse(d_x, d_y, 20, 20);
+			if (transformation.toInt() == TRANSLATE) {
+				pa.ellipse(d_x - width, d_y, 20, 20);
+				pa.ellipse(d_x + width, d_y, 20, 20);
+			}
+		}
+		else if (noteGraphic.toInt() == RECTS_OR_SECTORS) {
+			if (transformation.toInt() == TRANSLATE) {
+				float d_x = d.x();
+				float d_y = d.y();
+				
+				pa.rectMode(pa.CORNER);
+				pa.rect(d_x, d_y, d.twidth, 20);
+				pa.rect(d_x - width, d_y, d.twidth, 20);
+				pa.rect(d_x + width, d_y, d.twidth, 20);
+			}
+			else {
+				d.curvedRect().display(pa);
+			}
+		}
+	}
+	
+	/********************************
+	 ***** DataConnection class *****
+	 ********************************/
+	
 	/**
 	 * Container for positioning data regarding connections between note graphics (used when the noteGraphic is CONNECTED_DOTS).
 	 * This is so the data doesn't have to be recalculated every time its used, which is every frame when the noteGraphic is CONNECTED_DOTS.
@@ -332,6 +421,10 @@ public class PhaseShifter extends View {
 		}
 	}
 	
+	/***************************
+	 ***** DataPoint class *****
+	 ***************************/
+	
 	/**
 	 * Container for the positions of note graphics.
 	 * This is so the data doesn't have to be recalculated every time its used, which is every frame.
@@ -391,74 +484,6 @@ public class PhaseShifter extends View {
 			}
 			else {
 				return (plotPitchMode.toInt() == PLOT_PITCH) ? ry : ryAlt;
-			}
-		}
-	}
-	
-	private void styleNoteGraphics(int color) {
-		switch (noteGraphic.toInt()) {
-			case SYMBOLS:
-			case DOTS1:
-			case CONNECTED_DOTS:
-			case RECTS_OR_SECTORS:
-				pa.noStroke();
-				pa.fill(color);
-				break;
-		}
-	}
-	
-	private void drawSymbol(String s, float x, float y) {
-		pa.textSize(FONT_SIZE);
-		pa.textFont(pa.pfont42);
-		pa.text(s.charAt(0), x, y);
-		
-		x += pa.textWidth(s.charAt(0))/2f + 5;
-		y += pa.textDescent();
-		
-		if (s.length() > 1) {
-			pa.textSize(18);
-			pa.textFont(pa.pfont18);
-			pa.text(s.charAt(1), x, y);
-		}
-	}
-	
-	private void drawNoteGraphic(DataPoint d, DataPoint e) {
-		if (noteGraphic.toInt()== SYMBOLS) {
-			pa.pushMatrix();
-				pa.translate(d.x(), d.y());
-				if (transformation.toInt() == ROTATE) {
-					pa.rotate(d.theta1);
-				}
-				drawSymbol(d.pitchName, 0, 0);
-				if (transformation.toInt() == TRANSLATE) {
-					drawSymbol(d.pitchName, width, 0);
-					drawSymbol(d.pitchName, -width, 0);
-				}
-			pa.popMatrix();
-		}
-		else if (noteGraphic.toInt() == DOTS1 || noteGraphic.toInt() == CONNECTED_DOTS) {
-			float d_x = d.x();
-			float d_y = d.y();
-					
-			pa.ellipseMode(pa.CENTER);
-			pa.ellipse(d_x, d_y, 20, 20);
-			if (transformation.toInt() == TRANSLATE) {
-				pa.ellipse(d_x - width, d_y, 20, 20);
-				pa.ellipse(d_x + width, d_y, 20, 20);
-			}
-		}
-		else if (noteGraphic.toInt() == RECTS_OR_SECTORS) {
-			if (transformation.toInt() == TRANSLATE) {
-				float d_x = d.x();
-				float d_y = d.y();
-				
-				pa.rectMode(pa.CORNER);
-				pa.rect(d_x, d_y, d.twidth, 20);
-				pa.rect(d_x - width, d_y, d.twidth, 20);
-				pa.rect(d_x + width, d_y, d.twidth, 20);
-			}
-			else {
-				d.curvedRect().display(pa);
 			}
 		}
 	}

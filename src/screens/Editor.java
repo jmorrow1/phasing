@@ -412,7 +412,7 @@ public class Editor extends Screen {
 	 *********************************/
 	
 	@Override
-	public void resized() {}
+	public void windowResized() {}
 
 	@Override
 	public void onEnter() {

@@ -211,7 +211,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		int availability = this.getIconAvailability(activeVar.getName());
 		int newValue = PhasesPApplet.remainder(activeVar.toInt() - 1, availability);
 		activeVar.setValue(newValue);
-		view.respondToChangeInSettings();
+		view.settingsChanged();
 		checkViewType();
 	}
 	
@@ -227,7 +227,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		int availability = this.getIconAvailability(activeVar.getName());
 		int newValue = PhasesPApplet.remainder(activeVar.toInt() + 1, availability);
 		activeVar.setValue(newValue);
-		view.respondToChangeInSettings();
+		view.settingsChanged();
 		checkViewType();
 	}
 	
@@ -278,8 +278,9 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 *********************************/
 	
 	@Override
-	public void resized() {
+	public void windowResized() {
 		repositionDirectionalButtons();
+		view.screenResized();
 	}
 	
 	@Override

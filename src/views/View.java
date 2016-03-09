@@ -46,5 +46,10 @@ public abstract class View extends Rect implements ViewVariableInfo {
 	/**
 	 * Allows the view to change its state in response to a change in one of its option variables.
 	 */
-	public void respondToChangeInSettings() {}
+	public void settingsChanged() {}
+	
+	/**
+	 * Responds to a change in screen size.
+	 */
+	public abstract void screenResized();
 }

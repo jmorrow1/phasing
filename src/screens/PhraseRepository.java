@@ -201,7 +201,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	 *********************************/
 	
 	@Override
-	public void resized() {}
+	public void windowResized() {}
 
 	@Override
 	public void onEnter() {

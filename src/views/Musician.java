@@ -36,13 +36,9 @@ public class Musician extends View {
 	public ModInt colorScheme = new ModInt(0, numColorSchemes, colorSchemeName);
 	public ModInt instrument = new ModInt(0, numInstruments, instrumentName);
 	
-	@Override
-	public void respondToChangeInSettings() {
-		assignInstruments();
-		initInstrumentPlayers();
-		readerA.setCallee(playerA);
-		readerB.setCallee(playerB);
-	}
+	/**************************
+	 ***** Initialization *****
+	 **************************/
 	
 	/**
 	 * 
@@ -58,68 +54,12 @@ public class Musician extends View {
 		initPhraseReaders();
 	}
 	
-	@Override
-	public void wakeUp(float notept1, float notept2) {
-		readerA.wakeUp(notept1);
-		readerB.wakeUp(notept2);
-	}
-	
-	@Override
-	public void update(int dt, float dNotept1, float dNotept2) {
-		if (pa.currentPhrase.getNumNotes() > 0) {
-			readerA.update(dNotept1);
-			readerB.update(dNotept2);	
-			
-			if (superimposedOrSeparated.toInt() == SUPERIMPOSED) {
-				instrumentAB.display(pa);
-			}
-			else {
-				instrumentA.display(pa);
-				instrumentB.display(pa);
-			}
-			
-			pa.noStroke();
-			if (colorScheme.toInt() == DIACHROMATIC) {
-				pa.fill(pa.getColor1(), opacity);
-			}
-			else {
-				pa.fill(0, opacity);
-			}
-			playerA.draw(pa);
-			if (colorScheme.toInt() == DIACHROMATIC) {
-				pa.fill(pa.getColor2(), opacity);
-			}
-			else {
-				pa.fill(0, opacity);
-			}
-			playerB.draw(pa);
-		}
-	}
-	
 	/**
 	 * Initializes all instruments.
 	 */
 	private void initInstruments() {
 		initPianos(0.75f*this.getWidth(), 0.075f*this.getWidth());
 		initMarimbas(0.75f*this.getWidth(), 0.175f*this.getWidth());
-	}
-	
-	/**
-	 * Assigns instruments to variables accordinate to what the "instrument" option is set to.
-	 */
-	private void assignInstruments() {
-		switch (instrument.toInt()) {
-			case PIANO:
-				instrumentA = pianoA;
-				instrumentB = pianoB;
-				instrumentAB = pianoAB;
-				break;
-			case XYLOPHONE:
-				instrumentA = marimbaA;
-				instrumentB = marimbaB;
-				instrumentAB = marimbaAB;
-				break;
-		}
 	}
 	
 	/**
@@ -170,6 +110,85 @@ public class Musician extends View {
 
 		} catch (NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	/**************************
+	 ***** Event Handling *****
+	 **************************/
+	
+	@Override
+	public void screenResized() {
+		
+	}
+	
+	@Override
+	public void settingsChanged() {
+		assignInstruments();
+		initInstrumentPlayers();
+		readerA.setCallee(playerA);
+		readerB.setCallee(playerB);
+	}
+	
+	@Override
+	public void wakeUp(float notept1, float notept2) {
+		readerA.wakeUp(notept1);
+		readerB.wakeUp(notept2);
+	}
+	
+	/******************
+	 ***** Update *****
+	 ******************/
+	
+	@Override
+	public void update(int dt, float dNotept1, float dNotept2) {
+		if (pa.currentPhrase.getNumNotes() > 0) {
+			readerA.update(dNotept1);
+			readerB.update(dNotept2);	
+			
+			if (superimposedOrSeparated.toInt() == SUPERIMPOSED) {
+				instrumentAB.display(pa);
+			}
+			else {
+				instrumentA.display(pa);
+				instrumentB.display(pa);
+			}
+			
+			pa.noStroke();
+			if (colorScheme.toInt() == DIACHROMATIC) {
+				pa.fill(pa.getColor1(), opacity);
+			}
+			else {
+				pa.fill(0, opacity);
+			}
+			playerA.draw(pa);
+			if (colorScheme.toInt() == DIACHROMATIC) {
+				pa.fill(pa.getColor2(), opacity);
+			}
+			else {
+				pa.fill(0, opacity);
+			}
+			playerB.draw(pa);
+		}
+	}
+	
+	
+	
+	/**
+	 * Assigns instruments to variables accordinate to what the "instrument" option is set to.
+	 */
+	private void assignInstruments() {
+		switch (instrument.toInt()) {
+			case PIANO:
+				instrumentA = pianoA;
+				instrumentB = pianoB;
+				instrumentAB = pianoAB;
+				break;
+			case XYLOPHONE:
+				instrumentA = marimbaA;
+				instrumentB = marimbaB;
+				instrumentAB = marimbaAB;
+				break;
 		}
 	}
 }

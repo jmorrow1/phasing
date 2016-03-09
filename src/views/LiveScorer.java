@@ -51,6 +51,10 @@ public class LiveScorer extends View {
 	public ModInt noteGraphic = new ModInt(0, numNoteGraphicSet2s, noteGraphicSet2Name);
 	public ModInt colorScheme = new ModInt(1, numColorSchemes, colorSchemeName);
 
+	/**************************
+	 ***** Initialization *****
+	 **************************/
+	
 	/**
 	 * 
 	 * @param rect The area in which to draw (usually just the entirety of the window).
@@ -103,7 +107,16 @@ public class LiveScorer extends View {
 		//this helps make it such that a quarter note is drawn as a circle when the stroke cap is round:
 		roundStrokeCapSurplus = pixelsPerWholeNote/8f;
 		
-		respondToChangeInSettings();
+		settingsChanged();
+	}
+	
+	/**************************
+	 ***** Event Handling *****
+	 **************************/
+	
+	@Override
+	public void screenResized() {
+		
 	}
 	
 	@Override
@@ -115,7 +128,7 @@ public class LiveScorer extends View {
 	}
 	
 	@Override
-	public void respondToChangeInSettings() {
+	public void settingsChanged() {
 		boolean scoreModeChanged = ((scoreMode.toInt() == MOVE_NOTES && x != 0 && y != 0) || 
 				                    (scoreMode.toInt() == MOVE_SPAWN_POINT && x == 0 && y == 0));
 		
@@ -134,6 +147,10 @@ public class LiveScorer extends View {
 			}
 		}
 	}
+	
+	/******************
+	 ***** Update *****
+	 ******************/
 	
 	@Override
 	public void update(int dt, float dNotept1, float dNotept2) {
@@ -209,9 +226,13 @@ public class LiveScorer extends View {
 	 * @return The amount to decrease opacity by given that dt milliseconds have passed.
 	 */
 	private float fadeAmt(int dt) {
-		//TODO: Make dependent on width of screen
-		//TODO: Make dependent on whether the score mode is MOVE_SPAWN_POINT or MOVE_NOTES
-		return 0.01f * dt;
+		//TODO Test and make more precise if need be
+		if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
+			return (10000 - pa.width) * 0.00000075f * dt;
+		}
+		else {
+			return (10000 - pa.width) * 0.000002f * dt;
+		}
 	}
 	
 	/**
@@ -295,6 +316,10 @@ public class LiveScorer extends View {
 			return y + pa.lerp(minPitch, maxPitch, 0.5f);
 		}
 	}
+	
+	/***************************
+	 ***** DataPoint class *****
+	 ***************************/
 	
 	/**
 	 * A single note in the pitch/time plot of notes, with a start point, an end point, an opacity, and an index to the Phrase.

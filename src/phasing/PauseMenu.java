@@ -13,6 +13,9 @@ import geom.Rect;
  *
  */
 public class PauseMenu {
+	//papplet
+	private PhasesPApplet pa;
+	
 	//area
 	private Rect rect;
 	
@@ -27,6 +30,7 @@ public class PauseMenu {
 	
 	public PauseMenu(Rect rect, PhasesPApplet pa) {
 		this.rect = rect;
+		this.pa = pa;
 		cp5 = new ControlP5(pa);
 	}
 	
@@ -54,7 +58,7 @@ public class PauseMenu {
 	 ***** Drawing *****
 	 *******************/
 	
-	public void draw(PhasesPApplet pa) {
+	public void draw() {
 		pa.stroke(50);
 		pa.strokeWeight(8);
 		pa.fill(pa.getColor1());
@@ -67,7 +71,7 @@ public class PauseMenu {
 	 ************************************/
 	
 	public void closeMenu(ControlEvent e) {
-		
+		pa.togglePause(e);
 	}
 	
 	public void adjustVolume(ControlEvent e) {

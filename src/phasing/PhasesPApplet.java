@@ -32,9 +32,6 @@ import util.NameGenerator;
  *
  */
 public class PhasesPApplet extends PApplet {
-	// testing
-	public static final boolean testResizing = false;
-	
 	//phrase picture name generator
 	public static NameGenerator phrasePictureNameGenerator;
 	
@@ -78,6 +75,7 @@ public class PhasesPApplet extends PApplet {
 	private Button pauseButton;
 	
 	//screen size
+	private int prevWidth, prevHeight;
 	public static final int _800x600 = 0, _1366x768 = 1, _1024x768 = 2, _1280x800 = 3, _1920x1080 = 4, _1280x1024 = 5;
 	public int screenSizeMode = _800x600;
 	
@@ -111,7 +109,9 @@ public class PhasesPApplet extends PApplet {
 			case _1024x768 : size(1024, 768); break;
 			case _1280x800 : size(1280, 800); break;
 			case _1280x1024 : size(1280, 1024); break;
-		}	
+		}
+		prevWidth = width;
+		prevHeight = height;
 	}
 	
 	/**
@@ -138,12 +138,10 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
-	 * Loads JSON scale data
-	 * Creates a default phrase.
-	 * Creates an instance of an Editor screen and an instance of a Presenter screen.
-	 * Sets the current screen.
+	 * Does the initial setup.
 	 */
 	public void setup() {
+		registerMethod("pre", this);
 		initStaticVariables();
 		surface.setResizable(true);
 	    cp5 = new ControlP5(this);
@@ -158,6 +156,8 @@ public class PhasesPApplet extends PApplet {
 		initChangeScreenButton();
 		initPauseButton();
 	}
+	
+	
 	
 	private void initPhrasePictures() {
 		boolean phrasePicturesLoaded = loadPhrasePictures();
@@ -238,7 +238,7 @@ public class PhasesPApplet extends PApplet {
 	 * Initializes the pauseButton;
 	 */
 	private void initPauseButton() {
-		pauseButton = cp5.addButton("pause")
+		pauseButton = cp5.addButton("togglePause")
 				         .setLabel("Pause")
 				         .setPosition(width - 110, 10)
 				         .setSize(100, 10)
@@ -635,20 +635,22 @@ public class PhasesPApplet extends PApplet {
 	 * @param e
 	 */
 	public void changeScreen(ControlEvent e) {
-		currentScreen.onExit();
-		changeScreenButton.show();
-		if (currentScreen == editor) {
-			currentScreen = presenter;
-			changeScreenButton.setCaptionLabel("Compose");
+		if (!pause) {
+			currentScreen.onExit();
+			changeScreenButton.show();
+			if (currentScreen == editor) {
+				currentScreen = presenter;
+				changeScreenButton.setCaptionLabel("Compose");
+			}
+			else if (currentScreen == presenter) {
+				currentScreen = editor;
+				changeScreenButton.setCaptionLabel("Rehearse");
+			}
+			else if (currentScreen == phraseRepo) {
+				changeScreenButton.setCaptionLabel("Go Back");
+			}
+			currentScreen.onEnter();
 		}
-		else if (currentScreen == presenter) {
-			currentScreen = editor;
-			changeScreenButton.setCaptionLabel("Rehearse");
-		}
-		else if (currentScreen == phraseRepo) {
-			changeScreenButton.setCaptionLabel("Go Back");
-		}
-		currentScreen.onEnter();
 	}
 	
 	/**
@@ -656,13 +658,26 @@ public class PhasesPApplet extends PApplet {
 	 * Controls whether or not the pause menu is displayed.
 	 * @param e
 	 */
-	public void pause(ControlEvent e) {
+	public void togglePause(ControlEvent e) {
 		pause = !pause;
 	}
 	
 	/*********************
 	 ***** Draw Loop *****
 	 *********************/
+	
+	/**
+	 * Checks if the window size has changed.
+	 * If so, informs the currentScreen of the size change.
+	 * 
+	 */
+	public void pre() {
+		if (prevWidth != width || prevHeight != height) {
+			prevWidth = width;
+			prevHeight = height;
+			currentScreen.windowResized();
+		}
+	}
 	
 	/**
 	 * Sends a message to the current screen to draw itself.
@@ -673,7 +688,7 @@ public class PhasesPApplet extends PApplet {
 		}
 		else {
 			currentScreen.drawWhilePaused();
-			pauseMenu.draw(this);
+			pauseMenu.draw();
 		}
 	}
 	
@@ -732,13 +747,7 @@ public class PhasesPApplet extends PApplet {
 	/**
 	 * Sends key pressed events to the current screen.
 	 */
-	public void keyPressed() {
-		if (testResizing) {
-			switch (key) {
-				case '1' : resize(width, height+1); break;
-				case '2' : resize(width+1, height); break;
-			}
-		}
+	public void keyPressed() {		
 		if (!pause) {
 			currentScreen.keyPressed();
 		}
@@ -926,18 +935,6 @@ public class PhasesPApplet extends PApplet {
 	/*******************************
 	 ***** Getters and Setters *****
 	 ******************************/
-	
-	/**
-	 * Resizes the window according to the given width and height.
-	 * Then informs the current screen of that the window was resized.
-	 * 
-	 * @param width The new width of the window.
-	 * @param height The new height of the window.
-	 */
-	private void resize(int width, int height) {
-		surface.setSize(width, height);
-		currentScreen.resized();
-	}
 	
 	/**
 	 * Returns the scale matching the given root name and scale name, or null if no scale matches.
