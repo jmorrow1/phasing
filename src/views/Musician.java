@@ -112,8 +112,8 @@ public class Musician extends View {
 		pianoAB.setSize(width, height);
 		float cenx = getCenx();
 		float ceny = getCeny();
-		pianoA.setCenter(cenx, ceny);
-		pianoB.setCenter(cenx, ceny);
+		pianoA.setCenter(cenx, ceny - height);
+		pianoB.setCenter(cenx, ceny + height);
 		pianoAB.setCenter(cenx, ceny);
 	}
 
