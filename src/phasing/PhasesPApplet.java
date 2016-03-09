@@ -92,7 +92,7 @@ public class PhasesPApplet extends PApplet {
 	/**
 	 * Sets up the size of the canvas/window
 	 */
-	public void settings() {	
+	public void settings() {
 		setSize(screenSizeMode);
 	}
 	
@@ -144,7 +144,6 @@ public class PhasesPApplet extends PApplet {
 		registerMethod("pre", this);
 		initStaticVariables();
 		surface.setResizable(true);
-	    cp5 = new ControlP5(this);
 		initCurrentScale();		
 		initPlayerInfo();		
 		initCurrentPhrase();
@@ -153,11 +152,17 @@ public class PhasesPApplet extends PApplet {
 		currentScreen = presenter;
 		currentScreen.onEnter();
 		
-		initChangeScreenButton();
-		initPauseButton();
+		initCP5Objects(currentScreen);
 	}
 	
-	
+	private void initCP5Objects(Screen currentScreen) {
+		if (cp5 != null) {
+			cp5.dispose();
+		}
+		cp5 = new ControlP5(this);
+		initChangeScreenButton(currentScreen);
+		initPauseButton();
+	}
 	
 	private void initPhrasePictures() {
 		boolean phrasePicturesLoaded = loadPhrasePictures();
@@ -214,7 +219,7 @@ public class PhasesPApplet extends PApplet {
 	/**
 	 * Initializes the changeScreenButton.
 	 */
-	private void initChangeScreenButton() {
+	private void initChangeScreenButton(Screen currentScreen) {
 		changeScreenButton = cp5.addButton("changeScreen")
 			                    .setPosition(changeScreenButtonX2 - 125, changeScreenButtonY2 - 40)
 			                    .setSize(125, 40)

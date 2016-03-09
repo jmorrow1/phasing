@@ -20,11 +20,11 @@ public class LiveScorer extends View {
 	private PhraseReader readerA, readerB;
 	
 	//where to spawn new points:
-	private float x;
-	private float y;
+	private float spawnX;
+	private float spawnY;
 	
 	//used in calculating where to spawn new points when scoreMode is MOVE_SPAWN_POINT:
-	private float spawnX1, spawnY1, spawnX2, spawnY2;
+	private float startSpawnX, startSpawnY, endSpawnX, endSpawnY;
 	
 	//labels of plot's y-axis:
 	private float[] ys;
@@ -77,13 +77,13 @@ public class LiveScorer extends View {
 		}
 		
 		//note spawn point
-		x = 0;
-		y = 0;
+		spawnX = 0;
+		spawnY = 0;
+		initSpawnBoundaries();
 		
 		//labels of y-axis
 		ys = new float[pa.currentPhrase.getNumNotes()];
-		halfWidth = this.getWidth() * 0.5f;
-		halfHeight = this.getHeight() * 0.3f;
+		
 		float minPitch = pa.currentPhrase.minPitch();
 		float maxPitch = pa.currentPhrase.maxPitch();
 		for (int i=0; i<ys.length; i++) {
@@ -95,12 +95,6 @@ public class LiveScorer extends View {
 			}
 		}
 		
-		//variables for computing note spawn point when scoreMode is MOVE_SPAWN_POINT
-		spawnX1 = -getWidth() * 0.5f;
-		spawnY1 = -getHeight() * 0.15f - NOTE_SIZE/2f;
-		spawnX2 = getWidth() * 0.5f;
-		spawnY2 = getHeight() * 0.15f + NOTE_SIZE/2f;
-		
 		//pixels to musical time conversion
 		pixelsPerWholeNote = 60;
 		
@@ -110,13 +104,26 @@ public class LiveScorer extends View {
 		settingsChanged();
 	}
 	
+	/**
+	 * Initializes variables for that define the boundaries of the note spawn point.
+	 */
+	private void initSpawnBoundaries() {
+		startSpawnX = -getWidth() * 0.5f;
+		startSpawnY = -getHeight() * 0.15f - NOTE_SIZE/2f;
+		endSpawnX = getWidth() * 0.5f;
+		endSpawnY = getHeight() * 0.15f + NOTE_SIZE/2f;
+		
+		halfWidth = this.getWidth() * 0.5f;
+		halfHeight = this.getHeight() * 0.3f;
+	}
+	
 	/**************************
 	 ***** Event Handling *****
 	 **************************/
 	
 	@Override
 	protected void resized() {
-		
+		initSpawnBoundaries();
 	}
 	
 	@Override
@@ -129,19 +136,19 @@ public class LiveScorer extends View {
 	
 	@Override
 	public void settingsChanged() {
-		boolean scoreModeChanged = ((scoreMode.toInt() == MOVE_NOTES && x != 0 && y != 0) || 
-				                    (scoreMode.toInt() == MOVE_SPAWN_POINT && x == 0 && y == 0));
+		boolean scoreModeChanged = ((scoreMode.toInt() == MOVE_NOTES && spawnX != 0 && spawnY != 0) || 
+				                    (scoreMode.toInt() == MOVE_SPAWN_POINT && spawnX == 0 && spawnY == 0));
 		
 		if (scoreModeChanged) {
 			if (scoreMode.toInt() == MOVE_NOTES) {
-				x = 0;
-				y = 0;
+				spawnX = 0;
+				spawnY = 0;
 				halfWidth = getWidth() * 0.5f;
 				halfHeight = getHeight() * 0.3f;
 			}
 			else if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
-				x = spawnX1;
-				y = spawnY1;
+				spawnX = startSpawnX;
+				spawnY = startSpawnY;
 				halfWidth = getWidth() * 0.25f;
 				halfHeight = getHeight() * 0.15f;
 			}
@@ -242,16 +249,16 @@ public class LiveScorer extends View {
 	 * @param dy The number of pixels to move the spawn point vertically.
 	 */
 	private void moveSpawnPoint(float dx, float dy) {
-		if (x < spawnX2) {
-			x += dx;
+		if (spawnX < endSpawnX) {
+			spawnX += dx;
 		}
 		else {
-			x = spawnX1;
-			if (y < spawnY2) {
-				y += dy;
+			spawnX = startSpawnX;
+			if (spawnY < endSpawnY) {
+				spawnY += dy;
 			}
 			else {
-				y = spawnY1;
+				spawnY = startSpawnY;
 			}
 		}
 	}
@@ -286,16 +293,16 @@ public class LiveScorer extends View {
 									   0, pa.currentPhrase.getTotalDuration(),
 									   0, PApplet.TWO_PI);
 			
-			y1 = y + PApplet.sin(angle1)*halfHeight;
-			y2 = y + PApplet.sin(angle2)*halfHeight;
+			y1 = spawnY + PApplet.sin(angle1)*halfHeight;
+			y2 = spawnY + PApplet.sin(angle2)*halfHeight;
 		}
 		else {
 			y1 = noteIndexToY(noteIndex);
 			y2 = noteIndexToY((noteIndex+1) % ys.length);
 		}
 		
-		dataPts.add(new DataPoint(x, y1,
-                	x + pixelsPerWholeNote*pa.currentPhrase.getSCDuration(noteIndex),
+		dataPts.add(new DataPoint(spawnX, y1,
+                	spawnX + pixelsPerWholeNote*pa.currentPhrase.getSCDuration(noteIndex),
                 	opacity));
 	}
 	
@@ -310,10 +317,10 @@ public class LiveScorer extends View {
 		float maxPitch = pa.currentPhrase.maxPitch();
 
 		if (minPitch != maxPitch) {
-			return y + pa.map(pa.currentPhrase.getSCPitch(noteIndex), minPitch, maxPitch, halfHeight, -halfHeight);
+			return spawnY + pa.map(pa.currentPhrase.getSCPitch(noteIndex), minPitch, maxPitch, halfHeight, -halfHeight);
 		}
 		else {
-			return y + pa.lerp(minPitch, maxPitch, 0.5f);
+			return spawnY + pa.lerp(minPitch, maxPitch, 0.5f);
 		}
 	}
 	

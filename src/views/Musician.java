@@ -66,8 +66,6 @@ public class Musician extends View {
 	 * Resets all instruments according to the current width and height of this Musician.
 	 */
 	private void resetInstruments() {
-		//TODO piano height probably shouldn't be exclusively dependent on piano width
-		//TODO number of keys should increase slightly with width maybe	
 		resetPianos(0.75f*this.getWidth(), 0.075f*this.getWidth());
 		resetMarimbas(0.75f*this.getWidth(), 0.175f*this.getWidth());
 	}

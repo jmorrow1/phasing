@@ -4,8 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import controlP5.Button;
-import controlP5.ControlEvent;
 import controlP5.ControlP5;
+import controlP5.ControlWindow;
 import controlp5.TriangleButtonView;
 import geom.Rect;
 import icons.CameraIcon;
@@ -24,7 +24,6 @@ import icons.TransformIcon;
 import icons.ViewTypeIcon;
 import phasing.PhasesPApplet;
 import processing.core.PApplet;
-import processing.data.JSONObject;
 import soundcipher.SCScorePlus;
 import util.ModInt;
 import views.LiveScorer;
@@ -102,8 +101,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
 		initViews();	
-		cp5 = new ControlP5(pa);
-		initDirectionalButtons();
+		initCP5Objects();
 		cp5.hide();
 	}
 	
@@ -111,6 +109,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 * Initializes an instance of each view type.
 	 */
 	private void initViews() {
+		//TODO Make the view Rects smaller, to stay out of the way of the UI, and update the documentation to reflect this change.
 		musicianView = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		phaseShifterView = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
 		liveScorerView = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
@@ -121,8 +120,16 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 	}
 	
+	private void initCP5Objects() {
+		if (cp5 != null) {
+			cp5.dispose();
+		}
+		cp5 = new ControlP5(pa);
+		initDirectionalButtons();
+	}
+	
 	/**
-	 * Initializes the directional buttons.
+	 * Initializes the directional button variables.
 	 */
 	private void initDirectionalButtons() {
 		float buttonX1 = directionalButtonX1(0);
@@ -195,6 +202,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 * Repositions the up and down buttons according to the activeIconIndex.
 	 */
 	private void repositionDirectionalButtons() {
+		//TODO troubleshoot why when the screen is resized to a certain height these buttons no longer work
 		upButton.setPosition(directionalButtonX1(activeIconIndex), upButtonY1());
 		downButton.setPosition(directionalButtonX1(activeIconIndex), downButtonY1());
 	}
@@ -282,6 +290,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		repositionDirectionalButtons();
 		view.setWidth(pa.width);
 		view.setHeight(pa.height);
+		initCP5Objects();
 	}
 	
 	@Override
