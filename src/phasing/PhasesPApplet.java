@@ -667,6 +667,7 @@ public class PhasesPApplet extends PApplet {
 	 *********************/
 	
 	/**
+	 * Called right before draw() every frame.
 	 * Checks if the window size has changed.
 	 * If so, informs the currentScreen of the size change.
 	 * 

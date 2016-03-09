@@ -115,7 +115,7 @@ public class LiveScorer extends View {
 	 **************************/
 	
 	@Override
-	public void screenResized() {
+	protected void resized() {
 		
 	}
 	

@@ -3,8 +3,8 @@ package views;
 import geom.Rect;
 import instrument_graphics.Instrument;
 import instrument_graphics.InstrumentPlayer;
-import instrument_graphics.Piano;
 import instrument_graphics.Marimba;
+import instrument_graphics.Piano;
 import phasing.PhasesPApplet;
 import phasing.PhraseReader;
 import processing.core.PApplet;
@@ -63,6 +63,16 @@ public class Musician extends View {
 	}
 	
 	/**
+	 * Resets all instruments according to the current width and height of this Musician.
+	 */
+	private void resetInstruments() {
+		//TODO piano height probably shouldn't be exclusively dependent on piano width
+		//TODO number of keys should increase slightly with width maybe	
+		resetPianos(0.75f*this.getWidth(), 0.075f*this.getWidth());
+		resetMarimbas(0.75f*this.getWidth(), 0.175f*this.getWidth());
+	}
+	
+	/**
 	 * Initializes all marimbas.
 	 * @param width The width for each marimba.
 	 * @param height The height for each marimba.
@@ -71,6 +81,13 @@ public class Musician extends View {
 		marimbaAB = new Marimba(3, new Rect(this.getCenx(), this.getCeny(), width, height, PApplet.CENTER));
 		marimbaA = new Marimba(3, new Rect(this.getCenx(), this.getCeny() - height*0.66f, width, height, PApplet.CENTER));
 		marimbaB = new Marimba(3, new Rect(this.getCenx(), this.getCeny() + height*0.66f, width, height, PApplet.CENTER));
+	}
+	
+	private void resetMarimbas(float width, float height) {
+		//TODO : implement this method by adding functionality to Marimba to make it resizable.
+		//marimbaA.setSize(pa.width, pa.height);
+		//marimbaB.setSize(pa.width, pa.height);
+		//marimbaAB.setSize(pa.width, pa.height);
 	}
 	
 	/**
@@ -82,6 +99,22 @@ public class Musician extends View {
 		pianoAB = new Piano(4, new Rect(this.getCenx(), this.getCeny(), width, height, PApplet.CENTER), true, pa.color(255));
 		pianoA = new Piano(4, new Rect(this.getCenx(), this.getCeny() - height, width, height, PApplet.CENTER), true, pa.color(255));	
 		pianoB = new Piano(4, new Rect(this.getCenx(), this.getCeny() + height, width, height, PApplet.CENTER), true, pa.color(255));
+	}
+	
+	/**
+	 * Resets the widths and heights of each piano.
+	 * @param width The width for each piano.
+	 * @param height The height for each piano.
+	 */
+	private void resetPianos(float width, float height) {
+		pianoA.setSize(width, height);
+		pianoB.setSize(width, height);
+		pianoAB.setSize(width, height);
+		float cenx = getCenx();
+		float ceny = getCeny();
+		pianoA.setCenter(cenx, ceny);
+		pianoB.setCenter(cenx, ceny);
+		pianoAB.setCenter(cenx, ceny);
 	}
 
 	/**
@@ -95,6 +128,20 @@ public class Musician extends View {
 		else {
 			playerA = new InstrumentPlayer(instrumentA, pa.currentPhrase);
 			playerB = new InstrumentPlayer(instrumentB, pa.currentPhrase);
+		}
+	}
+	
+	/**
+	 * Resets the InstrumentPlayers according to the current values of InstrumentA, InstrumentB, and InstrumentAB.
+	 */
+	private void resetInstrumentPlayers() {
+		if (superimposedOrSeparated.toInt() == SUPERIMPOSED) {
+			playerA.setInstrument(instrumentAB);
+			playerB.setInstrument(instrumentAB);
+		}
+		else {
+			playerA.setInstrument(instrumentA);
+			playerB.setInstrument(instrumentB);
 		}
 	}
 	
@@ -113,19 +160,38 @@ public class Musician extends View {
 		}
 	}
 	
+	/**
+	 * Assigns instruments to variables accordinate to what the "instrument" option is set to.
+	 */
+	private void assignInstruments() {
+		switch (instrument.toInt()) {
+			case PIANO:
+				instrumentA = pianoA;
+				instrumentB = pianoB;
+				instrumentAB = pianoAB;
+				break;
+			case XYLOPHONE:
+				instrumentA = marimbaA;
+				instrumentB = marimbaB;
+				instrumentAB = marimbaAB;
+				break;
+		}
+	}
+	
 	/**************************
 	 ***** Event Handling *****
 	 **************************/
 	
 	@Override
-	public void screenResized() {
-		
+	protected void resized() {			
+		resetInstruments();
+		resetInstrumentPlayers();
 	}
 	
 	@Override
 	public void settingsChanged() {
 		assignInstruments();
-		initInstrumentPlayers();
+		resetInstrumentPlayers();
 		readerA.setCallee(playerA);
 		readerB.setCallee(playerB);
 	}
@@ -169,26 +235,6 @@ public class Musician extends View {
 				pa.fill(0, opacity);
 			}
 			playerB.draw(pa);
-		}
-	}
-	
-	
-	
-	/**
-	 * Assigns instruments to variables accordinate to what the "instrument" option is set to.
-	 */
-	private void assignInstruments() {
-		switch (instrument.toInt()) {
-			case PIANO:
-				instrumentA = pianoA;
-				instrumentB = pianoB;
-				instrumentAB = pianoAB;
-				break;
-			case XYLOPHONE:
-				instrumentA = marimbaA;
-				instrumentB = marimbaB;
-				instrumentAB = marimbaAB;
-				break;
 		}
 	}
 }

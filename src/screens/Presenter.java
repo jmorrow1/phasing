@@ -280,7 +280,8 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	@Override
 	public void windowResized() {
 		repositionDirectionalButtons();
-		view.screenResized();
+		view.setWidth(pa.width);
+		view.setHeight(pa.height);
 	}
 	
 	@Override

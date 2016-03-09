@@ -49,7 +49,19 @@ public abstract class View extends Rect implements ViewVariableInfo {
 	public void settingsChanged() {}
 	
 	/**
-	 * Responds to a change in screen size.
+	 * Handles the event of this view being resized.
 	 */
-	public abstract void screenResized();
+	protected abstract void resized();
+	
+	@Override
+	public void setWidth(float width) {
+		super.setWidth(width);
+		resized();
+	}
+	
+	@Override
+	public void setHeight(float height) {
+		super.setHeight(height);
+		resized();
+	}
 }

@@ -109,7 +109,7 @@ public class PhaseShifter extends View {
 	 **************************/
 	
 	@Override
-	public void screenResized() {
+	protected void resized() {
 		
 	}
 	

@@ -23,6 +23,10 @@ public class Piano extends Rect implements Instrument {
 	private Shape[] keys;
 	private int blackKeyColor;
 	
+	/**************************
+	 ***** Initialization *****
+	 **************************/
+	
 	/**
 	 * 
 	 * @param numOctaves The number of octaves the piano should span, starting on C.
@@ -68,7 +72,7 @@ public class Piano extends Rect implements Instrument {
 	 * @param whiteKeyHeight The height of white keys in a piano.
 	 * @param blackKeyWidth The width of black keys in a piano.
 	 * @param blackKeyHeight The height of black keys in a piano.
-	 * @return
+	 * @return A polygon the shape of the white key.
 	 */
 	private static Polygon initWhiteKey(int pitch, float x1, float y1,
 			float whiteKeyWidth, float whiteKeyHeight, float blackKeyWidth, float blackKeyHeight) {
@@ -148,6 +152,10 @@ public class Piano extends Rect implements Instrument {
 		}
 	}
 	
+	/*******************
+	 ***** Drawing *****
+	 *******************/
+	
 	@Override
 	public void display(PApplet pa) {
 		displayWhiteKeys(pa);			
@@ -180,6 +188,10 @@ public class Piano extends Rect implements Instrument {
 		}
 	}
 	
+	/*******************************
+	 ***** Getters and Setters *****
+	 *******************************/
+	
 	/**
 	 * Sets the width of the piano's area (which is a rectangle).
 	 */
@@ -194,6 +206,20 @@ public class Piano extends Rect implements Instrument {
 	 * Sets the height of the piano's area (which is a rectangle).
 	 */
 	public void setHeight(float height) {
+		super.setHeight(height);
+		if (numOctaves > 0) {
+			initKeys();
+		}
+	}
+	
+	/**
+	 * Sets the width and height of the piano's area.
+	 * 
+	 * @param width
+	 * @param height
+	 */
+	public void setSize(float width, float height) {
+		super.setWidth(width);
 		super.setHeight(height);
 		if (numOctaves > 0) {
 			initKeys();
@@ -252,7 +278,7 @@ public class Piano extends Rect implements Instrument {
 	 * 
 	 * @return True, if this piano faces down. False, if this piano faces up.
 	 */
-	public boolean doesFaceDown() {
+	public boolean isFaceDown() {
 		return faceDown;
 	}
 	
