@@ -327,7 +327,6 @@ public class Piano extends Rect implements Instrument {
 	public Rect getBlackKeyCopy() {
 		if (blackKeys.length > 0) {
 			Rect copy = new Rect(blackKeys[0]);
-			copy.setCenter(0, 0);
 			return copy;
 		}
 		else {

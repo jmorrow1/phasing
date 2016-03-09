@@ -141,7 +141,6 @@ public class PhasesPApplet extends PApplet {
 	 * Does the initial setup.
 	 */
 	public void setup() {
-		registerMethod("pre", this);
 		initStaticVariables();
 		surface.setResizable(true);
 		initCurrentScale();		
@@ -672,29 +671,29 @@ public class PhasesPApplet extends PApplet {
 	 *********************/
 	
 	/**
-	 * Called right before draw() every frame.
-	 * Checks if the window size has changed.
-	 * If so, informs the currentScreen of the size change.
-	 * 
-	 */
-	public void pre() {
-		if (prevWidth != width || prevHeight != height) {
-			prevWidth = width;
-			prevHeight = height;
-			currentScreen.windowResized();
-		}
-	}
-	
-	/**
 	 * Sends a message to the current screen to draw itself.
 	 */
 	public void draw() {
+		checkForWindowResizeEvent();
 		if (!pause) {
 			currentScreen.draw();
 		}
 		else {
 			currentScreen.drawWhilePaused();
 			pauseMenu.draw();
+		}
+	}
+	
+	/**
+	 * Checks if the window size has changed.
+	 * If so, informs the currentScreen of the size change.
+	 * 
+	 */
+	private void checkForWindowResizeEvent() {
+		if (prevWidth != width || prevHeight != height) {
+			prevWidth = width;
+			prevHeight = height;
+			currentScreen.windowResized();
 		}
 	}
 	

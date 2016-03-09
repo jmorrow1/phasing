@@ -62,13 +62,9 @@ public class PhaseShifter extends View {
 		super(rect, opacity, pa);
 		this.pa = pa;
 		
-		width = this.getWidth();
-		height = this.getHeight()*0.5f;
-		halfWidth = width*0.5f;
-		halfHeight = height*0.5f;
+		initBounds();
 		
-		//TODO: incorporate the number of notes into this calculation (the more notes the larger the radius)
-		
+		//TODO: incorporate the number of notes into this calculation (the more notes the larger the radius):
 		maxRadius = pa.min(pa.lerp(getHeight(), getWidth(), 0.2f) * 0.3f, pa.height/2f - FONT_SIZE/2f);
 		minRadius = maxRadius / 2;
 		
@@ -77,6 +73,12 @@ public class PhaseShifter extends View {
 		initData();
 	}
 	
+	private void initBounds() {
+		width = this.getWidth();
+		height = this.getHeight()*0.5f;
+		halfWidth = width*0.5f;
+		halfHeight = height*0.5f;
+	}
 	
 	private void initData() {
 		dataPoints.clear();
@@ -110,7 +112,7 @@ public class PhaseShifter extends View {
 	
 	@Override
 	protected void resized() {
-		
+		initBounds();
 	}
 	
 	@Override

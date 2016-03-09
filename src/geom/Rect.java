@@ -9,7 +9,7 @@ import processing.core.PApplet;
  *
  */
 public class Rect extends Shape {
-    private float x1, y1, width, height;
+    private float x, y, width, height;
     private float area;
     
     /**
@@ -17,8 +17,8 @@ public class Rect extends Shape {
      * @param rect The rect to copy
      */
     public Rect(Rect rect) {
-    	this.x1 = rect.x1;
-    	this.y1 = rect.y1;
+    	this.x = rect.x;
+    	this.y = rect.y;
     	this.width = rect.width;
     	this.height = rect.height;
     	area = width * height;
@@ -45,28 +45,28 @@ public class Rect extends Shape {
         if (rectMode == PApplet.CENTER) {
         	this.width = c;
             this.height = d;
-            this.x1 = a - width/2f;
-            this.y1 = b - height/2f;
+            this.x = a;
+            this.y = b;
             
         }
         else if (rectMode == PApplet.RADIUS) {
         	this.width = 2*c;
             this.height = 2*d;
-            this.x1 = a - width/2f;
-            this.y1 = b - height/2f;
+            this.x = a;
+            this.y = b;
             
         }
         else if (rectMode == PApplet.CORNER) {
-        	this.x1 = a;
-            this.y1 = b;
             this.width = c;
-            this.height = d;        
+            this.height = d;  
+            this.x = a + width/2;
+            this.y = b + height/2;
         }
         else if (rectMode == PApplet.CORNERS) {
-        	this.x1 = a;
-            this.y1 = b;
             this.width = c - a;
             this.height = d - b;
+            this.x = a + width/2;
+            this.y = b + height/2;
         }
         area = width * height;
     }
@@ -76,8 +76,8 @@ public class Rect extends Shape {
      * @param pa The PApplet to draw to
      */
     public void display(PApplet pa) {
-        pa.rectMode(pa.CORNER);
-        pa.rect(x1, y1, width, height);
+        pa.rectMode(pa.CENTER);
+        pa.rect(x, y, width, height);
     }
     
     /**
@@ -87,8 +87,8 @@ public class Rect extends Shape {
      * @return True if the point (x, y) is wihtin the rect, false otherwise
      */
     public boolean touches(float x, float y) {
-        return (x1 <= x && x <= x1 + width &&
-                y1 <= y && y <= y1 + height);
+        return (getX1() <= x && x <= getX2() + width &&
+                getY1() <= y && y <= getY2() + height);
     }
     
     /**
@@ -96,7 +96,7 @@ public class Rect extends Shape {
      * @return the leftmost x-coordinate of the rect
      */
     public float getX1() {
-        return x1;
+        return x - width/2;
     }
     
     /**
@@ -104,7 +104,7 @@ public class Rect extends Shape {
      * @return the uppermost y-coordinate of the rect
      */
     public float getY1() {
-        return y1;
+        return y - height/2;
     }
     
     /**
@@ -112,7 +112,7 @@ public class Rect extends Shape {
      * @return the rightmost x-coordinate of the rect
      */
     public float getX2() {
-        return x1 + width;
+        return x + width/2;
     }
     
     /**
@@ -120,7 +120,7 @@ public class Rect extends Shape {
      * @return the bottommost y-coordinate of the rect
      */
     public float getY2() {
-        return y1 + height;
+        return y + height/2;
     }
 
     /**
@@ -128,7 +128,7 @@ public class Rect extends Shape {
      * @return the center x-coordinate of the rect
      */
 	public float getCenx() {
-		return x1 + width/2f;
+		return x;
 	}
 	
 	/**
@@ -136,7 +136,7 @@ public class Rect extends Shape {
 	 * @return The center of this rectangle.
 	 */
 	public Point getCenter() {
-		return new Point(getCenx(), getCeny());
+		return new Point(x, y);
 	}
 	
 	/**
@@ -145,15 +145,16 @@ public class Rect extends Shape {
 	 * @param y The new center y-coordinate for this rectangle.
 	 */
 	public void setCenter(float x, float y) {
-		translate(x - getCenx(), y - getCeny());
+		this.x = x;
+		this.y = y;
 	}
 
 	/**
 	 * 
-	 * @param x1 the new rightmost x-coordinate for the rect
+	 * @param x1 the new leftmost x-coordinate for the rect
 	 */
 	public void setX1(float x1) {
-		this.x1 = x1;
+		x = x1 + width/2;
 	}
 
 	/**
@@ -161,7 +162,7 @@ public class Rect extends Shape {
 	 * @return the center y-coordinate of the rect
 	 */
 	public float getCeny() {
-		return y1 + height/2f;
+		return y;
 	}
 
 	/**
@@ -169,7 +170,7 @@ public class Rect extends Shape {
 	 * @param y1 the new uppermost y-coordinate for the rect
 	 */
 	public void setY1(float y1) {
-		this.y1 = y1;
+		y = y1 + height/2;
 	}
 
 	/**
@@ -181,7 +182,7 @@ public class Rect extends Shape {
 	}
 
 	/**
-	 * 
+	 * Sets the width, keeping the center of the Rect in place.
 	 * @param the new width for the rect
 	 */
 	public void setWidth(float width) {
@@ -190,7 +191,7 @@ public class Rect extends Shape {
 	}
 
 	/**
-	 * 
+	 * Sets the height, keeping the center of the Rect in place.
 	 * @return the height of the rect
 	 */
 	public float getHeight() {
@@ -216,8 +217,8 @@ public class Rect extends Shape {
 	
 	@Override
 	public void translate(float dx, float dy) {
-		x1 += dx;
-		y1 += dy;
+		x += dx;
+		y += dy;
 	}
 	
 	@Override
