@@ -67,7 +67,21 @@ public class LiveScorer extends View {
 		//TODO: Make dependent on screen size
 		NOTE_SIZE = 20;
 		
-		//phrase readers
+		initPhraseReaders();
+		initSpawnPoint();
+		initSpawnBoundaries();
+		initPossibleYValuesForMoveNotesMode();
+		
+		//pixels to musical time conversion
+		pixelsPerWholeNote = 60;
+		
+		//this helps make it such that a quarter note is drawn as a circle when the stroke cap is round:
+		roundStrokeCapSurplus = pixelsPerWholeNote/8f;
+		
+		settingsChanged();
+	}
+	
+	private void initPhraseReaders() {
 		try {
 			Method callback = LiveScorer.class.getMethod("plotNote", PhraseReader.class);
 			readerA = new PhraseReader(pa.currentPhrase, ONE_ID, this, callback);
@@ -75,13 +89,9 @@ public class LiveScorer extends View {
 		} catch (NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 		}
-		
-		//note spawn point
-		spawnX = 0;
-		spawnY = 0;
-		initSpawnBoundaries();
-		
-		//labels of y-axis
+	}
+	
+	private void initPossibleYValuesForMoveNotesMode() {
 		ys = new float[pa.currentPhrase.getNumNotes()];
 		
 		float minPitch = pa.currentPhrase.minPitch();
@@ -94,14 +104,11 @@ public class LiveScorer extends View {
 				ys[i] = PApplet.lerp(minPitch, maxPitch, 0.5f);
 			}
 		}
-		
-		//pixels to musical time conversion
-		pixelsPerWholeNote = 60;
-		
-		//this helps make it such that a quarter note is drawn as a circle when the stroke cap is round:
-		roundStrokeCapSurplus = pixelsPerWholeNote/8f;
-		
-		settingsChanged();
+	}
+	
+	private void initSpawnPoint() {
+		spawnX = (scoreMode.toInt() == MOVE_SPAWN_POINT) ? startSpawnX : 0;
+		spawnY = (scoreMode.toInt() == MOVE_SPAWN_POINT) ? startSpawnY : 0;
 	}
 	
 	/**
@@ -113,8 +120,8 @@ public class LiveScorer extends View {
 		endSpawnX = getWidth() * 0.5f;
 		endSpawnY = getHeight() * 0.15f + NOTE_SIZE/2f;
 		
-		halfWidth = this.getWidth() * 0.5f;
-		halfHeight = this.getHeight() * 0.3f;
+		halfWidth = (scoreMode.toInt() == MOVE_NOTES) ? (getWidth() * 0.5f) : (getWidth() * 0.25f);
+		halfHeight = (scoreMode.toInt() == MOVE_NOTES) ? (getHeight() * 0.3f) : (getHeight() * 0.15f);
 	}
 	
 	/**************************
@@ -122,8 +129,18 @@ public class LiveScorer extends View {
 	 **************************/
 	
 	@Override
-	protected void resized() {
+	protected void resized(float prevWidth, float prevHeight) {
+		float prevHalfHeight = halfHeight;
 		initSpawnBoundaries();
+		for (int i=0; i<ys.length; i++) {
+			ys[i] = PApplet.map(ys[i], prevHalfHeight, -prevHalfHeight, halfHeight, -halfHeight);
+		}
+		for (DataPoint pt : dataPts1) {
+			pt.startY = PApplet.map(pt.startY, prevHalfHeight, -prevHalfHeight, halfHeight, -halfHeight);
+		}
+		for (DataPoint pt : dataPts2) {
+			pt.startY = PApplet.map(pt.startY, prevHalfHeight, -prevHalfHeight, halfHeight, -halfHeight);
+		}
 	}
 	
 	@Override
@@ -140,18 +157,8 @@ public class LiveScorer extends View {
 				                    (scoreMode.toInt() == MOVE_SPAWN_POINT && spawnX == 0 && spawnY == 0));
 		
 		if (scoreModeChanged) {
-			if (scoreMode.toInt() == MOVE_NOTES) {
-				spawnX = 0;
-				spawnY = 0;
-				halfWidth = getWidth() * 0.5f;
-				halfHeight = getHeight() * 0.3f;
-			}
-			else if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
-				spawnX = startSpawnX;
-				spawnY = startSpawnY;
-				halfWidth = getWidth() * 0.25f;
-				halfHeight = getHeight() * 0.15f;
-			}
+			initSpawnPoint();
+			initSpawnBoundaries();
 		}
 	}
 	
@@ -254,6 +261,8 @@ public class LiveScorer extends View {
 		}
 		else {
 			spawnX = startSpawnX;
+			//TODO Bug: The spawnY might have a greater value than it should under some unusual circumstances having to do
+			//with screen resizing
 			if (spawnY < endSpawnY) {
 				spawnY += dy;
 			}

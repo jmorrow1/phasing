@@ -50,18 +50,36 @@ public abstract class View extends Rect implements ViewVariableInfo {
 	
 	/**
 	 * Handles the event of this view being resized.
+	 * This method is called AFTER the view has been resized.
+	 * @param prevWidth The width of the View before the resizing occured.
+	 * @param prevHeight The height of the View before the resizing occured.
 	 */
-	protected abstract void resized();
+	protected abstract void resized(float prevWidth, float prevHeight);
+	
+	/**
+	 * Sets the width and height of this View.
+	 * @param width
+	 * @param height
+	 */
+	public void setSize(float width, float height) {
+		float prevWidth = getWidth();
+		float prevHeight = getHeight();
+		super.setWidth(width);
+		super.setHeight(height);
+		resized(prevWidth, prevHeight);
+	}
 	
 	@Override
 	public void setWidth(float width) {
+		float prevWidth = getWidth();
 		super.setWidth(width);
-		resized();
+		resized(prevWidth, getHeight());
 	}
 	
 	@Override
 	public void setHeight(float height) {
+		float prevHeight = getHeight();
 		super.setHeight(height);
-		resized();
+		resized(getWidth(), prevHeight);
 	}
 }

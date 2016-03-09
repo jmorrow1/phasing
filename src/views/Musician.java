@@ -181,7 +181,7 @@ public class Musician extends View {
 	 **************************/
 	
 	@Override
-	protected void resized() {			
+	protected void resized(float prevWidth, float prevHeight) {			
 		resetInstruments();
 		resetInstrumentPlayers();
 	}

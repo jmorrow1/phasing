@@ -112,7 +112,7 @@ public class PhaseShifter extends View {
 	 **************************/
 	
 	@Override
-	protected void resized() {
+	protected void resized(float prevWidth, float prevHeight) {
 		initBounds();
 		initData();
 	}
