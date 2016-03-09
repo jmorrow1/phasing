@@ -63,21 +63,22 @@ public class PhaseShifter extends View {
 		this.pa = pa;
 		
 		initBounds();
-		
-		//TODO: incorporate the number of notes into this calculation (the more notes the larger the radius):
-		maxRadius = pa.min(pa.lerp(getHeight(), getWidth(), 0.2f) * 0.3f, pa.height/2f - FONT_SIZE/2f);
-		minRadius = maxRadius / 2;
-		
-		initPhraseReaders();
-		
+		initPhraseReaders();		
 		initData();
 	}
 	
+	/**
+	 * Initializes the variables that have to do with the boundaries within which things are drawn.
+	 */
 	private void initBounds() {
 		width = this.getWidth();
 		height = this.getHeight()*0.5f;
 		halfWidth = width*0.5f;
 		halfHeight = height*0.5f;
+		
+		//TODO: incorporate the number of notes into this calculation (the more notes the larger the radius):
+		maxRadius = pa.min(pa.lerp(getHeight(), getWidth(), 0.2f) * 0.3f, pa.height/2f - FONT_SIZE/2f);
+		minRadius = maxRadius / 2;
 	}
 	
 	private void initData() {
@@ -113,6 +114,7 @@ public class PhaseShifter extends View {
 	@Override
 	protected void resized() {
 		initBounds();
+		initData();
 	}
 	
 	@Override
@@ -200,7 +202,8 @@ public class PhaseShifter extends View {
 			int j=0; //loops through data points
 			while (i < pa.currentPhrase.getNumNotes()) {
 				if (pa.currentPhrase.getSCDynamic(i) > 0) {
-					if ( (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE) && i == activeNote) {
+					if ( (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE)
+							&& i == activeNote) {
 						styleNoteGraphics(activeColor);
 						drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
 						styleNoteGraphics(nonActiveColor);

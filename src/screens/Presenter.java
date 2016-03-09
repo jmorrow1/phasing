@@ -287,20 +287,17 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	
 	@Override
 	public void windowResized() {
-		musicianView.setCenter(pa.width/2, pa.height/2);
-		musicianView.setWidth(pa.width);
-		musicianView.setHeight(pa.height);
-		phaseShifterView.setCenter(pa.width/2, pa.height/2);
-		phaseShifterView.setWidth(pa.width);
-		phaseShifterView.setHeight(pa.height);
-		phaseShifterView.setCenter(pa.width/2, pa.height/2);
-		liveScorerView.setWidth(pa.width);
-		liveScorerView.setHeight(pa.height);
-		/*musicianView.setSize(pa.width, pa.height);
-		phaseShifterView.setSize(pa.width, pa.height);
-		liveScorerView.setSize(pa.width, pa.height);*/
+		resizeView(musicianView);
+		resizeView(phaseShifterView);
+		resizeView(liveScorerView);
 		initCP5Objects();
 		repositionDirectionalButtons();
+	}
+	
+	private void resizeView(View view) {
+		view.setCenter(pa.width/2, pa.height/2);
+		view.setWidth(pa.width);
+		view.setHeight(pa.height);
 	}
 	
 	@Override
