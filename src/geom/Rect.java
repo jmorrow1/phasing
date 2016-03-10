@@ -87,8 +87,8 @@ public class Rect extends Shape {
      * @return True if the point (x, y) is wihtin the rect, false otherwise
      */
     public boolean touches(float x, float y) {
-        return (getX1() <= x && x <= getX2() + width &&
-                getY1() <= y && y <= getY2() + height);
+        return (getX1() <= x && x <= getX2() &&
+                getY1() <= y && y <= getY2());
     }
     
     /**
