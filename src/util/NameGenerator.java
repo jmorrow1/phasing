@@ -89,7 +89,7 @@ public class NameGenerator {
 	 * 2 => 'c'
 	 * ...
 	 * 
-	 * @return
+	 * @return The String.
 	 */
 	private String idToString(int id) {
 		Integer integer = id;

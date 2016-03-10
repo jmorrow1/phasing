@@ -28,12 +28,20 @@ public class PauseMenu {
 	 ***** Initialization *****
 	 **************************/
 	
+	/**
+	 * 
+	 * @param rect The area in which to draw the pause menu.
+	 * @param pa The PApplet to draw to.
+	 */
 	public PauseMenu(Rect rect, PhasesPApplet pa) {
 		this.rect = rect;
 		this.pa = pa;
 		cp5 = new ControlP5(pa);
 	}
 	
+	/**
+	 * Initializes the slider that controls the master volume.
+	 */
 	private void initVolumeSlider() {
 		int width = 100;
 		int height = 20;
@@ -43,6 +51,9 @@ public class PauseMenu {
 				          ;
 	}
 	
+	/**
+	 * Initializes the button that closes the pause menu.
+	 */
 	private void initCloseButton() {
 		int width = 30;
 		int height = 30;
@@ -58,7 +69,10 @@ public class PauseMenu {
 	 ***** Drawing *****
 	 *******************/
 	
-	public void draw() {
+	/**
+	 * Draws the pause menu.
+	 */
+	public void display() {
 		pa.stroke(50);
 		pa.strokeWeight(8);
 		pa.fill(pa.getColor1());

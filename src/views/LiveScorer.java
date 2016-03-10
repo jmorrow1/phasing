@@ -10,7 +10,8 @@ import processing.core.PApplet;
 import util.ModInt;
 
 /**
- * The LiveScorer View type. It listens for note events and every time it receives one, it adds a new note to a plot of pitch/time.
+ * The LiveScorer View type. It listens for note events and every time it receives one,
+ * it adds a new note to a plot of pitch/time.
  * 
  * @author James Morrow
  *
@@ -38,14 +39,20 @@ public class LiveScorer extends View {
 	//musical time bookkeeping:
 	private float durationAcc1, durationAcc2;
 	
+	//pixels to musical time conversion
+	private final int PIXELS_PER_WHOLE_NOTE = 60;
+	
+	//this helps make it such that a quarter note is drawn as a circle when the stroke cap is round:
+	private final float ROUND_STROKE_CAP_SURPLUS = PIXELS_PER_WHOLE_NOTE/8f;
+	
 	//other
-	private float pixelsPerWholeNote;
 	private final int ONE_ID = 1, TWO_ID = 2;
 	private int startingPitch = 0;
-	private final float NOTE_SIZE;
-	private float roundStrokeCapSurplus;
+	private float noteSize;
 	
 	//options:
+	//TODO Fix bug that when (sineWave.toInt() == IS_SINE_WAVE) the LiveScorer will draw notes
+	//followed by rests as sustained notes whether or not they're actually sustained notes.
 	public ModInt sineWave = new ModInt(1, numWaysOfBeingASineWaveOrNot, sineWaveName);
 	public ModInt scoreMode = new ModInt(0, numScoreModes, scoreModeName);
 	public ModInt noteGraphic = new ModInt(0, numNoteGraphicSet2s, noteGraphicSet2Name);
@@ -64,21 +71,16 @@ public class LiveScorer extends View {
 	public LiveScorer(Rect rect, int opacity, PhasesPApplet pa) {
 		super(rect, opacity, pa);
 		
-		//TODO: Make dependent on screen size
-		NOTE_SIZE = 20;
-		
+		initNoteSize();
 		initPhraseReaders();
 		initSpawnPoint();
 		initSpawnBoundaries();
 		initPossibleYValuesForMoveNotesMode();
-		
-		//pixels to musical time conversion
-		pixelsPerWholeNote = 60;
-		
-		//this helps make it such that a quarter note is drawn as a circle when the stroke cap is round:
-		roundStrokeCapSurplus = pixelsPerWholeNote/8f;
-		
-		settingsChanged();
+	}
+	
+	private void initNoteSize() {
+		float h = getHeight();
+		noteSize = (0 < h && h < 800) ? PApplet.map(h, 0, 800, 12, 24) : 24;
 	}
 	
 	private void initPhraseReaders() {
@@ -116,9 +118,9 @@ public class LiveScorer extends View {
 	 */
 	private void initSpawnBoundaries() {
 		startSpawnX = -getWidth() * 0.5f;
-		startSpawnY = -getHeight() * 0.15f - NOTE_SIZE/2f;
+		startSpawnY = -getHeight() * 0.15f - noteSize/2f;
 		endSpawnX = getWidth() * 0.5f;
-		endSpawnY = getHeight() * 0.15f + NOTE_SIZE/2f;
+		endSpawnY = getHeight() * 0.15f + noteSize/2f;
 		
 		halfWidth = (scoreMode.toInt() == MOVE_NOTES) ? (getWidth() * 0.5f) : (getWidth() * 0.25f);
 		halfHeight = (scoreMode.toInt() == MOVE_NOTES) ? (getHeight() * 0.3f) : (getHeight() * 0.15f);
@@ -131,6 +133,7 @@ public class LiveScorer extends View {
 	@Override
 	protected void resized(float prevWidth, float prevHeight) {
 		float prevHalfHeight = halfHeight;
+		initNoteSize();
 		initSpawnBoundaries();
 		for (int i=0; i<ys.length; i++) {
 			ys[i] = PApplet.map(ys[i], prevHalfHeight, -prevHalfHeight, halfHeight, -halfHeight);
@@ -176,7 +179,7 @@ public class LiveScorer extends View {
 			readerA.update(dNotept1);
 			readerB.update(dNotept2);
 			
-			float dx = -dNotept1 * pixelsPerWholeNote;
+			float dx = -dNotept1 * PIXELS_PER_WHOLE_NOTE;
 			
 			drawDataPoints(dataPts1, (colorScheme.toInt() == MONOCHROMATIC) ? 0 : pa.getColor1());
 			drawDataPoints(dataPts2, (colorScheme.toInt() == MONOCHROMATIC) ? 0 : pa.getColor2());
@@ -188,7 +191,7 @@ public class LiveScorer extends View {
 				scroll(dx, dataPts2);
 			}
 			else if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
-				moveSpawnPoint(-dx, getHeight() * 0.3f + NOTE_SIZE);
+				moveSpawnPoint(-dx, getHeight() * 0.3f + noteSize);
 			}
 			fade(dataPts1, dt);
 			fade(dataPts2, dt);
@@ -240,12 +243,11 @@ public class LiveScorer extends View {
 	 * @return The amount to decrease opacity by given that dt milliseconds have passed.
 	 */
 	private float fadeAmt(int dt) {
-		//TODO Test and make more precise if need be
 		if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
 			return (10000 - pa.width) * 0.00000075f * dt;
 		}
 		else {
-			return (10000 - pa.width) * 0.000002f * dt;
+			return (10000 - pa.width) * 0.0000015f * dt;
 		}
 	}
 	
@@ -311,7 +313,7 @@ public class LiveScorer extends View {
 		}
 		
 		dataPts.add(new DataPoint(spawnX, y1,
-                	spawnX + pixelsPerWholeNote*pa.currentPhrase.getSCDuration(noteIndex),
+                	spawnX + PIXELS_PER_WHOLE_NOTE*pa.currentPhrase.getSCDuration(noteIndex),
                 	opacity));
 	}
 	
@@ -378,12 +380,12 @@ public class LiveScorer extends View {
 		 */
 		void display(int color) {
 			pa.stroke(color, opacity);
-			pa.strokeWeight(NOTE_SIZE);
+			pa.strokeWeight(noteSize);
 			pa.fill(color, opacity);
 			if (noteGraphic.toInt() == DOTS2) {
 				pa.strokeCap(pa.ROUND);
-				float x1 = startX + roundStrokeCapSurplus;
-				float x2 = endX - roundStrokeCapSurplus;
+				float x1 = startX + ROUND_STROKE_CAP_SURPLUS;
+				float x2 = endX - ROUND_STROKE_CAP_SURPLUS;
 				pa.line(x1, startY, x2, startY);
 			}
 			else if (noteGraphic.toInt() == RECTS) {

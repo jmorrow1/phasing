@@ -61,7 +61,7 @@ public class Editor extends Screen {
 	private int startIndexOfUserDrawnNote = -1;
 	private int indexMousePressed=-1, pitchMousePressed=-1;
 	
-	//controllers
+	//cp5
 	private final static int BPM_1 = 1, BPM_DIFFERENCE = 2;
 	private int maxPhaseDifferenceAmplitude = 10;
 	private ControlP5 cp5;
@@ -76,22 +76,25 @@ public class Editor extends Screen {
 	//controller layout
 	private int controller_dx = 15;
 	
+	/**************************
+	 ***** Initialization *****
+	 **************************/
+	
 	/**
 	 * 
 	 * @param pa The PApplet to draw to
 	 */
 	public Editor(PhasesPApplet pa) {
 		super(pa);
-		
-		//init playback variables
-		try {
-			Method callback = Editor.class.getMethod("animate", SoundCipherPlus.class);
-			livePlayer = new SoundCipherPlus(pa, pa.currentPhrase, this, callback);
-		} catch (NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-		}
-		
-		//other things dependent on screen size
+		initMusicPlayer();
+		initGridVariables();
+		initCP5Objects();
+	}
+	
+	/**
+	 * Initializes gridFrame, cellWidth, and cellHeight variables.
+	 */
+	private void initGridVariables() {
 		gridFrame = new Rect(10, 60, pa.width-10, pa.height-40, pa.CORNERS);
 		switch (pa.screenSizeMode) {
 			case PhasesPApplet._800x600 :
@@ -101,22 +104,221 @@ public class Editor extends Screen {
 				rowSize = 18;
 				break;
 		}
-		
 		cellWidth = gridFrame.getWidth() / (rowSize+1);
 		cellHeight = gridFrame.getHeight() / columnSize;
-		
-		//cp5
+	}
+	
+	/**
+	 * Initializes the object that plays music in the editor.
+	 */
+	private void initMusicPlayer() {
+		try {
+			Method callback = Editor.class.getMethod("animate", SoundCipherPlus.class);
+			livePlayer = new SoundCipherPlus(pa, pa.currentPhrase, this, callback);
+		} catch (NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Initalizes the ControlP5 object and controllers, in addition to adding the controllers to the CP5 object.
+	 */
+	private void initCP5Objects() {
 		cp5 = new ControlP5(pa);
 		cp5.setAutoDraw(false);
-		setupControllers();
+		initScaleMenus();
+		initBPMSliders();
+		initPlayStopToggle();
+		initHorizontalScrollbar();
+	    initSubNoteButton();
+	    initAddNoteButton();
+	    hideAllControllers();
+	    cp5.hide();    
 	}
-
-	/****************************
-	 ***** Controller Setup *****
-	 ****************************/
 	
-	private void setupControllers() {
-		//scale menus
+	/**
+	 * Initializes the button that decreases phrase length note-by-note.
+	 * Adds the button to the CP5 object.
+	 */
+	private void initSubNoteButton() {
+		subNoteButton = cp5.addButton("decreasePhraseLength")
+			               .setPosition(gridFrame.getX1(), pa.height - 30f)
+			               .setSize(24, 24)
+			               .setView(new PlusMinusButtonView(false))
+			               .plugTo(this)
+			               ;
+		colorController(subNoteButton);
+	}
+	
+	/**
+	 * Initializes the button that increases phrase length note-by-note.
+	 * Adds the button to the CP5 object.
+	 */
+	private void initAddNoteButton() {
+		addNoteButton = cp5.addButton("increasePhraseLength")
+				           .setPosition(gridFrame.getX2() - 24, pa.height - 30f)
+				           .setSize(24, 24)
+				           .setView(new PlusMinusButtonView(true))
+				           .plugTo(this)
+				           ;
+		colorController(addNoteButton);
+	}
+	
+	/**
+	 * Initializes the scrollbar that controls which sub-section of the phrase is displayed.
+	 * Adds the scrollbar to the CP5 object.
+	 */
+	private void initHorizontalScrollbar() {
+		hScrollbar = new Scrollbar(cp5, "hScrollbar", PApplet.min(rowSize, pa.currentPhrase.getGridRowSize()), pa.currentPhrase.getGridRowSize());
+	    hScrollbar.setPosition(gridFrame.getX1() + 40, pa.height - 25f)
+			      .setSize((int)gridFrame.getWidth() - 80, 15)
+			      .plugTo(this)
+			      ;
+	    colorController(hScrollbar);
+	}
+	
+	/**
+	 * Initalizes the toggle that controls whether or not music plays.
+	 * Adds the toggle to the CP5 object.
+	 */
+	private void initPlayStopToggle() {
+		playToggle = cp5.addToggle("play")
+		        .setPosition(pa.width - 50, pa.changeScreenButtonY2 - 35)
+			    .setSize(35, 35)
+			    .plugTo(this)
+			    .setView(new ControllerView<Toggle>() {
+				    @Override
+					public void display(PGraphics pg, Toggle t) {
+				    	if (t.getValue() == 0) {
+				    		//draw white rect under play button
+							pg.rectMode(pg.CORNER);
+							pg.fill(255);
+							pg.noStroke();
+							pg.rect(0, 0, t.getWidth(), t.getHeight());
+				    	}
+				    	
+				    	pg.noStroke();
+						if (t.isMouseOver()) {
+							pg.fill(t.getColor().getForeground());
+						}
+						else {
+							pg.fill(t.getColor().getBackground());
+						}
+						
+						if (t.getValue() == 0) {
+							//draw play button
+							pg.triangle(0, 0, 0, t.getHeight(), t.getWidth(), t.getHeight()/2f);
+						}
+						else {
+							//draw pause button
+							pg.rectMode(pg.CORNER);
+							pg.rect(0, 0, t.getWidth(), t.getHeight());
+						}
+					}
+					   
+			   })
+			   ;
+		colorController(playToggle);
+	}
+	
+	/**
+	 * Initializes the sliders that control the tempos (in beats per minute) of the two players.
+	 * Adds the sliders to the CP5 object.
+	 */
+	private void initBPMSliders() {
+		int sliderWidth = getSliderWidth();
+		int sliderHeight = 23;
+		bpmSlider = consBPMSlider(scaleMenu.getPosition()[0] + scaleMenu.getWidth() + controller_dx, 
+				                  pa.changeScreenButtonY2 - sliderHeight,
+				                  sliderWidth,
+				                  sliderHeight);
+		
+		bpmDifferenceSlider = consBPMDifferenceSlider(bpmSlider.getPosition()[0] + sliderWidth + controller_dx,
+				                                     pa.changeScreenButtonY2 - sliderHeight,
+				                                     sliderWidth, 
+				                                     sliderHeight);
+	}
+	
+	/**
+	 * Constructs the slider that controls the first player's tempo (in beats per minute)
+	 * at a given location and with a given size.
+	 * 
+	 * @param x The leftmost x-coordinate of the slider.
+	 * @param y The uppermost y-coordinate of the slider.
+	 * @param w The width of the slider.
+	 * @param h The height of the slider.
+	 * @return The slider.
+	 */
+	private Slider consBPMSlider(float x, float y, int w, int h) {
+		return consBPMSlider("beatsPerMinute", "Beats Per Minute", BPM_1,
+			                x, y, w, h,
+			                pa.getBPM1(),
+			                11, 100,
+			                1,
+			                (floatingPoint) -> "" + PApplet.round(floatingPoint));
+	}
+	
+	/**
+	 * Constructs the slider that controls the difference between the 1st player's tempo and the 2nd player's tempo (in beats per minute)
+	 * at a given location and with a given size.
+	 * 
+	 * @param x The leftmost x-coordinate of the slider.
+	 * @param y The uppermost y-coordinate of the slider.
+	 * @param w The width of the slider.
+	 * @param h The height of the slider.
+	 * @return The slider.
+	 */
+	private Slider consBPMDifferenceSlider(float x, float y, int w, int h) {
+		return consBPMSlider("bpmDifference", "Difference", BPM_DIFFERENCE,
+			                x, y, w, h,
+			                pa.getBPM2() - pa.getBPM1(),
+			                -maxPhaseDifferenceAmplitude, maxPhaseDifferenceAmplitude,
+			                4, 
+			                (floatingPoint) -> String.format("%.2f", floatingPoint));
+	}
+	
+	/**
+	 * 
+	 * Constructs a slider with a bunch of properties.
+	 * 
+	 * The reason this method exists is mostly just to save keystrokes.
+	 * 
+	 * @param name A String identification.
+	 * @param label The String for the slider to display.
+	 * @param id An integer identification.
+	 * @param x The leftmost x-coordinate of the slider.
+	 * @param y The uppermost y-coordinate of the slider.
+	 * @param w The width of the slider.
+	 * @param h The height of the slider.
+	 * @param value The starting value the slider has.
+	 * @param minValue The minimum value the slider can have.
+	 * @param maxValue The maximum value the slider can have.
+	 * @param ticksPerWholeNumber 
+	 * @param f The function that converts floating points to Strings.
+	 * @return The slider.
+	 */
+	private Slider consBPMSlider(String name, String label, int id, float x, float y, int w, int h,
+			  float value, int minValue, int maxValue, int ticksPerWholeNumber, FloatFormatter f) {
+			Slider s = new SliderPlus(cp5, name, pa.pfont12, pa.pfont18, f);
+	        s.setId(id);
+	        s.setCaptionLabel(label);
+	        s.setDecimalPrecision(0);
+	        s.setRange(minValue, maxValue);
+	        s.setPosition(x, y);
+	        s.setSize(w, h);
+	        s.setValue(value);
+	        s.setLabelVisible(false);
+	        s.setNumberOfTickMarks((maxValue-minValue) * ticksPerWholeNumber + 1);
+	        s.plugTo(this);
+			colorController(s);
+			return s;
+		}
+	
+	/**
+	 * Initializes the drop-down menus that control what scale is active.
+	 * Adds the menus to the CP5 object.
+	 */
+	private void initScaleMenus() {
 		int menuItemHeight = 22;
 		rootMenu = new DropdownListPlus(cp5, "root");
 		rootMenu.setPosition(pa.changeScreenButtonX2 + controller_dx, pa.changeScreenButtonY2 - menuItemHeight)
@@ -144,86 +346,24 @@ public class Editor extends Screen {
 		colorController(scaleMenu);
 		formatLabel(scaleMenu);
 		scaleLabel = scaleMenu.getLabel();
-		
-		//bpm sliders
-		int sliderWidth = getSliderWidth();
-		int sliderHeight = 23;
-		bpmSlider = addBpm1Slider(scaleMenu.getPosition()[0] + scaleMenu.getWidth() + controller_dx, 
-				                  pa.changeScreenButtonY2 - sliderHeight,
-				                  sliderWidth,
-				                  sliderHeight);
-		
-		bpmDifferenceSlider = addBpmDifferenceSlider(bpmSlider.getPosition()[0] + sliderWidth + controller_dx,
-				                                     pa.changeScreenButtonY2 - sliderHeight,
-				                                     sliderWidth, 
-				                                     sliderHeight);
-		
-		//play stop toggle
-		playToggle = cp5.addToggle("play")
-				        .setPosition(pa.width - 50, pa.changeScreenButtonY2 - 35)
-					    .setSize(35, 35)
-					    .plugTo(this)
-					    .setView(new ControllerView<Toggle>() {
-						    @Override
-							public void display(PGraphics pg, Toggle t) {
-						    	if (t.getValue() == 0) {
-						    		//draw white rect under play button
-									pg.rectMode(pg.CORNER);
-									pg.fill(255);
-									pg.noStroke();
-									pg.rect(0, 0, t.getWidth(), t.getHeight());
-						    	}
-						    	
-						    	pg.noStroke();
-								if (t.isMouseOver()) {
-									pg.fill(t.getColor().getForeground());
-								}
-								else {
-									pg.fill(t.getColor().getBackground());
-								}
-								
-								if (t.getValue() == 0) {
-									//draw play button
-									pg.triangle(0, 0, 0, t.getHeight(), t.getWidth(), t.getHeight()/2f);
-								}
-								else {
-									//draw pause button
-									pg.rectMode(pg.CORNER);
-									pg.rect(0, 0, t.getWidth(), t.getHeight());
-								}
-							}
-							   
-					   })
-					   ;
-		colorController(playToggle);
-		
-		//horizontal scrollbar
-		hScrollbar = new Scrollbar(cp5, "hScrollbar", PApplet.min(rowSize, pa.currentPhrase.getGridRowSize()), pa.currentPhrase.getGridRowSize());
-	    hScrollbar.setPosition(gridFrame.getX1() + 40, pa.height - 25f)
-			      .setSize((int)gridFrame.getWidth() - 80, 15)
-			      .plugTo(this)
-			      ;
-	    colorController(hScrollbar);
-	    
-		//add buttons that flank the scrollbar and control the adding and removing of notes from the phrase
-	    subNoteButton = cp5.addButton("decreasePhraseLength")
-						    .setPosition(gridFrame.getX1(), pa.height - 30f)
-						    .setSize(24, 24)
-						    .setView(new PlusMinusButtonView(false))
-						    .plugTo(this)
-						    ;
-	    colorController(subNoteButton);
-		addNoteButton = cp5.addButton("increasePhraseLength")
-						   .setPosition(gridFrame.getX2() - 24, pa.height - 30f)
-						   .setSize(24, 24)
-						   .setView(new PlusMinusButtonView(true))
-						   .plugTo(this)
-						   ;
-	    colorController(addNoteButton);
-	    cp5.hide();
-	    hideAllControllers();
 	}
 	
+	/**
+	 * Changes the style information of the given controller's label to reformat it.
+	 * @param x The given controller, a DropdownList.
+	 */
+	private void formatLabel(DropdownList x) {
+		x.getCaptionLabel().toUpperCase(false);
+		x.getValueLabel().toUpperCase(false);
+		x.getCaptionLabel().setFont(pa.pfont18);
+		x.getValueLabel().setFont(pa.pfont18);
+		x.getCaptionLabel().getStyle().paddingTop += 5;
+		x.getValueLabel().getStyle().paddingTop += 5;
+	}
+	
+	/**
+	 * Makes all the Editor's controllers invisible.
+	 */
 	private void hideAllControllers() {
 		hScrollbar.hide();
 		addNoteButton.hide();
@@ -235,6 +375,9 @@ public class Editor extends Screen {
 		playToggle.hide();
 	}
 	
+	/**
+	 * Makes all the controllers that, according to the pa.playerInfo object, the player has unlocked visible.
+	 */
 	private void showUnlockedControllers() {
 		if (pa.playerInfo.numEditorVisits >= 1) {
 			playToggle.show();
@@ -258,6 +401,7 @@ public class Editor extends Screen {
 		}	
 	}
 
+	//TODO Reevaluate
 	private int getSliderWidth() {
 		switch(pa.screenSizeMode) {
 			case PhasesPApplet._800x600 : return 160;
@@ -266,15 +410,11 @@ public class Editor extends Screen {
 		}
 	}
 	
-	private void formatLabel(DropdownList x) {
-		x.getCaptionLabel().toUpperCase(false);
-		x.getValueLabel().toUpperCase(false);
-		x.getCaptionLabel().setFont(pa.pfont18);
-		x.getValueLabel().setFont(pa.pfont18);
-		x.getCaptionLabel().getStyle().paddingTop += 5;
-		x.getValueLabel().getStyle().paddingTop += 5;
-	}
-	
+	/**
+	 * Changes the way the given controller is colored.
+	 * The way it does that is based on the controller's subtype.
+	 * @param c The given controller.
+	 */
 	private void colorController(Controller c) {
 		c.setColorCaptionLabel(pa.color(255));
 	    c.setColorValueLabel(pa.color(255));
@@ -298,46 +438,7 @@ public class Editor extends Screen {
 			c.setColorForeground(pa.getColor1Bold());
 		}
 	}
-	
-	private Slider addBpm1Slider(float x, float y, int w, int h) {
-		return addBPMSlider("beatsPerMinute", "Beats Per Minute", BPM_1,
-			                x, y, w, h,
-			                pa.getBPM1(),
-			                11, 100,
-			                1,
-			                (floatingPoint) -> "" + PApplet.round(floatingPoint));
-	}
-	
-	private Slider addBpmDifferenceSlider(float x, float y, int w, int h) {
-		return addBPMSlider("bpmDifference", "Difference", BPM_DIFFERENCE,
-			                x, y, w, h,
-			                pa.getBPM2() - pa.getBPM1(),
-			                -maxPhaseDifferenceAmplitude, maxPhaseDifferenceAmplitude,
-			                4, 
-			                (floatingPoint) -> String.format("%.2f", floatingPoint));
-	}
-	
-	private Slider addBPMSlider(String name, String label, int id, float x, float y, int w, int h,
-		  float value, int minValue, int maxValue, int ticksPerWholeNumber, FloatFormatter f) {
-		Slider s = new SliderPlus(cp5, name, pa.pfont12, pa.pfont18, f);
-        s.setId(id);
-        s.setCaptionLabel(label);
-        s.setDecimalPrecision(0);
-        s.setRange(minValue, maxValue);
-        s.setPosition(x, y);
-        s.setSize(w, h);
-        s.setValue(value);
-        s.setLabelVisible(false);
-        s.setNumberOfTickMarks((maxValue-minValue) * ticksPerWholeNumber + 1);
-        s.plugTo(this);
-		colorController(s);
-		return s;
-	}
 
-	public void hScrollbar(ControlEvent e) {
-		drawBody();
-	}
-	
 	/********************************
 	 ***** Controller Callbacks *****
 	 ********************************/
@@ -352,7 +453,7 @@ public class Editor extends Screen {
 			hScrollbar.setNumTickMarks(pa.currentPhrase.getGridRowSize());
 			hScrollbar.setTicksPerScroller(rowSize);
 		}
-		drawBody();		
+		//drawBody();		
 	}
 	
 	public void increasePhraseLength(ControlEvent e) {
@@ -365,19 +466,19 @@ public class Editor extends Screen {
 			hScrollbar.setNumTickMarks(pa.currentPhrase.getGridRowSize());
 			hScrollbar.setTicksPerScroller(rowSize);
 		}
-		drawBody();
+		//drawBody();
 	}
 	
 	public void beatsPerMinute(ControlEvent e) {
 		pa.setBPM1(e.getValue());
 		livePlayer.tempo(pa.getBPM1());
 		pa.setBPM2(e.getValue() + bpmDifferenceSlider.getValue());
-		drawBody();
+		//drawBody();
 	}
 	
 	public void bpmDifference(ControlEvent e) {
 		pa.setBPM2(pa.getBPM1() + e.getValue());
-		drawBody();
+		//drawBody();
 	}
 	
 	/**
@@ -412,14 +513,16 @@ public class Editor extends Screen {
 	 *********************************/
 	
 	@Override
-	public void windowResized() {}
+	public void windowResized() {
+		
+	}
 
 	@Override
 	public void onEnter() {
 		cp5.show();
 		showUnlockedControllers();
 		drawToolbar();
-		drawBody();
+		//drawBody();
 		timeEntered = System.currentTimeMillis();
 		prev_t = System.currentTimeMillis();
 		playToggle.setValue(false);
@@ -439,62 +542,45 @@ public class Editor extends Screen {
 	
 	@Override
 	public void onPause() {
-		//TODO: if playing, pause.
+		//TODO: if player is playing, pause it.
 	}
 	
 	@Override
 	public void onResume() {
-		//TODO: if was playing, resume.
+		//TODO: if player was playing prior to the pause, resume it.
 	}
 	
 	/********************************
 	 ***** Input Event Handling *****
 	 ********************************/
 	
+	@Override
 	public void keyPressed() {
 		if (pa.key == ' ') {
 			playToggle.setState(!playToggle.getState());
 		}
 	}
 	
+	/**
+	 * 
+	 * @return True if user is simultaneously holding shift and pressing the left or right mouse button, false otherwise.
+	 */
 	private boolean shiftClick() {
 		return pa.keyPressed && pa.key == pa.CODED && pa.keyCode == pa.SHIFT && pa.mousePressed && (pa.mouseButton == pa.LEFT || pa.mouseButton == pa.RIGHT);
 	}
 	
+	@Override
 	public void mouseWheel(MouseEvent event) {
 		hScrollbar.myOnScroll(event.getCount());
-		drawBody();
+		//drawBody();
 	}
 	
+	@Override
 	public void mousePressed() {
-		//for drawing a note to the grid:
-		if (mouseIntersectsGrid()) {
-			indexMousePressed = mouseToIndex();
-			pitchMousePressed = mouseToPitch();
-			startIndexOfUserDrawnNote = indexMousePressed;
-			if (!rootMenu.isInside() && !scaleMenu.isInside()) {
-				if (pa.mouseButton == pa.LEFT && !shiftClick()) {
-					boolean success = pa.currentPhrase.setCell(indexMousePressed, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
-					if (success && 
-							indexMousePressed+1 < pa.currentPhrase.getGridRowSize() &&
-							pa.currentPhrase.getNoteType(indexMousePressed+1) == Phrase.NOTE_SUSTAIN) {
-						pa.currentPhrase.setNoteType(indexMousePressed+1, Phrase.NOTE_START);
-					}
-					if (success) {
-						drawState = DRAWING_NOTE;
-						drawBody();
-					}
-				}
-				else if ( (pa.mouseButton == pa.RIGHT || shiftClick())) {
-					drawState = DRAWING_REST;
-					if (pitchMousePressed == pa.currentPhrase.getGridPitch(indexMousePressed)) {
-						drawRest(indexMousePressed, pitchMousePressed);
-					}
-				}
-			}
+		if (mouseInGrid()) {
+			mousePressedOnGrid();
 		}
 		
-		//close a menu when a mouse click occurs outside it:
 		if (!rootMenu.isInside()) {
 			rootMenu.close();
 		}
@@ -504,28 +590,78 @@ public class Editor extends Screen {
 		}
 	}
 	
-	private void drawRest(int index, int pitch) {
+	/**
+	 * Allows notes and rests to be drawn to the grid.
+	 */
+	private void mousePressedOnGrid() {
+		indexMousePressed = mouseToIndex();
+		pitchMousePressed = mouseToPitch();
+		startIndexOfUserDrawnNote = indexMousePressed;
+		
+		if (!rootMenu.isInside() && !scaleMenu.isInside()) {
+			if (pa.mouseButton == pa.LEFT && !shiftClick()) {
+				writeNote(indexMousePressed, pitchMousePressed);
+			}
+			else if ( (pa.mouseButton == pa.RIGHT || shiftClick())) {
+				drawState = DRAWING_REST;
+				if (pitchMousePressed == pa.currentPhrase.getGridPitch(indexMousePressed)) {
+					writeRest(indexMousePressed, pitchMousePressed);
+				}
+			}
+		}
+		//drawBody();
+	}
+	
+	/**
+	 * Tries to write a pitch to the current phrase at some index.
+	 * If it succeeds, it also edits the note at the subsequent index when appropriate.
+	 * 
+	 * @param index The index at which to add the pitch.
+	 * @param pitch The pitch.
+	 */
+	private void writeNote(int index, int pitch) {
+		boolean success = pa.currentPhrase.setCell(index, pitch, defaultDynamic(), Phrase.NOTE_START);
+		if (success) {
+			boolean editSubsequentNote = index+1 < pa.currentPhrase.getGridRowSize() &&
+											pa.currentPhrase.getNoteType(index+1) == Phrase.NOTE_SUSTAIN;
+			if (editSubsequentNote) {
+				pa.currentPhrase.setNoteType(index+1, Phrase.NOTE_START);
+			}
+			
+			drawState = DRAWING_NOTE;	
+		}
+	}
+	
+	/**
+	 * Tries to write a rest to the current phrase at some index.
+	 * If it succeeds, it also edits the note at the subsequent index when appropriate.
+	 * 
+	 * @param index The index at which to add the rest.
+	 * @param pitch The pitch.
+	 */
+	private void writeRest(int index, int pitch) {
 		boolean success = pa.currentPhrase.setCell(index, pitch, defaultDynamic(), Phrase.REST);
 		pa.currentPhrase.setNoteType(index, Phrase.REST);
 		if (success) {
-			if (index+1 < pa.currentPhrase.getGridRowSize() && 
-					pa.currentPhrase.getNoteType(index+1) == Phrase.NOTE_SUSTAIN) {
+			boolean editSubsequentNote = index+1 < pa.currentPhrase.getGridRowSize() && 
+											pa.currentPhrase.getNoteType(index+1) == Phrase.NOTE_SUSTAIN;
+			if (editSubsequentNote) {
 				pa.currentPhrase.setNoteType(index+1, Phrase.NOTE_START);
 			}
-			drawBody();
-			
 		}	
 	}
 	
+	@Override
 	public void mouseReleased() {
-		//for resetting the Editor's state w/r/t the grid:
+		//resets the Editor's state w/r/t the grid:
 		drawState = NOT_DRAWING;
 		startIndexOfUserDrawnNote = -1;
 	}
 	
+	@Override
 	public void mouseDragged() {
 		//for continuing to draw notes to the grid:
-		if (drawState == DRAWING_NOTE && mouseIntersectsGrid()) {
+		if (drawState == DRAWING_NOTE && mouseInGrid()) {
 			int newIndex = mouseToIndex();
 			int newPitch = mouseToPitch();
 			if (newPitch == pitchMousePressed) {
@@ -538,7 +674,7 @@ public class Editor extends Screen {
 						indexMousePressed++;
 					}
 					pa.currentPhrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_SUSTAIN);
-					drawBody();
+					//drawBody();
 				}
 				else if (newIndex < indexMousePressed && newIndex < startIndexOfUserDrawnNote) {
 					pa.currentPhrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
@@ -547,18 +683,18 @@ public class Editor extends Screen {
 						indexMousePressed++;
 					}
 					startIndexOfUserDrawnNote = newIndex;
-					drawBody();
+					//drawBody();
 				}
 			}
 			else {
 				mousePressed();
 			}
 		}
-		else if (drawState == DRAWING_REST && mouseIntersectsGrid()) {
+		else if (drawState == DRAWING_REST && mouseInGrid()) {
 			int index = mouseToIndex();
 			int pitch = mouseToPitch();
 			if (0 <= index && index < pa.currentPhrase.getGridRowSize() && pitch == pa.currentPhrase.getGridPitch(index)) {
-				drawRest(index, pitch);
+				writeRest(index, pitch);
 			}
 		}
 		/*else {
@@ -570,13 +706,13 @@ public class Editor extends Screen {
 	 * 
 	 * @return True, if the mouse intersects the grid (but not the piano-shaped y-axis), false otherwise
 	 */
-	private boolean mouseIntersectsGrid() {
+	private boolean mouseInGrid() {
 		return (gridFrame.touches(pa.mouseX, pa.mouseY) && gridFrame.getX1() + cellWidth < pa.mouseX);
 	}
 	
 	/**
-	 * Looks at the variable pa.mouseX and its position in relation to the grid, mapping that to the index of a note in the phrase.
-	 * @return The index of the note to which pa.mouseX cooresponds
+	 * Maps the mouse's x-coordinate to an index of a note in the phrase.
+	 * @return The index.
 	 */
 	private int mouseToIndex() {
 		return (int)pa.map(pa.mouseX, 
@@ -585,8 +721,8 @@ public class Editor extends Screen {
 	}
 	
 	/**
-	 * Looks at the variable pa.mouseY and its position in relation to the grid, mapping that to a pitch in the phrase.
-	 * @return The pitch of the note to which pa.mouseY cooresponds
+	 * Maps the mouse's x-coordinate to a pitch value.
+	 * @return The pitch value.
 	 */
 	private int mouseToPitch() {
 		int pitchIndex = (int)pa.map(pa.mouseY, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys);
@@ -597,11 +733,21 @@ public class Editor extends Screen {
 	 ***** Music/Grid Conversion *****
 	 *********************************/
 
+	/**
+	 * Converts a y-value to a pitch value, using the coordinate system of the grid.
+	 * @param y The y-value.
+	 * @return The pitch value.
+	 */
 	private int yToPitch(float y) {
 		int pitchIndex = (int)pa.map(y + cellHeight/2f, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys);
 		return pa.currentScale.getNoteValue(pitchIndex) + minOctave*12;
 	}
 	
+	/**
+	 * Converts a pitch value to a y-value, using the coordinate system of the grid.
+	 * @param pitch The pitch value.
+	 * @return The y-value.
+	 */
 	private float pitchToY(int pitch) {
 		int pitchIndex = pa.currentScale.getIndexOfNoteValue(pitch - minOctave*12) + 1;
 		return pa.map(pitchIndex, 0, numKeys, gridFrame.getY2(), gridFrame.getY1());
@@ -621,13 +767,17 @@ public class Editor extends Screen {
 		if (playToggle.getValue() != 0) {
 			long dt = System.currentTimeMillis() - prev_t;
 			livePlayer.update(dt * pa.getBPMS1());
-			drawBody();
+			//drawBody();
 		}
 		prev_t = System.currentTimeMillis();
 		
+		drawBody();
 		drawToolbar();
 	}
 	
+	/**
+	 * Draws the stuff apart from the grid.
+	 */
 	private void drawToolbar() {
 		//top toolbar background
 		pa.noStroke();
@@ -644,9 +794,12 @@ public class Editor extends Screen {
 		
 		//controllers
 		cp5.draw();
-		updateMenus();
+		checkMenus();
 	}
 	
+	/**
+	 * Draws the grid and the stuff behind the grid.
+	 */
 	private void drawBody() {
 		//draw blank background behind grid
 		pa.noStroke();
@@ -679,23 +832,49 @@ public class Editor extends Screen {
 		drawPiano();
 	}
 	
-	private void updateMenus() {
+	/**
+	 * Checks if either the rootMenu or the scaleMenu have changed state.
+	 * If either has changed state, that means the current scale has changed,
+	 * and the editor needs to change state accordingly.
+	 */
+	private void checkMenus() {
 		if (rootLabel != rootMenu.getLabel() || scaleLabel != scaleMenu.getLabel()) {
 			rootLabel = rootMenu.getLabel();
 			scaleLabel = scaleMenu.getLabel();
 			Scale newScale = pa.getScale(rootLabel, scaleLabel);
-			updateGrid(newScale);
-			drawBody();
+			changeScale(newScale);
+			//drawBody();
 		}
-		else if (rootMenu.isOpen() != rootMenuOpen || scaleMenu.isOpen() != scaleMenuOpen) {
-			rootMenuOpen = rootMenu.isOpen();
-			scaleMenuOpen = scaleMenu.isOpen();
-			drawBody();
+		//else if (rootMenu.isOpen() != rootMenuOpen || scaleMenu.isOpen() != scaleMenuOpen) {
+		//	rootMenuOpen = rootMenu.isOpen();
+		//	scaleMenuOpen = scaleMenu.isOpen();
+			//drawBody();
+		//}
+	}
+	
+	/**
+	 * Changes the scale to the new scale.
+	 * @param newScale The new scale.
+	 */
+	private void changeScale(Scale newScale) {
+		float[] ys = new float[pa.currentPhrase.getGridRowSize()];
+		for (int i=0; i<pa.currentPhrase.getGridRowSize(); i++) {
+			int pitch = (int)pa.currentPhrase.getGridPitch(i);
+			ys[i] = pitchToY(pitch);
+		}
+
+		pa.currentScale = newScale;
+		
+		for (int i=0; i<pa.currentPhrase.getGridRowSize(); i++) {
+			if (pa.currentPhrase.getGridPitch(i) > 0) {
+				int pitch = yToPitch(ys[i]);
+				pa.currentPhrase.setGridPitch(i, pitch);
+			}
 		}
 	}
 	
 	/**
-	 * Interprets the Phrase data and draws it to the grid.
+	 * Interprets the Phrase data as geometry and draws it to the grid.
 	 */
 	private void drawPhrase(int inactiveColor, int activeColor, int strokeColor, float cellWidth) {
 		pa.strokeWeight(1.5f);
@@ -731,11 +910,11 @@ public class Editor extends Screen {
 	
 	/**
 	 * Draws the empty grid.
-	 * @param color
+	 * @param strokeColor
 	 */
-	private void drawGrid(int color, float cellWidth) {
+	private void drawGrid(int strokeColor, float cellWidth) {
 		pa.strokeWeight(1);
-		pa.stroke(color);
+		pa.stroke(strokeColor);
 		
 		//vertical lines
 		int numQuarterNotes = (int)(pa.currentPhrase.getTotalDuration() / 0.25f) - hScrollbar.getLowTick();
@@ -755,23 +934,6 @@ public class Editor extends Screen {
 		}
 		
 		pa.line(x, gridFrame.getY1(), x, gridFrame.getY2());
-	}
-	
-	private void updateGrid(Scale newScale) {
-		float[] ys = new float[pa.currentPhrase.getGridRowSize()];
-		for (int i=0; i<pa.currentPhrase.getGridRowSize(); i++) {
-			int pitch = (int)pa.currentPhrase.getGridPitch(i);
-			ys[i] = pitchToY(pitch);
-		}
-
-		pa.currentScale = newScale;
-		
-		for (int i=0; i<pa.currentPhrase.getGridRowSize(); i++) {
-			if (pa.currentPhrase.getGridPitch(i) > 0) {
-				int pitch = yToPitch(ys[i]);
-				pa.currentPhrase.setGridPitch(i, pitch);
-			}
-		}
 	}
 	
 	/**
@@ -810,9 +972,11 @@ public class Editor extends Screen {
 	
 	/**
 	 * 
-	 * @return The default dynamic for notes created in the Editor
+	 * @return The default dynamic value for notes created in the Editor
 	 */
 	private float defaultDynamic() {
+		//TODO Bookmarking this in case there's no better way to
+		//manipulate the volume than by changing the dynamic directly
 		return 50 + pa.random(-5, 5);
 	}
 }

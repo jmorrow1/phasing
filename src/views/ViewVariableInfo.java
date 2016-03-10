@@ -1,5 +1,10 @@
 package views;
 
+/**
+ * 
+ * @author James Morrow
+ *
+ */
 public interface ViewVariableInfo {
 	public final String colorSchemeName = "Color Scheme";
 	public final int numColorSchemes=2;

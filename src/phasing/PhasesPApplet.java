@@ -148,7 +148,7 @@ public class PhasesPApplet extends PApplet {
 		initCurrentPhrase();
 		initScreens();
 		
-		currentScreen = presenter;
+		currentScreen = editor;
 		currentScreen.onEnter();
 		
 		initCP5Objects(currentScreen);
@@ -680,7 +680,7 @@ public class PhasesPApplet extends PApplet {
 		}
 		else {
 			currentScreen.drawWhilePaused();
-			pauseMenu.draw();
+			pauseMenu.display();
 		}
 	}
 	
