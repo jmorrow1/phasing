@@ -22,5 +22,6 @@ public abstract class Shape {
 	 */
 	public abstract void translate(float dx, float dy);
 
+	@Override
 	public abstract Shape clone();
 }

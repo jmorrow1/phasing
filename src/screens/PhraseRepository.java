@@ -12,6 +12,7 @@ import phasing.Phrase;
 import phasing.PhrasePicture;
 
 /**
+ * A screen for saving and loading Phrases.
  * 
  * @author James Morrow
  *
@@ -134,6 +135,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	 ***** CellEventHandler *****
 	 ****************************/
 	
+	@Override
 	public void copy(Cell cell) {
 		int i = cells.indexOf(cell) + currPageNum*cells.size();
 		if (i < pa.phrasePictures.size()) {
@@ -142,14 +144,16 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		}
 	}
 
+	/*@Override
 	public void load(Cell cell) {
 		int i = cells.indexOf(cell) + currPageNum*cells.size();
 		if (i < pa.phrasePictures.size()) {
 			pa.currentPhrasePicture = pa.phrasePictures.get(i);
 			pa.currentPhrase = pa.currentPhrasePicture.getPhrase();
 		}
-	}
+	}*/
 	
+	@Override
 	public void delete(Cell cell) {
 		int i = cells.indexOf(cell);
 		if (i != -1) {
@@ -157,12 +161,14 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		}
 	}
 	
+	@Override
 	public void newPhrase() {
 		pa.currentPhrase = new Phrase();
 		pa.currentPhrasePicture = new PhrasePicture(pa.currentPhrase, pa);
 		addPhrasePicture(pa.currentPhrasePicture);
 	}
 	
+	@Override
 	public void generatePhrase() {
 		pa.currentPhrase = pa.generateReichLikePhrase();
 		pa.currentPhrasePicture = new PhrasePicture(pa.currentPhrase, pa);
@@ -222,6 +228,41 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	@Override
 	public void onResume() {}
 	
+	/********************************
+	 ***** Input Event Handling *****
+	 ********************************/
+	
+	@Override
+	public void mousePressed() {
+		Cell c = cellTouching(pa.mouseX, pa.mouseY);
+		if (c != null) {
+			load(c);
+		}
+	}
+	
+	private void load(Cell cell) {
+		int i = cells.indexOf(cell) + currPageNum*cells.size();
+		if (i < pa.phrasePictures.size()) {
+			pa.currentPhrasePicture = pa.phrasePictures.get(i);
+			pa.currentPhrase = pa.currentPhrasePicture.getPhrase();
+		}
+	}
+	
+	/**
+	 * Gives the Cell that touches the given (x,y), or null if no such Cell exists.
+	 * @param x
+	 * @param y
+	 * @return The Cell that touches (x,y) or null.
+	 */
+	private Cell cellTouching(int x, int y) {
+		for (Cell c : cells) {
+			if (c.touches(x, y)) {
+				return c;
+			}
+		}
+		return null;
+	}
+	
 	/*******************
 	 ***** Drawing *****
 	 *******************/
@@ -253,7 +294,6 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	@Override
 	public void draw() {
 		pa.background(255);
-		
 		int i = 0;
 		int j = currPageNum*cells.size();
 		while (i < cells.size()) {

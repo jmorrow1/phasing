@@ -28,7 +28,6 @@ class Cell {
 
 	//buttons
 	private Button copyButton;
-	private Button loadButton;
 	private Button deleteButton;
 	private Button generateButton;
 	private Button newPhraseButton;
@@ -45,7 +44,6 @@ class Cell {
 	 */
 	protected Cell(Rect rect, ControlP5 cp5, PhraseRepository phraseRepo) {
 		this.rect = rect;
-		initLoadButton(cp5);
 		initCopyButton(cp5);
 		initGenerateButton(cp5);
 		initNewPhraseButton(cp5);
@@ -75,30 +73,6 @@ class Cell {
         copyButton.getCaptionLabel().setFont(PhasesPApplet.pfont12);
         copyButton.getCaptionLabel().toUpperCase(false);
   		PhasesPApplet.colorControllerShowingLabel(copyButton);
-	}
-	
-	/**
-	 * Initializes the "Load" button. This is intended to make
-	 * the PhrasePicture associated with this cell the current phrase.
-	 * 
-	 * @param cp5 The ControlP5 instance to add the button to.
-	 */
-	private void initLoadButton(ControlP5 cp5) {
-		float x1 = rect.getX1() + 0.5f;
-		float y1 = rect.getY1() + 0.9f * rect.getHeight();
-		float width = 0.4f * rect.getWidth();
-		float height = 0.1f * rect.getHeight();
-		this.loadButton = cp5.addButton((char)nextId + " load")
-						     .setLabel("Load")
-						     .setPosition(x1, y1)
-						     .setSize((int)width, (int)height)
-						     .setId(LOAD)
-						     .plugTo(this);
-						     ;	     
-		//TODO: Fix font blurriness.
-		loadButton.getCaptionLabel().setFont(PhasesPApplet.pfont12);
-		loadButton.getCaptionLabel().toUpperCase(false);
-		PhasesPApplet.colorControllerShowingLabel(loadButton);
 	}
 	
 	/**
@@ -178,7 +152,7 @@ class Cell {
 				eventHandler.copy(this);
 				break;
 			case LOAD :
-				eventHandler.load(this);
+				//eventHandler.load(this);
 				break;
 			case NEW :
 				eventHandler.newPhrase();
@@ -220,7 +194,6 @@ class Cell {
 		drawBorder(false, pa);
 		deleteButton.hide();
 		copyButton.hide();
-		loadButton.hide();
 		if (showNewPhraseButtons) {
 			generateButton.show();
 			newPhraseButton.show();
@@ -249,15 +222,26 @@ class Cell {
 		pa.text(name, rect.getCenx(), rect.getY1());
 		
 		deleteButton.show();
+		copyButton.show();
 		if (isCurrentPhrase) {
-			copyButton.show();
-			loadButton.hide();
 		}
 		else {
-			copyButton.hide();
-			loadButton.show();
 		}
 		generateButton.hide();
 		newPhraseButton.hide();
+	}
+	
+	/****************
+	 ***** Misc *****
+	 ****************/
+	
+	/**
+	 * 
+	 * @param x
+	 * @param y
+	 * @return True if the (x,y) is inside the cell, false otherwise.
+	 */
+	public boolean touches(int x, int y) {
+		return rect.touches(x, y);
 	}
 }

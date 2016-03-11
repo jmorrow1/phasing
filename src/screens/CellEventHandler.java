@@ -21,7 +21,7 @@ interface CellEventHandler {
 	 * 
 	 * @param cell
 	 */
-	public void load(Cell cell);
+	//public void load(Cell cell);
 	
 	/**
 	 * Deletes the PhrasePicture associated with the given cell.
