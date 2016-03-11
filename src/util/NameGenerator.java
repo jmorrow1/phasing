@@ -13,7 +13,7 @@ import processing.core.PApplet;
  */
 public class NameGenerator {
 	private final Set<String> names = new TreeSet<String>();
-	private int nextId = 0;
+	private String nextName = "a";
 	
 	/**
 	 * Constructs a NameGenerator.
@@ -51,14 +51,13 @@ public class NameGenerator {
 	 * @return
 	 */
 	public String getUniqueName() {
-		while (names.contains(idToString(nextId))) {
-			incrementNextId();
+		while (names.contains(nextName)) {
+			incrementNextName();
 		}
 		
-		String name = idToString(nextId);
-		addNameToExclude(name);
-		incrementNextId();
-		return name;
+		addNameToExclude(nextName);
+		incrementNextName();
+		return nextName;
 	}
 	
 	/**
@@ -76,29 +75,38 @@ public class NameGenerator {
 	}
 	
 	/**
-	 * Increments the integer id, which cooresponds to the next name the NameGenerator will give.
+	 * Increments the next name.
 	 */
-	private void incrementNextId() {
-		nextId++;
+	private void incrementNextName() {
+		int i = nextName.length() - 1;
+		while (i >= 0) {
+			char c = nextName.charAt(i);
+			if (c == 'z') {
+				nextName = replaceCharAt(nextName, i, 'a');
+			}
+			else {
+				nextName = replaceCharAt(nextName, i, (char)(c+1));
+				return;
+			}
+			i--;
+		}
+		
+		nextName = 'a' + nextName;
 	}
 	
 	/**
-	 * Converts an id (a positive integer or 0) to a string, by replacing each decimal digit in the integer with a character.
-	 * 0 => 'a'
-	 * 1 => 'b'
-	 * 2 => 'c'
-	 * ...
-	 * 
-	 * @return The String.
+	 * Returns a new String that is the given String with the character at i replaced with c.
+	 * @param s The given String.
+	 * @param i The index.
+	 * @param c The character.
+	 * @return The new String.
 	 */
-	private String idToString(int id) {
-		Integer integer = id;
-		String s = integer.toString();
-		String t = "";
-		for (int i=0; i<s.length(); i++) {
-			int digit = s.charAt(i) - '0';
-			t += (char)('a' + digit);
+	private static String replaceCharAt(String s, int i, char c) {
+		if (i == s.length() - 1) {
+			return s.substring(0, i) + c;
 		}
-		return t;
+		else {
+			return s.substring(0, i) + c + s.substring(i+1, s.length());
+		}
 	}
 }

@@ -171,16 +171,16 @@ class Cell {
 	 *******************/
 	
 	/**
-	 * Draws a border around the cell.
-	 * A highlighted border, if the cell is associated with the current phrase.
+	 * Draws the background of the cell.
+	 * Draws this differently depending on whether this cell is selected or not.
 	 * 
-	 * @param isCurrentPhrase Whether or not the cell is associated with the current phrase.
+	 * @param selected Whether or not the cell is selected.
 	 * @param pa The PhasesPApplet.
 	 */
-	private void drawBorder(boolean isCurrentPhrase, PhasesPApplet pa) {
+	private void drawRect(boolean selected, PhasesPApplet pa) {
 		pa.noFill();
-		pa.strokeWeight(1);
-		pa.stroke(isCurrentPhrase ? 0 : 150);
+		if (selected) pa.strokeWeight(2); else pa.strokeWeight(1);
+		pa.stroke(selected ? pa.getColor1Bold() : 150);
 		pa.rect(rect.getX1(), rect.getY1(), rect.getWidth() - 1, rect.getHeight() - 1);
 	}
 	
@@ -191,7 +191,7 @@ class Cell {
 	 * @param pa The PhasesPApplet.
 	 */
 	protected void draw(boolean showNewPhraseButtons, PhasesPApplet pa) {
-		drawBorder(false, pa);
+		drawRect(false, pa);
 		deleteButton.hide();
 		copyButton.hide();
 		if (showNewPhraseButtons) {
@@ -212,13 +212,19 @@ class Cell {
 	 */
 	protected void draw(PhrasePicture phrasePicture, PhasesPApplet pa) {
 		boolean isCurrentPhrase = phrasePicture == pa.currentPhrasePicture;
-		drawBorder(isCurrentPhrase, pa);
+		drawRect(isCurrentPhrase, pa);
 		
 		phrasePicture.draw(rect, pa);
 		
 		String name = phrasePicture.getName();
+		if (isCurrentPhrase) {
+			pa.fill(0);
+		}
+		else {
+			pa.fill(100);
+		}
 		pa.textAlign(pa.CENTER, pa.TOP);
-		pa.fill(0);
+		pa.textSize(14);
 		pa.text(name, rect.getCenx(), rect.getY1());
 		
 		deleteButton.show();
