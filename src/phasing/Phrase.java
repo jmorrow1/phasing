@@ -185,6 +185,7 @@ public class Phrase implements JSONable {
 		unitDuration = json.getFloat("unitDuration", unitDuration);
 	}
 	
+	@Override
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
 		json.setJSONArray("gridPitches", Util.jsonify(gridPitches));
@@ -673,6 +674,7 @@ public class Phrase implements JSONable {
 		return s;
 	}
 	
+	@Override
 	public String toString() {
 		if (!scArraysUpToDate) updateSCValues();
 		return "{pitches: " + Arrays.toString(scPitches) + ", dynamics: " + Arrays.toString(scDynamics)

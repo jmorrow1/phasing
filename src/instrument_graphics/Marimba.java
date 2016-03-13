@@ -7,6 +7,7 @@ import phasing.PhasesPApplet;
 import processing.core.PApplet;
 
 /**
+ * A graphical representation of a marimba.
  * 
  * @author James Morrow
  *
@@ -15,6 +16,10 @@ public class Marimba implements Instrument {
 	private final int numOctaves;
 	private final int numBars;
 	private final Shape[] bars;
+	
+	/**************************
+	 ***** Initialization *****
+	 **************************/
 	
 	/**
 	 * 
@@ -33,6 +38,15 @@ public class Marimba implements Instrument {
 		initBars(r.getX1(), r.getY1() + 0.4f*r.getHeight(), barWidth, unitBarHeight, widthBetweenBars);
 	}
 	
+	/**
+	 * Initializes the bars variable.
+	 * 
+	 * @param x1 The leftmost x-coordinate of the area in which to initialize bars.
+	 * @param y1 The uppermost y-coordinate of the area in which to initalize bars.
+	 * @param barWidth The width of any bar.
+	 * @param unitBarHeight The height of the unit bar.
+	 * @param widthBetweenBars The number of pixels between bars.
+	 */
 	private void initBars(float x1, float y1, float barWidth, float unitBarHeight, float widthBetweenBars) {
 		float dx = barWidth + widthBetweenBars;
 		
@@ -44,7 +58,7 @@ public class Marimba implements Instrument {
 	        barHeight = nextBarHeight;
 	        nextBarHeight = barHeight(i+1, unitBarHeight);
 	        if (Instrument.isWhiteKey(i)) {
-	            bars[i] = makeWhiteBar(i, x1, y1, barWidth, barHeight, widthBetweenBars, -prevBarHeight*0.2f, -nextBarHeight*0.2f);
+	            bars[i] = consWhiteBar(i, x1, y1, barWidth, barHeight, widthBetweenBars, -prevBarHeight*0.2f, -nextBarHeight*0.2f);
 	            i++;
 	            x1 += dx;
 	        }
@@ -56,8 +70,20 @@ public class Marimba implements Instrument {
 	    }
 	}
 	
-	
-	private Shape makeWhiteBar(int barIndex, float x1, float y1, float barWidth, float barHeight, float widthBetweenBars, float prevBarHeight, float nextBarHeight) {
+	/**
+	 * Constructs a Polygon for a white bar.
+	 * 
+	 * @param barIndex The index of the bar.
+	 * @param x1 The leftmost x-coordinate of the bar.
+	 * @param y1 The uppermost y-coordinate of the bar.
+	 * @param barWidth The width of any bar.
+	 * @param barHeight The height of the bar.
+	 * @param widthBetweenBars The number of pixels between bars.
+	 * @param prevBarHeight The height of the bar at the previous index.
+	 * @param nextBarHeight The height of the bar at the next index.
+	 * @return The polygon.
+	 */
+	private Shape consWhiteBar(int barIndex, float x1, float y1, float barWidth, float barHeight, float widthBetweenBars, float prevBarHeight, float nextBarHeight) {
 	    boolean leftNeighborIsBlack = Instrument.isBlackKey(barIndex-1);
 	    boolean rightNeighborIsBlack = Instrument.isBlackKey(barIndex+1);
 	    
@@ -81,6 +107,10 @@ public class Marimba implements Instrument {
 	    
 	    return null;
 	}
+	
+	/********************************
+	 ***** Instrument Interface *****
+	 ********************************/
 
 	@Override
 	public Shape pitchToShape(int index) {
@@ -98,11 +128,15 @@ public class Marimba implements Instrument {
 	    }
 	}
 	
+	/**********************************
+	 ***** Static Utility Methods *****
+	 **********************************/
+	
 	/**
 	 * Computes the height of the nth bar in a marimba with a given unit bar height.
 	 * @param n The index of the bar in a marimba.
 	 * @param unitBarHeight The unit bar height.
-	 * @return
+	 * @return The bar height of the nth bar.
 	 */
 	private static float barHeight(int n, float unitBarHeight) {
 	    float ratio = 1 / (float)Math.sqrt(Math.pow(nroot(2, 12), n));
@@ -113,7 +147,7 @@ public class Marimba implements Instrument {
 	 * Computes the nth root of x.
 	 * @param x
 	 * @param n
-	 * @return
+	 * @return The nth root of x.
 	 */
 	private static float nroot(float x, float n) {
 	    return (float)Math.pow(x, 1 / n);

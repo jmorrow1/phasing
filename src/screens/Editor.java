@@ -14,6 +14,7 @@ import controlp5.DropdownListPlus;
 import controlp5.PlusMinusButtonView;
 import controlp5.Scrollbar;
 import controlp5.SliderPlus;
+import controlp5.Util;
 import geom.Rect;
 import phasing.PhasesPApplet;
 import phasing.Phrase;
@@ -25,7 +26,7 @@ import soundcipher.SoundCipherPlus;
 import util.FloatFormatter;
 
 /**
- * Provides an editor in which the user can create and edit musical phrases for the Presenter screen.
+ * Provides an editor in which the user can create and edit musical phrases.
  * @author James Morrow
  *
  */
@@ -53,7 +54,6 @@ public class Editor extends Screen {
 	private Rect gridFrame;
 	private int rowSize;
 	private int columnSize = numKeys;
-	private float cellWidth, cellHeight;
 	
 	//interaction w/ grid
 	private final int NOT_DRAWING=-1, DRAWING_NOTE=0, DRAWING_REST=1;
@@ -91,11 +91,51 @@ public class Editor extends Screen {
 		initCP5Objects();
 	}
 	
+	//TODO Find a better place in the source code to insert the following few methods
+	//TODO Maybe find a naming convention that signals which of the following methods
+	//are to be used just as variables and which of them are to be used to update the Editor state.
+	
 	/**
-	 * Initializes gridFrame, cellWidth, and cellHeight variables.
+	 * Gives the proper value for the uppermost y-coordinate of the bottom tollbar,
+	 * which is dependent on the height of the window.
+	 * @return The proper uppermost y-coordinate of the bottom toolbar.
+	 */
+	private float botToolbarY1() {
+		return pa.height - 40;
+	}
+	
+	/**
+	 * Gives the proper value for the lowermost y-coordinate of the top toolbar,
+	 * which is dependent on the height of the window.
+	 * @return The proper lowermost y-coordinate of the top toolbar.
+	 */
+	private float topToolbarY2() {
+		return /*PApplet.max(60, */PApplet.map(pa.height, 0, 600, 0, 60)/*)*/;
+	}
+	
+	/**
+	 * Gives the width of a cell in the grid.
+	 * @return The width of a cell in the grid.
+	 */
+	private float cellWidth() {
+		return gridFrame.getWidth() / (rowSize + 1);
+	}
+	
+	/**
+	 * Gives the height of a cell in the grid.
+	 * @return The height of a cell in the grid.
+	 */
+	private float cellHeight() {
+		return gridFrame.getHeight() / columnSize;
+	}
+	
+	/**
+	 * Initializes the gridFrame.
 	 */
 	private void initGridVariables() {
-		gridFrame = new Rect(10, 60, pa.width-10, pa.height-40, pa.CORNERS);
+		gridFrame = new Rect(10, topToolbarY2(), pa.width-10, botToolbarY1(), pa.CORNERS);
+		
+		//TODO Exactly what does this (below) have to do with anything anymore?
 		switch (pa.screenSizeMode) {
 			case PhasesPApplet._800x600 :
 				rowSize = 12;
@@ -104,8 +144,6 @@ public class Editor extends Screen {
 				rowSize = 18;
 				break;
 		}
-		cellWidth = gridFrame.getWidth() / (rowSize+1);
-		cellHeight = gridFrame.getHeight() / columnSize;
 	}
 	
 	/**
@@ -141,9 +179,12 @@ public class Editor extends Screen {
 	 * Adds the button to the CP5 object.
 	 */
 	private void initSubNoteButton() {
+		int sideLength = 24;
+		float botToolbarHeight = pa.height - botToolbarY1();
+		
 		subNoteButton = cp5.addButton("decreasePhraseLength")
-			               .setPosition(gridFrame.getX1(), pa.height - 30f)
-			               .setSize(24, 24)
+			               .setPosition(gridFrame.getX1(), botToolbarY1() + 30f)
+			               .setSize(sideLength, sideLength)
 			               .setView(new PlusMinusButtonView(false))
 			               .plugTo(this)
 			               ;
@@ -155,9 +196,11 @@ public class Editor extends Screen {
 	 * Adds the button to the CP5 object.
 	 */
 	private void initAddNoteButton() {
+		int sideLength = 24;
+		
 		addNoteButton = cp5.addButton("increasePhraseLength")
 				           .setPosition(gridFrame.getX2() - 24, pa.height - 30f)
-				           .setSize(24, 24)
+				           .setSize(sideLength, sideLength)
 				           .setView(new PlusMinusButtonView(true))
 				           .plugTo(this)
 				           ;
@@ -182,9 +225,10 @@ public class Editor extends Screen {
 	 * Adds the toggle to the CP5 object.
 	 */
 	private void initPlayStopToggle() {
+		int sideLength = 35;
 		playToggle = cp5.addToggle("play")
-		        .setPosition(pa.width - 50, pa.changeScreenButtonY2 - 35)
-			    .setSize(35, 35)
+		        .setPosition(pa.width - 50, pa.getChangeScreenButtonY2() - sideLength)
+			    .setSize(sideLength, sideLength)
 			    .plugTo(this)
 			    .setView(new ControllerView<Toggle>() {
 				    @Override
@@ -214,8 +258,7 @@ public class Editor extends Screen {
 							pg.rectMode(pg.CORNER);
 							pg.rect(0, 0, t.getWidth(), t.getHeight());
 						}
-					}
-					   
+					}				   
 			   })
 			   ;
 		colorController(playToggle);
@@ -229,12 +272,12 @@ public class Editor extends Screen {
 		int sliderWidth = getSliderWidth();
 		int sliderHeight = 23;
 		bpmSlider = consBPMSlider(scaleMenu.getPosition()[0] + scaleMenu.getWidth() + controller_dx, 
-				                  pa.changeScreenButtonY2 - sliderHeight,
+				                  pa.getChangeScreenButtonY2() - sliderHeight,
 				                  sliderWidth,
 				                  sliderHeight);
 		
 		bpmDifferenceSlider = consBPMDifferenceSlider(bpmSlider.getPosition()[0] + sliderWidth + controller_dx,
-				                                     pa.changeScreenButtonY2 - sliderHeight,
+				                                     pa.getChangeScreenButtonY2() - sliderHeight,
 				                                     sliderWidth, 
 				                                     sliderHeight);
 	}
@@ -299,20 +342,20 @@ public class Editor extends Screen {
 	 */
 	private Slider consBPMSlider(String name, String label, int id, float x, float y, int w, int h,
 			  float value, int minValue, int maxValue, int ticksPerWholeNumber, FloatFormatter f) {
-			Slider s = new SliderPlus(cp5, name, pa.pfont12, pa.pfont18, f);
-	        s.setId(id);
-	        s.setCaptionLabel(label);
-	        s.setDecimalPrecision(0);
-	        s.setRange(minValue, maxValue);
-	        s.setPosition(x, y);
-	        s.setSize(w, h);
-	        s.setValue(value);
-	        s.setLabelVisible(false);
-	        s.setNumberOfTickMarks((maxValue-minValue) * ticksPerWholeNumber + 1);
-	        s.plugTo(this);
-			colorController(s);
-			return s;
-		}
+		Slider s = new SliderPlus(cp5, name, pa.pfont12, pa.pfont18, f);
+        s.setId(id);
+        s.setCaptionLabel(label);
+        s.setDecimalPrecision(0);
+        s.setRange(minValue, maxValue);
+        s.setPosition(x, y);
+        s.setSize(w, h);
+        s.setValue(value);
+        s.setLabelVisible(false);
+        s.setNumberOfTickMarks((maxValue-minValue) * ticksPerWholeNumber + 1);
+        s.plugTo(this);
+		colorController(s);
+		return s;
+	}
 	
 	/**
 	 * Initializes the drop-down menus that control what scale is active.
@@ -321,7 +364,7 @@ public class Editor extends Screen {
 	private void initScaleMenus() {
 		int menuItemHeight = 22;
 		rootMenu = new DropdownListPlus(cp5, "root");
-		rootMenu.setPosition(pa.changeScreenButtonX2 + controller_dx, pa.changeScreenButtonY2 - menuItemHeight)
+		rootMenu.setPosition(pa.getChangeScreenButtonX2() + controller_dx, pa.getChangeScreenButtonY2() - menuItemHeight)
 			    .setSize(90, menuItemHeight*(pa.roots.length+1))
 			    .addItems(pa.roots)
 			    .setItemHeight(menuItemHeight)
@@ -335,7 +378,7 @@ public class Editor extends Screen {
 		
 		scaleMenu = new DropdownListPlus(cp5, "Scale");
 		scaleMenu.setPosition(rootMenu.getPosition()[0] + rootMenu.getWidth() + controller_dx,
-				              pa.changeScreenButtonY2 - menuItemHeight)
+				              pa.getChangeScreenButtonY2() - menuItemHeight)
 		         .setSize(130, menuItemHeight*(pa.scaleTypes.size()+1))
 				 .addItems(pa.scaleTypes)
 				 .setItemHeight(menuItemHeight)
@@ -443,6 +486,10 @@ public class Editor extends Screen {
 	 ***** Controller Callbacks *****
 	 ********************************/
 	
+	/**
+	 * Decreases the phrase length note-by-note.
+	 * @param e
+	 */
 	public void decreasePhraseLength(ControlEvent e) {
 		pa.currentPhrase.removeLastCell();
 		if (pa.currentPhrase.getGridRowSize() <= rowSize) {
@@ -456,6 +503,10 @@ public class Editor extends Screen {
 		//drawBody();		
 	}
 	
+	/**
+	 * Increases the phrase length note-by-note.
+	 * @param e
+	 */
 	public void increasePhraseLength(ControlEvent e) {
 		pa.currentPhrase.appendCell();
 		if (pa.currentPhrase.getGridRowSize() <= rowSize) {
@@ -469,6 +520,10 @@ public class Editor extends Screen {
 		//drawBody();
 	}
 	
+	/**
+	 * Manipulates the tempo (in beats per minute) of the first player. 
+	 * @param e
+	 */
 	public void beatsPerMinute(ControlEvent e) {
 		pa.setBPM1(e.getValue());
 		livePlayer.tempo(pa.getBPM1());
@@ -476,6 +531,10 @@ public class Editor extends Screen {
 		//drawBody();
 	}
 	
+	/**
+	 * Manipulates the difference between the tempos (in beats per minute) of the two players.
+	 * @param e
+	 */
 	public void bpmDifference(ControlEvent e) {
 		pa.setBPM2(pa.getBPM1() + e.getValue());
 		//drawBody();
@@ -514,6 +573,57 @@ public class Editor extends Screen {
 	
 	@Override
 	public void windowResized() {
+		changeTopBarPosition();
+		changeBotBarPosition();
+		changeBottomBarWidth();
+		changeBPMSliderWidths();
+	}
+	
+	/**
+	 * Changes the y-position of the top bar (the area with controllers at the top of the screen)
+	 * based on the window size.
+	 */
+	private void changeTopBarPosition() {
+		float topToolbarHeight = topToolbarY2();
+		gridFrame.setY1(topToolbarHeight);
+		
+		float y2 = topToolbarHeight - 0.5f*(topToolbarHeight - pa.getChangeScreenButtonHeight());
+		pa.setChangeScreenButtonY2(y2);
+		
+		Util.setControllerY2(rootMenu, y2);
+		Util.setControllerY2(scaleMenu, y2);
+		Util.setControllerY2(bpmSlider, y2);
+		Util.setControllerY2(bpmDifferenceSlider, y2);
+		Util.setControllerY2(playToggle, y2);
+	}
+	
+	/**
+	 * Changes the bottom bar's y-position based on the window size.
+	 */
+	private void changeBotBarPosition() {
+		float gridY1 = gridFrame.getY1();
+		float botBarY1 = botToolbarY1();
+		gridFrame.setHeight(botBarY1 - gridY1);
+		gridFrame.setY1(gridY1);
+		
+		float botBarHeight = pa.height - botBarY1;
+		
+		Util.setControllerY1(hScrollbar, botBarY1 + 0.5f*(botBarHeight - hScrollbar.getHeight()));
+		Util.setControllerY1(addNoteButton, botBarY1 + 0.5f*(botBarHeight - addNoteButton.getHeight()));
+		Util.setControllerY1(subNoteButton, botBarY1 + 0.5f*(botBarHeight - subNoteButton.getHeight()));
+	}
+	
+	/**
+	 * Changes the width of the bottom bar (the area at the bottom of the screen that includes the scrollbar).
+	 */
+	private void changeBottomBarWidth() {
+		
+	}
+	
+	/**
+	 * Changes the width of the bpm sliders and shifts anything to the right of them over.
+	 */
+	private void changeBPMSliderWidths() {
 		
 	}
 
@@ -707,7 +817,7 @@ public class Editor extends Screen {
 	 * @return True, if the mouse intersects the grid (but not the piano-shaped y-axis), false otherwise
 	 */
 	private boolean mouseInGrid() {
-		return (gridFrame.touches(pa.mouseX, pa.mouseY) && gridFrame.getX1() + cellWidth < pa.mouseX);
+		return (gridFrame.touches(pa.mouseX, pa.mouseY) && gridFrame.getX1() + cellWidth() < pa.mouseX);
 	}
 	
 	/**
@@ -716,7 +826,7 @@ public class Editor extends Screen {
 	 */
 	private int mouseToIndex() {
 		return (int)pa.map(pa.mouseX, 
-			               gridFrame.getX1() + cellWidth, gridFrame.getX2(),
+			               gridFrame.getX1() + cellWidth(), gridFrame.getX2(),
 			               0, rowSize) + hScrollbar.getLowTick();
 	}
 	
@@ -739,7 +849,7 @@ public class Editor extends Screen {
 	 * @return The pitch value.
 	 */
 	private int yToPitch(float y) {
-		int pitchIndex = (int)pa.map(y + cellHeight/2f, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys);
+		int pitchIndex = (int)pa.map(y + cellHeight()/2f, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys);
 		return pa.currentScale.getNoteValue(pitchIndex) + minOctave*12;
 	}
 	
@@ -801,6 +911,8 @@ public class Editor extends Screen {
 	 * Draws the grid and the stuff behind the grid.
 	 */
 	private void drawBody() {
+		float cellWidth = cellWidth();
+		
 		//draw blank background behind grid
 		pa.noStroke();
 		pa.fill(255);
@@ -811,7 +923,7 @@ public class Editor extends Screen {
 		float ghostCellWidth = cellWidth * pa.getBPM2() / pa.getBPM1();
 		drawGrid(pa.lerpColor(PhasesPApplet.getColor2(), pa.color(255), 0.8f), ghostCellWidth);
 		drawPhrase(pa.lerpColor(PhasesPApplet.getColor1(), pa.color(255), 0.8f),
-				pa.lerpColor(PhasesPApplet.getColor2(), pa.color(255), 0.8f), pa.color(255), ghostCellWidth);
+				   pa.lerpColor(PhasesPApplet.getColor2(), pa.color(255), 0.8f), pa.color(255), ghostCellWidth);
 		
 		/*if (pa.phrase.getNumNotes() < rowSize) {
 			//draw outline of grid frame
@@ -898,7 +1010,7 @@ public class Editor extends Screen {
 				
 				int pitch = pa.currentPhrase.getSCPitch(i);
 				float y = pitchToY(pitch);
-				pa.rect(x, y, cellWidth*numCellsWide, cellHeight);
+				pa.rect(x, y, cellWidth*numCellsWide, cellHeight());
 			}
 			
 			x += (cellWidth*numCellsWide);
@@ -913,6 +1025,8 @@ public class Editor extends Screen {
 	 * @param strokeColor
 	 */
 	private void drawGrid(int strokeColor, float cellWidth) {
+		float cellHeight = cellHeight();
+		
 		pa.strokeWeight(1);
 		pa.stroke(strokeColor);
 		
@@ -940,6 +1054,9 @@ public class Editor extends Screen {
 	 * Draws the piano, which serves as the y-axis of the grid.
 	 */
 	private void drawPiano() {
+		float cellWidth = cellWidth();
+		float cellHeight = cellHeight();
+		
 		pa.rectMode(pa.CORNER);
 		pa.stroke(PhasesPApplet.getColor2());
 		float y = gridFrame.getY2() - cellHeight;

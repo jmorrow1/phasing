@@ -66,8 +66,8 @@ public class PhasesPApplet extends PApplet {
 	//visual variables
 	private static ColorScheme colorScheme;
 	public static PFont pfont12, pfont18, pfont42, musicFont;
-	public int changeScreenButtonY2 = 50;
-	public int changeScreenButtonX2 = 135;
+	private final float defaultChangeScreenButtonY2 = 50;
+	private final float defaultChangeScreenButtonX2 = 135;
 	
 	//controlp5
 	private ControlP5 cp5;
@@ -148,7 +148,7 @@ public class PhasesPApplet extends PApplet {
 		initCurrentPhrase();
 		initScreens();
 		
-		currentScreen = phraseRepo;
+		currentScreen = editor;
 		currentScreen.onEnter();
 		
 		initCP5Objects(currentScreen);
@@ -220,7 +220,7 @@ public class PhasesPApplet extends PApplet {
 	 */
 	private void initChangeScreenButton(Screen currentScreen) {
 		changeScreenButton = cp5.addButton("changeScreen")
-			                    .setPosition(changeScreenButtonX2 - 125, changeScreenButtonY2 - 40)
+			                    .setPosition(defaultChangeScreenButtonX2 - 125, defaultChangeScreenButtonY2 - 40)
 			                    .setSize(125, 40)
 			                    ;
 		changeScreenButton.getCaptionLabel().toUpperCase(false);
@@ -1114,6 +1114,44 @@ public class PhasesPApplet extends PApplet {
 	public void setBPM2(float bpm2) {
 		this.bpm2 = bpm2;
 		this.bpms2 = bpm2 / 60000f;
+	}
+	
+	/**
+	 * Gives the lowermost y-coordinate of the change screen button.
+	 * @return The lowermost y-coordinate of the change screen button.
+	 */
+	public float getChangeScreenButtonY2() {
+		return (changeScreenButton != null) ? changeScreenButton.getPosition()[1] + changeScreenButton.getHeight()
+		                                    : defaultChangeScreenButtonY2;
+	}
+	
+	/**
+	 * Sets the lowermost y-coordinate of the change screen button.
+	 * @param y2 The new value for the lowermost y-coordinate of the change screen button.
+	 */
+	public void setChangeScreenButtonY2(float y2) {
+		float currX1 = changeScreenButton.getPosition()[0];
+		float currY1 = changeScreenButton.getPosition()[1];
+		float currY2 = currY1 + changeScreenButton.getHeight();
+		float newY1 = currY1 + (y2 - currY2);
+		changeScreenButton.setPosition(currX1, newY1);
+	}
+	
+	/**
+	 * Gives the rightmost x-coordinate of the change screen button.
+	 * @return The rightmost x-coordinate of the change screen button.
+	 */
+	public float getChangeScreenButtonX2() {
+		return (changeScreenButton != null) ? changeScreenButton.getPosition()[0] + changeScreenButton.getWidth()
+		                                    : defaultChangeScreenButtonX2;
+	}
+	
+	/**
+	 * Gives the width of the change screen button.
+	 * @return The width of the change screen button.
+	 */
+	public float getChangeScreenButtonHeight() {
+		return changeScreenButton.getHeight();
 	}
 	
 	/**

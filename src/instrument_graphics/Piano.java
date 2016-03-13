@@ -152,9 +152,9 @@ public class Piano extends Rect implements Instrument {
 		}
 	}
 	
-	/*******************
-	 ***** Drawing *****
-	 *******************/
+	/********************************
+	 ***** Instrument Interface *****
+	 ********************************/
 	
 	@Override
 	public void display(PApplet pa) {
@@ -186,6 +186,16 @@ public class Piano extends Rect implements Instrument {
 		for (int i=0; i<blackKeys.length; i++) {
 			blackKeys[i].display(pa);
 		}
+	}
+	
+	/**
+	 * Returns a rectangle copy of the key indexed by i.
+	 * @param i
+	 * @return
+	 */
+	public Shape pitchToShape(int i) {
+		i = PhasesPApplet.remainder(i, keys.length);
+		return keys[i].clone();
 	}
 	
 	/*******************************
@@ -291,16 +301,6 @@ public class Piano extends Rect implements Instrument {
 			faceDown = value;
 			initKeys();
 		}
-	}
-	
-	/**
-	 * Returns a rectangle copy of the key indexed by i.
-	 * @param i
-	 * @return
-	 */
-	public Shape pitchToShape(int i) {
-		i = PhasesPApplet.remainder(i, keys.length);
-		return keys[i].clone();
 	}
 	
 	/**

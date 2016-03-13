@@ -32,7 +32,7 @@ public class NameGenerator {
 	
 	/**
 	 * Excludes the given name from the set of generatable names.
-	 * @param name
+	 * @param name The name to exclude.
 	 */
 	public void addNameToExclude(String name) {
 		names.add(name);
@@ -40,7 +40,7 @@ public class NameGenerator {
 	
 	/**
 	 * Stops excluding the given name from the set of generatable names.
-	 * @param name
+	 * @param name The name to stop excluding.
 	 */
 	public void removeNameFromExcluded(String name) {
 		names.remove(name);
@@ -48,7 +48,7 @@ public class NameGenerator {
 	
 	/**
 	 * Returns a name.
-	 * @return
+	 * @return The name.
 	 */
 	public String getUniqueName() {
 		while (names.contains(nextName)) {
@@ -62,8 +62,8 @@ public class NameGenerator {
 	
 	/**
 	 * Returns a name that derives from the given name.
-	 * @param name
-	 * @return
+	 * @param The given name.
+	 * @return The derivative name.
 	 */
 	public String getUniqueNameFrom(String name) {
 		int i = 1;

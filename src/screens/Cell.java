@@ -229,10 +229,6 @@ class Cell {
 		
 		deleteButton.show();
 		copyButton.show();
-		if (isCurrentPhrase) {
-		}
-		else {
-		}
 		generateButton.hide();
 		newPhraseButton.hide();
 	}
