@@ -28,6 +28,7 @@ public class PhrasePicture implements JSONable {
 	//style parameters
 	private static final int CIRCLE=0, DIAMOND=1, SQUARE=2;
 	private final DrawNote addVertexFunc = new AddVertex();
+	private final DrawNote endShapeFunc = new EndShape();
 	private final Style drawStyle = pa -> { pa.noStroke(); pa.fill(pa.getBlendedColor(blendAmt)); };
 	private final Style restStyle = pa -> { pa.stroke(pa.getBlendedColor(blendAmt)); pa.fill(255); };
 	
@@ -100,11 +101,12 @@ public class PhrasePicture implements JSONable {
 	 */
 	private void initDrawNoteFuncs(int noteStyleType) {
 		switch (noteStyleType) {
-			case CIRCLE : drawNoteFunc = new DrawCircle(drawStyle); drawRestFunc = new DrawCircle(restStyle); break;
-			case DIAMOND : drawNoteFunc = new DrawDiamond(drawStyle); drawRestFunc = new DrawDiamond(restStyle); break;
-			case SQUARE : drawNoteFunc = new DrawSquare(drawStyle); drawRestFunc = new DrawSquare(restStyle); break;
+			case CIRCLE : drawNoteFunc = new DrawCircle(drawStyle); break;
+			case DIAMOND : drawNoteFunc = new DrawDiamond(drawStyle); break;
+			case SQUARE : drawNoteFunc = new DrawSquare(drawStyle);  break;
 			default : initDrawNoteFuncs(CIRCLE); break;
 		}
+		drawRestFunc = new DoNothing();
 	}
 	
 	/**
@@ -134,7 +136,7 @@ public class PhrasePicture implements JSONable {
 		pa.stroke(pa.getBlendedColor(blendAmt));
 		pa.noFill();
 		pa.beginShape();
-		iterateNotes(addVertexFunc, addVertexFunc, rect, pa);
+		iterateNotes(addVertexFunc, endShapeFunc, rect, pa);
 		pa.endShape();
 		
 		//draw notes
@@ -271,6 +273,27 @@ public class PhrasePicture implements JSONable {
 		public void draw(float x, float y, float r, PhasesPApplet pa) {
 			pa.vertex(x, y);
 		}
+	}
+	
+	/**
+	 * Ends the shape and starts a new shape.
+	 * @author James Morrow
+	 *
+	 */
+	private class EndShape implements DrawNote {
+		public void draw(float x, float y, float r, PhasesPApplet pa) {
+			pa.endShape();
+			pa.beginShape();
+		}
+	}
+	
+	/**
+	 * Does nothing when draw() is requested.
+	 * @author James Morrow
+	 *
+	 */
+	private class DoNothing implements DrawNote {
+		public void draw(float x, float y, float r, PhasesPApplet pa) {}
 	}
 	
 	/*******************************
