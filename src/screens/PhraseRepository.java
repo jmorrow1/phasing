@@ -52,8 +52,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		int size = 40;
 		pageLeftButton = consDirectionalButton("pageLeft", 10, pa.height - size - 5, size, pa.PI);
 		pageRightButton = consDirectionalButton("pageRight", pa.width - size - 10, pa.height - size - 5, size, 0);
-		pageLeftButton.hide();
-		pageRightButton.hide();
+		updatePageButtonStates();
 	}
 	
 	/**
@@ -81,22 +80,21 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	 * Initialzes the list of cells.
 	 */
 	private void initCells() {
-		switch (pa.screenSizeMode) {
-			case PhasesPApplet._800x600 :
-				initCells(new Rect(50, 75, 725, 550, pa.CORNERS), 4, 3);
-				break;
-		}
+		populateCellList(new Rect(pa.width/2, pa.height/2, pa.width - 125, pa.height - 125, pa.CENTER), 150);
 	}
 	
 	/**
-	 * Initializes the list of cells.
+	 * Populates the list of cells with cells.
 	 * 
 	 * @param box The size of a cell.
 	 * @param rowSize The number of cells in a row.
 	 * @param colSize The number of cells in a column.
 	 */
-	private void initCells(Rect box, int rowSize, int colSize) {
-		float cellSize = pa.min(box.getWidth() / rowSize, box.getHeight() / colSize);
+	private void populateCellList(Rect box, float cellSize) {
+		cells.clear();
+		
+		int rowSize = (int)(box.getWidth() / cellSize);
+		int colSize = (int)(box.getHeight() / cellSize);
 		
 		float y1 = box.getCeny() - cellSize*0.5f*colSize;
 		for (int j=0; j<colSize; j++) {
@@ -207,7 +205,12 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	 *********************************/
 	
 	@Override
-	public void windowResized() {}
+	public void windowResized() {
+		cp5.dispose();
+		cp5 = new ControlP5(pa);
+		initCells();
+		initDirectionalButtons();
+	}
 
 	@Override
 	public void onEnter() {

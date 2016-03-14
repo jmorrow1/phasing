@@ -238,12 +238,22 @@ class Cell {
 	 ****************/
 	
 	/**
+	 * Removes the controllers this Cell generated from the given ControlP5 object.
+	 */
+	protected void disposeControllers(ControlP5 cp5) {
+		cp5.remove(copyButton.getName());
+		cp5.remove(deleteButton.getName());
+		cp5.remove(generateButton.getName());
+		cp5.remove(newPhraseButton.getName());
+	}
+	
+	/**
 	 * 
 	 * @param x
 	 * @param y
 	 * @return True if the (x,y) is inside the cell, false otherwise.
 	 */
-	public boolean touches(int x, int y) {
+	protected boolean touches(int x, int y) {
 		return rect.touches(x, y);
 	}
 }

@@ -148,7 +148,7 @@ public class PhasesPApplet extends PApplet {
 		initCurrentPhrase();
 		initScreens();
 		
-		currentScreen = editor;
+		currentScreen = phraseRepo;
 		currentScreen.onEnter();
 		
 		initCP5Objects(currentScreen);
