@@ -32,8 +32,8 @@ import util.FloatFormatter;
  */
 public class Editor extends Screen {
 	//time
-	private long prev_t;
-	private long timeEntered;
+	private int prev_t;
+	private int timeEntered;
 	
 	//playback
 	private SoundCipherPlus livePlayer;
@@ -89,6 +89,8 @@ public class Editor extends Screen {
 		initMusicPlayer();
 		initGridVariables();
 		initCP5Objects();
+		hideAllControllers();
+		cp5.hide();
 	}
 	
 	//TODO Find a better place in the source code to insert the following few methods
@@ -111,6 +113,15 @@ public class Editor extends Screen {
 	 */
 	private float topToolbarY2() {
 		return /*PApplet.max(60, */PApplet.map(pa.height, 0, 600, 0, 60)/*)*/;
+	}
+	
+	/**
+	 * Gives the proper value for the width of the hScrollbar,
+	 * which is dependent on the width of the grid.
+	 * @return The proper width of the hScrollbar.
+	 */
+	private int hScrollbarWidth() {
+		return (int)(gridFrame.getWidth() - 80);
 	}
 	
 	/**
@@ -170,8 +181,6 @@ public class Editor extends Screen {
 		initHorizontalScrollbar();
 	    initSubNoteButton();
 	    initAddNoteButton();
-	    hideAllControllers();
-	    cp5.hide();    
 	}
 	
 	/**
@@ -214,7 +223,7 @@ public class Editor extends Screen {
 	private void initHorizontalScrollbar() {
 		hScrollbar = new Scrollbar(cp5, "hScrollbar", PApplet.min(rowSize, pa.currentPhrase.getGridRowSize()), pa.currentPhrase.getGridRowSize());
 	    hScrollbar.setPosition(gridFrame.getX1() + 40, pa.height - 25f)
-			      .setSize((int)gridFrame.getWidth() - 80, 15)
+			      .setSize(hScrollbarWidth(), 15)
 			      .plugTo(this)
 			      ;
 	    colorController(hScrollbar);
@@ -617,7 +626,7 @@ public class Editor extends Screen {
 	 * Changes the width of the bottom bar (the area at the bottom of the screen that includes the scrollbar).
 	 */
 	private void changeBottomBarWidth() {
-		
+		hScrollbar.setWidth(hScrollbarWidth());
 	}
 	
 	/**
@@ -633,16 +642,16 @@ public class Editor extends Screen {
 		showUnlockedControllers();
 		drawToolbar();
 		//drawBody();
-		timeEntered = System.currentTimeMillis();
-		prev_t = System.currentTimeMillis();
+		timeEntered = pa.millis();
+		prev_t = pa.millis();
 		playToggle.setValue(false);
 	}
 	
 	@Override
 	public void onExit() {
 		cp5.hide();
-		pa.println("visit time: " + (System.currentTimeMillis() - timeEntered));
-		if (System.currentTimeMillis() - timeEntered > 10000) {
+		pa.println("visit time: " + (pa.millis() - timeEntered));
+		if (pa.millis() - timeEntered > 10000) {
 			pa.playerInfo.numEditorVisits++;
 			pa.savePlayerInfo();
 		}
@@ -869,17 +878,17 @@ public class Editor extends Screen {
 	
 	@Override
 	public void drawWhilePaused() {
-		prev_t = System.currentTimeMillis();
+		prev_t = pa.millis();
 	}
 	
 	@Override
 	public void draw() {
 		if (playToggle.getValue() != 0) {
-			long dt = System.currentTimeMillis() - prev_t;
+			int dt = pa.millis() - prev_t;
 			livePlayer.update(dt * pa.getBPMS1());
 			//drawBody();
 		}
-		prev_t = System.currentTimeMillis();
+		prev_t = pa.millis();
 		
 		drawBody();
 		drawToolbar();

@@ -85,6 +85,9 @@ public class PhasesPApplet extends PApplet {
 	//player
 	public PlayerInfo playerInfo;
 	
+	//input
+	private boolean pauseKeyHeldDown;
+	
 	/*****************
 	 ***** Setup *****
 	 *****************/
@@ -148,7 +151,7 @@ public class PhasesPApplet extends PApplet {
 		initCurrentPhrase();
 		initScreens();
 		
-		currentScreen = phraseRepo;
+		currentScreen = editor;
 		currentScreen.onEnter();
 		
 		initCP5Objects(currentScreen);
@@ -219,9 +222,11 @@ public class PhasesPApplet extends PApplet {
 	 * Initializes the changeScreenButton.
 	 */
 	private void initChangeScreenButton(Screen currentScreen) {
+		int width = 125;
+		int height = 33;
 		changeScreenButton = cp5.addButton("changeScreen")
-			                    .setPosition(defaultChangeScreenButtonX2 - 125, defaultChangeScreenButtonY2 - 40)
-			                    .setSize(125, 40)
+			                    .setPosition(defaultChangeScreenButtonX2 - width, defaultChangeScreenButtonY2 - height)
+			                    .setSize(width, height)
 			                    ;
 		changeScreenButton.getCaptionLabel().toUpperCase(false);
 		changeScreenButton.getCaptionLabel().setFont(pfont18);
@@ -242,10 +247,13 @@ public class PhasesPApplet extends PApplet {
 	 * Initializes the pauseButton;
 	 */
 	private void initPauseButton() {
+		int width = changeScreenButton.getWidth();
+		int height = 12;
 		pauseButton = cp5.addButton("togglePause")
 				         .setLabel("Pause")
-				         .setPosition(width - 110, 10)
-				         .setSize(100, 10)
+				         .setPosition(changeScreenButton.getPosition()[0],
+				        		      changeScreenButton.getPosition()[1] - height - 5)
+				         .setSize(width, height)
 				         ;
 		pauseButton.getCaptionLabel().toUpperCase(false);
 		pauseButton.getCaptionLabel().setFont(pfont12);
@@ -660,9 +668,8 @@ public class PhasesPApplet extends PApplet {
 	/**
 	 * Callback from ControlP5.
 	 * Controls whether or not the pause menu is displayed.
-	 * @param e
 	 */
-	public void togglePause(ControlEvent e) {
+	public void togglePause() {
 		pause = !pause;
 	}
 	
@@ -750,10 +757,20 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
+	 * Handles pause / unpause requests.
 	 * Sends key pressed events to the current screen.
 	 */
-	public void keyPressed() {		
-		if (!pause) {
+	public void keyPressed() {
+		if (key == ESC || key == 'p' || key == 'P') {
+			if (key == ESC) {
+				key = 0; //disable Processing's default behavior to close the program when ESC is pressed
+			}
+			if (!pauseKeyHeldDown) {
+				togglePause();
+				pauseKeyHeldDown = true;
+			}
+		}
+		else if (!pause) {
 			currentScreen.keyPressed();
 		}
 		else {
@@ -765,6 +782,9 @@ public class PhasesPApplet extends PApplet {
 	 * Sends key released events to the current screen.
 	 */
 	public void keyReleased() {
+		if (key == ESC || key == 'p' || key == 'P') {
+			pauseKeyHeldDown = false;
+		}
 		if (!pause) {
 			currentScreen.keyReleased();
 		}

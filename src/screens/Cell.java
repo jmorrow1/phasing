@@ -18,7 +18,7 @@ import phasing.PhrasePicture;
 class Cell {
 	//class-scope
 	private static int nextId = (int)'a';
-	private final static int LOAD = -1, GENERATE = -2, COPY = -3, NEW = -4, DELETE = -5;
+	private final static int GENERATE = -2, COPY = -3, NEW = -4, DELETE = -5;
 	
 	//outside world
 	private CellEventHandler eventHandler;
@@ -146,13 +146,14 @@ class Cell {
 	 ***** ControlP5 Callbacks *****
 	 *******************************/
 	
+	/**
+	 * Handles events sent from ControlP5.
+	 * @param e
+	 */
 	public void controlEvent(ControlEvent e) {
 		switch (e.getId()) {
 			case COPY :
 				eventHandler.copy(this);
-				break;
-			case LOAD :
-				//eventHandler.load(this);
 				break;
 			case NEW :
 				eventHandler.newPhrase();

@@ -85,7 +85,7 @@ public class PauseMenu {
 	 ************************************/
 	
 	public void closeMenu(ControlEvent e) {
-		pa.togglePause(e);
+		pa.togglePause();
 	}
 	
 	public void adjustVolume(ControlEvent e) {
