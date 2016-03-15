@@ -13,6 +13,7 @@ import controlP5.Button;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlP5.Controller;
+import controlp5.Util;
 import geom.Polygon;
 import geom.Rect;
 import processing.core.PApplet;
@@ -76,8 +77,7 @@ public class PhasesPApplet extends PApplet {
 	
 	//screen size
 	private int prevWidth, prevHeight;
-	public static final int _800x600 = 0, _1366x768 = 1, _1024x768 = 2, _1280x800 = 3, _1920x1080 = 4, _1280x1024 = 5;
-	public int screenSizeMode = _800x600;
+	private static int initialWidthSize = 800, initialHeightSize = 600; //default window size if given no command line args
 	
 	//save folder location
 	public String saveFolderPath; //TODO: Phase this variable out
@@ -93,26 +93,22 @@ public class PhasesPApplet extends PApplet {
 	 *****************/
 	
 	/**
-	 * Sets up the size of the canvas/window
+	 * Sets the initial width and height of the window.
+     * But PhasesPApplet reverts to its defaults if the given
+     * width is less than 800 or the given height is less than 600.
 	 */
-	public void settings() {
-		setSize(screenSizeMode);
+	protected static void setInitialScreenSize(int width, int height) {
+		if (width >= 800 && height >= 600) {
+			initialWidthSize = width;
+			initialHeightSize = height;
+		}
 	}
 	
 	/**
-	 * Sets the size of the canvas/window according to a given integer code.
-	 * 
-	 * @param screenSizeMode An integer code that represents a screen size.
+	 * Sets up the size of the canvas/window
 	 */
-	private void setSize(int screenSizeMode) {
-		switch (screenSizeMode) {
-			case _800x600 : size(800, 600); break;
-			case _1366x768 : size(1366, 768); break;
-			case _1920x1080 : size(1920, 1080); break;
-			case _1024x768 : size(1024, 768); break;
-			case _1280x800 : size(1280, 800); break;
-			case _1280x1024 : size(1280, 1024); break;
-		}
+	public void settings() {
+		size(initialWidthSize, initialHeightSize);
 		prevWidth = width;
 		prevHeight = height;
 	}
@@ -163,7 +159,7 @@ public class PhasesPApplet extends PApplet {
 		}
 		cp5 = new ControlP5(this);
 		initChangeScreenButton(currentScreen);
-		initPauseButton();
+		initPauseButton(changeScreenButton);
 	}
 	
 	private void initPhrasePictures() {
@@ -219,6 +215,14 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
+	 * Gives the proper lowermost y-coordinate of the change screen button, depending on the height of the screen.
+	 * @return The proper lowermost y-coordinate of the changeScreenButton.
+	 */
+	private int changeScreenButtonY2() {
+		return 33;
+	}
+	
+	/**
 	 * Initializes the changeScreenButton.
 	 */
 	private void initChangeScreenButton(Screen currentScreen) {
@@ -245,14 +249,14 @@ public class PhasesPApplet extends PApplet {
 	
 	/**
 	 * Initializes the pauseButton;
+	 * @param changeScreenButton This is here to make explicit that this method relies on changeScreenButton being already initialized.
 	 */
-	private void initPauseButton() {
+	private void initPauseButton(Button changeScreenButton) {
 		int width = changeScreenButton.getWidth();
 		int height = 12;
 		pauseButton = cp5.addButton("togglePause")
 				         .setLabel("Pause")
-				         .setPosition(changeScreenButton.getPosition()[0],
-				        		      changeScreenButton.getPosition()[1] - height - 5)
+				         .setPosition(Util.getX1(changeScreenButton), Util.getY1(changeScreenButton) - 5 - height)
 				         .setSize(width, height)
 				         ;
 		pauseButton.getCaptionLabel().toUpperCase(false);
@@ -698,10 +702,20 @@ public class PhasesPApplet extends PApplet {
 	 */
 	private void checkForWindowResizeEvent() {
 		if (prevWidth != width || prevHeight != height) {
+			resizeChangeScreenButton();
+			resizePauseButton();
 			prevWidth = width;
 			prevHeight = height;
 			currentScreen.windowResized();
 		}
+	}
+	
+	private void resizeChangeScreenButton() {
+		//TODO implement
+	}
+	
+	private void resizePauseButton() {
+		//TODO Implement
 	}
 	
 	/********************************

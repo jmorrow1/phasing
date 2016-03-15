@@ -9,6 +9,14 @@ import processing.core.PApplet;
  */
 public class App {
 	public static void main(String[] args) {
-		PApplet.main(new String[] {"phasing.PhasesPApplet"});
+		if (args.length >= 2) {
+			try {
+				int w = Integer.parseInt(args[0]);
+				int h = Integer.parseInt(args[1]);
+				PhasesPApplet.setInitialScreenSize(w, h);
+			}
+			catch (NumberFormatException e) {}
+		}
+		PApplet.main("phasing.PhasesPApplet");
 	}
 }
