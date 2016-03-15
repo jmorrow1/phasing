@@ -75,6 +75,7 @@ public class Editor extends Screen {
 	
 	//controller layout
 	private int controller_dx = 15;
+	private int margin_btwn_top_toolbar_y2_and_controllers = 10;
 	
 	/**************************
 	 ***** Initialization *****
@@ -93,7 +94,6 @@ public class Editor extends Screen {
 		cp5.hide();
 	}
 	
-	//TODO Find a better place in the source code to insert the following few methods
 	//TODO Maybe find a naming convention that signals which of the following methods
 	//are to be used just as variables and which of them are to be used to update the Editor state.
 	
@@ -104,15 +104,6 @@ public class Editor extends Screen {
 	 */
 	private float botToolbarY1() {
 		return pa.height - 40;
-	}
-	
-	/**
-	 * Gives the proper value for the lowermost y-coordinate of the top toolbar,
-	 * which is dependent on the height of the window.
-	 * @return The proper lowermost y-coordinate of the top toolbar.
-	 */
-	private float topToolbarY2() {
-		return /*PApplet.max(60, */PApplet.map(pa.height, 0, 600, 0, 60)/*)*/;
 	}
 	
 	/**
@@ -144,7 +135,7 @@ public class Editor extends Screen {
 	 * Initializes the gridFrame.
 	 */
 	private void initGridFrame() {
-		gridFrame = new Rect(10, topToolbarY2(), pa.width-10, botToolbarY1(), pa.CORNERS);
+		gridFrame = new Rect(10, pa.topToolbarY2(), pa.width-10, botToolbarY1(), pa.CORNERS);
 	}
 	
 	/**
@@ -166,8 +157,8 @@ public class Editor extends Screen {
 		cp5 = new ControlP5(pa);
 		cp5.setAutoDraw(false);
 		initScaleMenus();
-		initBPMSliders();
-		initPlayStopToggle();
+		initBPMSliders(scaleMenu);
+		initPlayStopToggle(bpmDifferenceSlider);
 		initHorizontalScrollbar();
 	    initSubNoteButton(hScrollbar);
 	    initAddNoteButton(hScrollbar);
@@ -176,7 +167,7 @@ public class Editor extends Screen {
 	/**
 	 * Initializes the button that decreases phrase length note-by-note.
 	 * Adds the button to the CP5 object.
-	 * @param hScrollbar This is here to indicate that this method relies on hScrollbar being already initialized.
+	 * @param hScrollbar This is here to make explicit that this method relies on hScrollbar being already initialized.
 	 */
 	private void initSubNoteButton(Scrollbar hScrollbar) {
 		int sideLength = 24;
@@ -195,7 +186,7 @@ public class Editor extends Screen {
 	/**
 	 * Initializes the button that increases phrase length note-by-note.
 	 * Adds the button to the CP5 object.
-	 * @param hScrollbar This is here to indicate that this method relies on hScrollbar being already initialized.
+	 * @param hScrollbar This is here to make explicit that this method relies on hScrollbar being already initialized.
 	 */
 	private void initAddNoteButton(Scrollbar hScrollbar) {
 		int sideLength = 24;
@@ -226,61 +217,64 @@ public class Editor extends Screen {
 	/**
 	 * Initalizes the toggle that controls whether or not music plays.
 	 * Adds the toggle to the CP5 object.
+	 * @param bpmDifferenceSlider This is here to make explicit that this method relies on bpmDifferenceSlider being already initialized.
 	 */
-	private void initPlayStopToggle() {
+	private void initPlayStopToggle(Slider bpmDifferenceSlider) {
 		int sideLength = 35;
 		playToggle = cp5.addToggle("play")
-		        .setPosition(pa.width - 50, pa.getChangeScreenButtonY2() - sideLength)
-			    .setSize(sideLength, sideLength)
-			    .plugTo(this)
-			    .setView(new ControllerView<Toggle>() {
-				    @Override
-					public void display(PGraphics pg, Toggle t) {
-				    	if (t.getValue() == 0) {
-				    		//draw white rect under play button
-							pg.rectMode(pg.CORNER);
-							pg.fill(255);
-							pg.noStroke();
-							pg.rect(0, 0, t.getWidth(), t.getHeight());
-				    	}
-				    	
-				    	pg.noStroke();
-						if (t.isMouseOver()) {
-							pg.fill(t.getColor().getForeground());
-						}
-						else {
-							pg.fill(t.getColor().getBackground());
-						}
-						
-						if (t.getValue() == 0) {
-							//draw play button
-							pg.triangle(0, 0, 0, t.getHeight(), t.getWidth(), t.getHeight()/2f);
-						}
-						else {
-							//draw pause button
-							pg.rectMode(pg.CORNER);
-							pg.rect(0, 0, t.getWidth(), t.getHeight());
-						}
-					}				   
-			   })
-			   ;
+		                .setPosition(Util.getX2(bpmDifferenceSlider) + this.controller_dx,
+		        		             pa.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sideLength)
+					    .setSize(sideLength, sideLength)
+					    .plugTo(this)
+					    .setView(new ControllerView<Toggle>() {
+						    @Override
+							public void display(PGraphics pg, Toggle t) {
+						    	if (t.getValue() == 0) {
+						    		//draw white rect under play button
+									pg.rectMode(pg.CORNER);
+									pg.fill(255);
+									pg.noStroke();
+									pg.rect(0, 0, t.getWidth(), t.getHeight());
+						    	}
+						    	
+						    	pg.noStroke();
+								if (t.isMouseOver()) {
+									pg.fill(t.getColor().getForeground());
+								}
+								else {
+									pg.fill(t.getColor().getBackground());
+								}
+								
+								if (t.getValue() == 0) {
+									//draw play button
+									pg.triangle(0, 0, 0, t.getHeight(), t.getWidth(), t.getHeight()/2f);
+								}
+								else {
+									//draw pause button
+									pg.rectMode(pg.CORNER);
+									pg.rect(0, 0, t.getWidth(), t.getHeight());
+								}
+							}				   
+					   })
+					   ;
 		colorController(playToggle);
 	}
 	
 	/**
 	 * Initializes the sliders that control the tempos (in beats per minute) of the two players.
 	 * Adds the sliders to the CP5 object.
+	 * @param scaleMenu This is here to make explicit that this method relies on scaleMenu being already initialized.
 	 */
-	private void initBPMSliders() {
+	private void initBPMSliders(DropdownList scaleMenu) {
 		int sliderWidth = getSliderWidth();
 		int sliderHeight = 23;
-		bpmSlider = consBPMSlider(scaleMenu.getPosition()[0] + scaleMenu.getWidth() + controller_dx, 
-				                  pa.getChangeScreenButtonY2() - sliderHeight,
+		bpmSlider = consBPMSlider(Util.getX2(scaleMenu) + controller_dx, 
+				                  pa.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
 				                  sliderWidth,
 				                  sliderHeight);
 		
-		bpmDifferenceSlider = consBPMDifferenceSlider(bpmSlider.getPosition()[0] + sliderWidth + controller_dx,
-				                                     pa.getChangeScreenButtonY2() - sliderHeight,
+		bpmDifferenceSlider = consBPMDifferenceSlider(Util.getX2(bpmSlider) + controller_dx,
+				                                     pa.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
 				                                     sliderWidth, 
 				                                     sliderHeight);
 	}
@@ -367,7 +361,8 @@ public class Editor extends Screen {
 	private void initScaleMenus() {
 		int menuItemHeight = 22;
 		rootMenu = new DropdownListPlus(cp5, "root");
-		rootMenu.setPosition(pa.getChangeScreenButtonX2() + controller_dx, pa.getChangeScreenButtonY2() - menuItemHeight)
+		rootMenu.setPosition(pa.getChangeScreenButtonX2() + controller_dx, 
+				             pa.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - menuItemHeight)
 			    .setSize(90, menuItemHeight*(pa.roots.length+1))
 			    .addItems(pa.roots)
 			    .setItemHeight(menuItemHeight)
@@ -381,7 +376,7 @@ public class Editor extends Screen {
 		
 		scaleMenu = new DropdownListPlus(cp5, "Scale");
 		scaleMenu.setPosition(rootMenu.getPosition()[0] + rootMenu.getWidth() + controller_dx,
-				              pa.getChangeScreenButtonY2() - menuItemHeight)
+				              pa.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - menuItemHeight)
 		         .setSize(130, menuItemHeight*(pa.scaleTypes.size()+1))
 				 .addItems(pa.scaleTypes)
 				 .setItemHeight(menuItemHeight)
@@ -447,13 +442,8 @@ public class Editor extends Screen {
 		}	
 	}
 
-	//TODO Reevaluate
 	private int getSliderWidth() {
-		switch(pa.screenSizeMode) {
-			case PhasesPApplet._800x600 : return 160;
-			case PhasesPApplet._1366x768 : return 442;
-			default : return 100;
-		}
+		return (int)PApplet.constrain(PApplet.map(pa.width, 800, 1366, 160, 442), 160, 442);
 	}
 	
 	/**
@@ -592,6 +582,10 @@ public class Editor extends Screen {
 		timeEntered = pa.millis();
 		prev_t = pa.millis();
 		playToggle.setValue(false);
+		
+		if (pa.width < 800 || pa.height < 600) {
+			pa.resize(PApplet.max(800, pa.width), PApplet.max(600, pa.height));
+		}
 	}
 	
 	@Override

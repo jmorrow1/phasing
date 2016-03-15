@@ -67,8 +67,6 @@ public class PhasesPApplet extends PApplet {
 	//visual variables
 	private static ColorScheme colorScheme;
 	public static PFont pfont12, pfont18, pfont42, musicFont;
-	private final float defaultChangeScreenButtonY2 = 50;
-	private final float defaultChangeScreenButtonX2 = 135;
 	
 	//controlp5
 	private ControlP5 cp5;
@@ -128,7 +126,7 @@ public class PhasesPApplet extends PApplet {
 		//initSimpleColorScheme();
 		
 		//init save folder path
-		saveFolderPath = sketchPath() + "\\save\\";
+		saveFolderPath = sketchPath() + "\\sav\\";
 		
 		initPhrasePictures();
 		
@@ -215,11 +213,28 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
-	 * Gives the proper lowermost y-coordinate of the change screen button, depending on the height of the screen.
-	 * @return The proper lowermost y-coordinate of the changeScreenButton.
+	 * Gives the proper value for the lowermost y-coordinate of the top toolbar,
+	 * which is dependent on the height of the window.
+	 * @return The proper lowermost y-coordinate of the top toolbar.
+	 */
+	public int topToolbarY2() {
+		return (int)PApplet.constrain(PApplet.map(this.height, 0, 600, 0, 60), 60, 150);
+	}
+	
+	/**
+	 * Gives the proper height of the change screen button, depending on the height of the screen.
+	 * @return The proper height of the changeScreenButton.
 	 */
 	private int changeScreenButtonY2() {
-		return 33;
+		return topToolbarY2() - 10;
+	}
+	
+	/**
+	 * Gives the proper width of the change screen button.
+	 * @return The proper width of the changeScreenButton.
+	 */
+	private int changeScreenButtonX2() {
+		return 135;
 	}
 	
 	/**
@@ -229,7 +244,7 @@ public class PhasesPApplet extends PApplet {
 		int width = 125;
 		int height = 33;
 		changeScreenButton = cp5.addButton("changeScreen")
-			                    .setPosition(defaultChangeScreenButtonX2 - width, defaultChangeScreenButtonY2 - height)
+			                    .setPosition(changeScreenButtonX2() - width, changeScreenButtonY2() - height)
 			                    .setSize(width, height)
 			                    ;
 		changeScreenButton.getCaptionLabel().toUpperCase(false);
@@ -695,29 +710,6 @@ public class PhasesPApplet extends PApplet {
 		}
 	}
 	
-	/**
-	 * Checks if the window size has changed.
-	 * If so, informs the currentScreen of the size change.
-	 * 
-	 */
-	private void checkForWindowResizeEvent() {
-		if (prevWidth != width || prevHeight != height) {
-			resizeChangeScreenButton();
-			resizePauseButton();
-			prevWidth = width;
-			prevHeight = height;
-			currentScreen.windowResized();
-		}
-	}
-	
-	private void resizeChangeScreenButton() {
-		//TODO implement
-	}
-	
-	private void resizePauseButton() {
-		//TODO Implement
-	}
-	
 	/********************************
 	 ***** Input Event Handling *****
 	 ********************************/
@@ -814,6 +806,46 @@ public class PhasesPApplet extends PApplet {
 		if (!pause) {
 			currentScreen.mouseWheel(event);
 		}
+	}
+	
+	/************************
+	 ***** Other Events *****
+	 ************************/
+	
+	public void resize(int width, int height) {
+		surface.setSize(width, height);
+		checkForWindowResizeEvent();
+	}
+	
+	/**
+	 * Checks if the window size has changed.
+	 * If so, informs the currentScreen of the size change.
+	 * 
+	 */
+	private void checkForWindowResizeEvent() {
+		if (prevWidth != width || prevHeight != height) {
+			repositionChangeScreenButton();
+			repositionPauseButton(changeScreenButton);
+			prevWidth = width;
+			prevHeight = height;
+			currentScreen.windowResized();
+		}
+	}
+	
+	/**
+	 * Initializes the pauseButton;
+	 * @param changeScreenButton This is here to make explicit that this method relies on changeScreenButton being up to date.
+	 */
+	private void repositionPauseButton(Button changeScreenButton) {
+		pauseButton.setPosition(Util.getX1(pauseButton),
+				                Util.getY1(changeScreenButton) - 5 - pauseButton.getHeight());
+	}
+	
+	/**
+	 * Repositions the ChangeScreenButton based on the current height of the window.
+	 */
+	private void repositionChangeScreenButton() {
+		Util.setY2(changeScreenButton, changeScreenButtonY2());
 	}
 	
 	/************************************************
@@ -1155,8 +1187,7 @@ public class PhasesPApplet extends PApplet {
 	 * @return The lowermost y-coordinate of the change screen button.
 	 */
 	public float getChangeScreenButtonY2() {
-		return (changeScreenButton != null) ? changeScreenButton.getPosition()[1] + changeScreenButton.getHeight()
-		                                    : defaultChangeScreenButtonY2;
+		return (changeScreenButton != null) ? Util.getY2(changeScreenButton) : changeScreenButtonY2();
 	}
 	
 	/**
@@ -1176,8 +1207,7 @@ public class PhasesPApplet extends PApplet {
 	 * @return The rightmost x-coordinate of the change screen button.
 	 */
 	public float getChangeScreenButtonX2() {
-		return (changeScreenButton != null) ? changeScreenButton.getPosition()[0] + changeScreenButton.getWidth()
-		                                    : defaultChangeScreenButtonX2;
+		return (changeScreenButton != null) ? Util.getX2(changeScreenButton) : changeScreenButtonX2();
 	}
 	
 	/**
