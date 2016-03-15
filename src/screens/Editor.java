@@ -52,8 +52,8 @@ public class Editor extends Screen {
 	
 	//grid
 	private Rect gridFrame;
-	private int rowSize;
 	private int columnSize = numKeys;
+	private int cellWidth = 60;
 	
 	//interaction w/ grid
 	private final int NOT_DRAWING=-1, DRAWING_NOTE=0, DRAWING_REST=1;
@@ -87,7 +87,7 @@ public class Editor extends Screen {
 	public Editor(PhasesPApplet pa) {
 		super(pa);
 		initMusicPlayer();
-		initGridVariables();
+		initGridFrame();
 		initCP5Objects();
 		hideAllControllers();
 		cp5.hide();
@@ -125,11 +125,11 @@ public class Editor extends Screen {
 	}
 	
 	/**
-	 * Gives the width of a cell in the grid.
-	 * @return The width of a cell in the grid.
+	 * Gives the number of rows after the piano in the grid.
+	 * @return The number of rows.
 	 */
-	private float cellWidth() {
-		return gridFrame.getWidth() / (rowSize + 1);
+	private int rowSize() {
+		return (int)(gridFrame.getWidth() / cellWidth) - 1;
 	}
 	
 	/**
@@ -143,18 +143,8 @@ public class Editor extends Screen {
 	/**
 	 * Initializes the gridFrame.
 	 */
-	private void initGridVariables() {
+	private void initGridFrame() {
 		gridFrame = new Rect(10, topToolbarY2(), pa.width-10, botToolbarY1(), pa.CORNERS);
-		
-		//TODO Exactly what does this (below) have to do with anything anymore?
-		switch (pa.screenSizeMode) {
-			case PhasesPApplet._800x600 :
-				rowSize = 12;
-				break;
-			case PhasesPApplet._1366x768 :
-				rowSize = 18;
-				break;
-		}
 	}
 	
 	/**
@@ -179,20 +169,22 @@ public class Editor extends Screen {
 		initBPMSliders();
 		initPlayStopToggle();
 		initHorizontalScrollbar();
-	    initSubNoteButton();
-	    initAddNoteButton();
+	    initSubNoteButton(hScrollbar);
+	    initAddNoteButton(hScrollbar);
 	}
 	
 	/**
 	 * Initializes the button that decreases phrase length note-by-note.
 	 * Adds the button to the CP5 object.
+	 * @param hScrollbar This is here to indicate that this method relies on hScrollbar being already initialized.
 	 */
-	private void initSubNoteButton() {
+	private void initSubNoteButton(Scrollbar hScrollbar) {
 		int sideLength = 24;
 		float botToolbarHeight = pa.height - botToolbarY1();
 		
 		subNoteButton = cp5.addButton("decreasePhraseLength")
-			               .setPosition(gridFrame.getX1(), botToolbarY1() + 30f)
+			               .setPosition(Util.getX1(hScrollbar) - sideLength - 10,
+			            		        Util.getY2(hScrollbar) - hScrollbar.getHeight()/2f - sideLength/2f)
 			               .setSize(sideLength, sideLength)
 			               .setView(new PlusMinusButtonView(false))
 			               .plugTo(this)
@@ -203,12 +195,14 @@ public class Editor extends Screen {
 	/**
 	 * Initializes the button that increases phrase length note-by-note.
 	 * Adds the button to the CP5 object.
+	 * @param hScrollbar This is here to indicate that this method relies on hScrollbar being already initialized.
 	 */
-	private void initAddNoteButton() {
+	private void initAddNoteButton(Scrollbar hScrollbar) {
 		int sideLength = 24;
 		
 		addNoteButton = cp5.addButton("increasePhraseLength")
-				           .setPosition(gridFrame.getX2() - 24, pa.height - 30f)
+				           .setPosition(Util.getX2(hScrollbar) + 10,
+				        		        Util.getY2(hScrollbar) - hScrollbar.getHeight()/2f - sideLength/2f)
 				           .setSize(sideLength, sideLength)
 				           .setView(new PlusMinusButtonView(true))
 				           .plugTo(this)
@@ -221,7 +215,7 @@ public class Editor extends Screen {
 	 * Adds the scrollbar to the CP5 object.
 	 */
 	private void initHorizontalScrollbar() {
-		hScrollbar = new Scrollbar(cp5, "hScrollbar", PApplet.min(rowSize, pa.currentPhrase.getGridRowSize()), pa.currentPhrase.getGridRowSize());
+		hScrollbar = new Scrollbar(cp5, "hScrollbar", PApplet.min(rowSize(), pa.currentPhrase.getGridRowSize()), pa.currentPhrase.getGridRowSize());
 	    hScrollbar.setPosition(gridFrame.getX1() + 40, pa.height - 25f)
 			      .setSize(hScrollbarWidth(), 15)
 			      .plugTo(this)
@@ -501,13 +495,13 @@ public class Editor extends Screen {
 	 */
 	public void decreasePhraseLength(ControlEvent e) {
 		pa.currentPhrase.removeLastCell();
-		if (pa.currentPhrase.getGridRowSize() <= rowSize) {
+		if (pa.currentPhrase.getGridRowSize() <= rowSize()) {
 			hScrollbar.setNumTickMarks(pa.currentPhrase.getGridRowSize());
 			hScrollbar.setTicksPerScroller(pa.currentPhrase.getGridRowSize());
 		}
 		else {
 			hScrollbar.setNumTickMarks(pa.currentPhrase.getGridRowSize());
-			hScrollbar.setTicksPerScroller(rowSize);
+			hScrollbar.setTicksPerScroller(rowSize());
 		}
 		//drawBody();		
 	}
@@ -518,13 +512,13 @@ public class Editor extends Screen {
 	 */
 	public void increasePhraseLength(ControlEvent e) {
 		pa.currentPhrase.appendCell();
-		if (pa.currentPhrase.getGridRowSize() <= rowSize) {
+		if (pa.currentPhrase.getGridRowSize() <= rowSize()) {
 			hScrollbar.setNumTickMarks(pa.currentPhrase.getGridRowSize());
 			hScrollbar.setTicksPerScroller(pa.currentPhrase.getGridRowSize());
 		}
 		else {
 			hScrollbar.setNumTickMarks(pa.currentPhrase.getGridRowSize());
-			hScrollbar.setTicksPerScroller(rowSize);
+			hScrollbar.setTicksPerScroller(rowSize());
 		}
 		//drawBody();
 	}
@@ -582,58 +576,11 @@ public class Editor extends Screen {
 	
 	@Override
 	public void windowResized() {
-		changeTopBarPosition();
-		changeBotBarPosition();
-		changeBottomBarWidth();
-		changeBPMSliderWidths();
-	}
-	
-	/**
-	 * Changes the y-position of the top bar (the area with controllers at the top of the screen)
-	 * based on the window size.
-	 */
-	private void changeTopBarPosition() {
-		float topToolbarHeight = topToolbarY2();
-		gridFrame.setY1(topToolbarHeight);
-		
-		float y2 = topToolbarHeight - 0.5f*(topToolbarHeight - pa.getChangeScreenButtonHeight());
-		pa.setChangeScreenButtonY2(y2);
-		
-		Util.setControllerY2(rootMenu, y2);
-		Util.setControllerY2(scaleMenu, y2);
-		Util.setControllerY2(bpmSlider, y2);
-		Util.setControllerY2(bpmDifferenceSlider, y2);
-		Util.setControllerY2(playToggle, y2);
-	}
-	
-	/**
-	 * Changes the bottom bar's y-position based on the window size.
-	 */
-	private void changeBotBarPosition() {
-		float gridY1 = gridFrame.getY1();
-		float botBarY1 = botToolbarY1();
-		gridFrame.setHeight(botBarY1 - gridY1);
-		gridFrame.setY1(gridY1);
-		
-		float botBarHeight = pa.height - botBarY1;
-		
-		Util.setControllerY1(hScrollbar, botBarY1 + 0.5f*(botBarHeight - hScrollbar.getHeight()));
-		Util.setControllerY1(addNoteButton, botBarY1 + 0.5f*(botBarHeight - addNoteButton.getHeight()));
-		Util.setControllerY1(subNoteButton, botBarY1 + 0.5f*(botBarHeight - subNoteButton.getHeight()));
-	}
-	
-	/**
-	 * Changes the width of the bottom bar (the area at the bottom of the screen that includes the scrollbar).
-	 */
-	private void changeBottomBarWidth() {
-		hScrollbar.setWidth(hScrollbarWidth());
-	}
-	
-	/**
-	 * Changes the width of the bpm sliders and shifts anything to the right of them over.
-	 */
-	private void changeBPMSliderWidths() {
-		
+		initGridFrame();
+		cp5.dispose();
+		initCP5Objects();
+		hideAllControllers();
+		showUnlockedControllers();
 	}
 
 	@Override
@@ -826,7 +773,7 @@ public class Editor extends Screen {
 	 * @return True, if the mouse intersects the grid (but not the piano-shaped y-axis), false otherwise
 	 */
 	private boolean mouseInGrid() {
-		return (gridFrame.touches(pa.mouseX, pa.mouseY) && gridFrame.getX1() + cellWidth() < pa.mouseX);
+		return (gridFrame.touches(pa.mouseX, pa.mouseY) && gridFrame.getX1() + cellWidth < pa.mouseX);
 	}
 	
 	/**
@@ -835,8 +782,8 @@ public class Editor extends Screen {
 	 */
 	private int mouseToIndex() {
 		return (int)pa.map(pa.mouseX, 
-			               gridFrame.getX1() + cellWidth(), gridFrame.getX2(),
-			               0, rowSize) + hScrollbar.getLowTick();
+			               gridFrame.getX1() + cellWidth, gridFrame.getX2(),
+			               0, rowSize()) + hScrollbar.getLowTick();
 	}
 	
 	/**
@@ -920,8 +867,6 @@ public class Editor extends Screen {
 	 * Draws the grid and the stuff behind the grid.
 	 */
 	private void drawBody() {
-		float cellWidth = cellWidth();
-		
 		//draw blank background behind grid
 		pa.noStroke();
 		pa.fill(255);
@@ -1063,7 +1008,6 @@ public class Editor extends Screen {
 	 * Draws the piano, which serves as the y-axis of the grid.
 	 */
 	private void drawPiano() {
-		float cellWidth = cellWidth();
 		float cellHeight = cellHeight();
 		
 		pa.rectMode(pa.CORNER);
