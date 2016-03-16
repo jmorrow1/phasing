@@ -15,7 +15,6 @@ import controlP5.ControlP5;
 import controlP5.Controller;
 import controlp5.Util;
 import geom.Polygon;
-import geom.Rect;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
@@ -58,8 +57,6 @@ public class PhasesPApplet extends PApplet {
 	private Presenter presenter;
 	private Editor editor;
 	private PhraseRepository phraseRepo;
-	private PauseMenu pauseMenu;
-	private boolean pause;
 	private boolean presenterEntered = false;
 	private Screen currentScreen;
 	
@@ -70,7 +67,8 @@ public class PhasesPApplet extends PApplet {
 	//controlp5
 	private ControlP5 cp5;
 	private Button changeScreenButton;
-	private Button pauseButton;
+	private Button helpToggle;
+	private boolean helpOn;
 	
 	//screen size
 	private int prevWidth, prevHeight;
@@ -81,9 +79,6 @@ public class PhasesPApplet extends PApplet {
 	
 	//player
 	public PlayerInfo playerInfo;
-	
-	//input
-	private boolean pauseKeyHeldDown;
 
 	/*****************
 	 ***** Setup *****
@@ -160,7 +155,7 @@ public class PhasesPApplet extends PApplet {
 		cp5 = new ControlP5(this);
 		cp5.setAutoDraw(false);
 		initChangeScreenButton(currentScreen);
-		initPauseButton(changeScreenButton);
+		initHelpToggle(changeScreenButton);
 	}
 	
 	/**
@@ -180,7 +175,6 @@ public class PhasesPApplet extends PApplet {
 		presenter = new Presenter(this);
 		editor = new Editor(this);
 		phraseRepo = new PhraseRepository(this);
-		pauseMenu = new PauseMenu(new Rect(width/2, height/2, 0.8f*width, 0.8f*height, CENTER), this);
 	}
 	
 	/**
@@ -261,20 +255,25 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
-	 * Initializes the pauseButton;
+	 * Initializes the helpToggle;
 	 * @param changeScreenButton This is here to make explicit that this method relies on changeScreenButton being already initialized.
 	 */
-	private void initPauseButton(Button changeScreenButton) {
+	private void initHelpToggle(Button changeScreenButton) {
 		int width = changeScreenButton.getWidth();
 		int height = 12;
-		pauseButton = cp5.addButton("togglePause")
-				         .setLabel("Pause")
-				         .setPosition(Util.getX1(changeScreenButton), Util.getY1(changeScreenButton) - 5 - height)
-				         .setSize(width, height)
-				         ;
-		pauseButton.getCaptionLabel().toUpperCase(false);
-		pauseButton.getCaptionLabel().setFont(pfont12);
-		colorControllerShowingLabel(pauseButton);
+		helpToggle = cp5.addButton("toggleHelp")
+				        .setLabel("Help")
+				        .setPosition(Util.getX1(changeScreenButton), Util.getY1(changeScreenButton) - 5 - height)
+				        .setSize(width, height)
+				        ;
+		helpToggle.getCaptionLabel().toUpperCase(false);
+		helpToggle.getCaptionLabel().setFont(pfont12);
+		/*helpToggle.setColorCaptionLabel(0xffffffff);
+	    helpToggle.setColorValueLabel(0xffffffff);
+		helpToggle.setColorBackground(getColor1());
+		helpToggle.setColorForeground(getColor1());
+		helpToggle.setColorActive(getColor1Bold());*/
+		this.colorControllerShowingLabel(helpToggle);
 	}
 	
 	/**
@@ -643,7 +642,7 @@ public class PhasesPApplet extends PApplet {
 	 * Makes all the PhasesPApplet's controllers invisible.
 	 */
 	public void hideAllControllers() {
-		pauseButton.hide();
+		helpToggle.hide();
 		changeScreenButton.hide();
 	}
 	
@@ -651,7 +650,7 @@ public class PhasesPApplet extends PApplet {
 	 * Makes all the PhasesPApplet's controllers visible.
 	 */
 	public void showAllControllers() {
-		pauseButton.show();
+		helpToggle.show();
 		changeScreenButton.show();
 	}
 	
@@ -664,7 +663,7 @@ public class PhasesPApplet extends PApplet {
 	    c.setColorValueLabel(0xffffffff);
 		c.setColorBackground(getColor1());
 		c.setColorForeground(getColor1Bold());
-		c.setColorActive(getColor1Bold());	
+		c.setColorActive(getColor1Bold());
 	}
 	
 	/**
@@ -687,16 +686,14 @@ public class PhasesPApplet extends PApplet {
 	 * @param e
 	 */
 	public void changeScreen(ControlEvent e) {
-		if (!pause) {
-			if (currentScreen == editor) {
-				changeScreenTo(presenter);
-			}
-			else if (currentScreen == presenter) {
-				changeScreenTo(editor);
-			}
-			else if (currentScreen == phraseRepo) {
-				changeScreenTo(phraseRepo);
-			}
+		if (currentScreen == editor) {
+			changeScreenTo(presenter);
+		}
+		else if (currentScreen == presenter) {
+			changeScreenTo(editor);
+		}
+		else if (currentScreen == phraseRepo) {
+			changeScreenTo(phraseRepo);
 		}
 	}
 	
@@ -736,10 +733,17 @@ public class PhasesPApplet extends PApplet {
 	
 	/**
 	 * Callback from ControlP5.
-	 * Controls whether or not the pause menu is displayed.
+	 * Controls whether or not the help information is displayed.
 	 */
-	public void togglePause() {
-		pause = !pause;
+	public void toggleHelp() {
+		helpOn = !helpOn;
+		
+		if (helpOn) {
+			helpToggle.setColorBackground(getColor1Bold());
+		}
+		else {
+			helpToggle.setColorBackground(getColor1());
+		}
 	}
 	
 	/*********************
@@ -751,13 +755,7 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void draw() {
 		checkForWindowResizeEvent();
-		if (!pause) {
-			currentScreen.draw();
-		}
-		else {
-			currentScreen.drawWhilePaused();
-			pauseMenu.display();
-		}
+		currentScreen.draw();
 	}
 	
 	/********************************
@@ -768,48 +766,28 @@ public class PhasesPApplet extends PApplet {
 	 * Sends mouse pressed events to the current screen.
 	 */
 	public void mousePressed() {
-		if (!pause) {
-			currentScreen.mousePressed();
-		}
-		else {
-			pauseMenu.mousePressed();
-		}
+		currentScreen.mousePressed();
 	}
 	
 	/**
 	 * Sends mouse released events to the current screen.
 	 */
 	public void mouseReleased() {
-		if (!pause) {
-			currentScreen.mouseReleased();
-		}
-		else {
-			pauseMenu.mouseReleased();
-		}
+		currentScreen.mouseReleased();
 	}
 	
 	/**
 	 * Sends mouse dragged events to the current screen.
 	 */
 	public void mouseDragged() {
-		if (!pause) {
-			currentScreen.mouseDragged();
-		}
-		else {
-			pauseMenu.mouseDragged();
-		}
+		currentScreen.mouseDragged();
 	}
 	
 	/**
 	 * Sends mouse moved events to the current screen.
 	 */
 	public void mouseMoved() {
-		if (!pause) {
-			currentScreen.mouseMoved();
-		}
-		else {
-			pauseMenu.mouseMoved();
-		}
+		currentScreen.mouseMoved();
 	}
 	
 	/**
@@ -817,20 +795,14 @@ public class PhasesPApplet extends PApplet {
 	 * Sends key pressed events to the current screen.
 	 */
 	public void keyPressed() {
-		if (key == ESC || key == 'p' || key == 'P') {
-			if (key == ESC) {
-				key = 0; //disable Processing's default behavior to close the program when ESC is pressed
-			}
-			if (!pauseKeyHeldDown) {
-				togglePause();
-				pauseKeyHeldDown = true;
-			}
+		if (key == 'h') {
+			toggleHelp();
 		}
-		else if (!pause) {
+		else if (key == ESC) {
+			key = 0; //disable Processing's default behavior to close the program when ESC is pressed
+		}
+		else  {
 			currentScreen.keyPressed();
-		}
-		else {
-			pauseMenu.keyPressed();
 		}
 	}
 	
@@ -838,24 +810,15 @@ public class PhasesPApplet extends PApplet {
 	 * Sends key released events to the current screen.
 	 */
 	public void keyReleased() {
-		if (key == ESC || key == 'p' || key == 'P') {
-			pauseKeyHeldDown = false;
-		}
-		if (!pause) {
-			currentScreen.keyReleased();
-		}
-		else {
-			pauseMenu.keyReleased();
-		}
+		currentScreen.keyReleased();
+		
 	}
 	
 	/**
 	 * Sends mouse wheel events to the current screen.
 	 */
 	public void mouseWheel(MouseEvent event) {
-		if (!pause) {
-			currentScreen.mouseWheel(event);
-		}
+		currentScreen.mouseWheel(event);
 	}
 	
 	/************************
@@ -875,20 +838,10 @@ public class PhasesPApplet extends PApplet {
 	private void checkForWindowResizeEvent() {
 		if (prevWidth != width || prevHeight != height) {
 			repositionChangeScreenButton();
-			repositionPauseButton(changeScreenButton);
 			prevWidth = width;
 			prevHeight = height;
 			currentScreen.windowResized();
 		}
-	}
-	
-	/**
-	 * Initializes the pauseButton;
-	 * @param changeScreenButton This is here to make explicit that this method relies on changeScreenButton being up to date.
-	 */
-	private void repositionPauseButton(Button changeScreenButton) {
-		pauseButton.setPosition(Util.getX1(pauseButton),
-				                Util.getY1(changeScreenButton) - 5 - pauseButton.getHeight());
 	}
 	
 	/**
