@@ -13,9 +13,9 @@ import processing.core.PApplet;
  *
  */
 public class Marimba implements Instrument {
-	private final int numOctaves;
-	private final int numBars;
-	private final Shape[] bars;
+	private int numOctaves;
+	private int numBars;
+	private Shape[] bars;
 	
 	/**************************
 	 ***** Initialization *****
@@ -27,6 +27,15 @@ public class Marimba implements Instrument {
 	 * @param r The area in which the marimba is situated.
 	 */
 	public Marimba(int numOctaves, Rect r) {
+		init(numOctaves, r);
+	}
+	
+	/**
+	 * Initializes (or re-initializes) the marimba's fields.
+	 * @param numOctaves The number of octaves the marimba spans.
+	 * @param r The area in which the marimba is situated.
+	 */
+	public void init(int numOctaves, Rect r) {
 		this.numOctaves = numOctaves;
 		this.numBars = numOctaves * 12;
 		int numWhiteBars = numOctaves * 7;
@@ -132,13 +141,40 @@ public class Marimba implements Instrument {
 	 ***** Static Utility Methods *****
 	 **********************************/
 	
+	private static int cachedUpTo = 0; //exclusive bound
+	private static float[] normalBarHeightCache = new float[100];
+	
+	/**
+	 * Computes the height of the nth bar in a mrimba with a given unit bar height.
+	 * Caches up to the first 100 normal bar heights to avoid recomputation.
+	 * 
+	 * @param n The index of the bar in a marimba.
+	 * @param unitBarHeight The unit bar height.
+	 * @return The bar height of the nth bar.
+	 */
+	private static float barHeight(int n, float unitBarHeight) {
+		if (cachedUpTo > n) {
+			return normalBarHeightCache[n] * unitBarHeight;
+		}
+		else if (n < normalBarHeightCache.length) {
+			for (int i=cachedUpTo; i<n; i++) {
+				normalBarHeightCache[i] = barHeightHelper(i, 1);
+			}
+			
+			return normalBarHeightCache[n] * unitBarHeight;
+		}
+		else {
+			return barHeightHelper(n, unitBarHeight);
+		}
+	}
+	
 	/**
 	 * Computes the height of the nth bar in a marimba with a given unit bar height.
 	 * @param n The index of the bar in a marimba.
 	 * @param unitBarHeight The unit bar height.
 	 * @return The bar height of the nth bar.
 	 */
-	private static float barHeight(int n, float unitBarHeight) {
+	private static float barHeightHelper(int n, float unitBarHeight) {
 	    float ratio = 1 / (float)Math.sqrt(Math.pow(nroot(2, 12), n));
 	    return ratio * unitBarHeight;
 	}

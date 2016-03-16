@@ -120,6 +120,9 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 	}
 	
+	/**
+	 * Initializes the Presenter's cp5 object and controllers.
+	 */
 	private void initCP5Objects() {
 		if (cp5 != null) {
 			cp5.dispose();

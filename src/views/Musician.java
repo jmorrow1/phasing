@@ -87,12 +87,10 @@ public class Musician extends View {
 	 * @param height The height for each marimba.
 	 */
 	private void resetMarimbas(float width, float height) {
-		//TODO : implement this method by adding functionality to Marimba to make it resizable.
-		//Resizing a marimba should be mostly
-		//a matter of scaling each key by (newWidth / currentWidth, newHeight / currentHeight).
-		//marimbaA.setSize(pa.width, pa.height);
-		//marimbaB.setSize(pa.width, pa.height);
-		//marimbaAB.setSize(pa.width, pa.height);
+		marimbaAB.init(3, new Rect(this.getCenx(), this.getCeny(), width, height, PApplet.CENTER));
+		marimbaA.init(3, new Rect(this.getCenx(), this.getCeny() - height*0.66f, width, height, PApplet.CENTER));
+		marimbaB.init(3, new Rect(this.getCenx(), this.getCeny() + height*0.66f, width, height, PApplet.CENTER));
+
 	}
 	
 	/**
