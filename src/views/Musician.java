@@ -88,6 +88,8 @@ public class Musician extends View {
 	 */
 	private void resetMarimbas(float width, float height) {
 		//TODO : implement this method by adding functionality to Marimba to make it resizable.
+		//Resizing a marimba should be mostly
+		//a matter of scaling each key by (newWidth / currentWidth, newHeight / currentHeight).
 		//marimbaA.setSize(pa.width, pa.height);
 		//marimbaB.setSize(pa.width, pa.height);
 		//marimbaAB.setSize(pa.width, pa.height);
@@ -174,7 +176,7 @@ public class Musician extends View {
 				instrumentB = pianoB;
 				instrumentAB = pianoAB;
 				break;
-			case XYLOPHONE:
+			case MARIMBA:
 				instrumentA = marimbaA;
 				instrumentB = marimbaB;
 				instrumentAB = marimbaAB;

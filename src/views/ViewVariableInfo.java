@@ -21,7 +21,7 @@ public interface ViewVariableInfo {
 	
 	public final String instrumentName = "Instrument";
 	public final int numInstruments=2;
-	public final int PIANO=0, XYLOPHONE=1;
+	public final int PIANO=0, MARIMBA=1;
 	
 	public final String activeNoteModeName = "Active Note Mode";
 	public final int numActiveNoteModes = 3;
