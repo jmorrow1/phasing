@@ -54,12 +54,12 @@ public class PhaseShifter extends View {
 	
 	/**
 	 * 
-	 * @param rect The area in which to draw (usually just the entirety of the window).
+	 * @param viewBox The area in which to draw (usually just the entirety of the window). //TODO Make this parenthetical statement wrong.
 	 * @param opacity The opacity of notes.
 	 * @param pa The PhasesPApplet instance.
 	 */
-	public PhaseShifter(Rect rect, int opacity, PhasesPApplet pa) {
-		super(rect, opacity, pa);
+	public PhaseShifter(Rect viewBox, int opacity, PhasesPApplet pa) {
+		super(viewBox, opacity, pa);
 		this.pa = pa;
 		
 		initBounds();
@@ -81,6 +81,9 @@ public class PhaseShifter extends View {
 		minRadius = maxRadius / 2;
 	}
 	
+	/**
+	 * Initializes note graphic positioning data and stores it so it doesn't have to be constantly recomputed.
+	 */
 	private void initData() {
 		dataPoints.clear();
 		for (int i=0; i<=pa.currentPhrase.getNumNotes(); i++) {
@@ -96,6 +99,9 @@ public class PhaseShifter extends View {
 		}
 	}
 	
+	/**
+	 * Initializes the PhraseReaders, the things that send event upon reading new notes (and rests) so the PhaseShifter can draw things in response.
+	 */
 	private void initPhraseReaders() {
 		try {
 			Method callback = PhaseShifter.class.getMethod("changeActiveNote", PhraseReader.class);
@@ -123,7 +129,10 @@ public class PhaseShifter extends View {
 		readerB.wakeUp(notept2);
 	}
 	
-	//callback:
+	/**
+	 * Callback from PhraseReaders, for when a new note (or rest) is read.
+	 * @param reader The callee.
+	 */
 	public void changeActiveNote(PhraseReader reader) {
 		if (reader.getId() == ONE_ID) {
 			activeNote1 = reader.getNoteIndex();
@@ -148,13 +157,18 @@ public class PhaseShifter extends View {
 			pa.translate(this.getCenx(), this.getCeny());
 			updateNormalTransforms(dNotept1, dNotept2);
 		
-			drawPhraseGraphic(activeNote1, 1);
-			drawPhraseGraphic(activeNote2, 2);
+			drawWave(activeNote1, 1);
+			drawWave(activeNote2, 2);
 			
 			pa.popMatrix();
 		}
 	}
 	
+	/**
+	 * Updates the transformation variables, which can later be translated into a rotation amount or a translation amount.
+	 * @param dNotept1 The amount of time passed since the last update, in terms of how much music player 1 played.
+	 * @param dNotept2 The amount of time passed since the last update, in terms of how much music player 2 played.
+	 */
 	public void updateNormalTransforms(float dNotept1, float dNotept2) {
 		if (pa.currentPhrase.getTotalDuration() != 0) {
 			if (cameraMode.toInt() == RELATIVE_TO_1) {
@@ -173,29 +187,41 @@ public class PhaseShifter extends View {
 		}
 	}
 
-	private void transform(int playerNum) {
-		float normalAcc = (playerNum == 2) ? normalTransform1 : normalTransform2;
+	/**
+	 * Applies a transformation to the animator with the given waveNum (1 or 2).
+	 * Whether that's a translation or a rotation depends on the transformation mode.
+	 * 
+	 * @param waveNum Specifies which wave (graph) is to be transformed.
+	 */
+	private void transform(int waveNum) {
+		float normalAcc = (waveNum == 2) ? normalTransform1 : normalTransform2;
 		switch(transformation.toInt()) {
 			case TRANSLATE: pa.translate(-normalAcc*width, 0); break;
 			case ROTATE: pa.rotate(-normalAcc*pa.TWO_PI); break;
 		}
 	}
 	
-	private void drawPhraseGraphic(int activeNote, int playerNum) {
+	/**
+	 * Draws the wave (graph).
+	 * 
+	 * @param activeNote The index of the note (or rest) that is currently being played.
+	 * @param waveNum Specifies which wave (graph) is to be transformed.
+	 */
+	private void drawWave(int activeNote, int waveNum) {
 		//set non-active and active colors
 		int nonActiveColor = pa.color(0, opacity);
 		int activeColor = pa.color(0);
 		if (colorScheme.toInt() == DIACHROMATIC) {
-			nonActiveColor = (playerNum == 1) ? pa.getColor1() : pa.getColor2();
+			nonActiveColor = (waveNum == 1) ? pa.getColor1() : pa.getColor2();
 			nonActiveColor = pa.color(nonActiveColor, opacity);
-			activeColor = (playerNum == 1) ? pa.getColor1VeryBold() : pa.getColor2VeryBold();
+			activeColor = (waveNum == 1) ? pa.getColor1VeryBold() : pa.getColor2VeryBold();
 			activeColor = pa.color(activeColor, opacity);
 		}
 		
 		//draw non-sine wave graphics
 		if (noteGraphic.toInt() != SINE_WAVE) {
 			pa.pushMatrix();
-			transform(playerNum);
+			transform(waveNum);
 			styleNoteGraphics(nonActiveColor);
 			
 			int i=0; //loops through notes in phrase
@@ -244,7 +270,7 @@ public class PhaseShifter extends View {
 			pa.stroke(nonActiveColor);
 			if (transformation.toInt() == TRANSLATE) {
 				if (plotPitchMode.toInt() == PLOT_PITCH) {
-					drawSineWave((playerNum == 1) ? normalTransform2 : normalTransform1);
+					drawSineWave((waveNum == 1) ? normalTransform2 : normalTransform1);
 				}
 				else {
 					pa.line(-halfWidth, 0, halfWidth, 0);
@@ -259,6 +285,11 @@ public class PhaseShifter extends View {
 		}
 	}
 	
+	/**
+	 * Draws a sine wave within the appropriate area of the view box.
+	 * 
+	 * @param normalTransform A normal value (one that's between 0 and 1) that determines a transformation (a translation in this case).
+	 */
 	private void drawSineWave(float normalTransform) {
 		int x = (int)-halfWidth;
 		int dx = 4;
@@ -278,19 +309,23 @@ public class PhaseShifter extends View {
 		pa.endShape();
 	}
 	
+	/**
+	 * Styles the note graphics with the given color.
+	 * @param color The color.
+	 */
 	private void styleNoteGraphics(int color) {
-		switch (noteGraphic.toInt()) {
-			case SYMBOLS:
-			case DOTS1:
-			case CONNECTED_DOTS:
-			case RECTS_OR_SECTORS:
-				pa.noStroke();
-				pa.fill(color);
-				break;
-		}
+		pa.noStroke();
+		pa.fill(color);
 	}
 	
-	private void drawSymbol(String s, float x, float y) {
+	/**
+	 * Draws the String at (x,y).
+	 * 
+	 * @param s The string.
+	 * @param x The x-coordinate.
+	 * @param y The y-coordinate.
+	 */
+	private void drawString(String s, float x, float y) {
 		pa.textSize(FONT_SIZE);
 		pa.textFont(pa.pfont42);
 		pa.text(s.charAt(0), x, y);
@@ -305,6 +340,12 @@ public class PhaseShifter extends View {
 		}
 	}
 	
+	/**
+	 * Draws the note graphic.
+	 * 
+	 * @param d The note DataPoint to draw.
+	 * @param e The subsequent note DataPoint.
+	 */
 	private void drawNoteGraphic(DataPoint d, DataPoint e) {
 		if (noteGraphic.toInt()== SYMBOLS) {
 			pa.pushMatrix();
@@ -312,10 +353,10 @@ public class PhaseShifter extends View {
 				if (transformation.toInt() == ROTATE) {
 					pa.rotate(d.theta1);
 				}
-				drawSymbol(d.pitchName, 0, 0);
+				drawString(d.pitchName, 0, 0);
 				if (transformation.toInt() == TRANSLATE) {
-					drawSymbol(d.pitchName, width, 0);
-					drawSymbol(d.pitchName, -width, 0);
+					drawString(d.pitchName, width, 0);
+					drawString(d.pitchName, -width, 0);
 				}
 			pa.popMatrix();
 		}

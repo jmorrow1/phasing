@@ -16,12 +16,12 @@ public abstract class View extends Rect implements ViewVariableInfo {
 	
 	/**
 	 * 
-	 * @param rect The area in which the view is drawn.
+	 * @param viewBox The area in which the view is drawn.
 	 * @param opacity The opacity of things the view draws.
 	 * @param pa The PApplet the view draws to.
 	 */
-	public View(Rect rect, int opacity, PhasesPApplet pa) {
-		super(rect);
+	public View(Rect viewBox, int opacity, PhasesPApplet pa) {
+		super(viewBox);
 		this.opacity = opacity;
 		this.pa = pa;
 	}

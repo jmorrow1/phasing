@@ -51,8 +51,6 @@ public class LiveScorer extends View {
 	private float noteSize;
 	
 	//options:
-	//TODO Fix bug that when (sineWave.toInt() == IS_SINE_WAVE) the LiveScorer will draw notes
-	//followed by rests as sustained notes whether or not they're actually sustained notes.
 	public ModInt sineWave = new ModInt(1, numWaysOfBeingASineWaveOrNot, sineWaveName);
 	public ModInt scoreMode = new ModInt(0, numScoreModes, scoreModeName);
 	public ModInt noteGraphic = new ModInt(0, numNoteGraphicSet2s, noteGraphicSet2Name);
@@ -64,12 +62,12 @@ public class LiveScorer extends View {
 	
 	/**
 	 * 
-	 * @param rect The area in which to draw (usually just the entirety of the window).
+	 * @param viewBox The area in which to draw (usually just the entirety of the window). //TODO Make this parenthetical statement wrong.
 	 * @param opacity The opacity of notes.
 	 * @param pa The PhasesPApplet instance.
 	 */
-	public LiveScorer(Rect rect, int opacity, PhasesPApplet pa) {
-		super(rect, opacity, pa);
+	public LiveScorer(Rect viewBox, int opacity, PhasesPApplet pa) {
+		super(viewBox, opacity, pa);
 		
 		initNoteSize();
 		initPhraseReaders();
@@ -78,11 +76,18 @@ public class LiveScorer extends View {
 		initPossibleYValuesForMoveNotesMode();
 	}
 	
+	/**
+	 * Initializes the variable that determines the (stroke) size of notes.
+	 */
 	private void initNoteSize() {
 		float h = getHeight();
 		noteSize = (0 < h && h < 800) ? PApplet.map(h, 0, 800, 12, 24) : 24;
 	}
 	
+	/**
+	 * Initializes the PhraseReaders, which read the Phrase and send events to the LiveScorer object whenever they encounter a new note.
+	 * When a LiveScorer object receives a note event, it draws it.
+	 */
 	private void initPhraseReaders() {
 		try {
 			Method callback = LiveScorer.class.getMethod("plotNote", PhraseReader.class);
@@ -93,6 +98,10 @@ public class LiveScorer extends View {
 		}
 	}
 	
+	/**
+	 * Initializes an array of possible y-values for notes, so they don't have to be constantly recomputed.
+	 * These values are used when (scoreMode.toInt() == MOVE_NOTES) but not when (scoreMode.toInt() == MOVE_SPAWN_POINT).
+	 */
 	private void initPossibleYValuesForMoveNotesMode() {
 		ys = new float[pa.currentPhrase.getNumNotes()];
 		
@@ -108,13 +117,16 @@ public class LiveScorer extends View {
 		}
 	}
 	
+	/**
+	 * Initializes the spawn point, which depends on the scoreMode.
+	 */
 	private void initSpawnPoint() {
 		spawnX = (scoreMode.toInt() == MOVE_SPAWN_POINT) ? startSpawnX : 0;
 		spawnY = (scoreMode.toInt() == MOVE_SPAWN_POINT) ? startSpawnY : 0;
 	}
 	
 	/**
-	 * Initializes variables for that define the boundaries of the note spawn point.
+	 * Initializes variables for that define the boundaries of the note spawn point, which depends on the scoreMode.
 	 */
 	private void initSpawnBoundaries() {
 		startSpawnX = -getWidth() * 0.5f;
@@ -200,6 +212,7 @@ public class LiveScorer extends View {
 	
 	/**
 	 * Draws the given list of data points with the given color.
+	 * 
 	 * @param dataPts The list of data points.
 	 * @param color The color.
 	 */
@@ -229,6 +242,7 @@ public class LiveScorer extends View {
 	
 	/**
 	 * Fades away a list of data points by the fade rate, which is specified by a helper method fadeAmt(dt).
+	 * 
 	 * @param dataPts The list of data points.
 	 * @param dt The number of milliseconds since the last update() invocation.
 	 */
@@ -239,6 +253,8 @@ public class LiveScorer extends View {
 	}
 	
 	/**
+	 * Gives the fade amount, given some delta time in milliseconds.
+	 * 
 	 * @param dt The number of milliseconds since the last update() invocation.
 	 * @return The amount to decrease opacity by given that dt milliseconds have passed.
 	 */

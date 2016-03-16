@@ -42,12 +42,12 @@ public class Musician extends View {
 	
 	/**
 	 * 
-	 * @param rect The area in which to draw (usually just the entirety of the window).
+	 * @param viewBox The area in which to draw (usually just the entirety of the window). //TODO Make this parenthetical statement wrong.
 	 * @param opacity The opacity of notes.
 	 * @param pa The PhasesPApplet instance.
 	 */
-	public Musician(Rect rect, int opacity, PhasesPApplet pa) {
-		super(rect, opacity, pa);
+	public Musician(Rect viewBox, int opacity, PhasesPApplet pa) {
+		super(viewBox, opacity, pa);
 		initInstruments();
 		assignInstruments();
 		initInstrumentPlayers();
@@ -81,6 +81,11 @@ public class Musician extends View {
 		marimbaB = new Marimba(3, new Rect(this.getCenx(), this.getCeny() + height*0.66f, width, height, PApplet.CENTER));
 	}
 	
+	/**
+	 * Resets the widths and heights of each marimba.
+	 * @param width The width for each marimba.
+	 * @param height The height for each marimba.
+	 */
 	private void resetMarimbas(float width, float height) {
 		//TODO : implement this method by adding functionality to Marimba to make it resizable.
 		//marimbaA.setSize(pa.width, pa.height);

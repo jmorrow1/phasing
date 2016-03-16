@@ -838,6 +838,7 @@ public class PhasesPApplet extends PApplet {
 	private void checkForWindowResizeEvent() {
 		if (prevWidth != width || prevHeight != height) {
 			repositionChangeScreenButton();
+			repositionHelpToggle(changeScreenButton);
 			prevWidth = width;
 			prevHeight = height;
 			currentScreen.windowResized();
@@ -849,6 +850,14 @@ public class PhasesPApplet extends PApplet {
 	 */
 	private void repositionChangeScreenButton() {
 		Util.setY2(changeScreenButton, changeScreenButtonY2());
+	}
+	
+	/**
+	 * Repositions the help toggle based on the current height of the window.
+	 * @param changeScreenButton Indicates that the changeScreenButton should be up to date before calling this method.
+	 */
+	private void repositionHelpToggle(Button changeScreenButton) {
+		Util.setY2(helpToggle, Util.getY1(changeScreenButton) - 5);
 	}
 	
 	/************************************************

@@ -1,6 +1,7 @@
 package views;
 
 /**
+ * Possible options for views.
  * 
  * @author James Morrow
  *

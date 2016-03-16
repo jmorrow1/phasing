@@ -41,13 +41,14 @@ public class Scale implements JSONable {
 	}
 	
 	/**
-	 * Constructs a Scale from a JSONObject containing a name, an array of note names, and an array of note values.
+	 * Constructs a Scale from a JSONObject containing a name, a class name, an array of note names, and an array of note values.
 	 * @param json The JSONObject
 	 */
 	public Scale(JSONObject json) {
 		this (json, json.getString("className", "?"));
 	}
 	
+	@Override
 	public JSONObject toJSON() {
 		json.setString("className", className);
 		return json;
@@ -78,20 +79,25 @@ public class Scale implements JSONable {
 	}
 	
 	/**
+	 * Gives the name of the note at the ith index, with 0 <= i && i < this.size().
 	 * 
+	 * Throws an array out of bounds exception if i is out of range.
 	 * @param i The note index
 	 * @return The name of the ith note in the scale
 	 */
-	public String getNoteNameByIndex(int i) {
+	public String getNoteNameByIndex(int i) throws ArrayIndexOutOfBoundsException {
 		return noteNames[i];
 	}
 	
 	/**
-	 * Returns the name of the given pitchValue. The name is in the context of this scale.
+	 * Gives the name for the given pitchValue that applies in the context of this scale.
 	 * The given pitchValue should be a pitch value within this scale.
+	 * If it isn't, the method returns "?".
 	 * 
-	 * @param pitchValue
-	 * @return
+	 * Won't throw an array out of bounds exception.
+	 * 
+	 * @param pitchValue The MIDI value of the pitch.
+	 * @return The name of the note in the context of this scale, or "?" if the note doesn't exist in this scale.
 	 */
 	public String getNoteNameByPitchValue(int pitchValue) {
 		int i = this.getIndexOfNoteValue(pitchValue);
@@ -105,6 +111,10 @@ public class Scale implements JSONable {
 	}
 	
 	/**
+	 * Gives the value of the note at the index i.
+	 * if i > this.size(), that value is extrapolated, so large values for i are perfectly acceptable.
+	 * 
+	 * Will throw an array out of bounds exception if and only if (i < 0).
 	 * 
 	 * @param i The note index
 	 * @return The MIDI pitch value of the ith note in the scale
@@ -119,11 +129,13 @@ public class Scale implements JSONable {
 	}
 	
 	/**
-	 * Does the opposite of getNoteValue(i).
-	 * Where that method takes an index and returns the pitch at that index in the scale,
-	 * this method takes a pitch and returns the index where that pitch is located in the scale
-	 * @param midiPitchValue
-	 * @return
+	 * Gives the index of the given note in the context of this scale.
+	 * If the given note does not exist in this scale, then the method will return -1.
+	 * If i > this.size(), the index is extrapolated, so large values for i are perfectly acceptable.
+	 * Same for small values for i, though this property is less likely to be useful.
+	 * 
+	 * @param midiPitchValue The value of the note.
+	 * @return The index in this scale of the given note, or -1 if the given note does not exist in this scale.
 	 */
 	public int getIndexOfNoteValue(int midiPitchValue) {
 		int minPitch = noteValues[0];
