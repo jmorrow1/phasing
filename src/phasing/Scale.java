@@ -86,6 +86,13 @@ public class Scale implements JSONable {
 		return noteNames[i];
 	}
 	
+	/**
+	 * Returns the name of the given pitchValue. The name is in the context of this scale.
+	 * The given pitchValue should be a pitch value within this scale.
+	 * 
+	 * @param pitchValue
+	 * @return
+	 */
 	public String getNoteNameByPitchValue(int pitchValue) {
 		int i = this.getIndexOfNoteValue(pitchValue);
 		if (i != -1) {

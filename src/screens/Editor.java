@@ -46,13 +46,11 @@ public class Editor extends Screen {
 	//piano
 	private boolean labelPianoKeys = true;
 	private int minOctave = 5;
-	//private int numKeys = 24;
 	private final static int W=0xffffffff, B=PhasesPApplet.getColor2();
 	private final static int[] keyColors = new int[] {W, B, W, B, W, W, B, W, B, W, B, W};
 	
 	//grid
 	private Rect gridFrame;
-	//private int columnSize = numKeys;
 	private int cellHeight = 20;
 	private int cellWidth = 60;
 	
