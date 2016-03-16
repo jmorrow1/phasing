@@ -46,13 +46,14 @@ public class Editor extends Screen {
 	//piano
 	private boolean labelPianoKeys = true;
 	private int minOctave = 5;
-	private int numKeys = 24;
+	//private int numKeys = 24;
 	private final static int W=0xffffffff, B=PhasesPApplet.getColor2();
 	private final static int[] keyColors = new int[] {W, B, W, B, W, W, B, W, B, W, B, W};
 	
 	//grid
 	private Rect gridFrame;
-	private int columnSize = numKeys;
+	//private int columnSize = numKeys;
+	private int cellHeight = 20;
 	private int cellWidth = 60;
 	
 	//interaction w/ grid
@@ -97,6 +98,14 @@ public class Editor extends Screen {
 	//TODO Maybe find a naming convention that signals which of the following methods
 	//are to be used just as variables and which of them are to be used to update the Editor state.
 	
+	private int columnSize() {
+		return (int)(gridFrame.getHeight() / cellHeight);
+	}
+	
+	private int numKeys() {
+		return columnSize();
+	}
+	
 	/**
 	 * Gives the proper value for the uppermost y-coordinate of the bottom tollbar,
 	 * which is dependent on the height of the window.
@@ -124,18 +133,11 @@ public class Editor extends Screen {
 	}
 	
 	/**
-	 * Gives the height of a cell in the grid.
-	 * @return The height of a cell in the grid.
-	 */
-	private float cellHeight() {
-		return gridFrame.getHeight() / columnSize;
-	}
-	
-	/**
 	 * Initializes the gridFrame.
 	 */
 	private void initGridFrame() {
-		gridFrame = new Rect(10, pa.topToolbarY2(), pa.width-10, botToolbarY1(), pa.CORNERS);
+		float gridHeight = cellHeight * (int) ((botToolbarY1() - pa.topToolbarY2()) / cellHeight);
+		gridFrame = new Rect(10, pa.topToolbarY2(), pa.width-10, pa.topToolbarY2() + gridHeight, pa.CORNERS);
 	}
 	
 	/**
@@ -785,7 +787,7 @@ public class Editor extends Screen {
 	 * @return The pitch value.
 	 */
 	private int mouseToPitch() {
-		int pitchIndex = (int)pa.map(pa.mouseY, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys);
+		int pitchIndex = (int)pa.map(pa.mouseY, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys());
 		return pa.currentScale.getNoteValue(pitchIndex) + minOctave*12;
 	}
 	
@@ -799,7 +801,7 @@ public class Editor extends Screen {
 	 * @return The pitch value.
 	 */
 	private int yToPitch(float y) {
-		int pitchIndex = (int)pa.map(y + cellHeight()/2f, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys);
+		int pitchIndex = (int)pa.map(y + cellHeight/2f, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys());
 		return pa.currentScale.getNoteValue(pitchIndex) + minOctave*12;
 	}
 	
@@ -810,7 +812,7 @@ public class Editor extends Screen {
 	 */
 	private float pitchToY(int pitch) {
 		int pitchIndex = pa.currentScale.getIndexOfNoteValue(pitch - minOctave*12) + 1;
-		return pa.map(pitchIndex, 0, numKeys, gridFrame.getY2(), gridFrame.getY1());
+		return pa.map(pitchIndex, 0, numKeys(), gridFrame.getY2(), gridFrame.getY1());
 	}
 	
 	/******************************
@@ -958,7 +960,7 @@ public class Editor extends Screen {
 				
 				int pitch = pa.currentPhrase.getSCPitch(i);
 				float y = pitchToY(pitch);
-				pa.rect(x, y, cellWidth*numCellsWide, cellHeight());
+				pa.rect(x, y, cellWidth*numCellsWide, cellHeight);
 			}
 			
 			x += (cellWidth*numCellsWide);
@@ -973,8 +975,6 @@ public class Editor extends Screen {
 	 * @param strokeColor
 	 */
 	private void drawGrid(int strokeColor, float cellWidth) {
-		float cellHeight = cellHeight();
-		
 		pa.strokeWeight(1);
 		pa.stroke(strokeColor);
 		
@@ -990,7 +990,7 @@ public class Editor extends Screen {
 		float y = gridFrame.getY1();
 		pa.line(gridFrame.getX1() + cellWidth, y, x, y);
 		y += cellHeight;
-		for (int i=0; i<numKeys; i++) {
+		for (int i=0; i<numKeys(); i++) {
 			pa.line(gridFrame.getX1() + cellWidth, y, x, y);		
 			y += cellHeight;
 		}
@@ -1002,8 +1002,6 @@ public class Editor extends Screen {
 	 * Draws the piano, which serves as the y-axis of the grid.
 	 */
 	private void drawPiano() {
-		float cellHeight = cellHeight();
-		
 		pa.rectMode(pa.CORNER);
 		pa.stroke(PhasesPApplet.getColor2());
 		float y = gridFrame.getY2() - cellHeight;
@@ -1012,7 +1010,7 @@ public class Editor extends Screen {
 		pa.textFont(pa.pfont18);
 		pa.textSize(16);
 		//for (int i=pitchOffset; i<numKeys+pitchOffset; i++) {
-		for (int i=0; i<numKeys; i++) {
+		for (int i=0; i<numKeys(); i++) {
 			int iModScaleSize = i % pa.currentScale.size();
 			int noteValueMod12 = pa.currentScale.getNoteValue(iModScaleSize) % 12;
 			int keyColor = keyColors[noteValueMod12];
