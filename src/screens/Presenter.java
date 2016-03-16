@@ -296,7 +296,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	}
 	
 	private void resizeView(View view) {
-		view.setCenter(pa.width/2, pa.height/2);
 		view.setSize(pa.width, pa.height);
 	}
 	

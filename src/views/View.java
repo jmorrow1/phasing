@@ -66,6 +66,8 @@ public abstract class View extends Rect implements ViewVariableInfo {
 		float prevHeight = getHeight();
 		super.setWidth(width);
 		super.setHeight(height);
+		super.setX1(0);
+		super.setY1(0);
 		resized(prevWidth, prevHeight);
 	}
 	
