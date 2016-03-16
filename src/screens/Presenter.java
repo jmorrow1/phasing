@@ -125,6 +125,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			cp5.dispose();
 		}
 		cp5 = new ControlP5(pa);
+		cp5.setAutoDraw(false);
 		initDirectionalButtons();
 	}
 	
@@ -367,6 +368,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		checkUnlocks();
 		pa.background(255);
 		pa.drawControlP5();
+		cp5.draw();
 		animateView();
 		drawNavigationMenu();
 	}

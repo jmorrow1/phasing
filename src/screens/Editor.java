@@ -586,6 +586,9 @@ public class Editor extends Screen {
 		if (pa.width < 800 || pa.height < 600) {
 			pa.resize(PApplet.max(800, pa.width), PApplet.max(600, pa.height));
 		}
+		else {
+			windowResized();
+		}
 	}
 	
 	@Override
