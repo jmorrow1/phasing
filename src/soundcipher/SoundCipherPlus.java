@@ -61,11 +61,13 @@ public class SoundCipherPlus extends SoundCipher {
 	 */
 	public void playNote(PhraseReader phraseReader) {
 		int i = phraseReader.getNoteIndex();
-		super.playNote(phrase.getSCPitch(i), phrase.getSCDynamic(i), phrase.getSCDuration(i));
-		try {
-			callback.invoke(callee, this);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
+		if (!phrase.isRest(i)) {
+			super.playNote(phrase.getSCPitch(i), phrase.getSCDynamic(i), 0.9f*phrase.getSCDuration(i));
+			try {
+				callback.invoke(callee, this);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
