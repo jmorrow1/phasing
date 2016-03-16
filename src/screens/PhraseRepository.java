@@ -297,6 +297,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	@Override
 	public void draw() {
 		pa.background(255);
+		pa.drawControlP5();
 		int i = 0;
 		int j = currPageNum*cells.size();
 		while (i < cells.size()) {

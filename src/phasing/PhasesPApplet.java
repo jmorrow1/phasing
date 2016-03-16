@@ -54,14 +54,13 @@ public class PhasesPApplet extends PApplet {
 	private float bpm2 = 60.5f;
 	private float bpms2 = bpm2 / 60000f;
 	
-	//all screens
+	//screens
 	private Presenter presenter;
 	private Editor editor;
 	private PhraseRepository phraseRepo;
 	private PauseMenu pauseMenu;
 	private boolean pause;
-	
-	//active screen
+	private boolean presenterEntered = false;
 	private Screen currentScreen;
 	
 	//visual variables
@@ -85,7 +84,7 @@ public class PhasesPApplet extends PApplet {
 	
 	//input
 	private boolean pauseKeyHeldDown;
-	
+
 	/*****************
 	 ***** Setup *****
 	 *****************/
@@ -145,21 +144,28 @@ public class PhasesPApplet extends PApplet {
 		initCurrentPhrase();
 		initScreens();
 		
-		currentScreen = editor;
-		currentScreen.onEnter();
-		
+		currentScreen = presenter;
 		initCP5Objects(currentScreen);
+		currentScreen.onEnter();
 	}
 	
+	/**
+	 * Initializes the ControlP5 object and its controllers.
+	 * @param currentScreen Indicates that the method relies on currentScreen being already initialized.
+	 */
 	private void initCP5Objects(Screen currentScreen) {
 		if (cp5 != null) {
 			cp5.dispose();
 		}
 		cp5 = new ControlP5(this);
+		cp5.setAutoDraw(false);
 		initChangeScreenButton(currentScreen);
 		initPauseButton(changeScreenButton);
 	}
 	
+	/**
+	 * Loads the phrase pictures.
+	 */
 	private void initPhrasePictures() {
 		boolean phrasePicturesLoaded = loadPhrasePictures();
 		if (!phrasePicturesLoaded) {
@@ -251,15 +257,7 @@ public class PhasesPApplet extends PApplet {
 		changeScreenButton.getCaptionLabel().setFont(pfont18);
 		colorControllerShowingLabel(changeScreenButton);
 		
-		if (currentScreen == editor) {
-			changeScreenButton.setCaptionLabel("Rehearse");
-		}
-		else if (currentScreen == presenter) {
-			changeScreenButton.setCaptionLabel("Compose");
-		}
-		else if (currentScreen == phraseRepo) {
-			changeScreenButton.setCaptionLabel("Go Back");
-		}
+		changeScreenButton.setCaptionLabel(captionLabel(currentScreen));
 	}
 	
 	/**
@@ -630,9 +628,32 @@ public class PhasesPApplet extends PApplet {
 		xs[j] = xs_i;
 	}
 	
-	/***************************
-	 ***** ControlP5 Style *****
-	 ***************************/
+	/*****************************
+	 ***** ControlP5 Related *****
+	 *****************************/
+	
+	/**
+	 * Draws the PhasesPapplet's controllers.
+	 */
+	public void drawControlP5() {
+		cp5.draw();
+	}
+	
+	/**
+	 * Makes all the PhasesPApplet's controllers invisible.
+	 */
+	public void hideAllControllers() {
+		pauseButton.hide();
+		changeScreenButton.hide();
+	}
+	
+	/**
+	 * Makes all the PhasesPApplet's controllers visible.
+	 */
+	public void showAllControllers() {
+		pauseButton.show();
+		changeScreenButton.show();
+	}
 	
 	/**
 	 * Gives the default coloring for labeled buttons to the given controller.
@@ -667,21 +688,50 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void changeScreen(ControlEvent e) {
 		if (!pause) {
-			currentScreen.onExit();
-			changeScreenButton.show();
 			if (currentScreen == editor) {
-				currentScreen = presenter;
-				changeScreenButton.setCaptionLabel("Compose");
+				changeScreenTo(presenter);
 			}
 			else if (currentScreen == presenter) {
-				currentScreen = editor;
-				changeScreenButton.setCaptionLabel("Rehearse");
+				changeScreenTo(editor);
 			}
 			else if (currentScreen == phraseRepo) {
-				changeScreenButton.setCaptionLabel("Go Back");
+				changeScreenTo(phraseRepo);
 			}
-			currentScreen.onEnter();
 		}
+	}
+	
+	/**
+	 * Changes the screen to the given destination screen and
+	 * does all the maintenance work that comes along with doing that.
+	 * @param destination The screen to change to.
+	 */
+	private void changeScreenTo(Screen destination) {
+		currentScreen.onExit();
+		changeScreenButton.show();
+		currentScreen = destination;
+		destination.onEnter();
+		changeScreenButton.setCaptionLabel(captionLabel(currentScreen));
+	}
+	
+	/**
+	 * Gives what the caption label should be for the given screen.
+	 * @param screen The screen.
+	 * @return The caption label.
+	 */
+	private String captionLabel(Screen screen) {
+		if (screen == presenter) {
+			return "Compose";
+		}
+		else if (screen == editor) {
+			return "Rehearse";
+		}
+		else if (screen == phraseRepo) {
+			return "Go Back";
+		}
+		else {
+			return "";
+		}
+			
 	}
 	
 	/**

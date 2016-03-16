@@ -833,6 +833,7 @@ public class Editor extends Screen {
 		
 		drawBody();
 		drawToolbar();
+		pa.drawControlP5();
 	}
 	
 	/**

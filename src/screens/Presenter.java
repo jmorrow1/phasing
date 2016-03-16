@@ -302,17 +302,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	@Override
 	public void onEnter() {
 		initViews();
-		
-		pa.currentPhrase.addToScore(player1, 0, 0, 0);
-		pa.currentPhrase.addToScore(player2, 0, 0, 0);
-		player1.tempo(pa.getBPM1());
-		player2.tempo(pa.getBPM2());
-		player1.repeat(-1);
-		player2.repeat(-1);
-		player1.play();
-		player2.play();
-
-		playing = true;
 
 		prev_notept1 = 0;
 		prev_notept2 = 0;
@@ -331,6 +320,17 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		repositionDirectionalButtons();
 		
 		cp5.show();
+		
+		pa.currentPhrase.addToScore(player1, 0, 0, 0);
+		pa.currentPhrase.addToScore(player2, 0, 0, 0);
+		player1.tempo(pa.getBPM1());
+		player2.tempo(pa.getBPM2());
+		player1.repeat(-1);
+		player2.repeat(-1);
+		player1.play();
+		player2.play();
+		
+		playing = true;
 	}
 	
 	@Override
@@ -366,6 +366,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		updateTime();
 		checkUnlocks();
 		pa.background(255);
+		pa.drawControlP5();
 		animateView();
 		drawNavigationMenu();
 	}
