@@ -411,6 +411,20 @@ public class Phrase implements JSONable {
 	}
 	
 	/**
+	 * Tells whether or not the note at the given index is a rest.
+	 * @param scIndex Index to the soundcipher pitches.
+	 * @return True if there is a rest at the given index, false otherwise.
+	 */
+	public boolean isRest(int scIndex) {
+		if (0 <= scIndex && scIndex < getNumNotes()) {
+			return getSCDynamic(scIndex) == 0;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	/**
 	 * 
 	 * @param i The index to the phrase's soundcipher representation
 	 * @return The pitch [0-127] at the given index

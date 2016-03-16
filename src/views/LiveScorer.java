@@ -285,7 +285,8 @@ public class LiveScorer extends View {
 		float y1 = -1;
 		float y2 = -1;
 		
-		if (sineWave.toInt() == IS_SINE_WAVE) {
+		if (sineWave.toInt() == IS_SINE_WAVE &&
+				!pa.currentPhrase.isRest(reader.getNoteIndex())) {
 			float notept = -1;
 			
 			if (reader.getId() == ONE_ID) {
