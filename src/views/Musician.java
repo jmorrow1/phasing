@@ -7,6 +7,7 @@ import instrument_graphics.Marimba;
 import instrument_graphics.Piano;
 import phasing.PhasesPApplet;
 import phasing.PhraseReader;
+import phasing.PlayerInfo;
 import processing.core.PApplet;
 import util.ModInt;
 
@@ -44,11 +45,13 @@ public class Musician extends View {
 	 * 
 	 * @param viewBox The area in which to draw.
 	 * @param opacity The opacity of notes.
+	 * @param playerInfo Contains information (potentially) about how to initialize the view's settings.
 	 * @param pa The PhasesPApplet instance.
 	 */
-	public Musician(Rect viewBox, int opacity, PhasesPApplet pa) {
-		super(viewBox, opacity, pa);
+	public Musician(Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
+		super(viewBox, opacity, playerInfo, pa);
 		init();
+		loadSettings(playerInfo);
 	}
 	
 	/**
@@ -57,12 +60,14 @@ public class Musician extends View {
 	 * @param m The Musician this one derives its option values from.
 	 * @param viewBox The area in which to draw.
 	 * @param opacity The opacity of notes.
+	 * @param playerInfo Contains information (potentially) about how to initialize the view's settings.
 	 * @param pa The PhasesPApplet instance.
 	 */
-	public Musician(Musician m, Rect viewBox, int opacity, PhasesPApplet pa) {
-		super(viewBox, opacity, pa);
+	public Musician(Musician m, Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
+		super(viewBox, opacity, playerInfo, pa);
 		copyOptionValues(m);
 		init();
+		loadSettings(playerInfo);
 	}
 	
 	/**
@@ -271,5 +276,24 @@ public class Musician extends View {
 			}
 			playerB.draw(pa);
 		}
+	}
+	
+	/***************************************
+	 ***** Saving and Loading Settings *****
+	 ***************************************/
+	
+	@Override
+	public void saveSettings(PlayerInfo playerInfo) {
+		save(superimposedOrSeparated, "superimposedOrSeparated", playerInfo);
+		save(colorScheme, "colorScheme", playerInfo);
+		save(instrument, "instrument", playerInfo);
+	}
+	
+	@Override
+	protected void loadSettings(PlayerInfo playerInfo) {
+		tryToSet(superimposedOrSeparated, "superimposedOrSeparated", playerInfo);
+		tryToSet(colorScheme, "colorScheme", playerInfo);
+		tryToSet(instrument, "instrument", playerInfo);
+		settingsChanged();
 	}
 }

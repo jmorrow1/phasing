@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import geom.Rect;
 import phasing.PhasesPApplet;
 import phasing.PhraseReader;
+import phasing.PlayerInfo;
 import processing.core.PApplet;
 import util.ModInt;
 
@@ -64,11 +65,13 @@ public class LiveScorer extends View {
 	 * 
 	 * @param viewBox The area in which to draw.
 	 * @param opacity The opacity of notes.
+	 * @param playerInfo Contains information (potentially) about how to initialize the view's settings.
 	 * @param pa The PhasesPApplet instance.
 	 */
-	public LiveScorer(Rect viewBox, int opacity, PhasesPApplet pa) {
-		super(viewBox, opacity, pa);	
+	public LiveScorer(Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
+		super(viewBox, opacity, playerInfo, pa);	
 		init();
+		loadSettings(playerInfo);
 	}
 	
 	/**
@@ -77,12 +80,14 @@ public class LiveScorer extends View {
 	 * @param ls The LiveScorer this one derives its option values from.
 	 * @param viewBox The area in which to draw.
 	 * @param opacity The opacity of notes.
+	 * @param playerInfo Contains information (potentially) about how to initialize the view's settings.
 	 * @param pa The PhasesPApplet instance.
 	 */
-	public LiveScorer(LiveScorer ls, Rect viewBox, int opacity, PhasesPApplet pa) {
-		super(viewBox, opacity, pa);
+	public LiveScorer(LiveScorer ls, Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
+		super(viewBox, opacity, playerInfo, pa);
 		copyOptionValues(ls);
 		init();
+		loadSettings(playerInfo);
 	}
 	
 
@@ -440,5 +445,26 @@ public class LiveScorer extends View {
 			}
 			pa.strokeCap(pa.ROUND); //back to default stroke cap
 		}
+	}
+	
+	/***************************************
+	 ***** Saving and Loading Settings *****
+	 ***************************************/
+	
+	@Override
+	public void saveSettings(PlayerInfo playerInfo) {
+		save(sineWave, "sineWave", playerInfo);
+		save(scoreMode, "scoreMode", playerInfo);
+		save(noteGraphic, "noteGraphic2", playerInfo);
+		save(colorScheme, "colorScheme", playerInfo);
+	}
+	
+	@Override
+	protected void loadSettings(PlayerInfo playerInfo) {
+		tryToSet(sineWave, "sineWave", playerInfo);
+		tryToSet(scoreMode, "scoreMode", playerInfo);
+		tryToSet(noteGraphic, "noteGraphic2", playerInfo);
+		tryToSet(colorScheme, "colorScheme", playerInfo);
+		settingsChanged();
 	}
 }

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import controlP5.Button;
 import controlP5.ControlP5;
-import controlP5.ControlWindow;
 import controlp5.TriangleButtonView;
 import geom.Rect;
 import icons.CameraIcon;
@@ -23,6 +22,7 @@ import icons.SuperimposedOrSeparatedIcon;
 import icons.TransformIcon;
 import icons.ViewTypeIcon;
 import phasing.PhasesPApplet;
+import phasing.PlayerInfo;
 import processing.core.PApplet;
 import soundcipher.SCScorePlus;
 import util.ModInt;
@@ -100,22 +100,23 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 */
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
-		initViews();	
+		initViews(pa.playerInfo);	
 		initCP5Objects();
 		cp5.hide();
 	}
 	
 	/**
 	 * Initializes an instance of each view type.
+	 * @param playerInfo The PlayerInfo object to initialize each view with.
 	 */
-	private void initViews() {
+	private void initViews(PlayerInfo playerInfo) {
 		Rect area = new Rect(viewCenx(), viewCeny(), pa.width, viewHeight(), pa.CENTER);
-		musicianView = (musicianView == null) ? new Musician(area, 150, pa)
-				                              : new Musician(musicianView, area, 150, pa);
-		phaseShifterView = (phaseShifterView == null) ? new PhaseShifter(area, 150, pa)
-				                                      : new PhaseShifter(phaseShifterView, area, 150, pa);
-		liveScorerView = (liveScorerView == null) ? new LiveScorer(area, 150, pa) :
-			                                        new LiveScorer(liveScorerView, area, 150, pa);
+		musicianView = (musicianView == null) ? new Musician(area, 150, playerInfo, pa)
+				                              : new Musician(musicianView, area, 150, playerInfo, pa);
+		phaseShifterView = (phaseShifterView == null) ? new PhaseShifter(area, 150, playerInfo, pa)
+				                                      : new PhaseShifter(phaseShifterView, area, 150, playerInfo, pa);
+		liveScorerView = (liveScorerView == null) ? new LiveScorer(area, 150, playerInfo, pa) :
+			                                        new LiveScorer(liveScorerView, area, 150, playerInfo, pa);
 		
 		switch(viewType.toInt()) {
 			case MUSICIAN : view = musicianView; break;
@@ -363,7 +364,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	
 	@Override
 	public void onEnter() {	
-		initViews();
+		initViews(pa.playerInfo);
 		setupIconLists();
 		activeIconIndex = 0;
 		repositionDirectionalButtons();	
@@ -398,6 +399,9 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	public void onExit() {
 		player1.stop();
 		player2.stop();
+		musicianView.saveSettings(pa.playerInfo);
+		phaseShifterView.saveSettings(pa.playerInfo);
+		liveScorerView.saveSettings(pa.playerInfo);
 		pa.savePlayerInfo();
 		cp5.hide();
 	}

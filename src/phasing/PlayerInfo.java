@@ -1,5 +1,10 @@
 package phasing;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import processing.data.JSONArray;
 import processing.data.JSONObject;
 
 /**
@@ -7,6 +12,7 @@ import processing.data.JSONObject;
  * --> data that determines what the player has and hasn't unlocked.
  * --> how many times the player has visited the editor.
  * --> the index of the phrase the current phrase derives from.
+ * --> the last saved state of view options
  * 
  * @author James Morrow
  *
@@ -15,7 +21,7 @@ public class PlayerInfo {
 	public float minutesSpentWithMusician, minutesSpentWithPhaseShifter, minutesSpentWithLiveScorer;
 	public int nextMusicianUnlockIndex, nextPhaseShifterUnlockIndex, nextLiveScorerUnlockIndex;
 	public int numEditorVisits;
-	//TODO: Save the state of view variables and icons (could do this by saving the names of them)
+	public HashMap<String, Integer> viewOptionValueMap = new HashMap<String, Integer>();
 	
 	public PlayerInfo(boolean everythingUnlocked) {
 		this((everythingUnlocked) ? 10000f : 0, (everythingUnlocked) ? 10000f : 0, (everythingUnlocked) ? 10000f : 0,
@@ -24,7 +30,8 @@ public class PlayerInfo {
 	}
 	
 	public PlayerInfo(float minutesSpentWithMusician, float minutesSpentWithPhaseShifter, float minutesSpentWithLiveScorer,
-			int nextMusicianUnlockIndex, int nextPhaseShifterUnlockIndex, int nextLiveScorerUnlockIndex, int numEditorVisits) {
+			int nextMusicianUnlockIndex, int nextPhaseShifterUnlockIndex, int nextLiveScorerUnlockIndex,
+			int numEditorVisits) {
 		this.minutesSpentWithMusician = minutesSpentWithMusician;
 		this.minutesSpentWithPhaseShifter = minutesSpentWithPhaseShifter;
 		this.minutesSpentWithLiveScorer = minutesSpentWithLiveScorer;
@@ -42,6 +49,16 @@ public class PlayerInfo {
 		     json.getInt("nextPhaseShifterUnlockIndex", 0),
 		     json.getInt("nextLiveScorerUnlockIndex", 0),
 		     json.getInt("numEditorVisits", 0));
+		
+		if (json.hasKey("viewOptionValueMap")) {
+			JSONArray optionValuePairs = json.getJSONArray("viewOptionValueMap");
+			for (int i=0; i<optionValuePairs.size(); i++) {
+				JSONObject pair = optionValuePairs.getJSONObject(i, new JSONObject());
+				String optionName = pair.getString("optionName", "");
+				Integer optionValue = pair.getInt("optionValue", -1);
+				viewOptionValueMap.put(optionName, optionValue);
+			}
+		}
 	}
 	
 	public JSONObject toJSON() {
@@ -53,6 +70,19 @@ public class PlayerInfo {
 		json.setInt("nextPhaseShifterUnlockIndex", nextPhaseShifterUnlockIndex);
 		json.setInt("nextLiveScorerUnlockIndex", nextLiveScorerUnlockIndex);
 		json.setInt("numEditorVisits", numEditorVisits);
+		
+		JSONArray jsonMap = new JSONArray();
+		json.setJSONArray("viewOptionValueMap", jsonMap);
+		Set<Map.Entry<String, Integer>> entrySet = viewOptionValueMap.entrySet();
+		int i=0;
+		for (Map.Entry<String, Integer> pair : entrySet) {
+			JSONObject jsonPair = new JSONObject();
+			jsonPair.setString("optionName", pair.getKey());
+			jsonPair.setInt("optionValue", pair.getValue());
+			jsonMap.setJSONObject(i, jsonPair);
+			i++;
+		}
+		
 		return json;
 	}
 }

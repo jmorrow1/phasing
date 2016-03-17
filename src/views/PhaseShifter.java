@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import geom.Rect;
 import phasing.PhasesPApplet;
 import phasing.PhraseReader;
+import phasing.PlayerInfo;
 import geom.CurvedRect;
 import processing.core.PApplet;
 import util.ModInt;
@@ -56,11 +57,13 @@ public class PhaseShifter extends View {
 	 * 
 	 * @param viewBox The area in which to draw.
 	 * @param opacity The opacity of notes.
+	 * @param playerInfo Contains information (potentially) about how to initialize the view's settings.
 	 * @param pa The PhasesPApplet instance.
 	 */
-	public PhaseShifter(Rect viewBox, int opacity, PhasesPApplet pa) {
-		super(viewBox, opacity, pa);
+	public PhaseShifter(Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
+		super(viewBox, opacity, playerInfo, pa);
 		init();
+		loadSettings(playerInfo);
 	}
 	
 	/**
@@ -69,12 +72,14 @@ public class PhaseShifter extends View {
 	 * @param ps The PhaseShifter this one derives its option values from.
 	 * @param viewBox The area in which to draw.
 	 * @param opacity The opacity of notes.
+	 * @param playerInfo Contains information (potentially) about how to initialize the view's settings.
 	 * @param pa The PhasesPApplet instance.
 	 */
-	public PhaseShifter(PhaseShifter ps, Rect viewBox, int opacity, PhasesPApplet pa) {
-		super(viewBox, opacity, pa);
+	public PhaseShifter(PhaseShifter ps, Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
+		super(viewBox, opacity, playerInfo, pa);
 		copyOptionValues(ps);
 		init();
+		loadSettings(playerInfo);
 	}
 	
 	/**
@@ -563,5 +568,30 @@ public class PhaseShifter extends View {
 				return (plotPitchMode.toInt() == PLOT_PITCH) ? ry : ryAlt;
 			}
 		}
+	}
+	
+	/***************************************
+	 ***** Saving and Loading Settings *****
+	 ***************************************/
+	
+	@Override
+	public void saveSettings(PlayerInfo playerInfo) {
+		save(activeNoteMode, "activeNoteMode", playerInfo);
+		save(transformation, "transformation", playerInfo);
+		save(cameraMode, "cameraMode", playerInfo);
+		save(noteGraphic, "noteGraphic1", playerInfo);
+		save(plotPitchMode, "plotPitchMode", playerInfo);
+		save(colorScheme, "colorScheme", playerInfo);
+	}
+	
+	@Override
+	protected void loadSettings(PlayerInfo playerInfo) {
+		tryToSet(activeNoteMode, "activeNoteMode", playerInfo);
+		tryToSet(transformation, "transformation", playerInfo);
+		tryToSet(cameraMode, "cameraMode", playerInfo);
+		tryToSet(noteGraphic, "noteGraphic1", playerInfo);
+		tryToSet(plotPitchMode, "plotPitchMode", playerInfo);
+		tryToSet(colorScheme, "colorScheme", playerInfo);
+		settingsChanged();
 	}
 }
