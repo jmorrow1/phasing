@@ -344,9 +344,8 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 * @return True, if they should change, false otherwise.
 	 */
 	private boolean instrumentShouldChange() {
-		return (view == musicianView) &&
-			   ((instrument == 13 && musicianView.instrument.toInt() != MARIMBA) ||
-				(instrument == 0 && musicianView.instrument.toInt() != PIANO));
+		return (instrument == 13 && musicianView.instrument.toInt() != MARIMBA) ||
+				(instrument == 0 && musicianView.instrument.toInt() != PIANO);
 	}
 	
 	/*********************************
@@ -370,6 +369,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		repositionDirectionalButtons();	
 		cp5.show();	
 		setupPlayback();
+		checkForInstrumentChange();
 	}
 	
 	private void setupPlayback() {
