@@ -188,4 +188,13 @@ public class Marimba implements Instrument {
 	private static float nroot(float x, float n) {
 	    return (float)Math.pow(x, 1 / n);
 	}
+	
+	/*******************************
+	 ***** Getters and Setters *****
+	 *******************************/
+	
+	@Override
+	public int getNumOctaves() {
+		return numOctaves;
+	}
 }

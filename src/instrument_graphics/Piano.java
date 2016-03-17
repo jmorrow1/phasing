@@ -236,10 +236,7 @@ public class Piano extends Rect implements Instrument {
 		}
 	}
 	
-	/**
-	 * 
-	 * @return The number of octaves the piano spans.
-	 */
+	@Override
 	public int getNumOctaves() {
 		return numOctaves;
 	}

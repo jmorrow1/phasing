@@ -45,7 +45,7 @@ public class InstrumentPlayer {
 	//callback:
 	public void setActiveKey(PhraseReader reader) {
 		int i = reader.getNoteIndex();
-		activeKey = (phrase.getSCDynamic(i) > 0) ? keyCopies[reader.getNoteIndex()] : null;
+		activeKey = (phrase.getSCDynamic(i) > 0) ? keyCopies[i] : null;
 	}
 	
 	/**
@@ -69,7 +69,17 @@ public class InstrumentPlayer {
 	 */
 	public void setInstrument(Instrument instrument) {
 		for (int i=0; i<keyCopies.length; i++) {
-			keyCopies[i] = instrument.pitchToShape(phrase.getSCPitch(i));
+			int minPhraseOctaveNum = (int)(phrase.minPitch() / 12);
+			int phraseSpan = (int)(phrase.maxPitch() - phrase.minPitch());
+			int instrumentSpan = instrument.getNumOctaves() * 12;
+			int spanDifferenceInNotes = instrumentSpan - phraseSpan;
+			int spanDifferenceInOctaves = spanDifferenceInNotes / 12;
+			int instrumentOffset = 12 * (spanDifferenceInOctaves/2);
+			if (instrumentOffset < 0) {
+				instrumentOffset = 0;
+			}
+			int pitch = phrase.getSCPitch(i) - 12*minPhraseOctaveNum + instrumentOffset;
+			keyCopies[i] = instrument.pitchToShape(pitch);
 		}
 	}
 }

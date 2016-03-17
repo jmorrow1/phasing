@@ -46,4 +46,10 @@ public interface Instrument {
 		i = PhasesPApplet.remainder(i, 12);
 		return i == 1 || i == 3 || i == 6 || i == 8 || i == 10;
 	}
+	
+	/**
+	 * Gives the number of whole octaves the instrument spans.
+	 * @return The number of whole octaves the instrument spans.
+	 */
+	public int getNumOctaves();
 }

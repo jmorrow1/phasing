@@ -29,9 +29,6 @@ public class Musician extends View {
 	//players:
 	private InstrumentPlayer playerA, playerB;
 	
-	//other
-	private int firstPitch = 48;
-	
 	//options:
 	public ModInt superimposedOrSeparated = new ModInt(0, numWaysOfBeingSuperimposedOrSeparated, superimposedOrSeparatedName);
 	public ModInt colorScheme = new ModInt(0, numColorSchemes, colorSchemeName);
@@ -126,7 +123,6 @@ public class Musician extends View {
 		marimbaAB.init(3, new Rect(this.getCenx(), this.getCeny(), width, height, PApplet.CENTER));
 		marimbaA.init(3, new Rect(this.getCenx(), this.getCeny() - height*0.66f, width, height, PApplet.CENTER));
 		marimbaB.init(3, new Rect(this.getCenx(), this.getCeny() + height*0.66f, width, height, PApplet.CENTER));
-
 	}
 	
 	/**
