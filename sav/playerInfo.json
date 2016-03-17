@@ -2,7 +2,7 @@
   "minutesSpentWithPhaseShifter": 10000.623046875,
   "nextLiveScorerUnlockIndex": 1000,
   "nextPhaseShifterUnlockIndex": 1000,
-  "numEditorVisits": 1029,
+  "numEditorVisits": 1030,
   "nextMusicianUnlockIndex": 1000,
   "viewOptionValueMap": [
     {
@@ -26,7 +26,7 @@
       "optionName": "superimposedOrSeparated"
     },
     {
-      "optionValue": 1,
+      "optionValue": 0,
       "optionName": "instrument"
     },
     {
@@ -51,7 +51,7 @@
     }
   ],
   "windowHeight": 600,
-  "minutesSpentWithMusician": 10044.873046875,
+  "minutesSpentWithMusician": 10046.8232421875,
   "windowWidth": 984,
   "minutesSpentWithLiveScorer": 10001.404296875
 }

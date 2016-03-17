@@ -141,7 +141,7 @@ public class PhasesPApplet extends PApplet {
 		initCurrentScale();				
 		initCurrentPhrase();
 		initScreens();
-		currentScreen = presenter;
+		currentScreen = editor;
 		initCP5Objects(currentScreen);
 		manipulateControllers();
 		currentScreen.onEnter();
@@ -291,6 +291,8 @@ public class PhasesPApplet extends PApplet {
 		helpToggle.getCaptionLabel().toUpperCase(false);
 		helpToggle.getCaptionLabel().setFont(pfont12);
 		colorControllerShowingLabel(helpToggle);
+		
+		System.out.println(Util.getY1(helpToggle) + ", " + helpToggle.getHeight());
 	}
 	
 	/**
@@ -922,43 +924,10 @@ public class PhasesPApplet extends PApplet {
 	private void checkForWindowResizeEvent() {
 		if (prevWidth != width || prevHeight != height) {
 			playerInfo.setSize(width, height);
-			repositionControllers();
 			prevWidth = width;
 			prevHeight = height;
 			currentScreen.windowResized();
 		}
-	}
-	
-	/**
-	 * Repositions all the controllers that need to be repositioned in the case of a window resize event.
-	 */
-	private void repositionControllers() {
-		repositionChangeScreenButton();
-		repositionHelpToggle(changeScreenButton);
-		repositionPhraseRepoButton(helpToggle);
-	}
-	
-	/**
-	 * Repositions the ChangeScreenButton based on the current height of the window.
-	 */
-	private void repositionChangeScreenButton() {
-		Util.setY2(changeScreenButton, changeScreenButtonY2());
-	}
-	
-	/**
-	 * Repositions the help toggle based on the current height of the window.
-	 * @param changeScreenButton Indicates that the changeScreenButton should be up to date before calling this method.
-	 */
-	private void repositionHelpToggle(Button changeScreenButton) {
-		Util.setY2(helpToggle, Util.getY1(changeScreenButton) - 5);
-	}
-	
-	/**
-	 * Repositions the phraseREpoButton based on the current height of the window.
-	 * @param changeScreenButton Indicates that the changeScreenButton should be up to date before calling this method.
-	 */
-	private void repositionPhraseRepoButton(Button changeScreenButton) {
-		Util.setY2(phraseRepoButton, Util.getY1(changeScreenButton) - 5);
 	}
 	
 	/************************************************
