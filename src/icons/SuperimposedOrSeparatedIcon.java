@@ -8,17 +8,25 @@ import phasing.PhasesPApplet;
  *
  */
 public class SuperimposedOrSeparatedIcon implements Icon {
-    private final int superimposed;
+    private final int mode;
   
-    public SuperimposedOrSeparatedIcon(int superimposed) {
-        this.superimposed = superimposed;
+    public SuperimposedOrSeparatedIcon(int mode) {
+        this.mode = mode;
     }
     
-    public void draw(float x, float y, float radius, PhasesPApplet pa) {
-        pa.textAlign(pa.CENTER, pa.CENTER);
+    @Override
+    public void draw(float cenx, float ceny, float radius, PhasesPApplet pa) {
+    	float rectWidth = radius * 0.25f;
+    	float rectHeight = radius;
         pa.noStroke();
         pa.fill(0);
-        pa.textSize(radius);
-        pa.text((superimposed == SUPERIMPOSED) ? "1" : "2", x, y);
+        pa.rectMode(pa.CENTER);
+        if (mode == SUPERIMPOSED) {
+        	pa.rect(cenx, ceny, rectWidth, rectHeight);
+        }
+        else if (mode == SEPARATED) {
+        	pa.rect(cenx - rectWidth, ceny, rectWidth, rectHeight);
+        	pa.rect(cenx + rectWidth, ceny, rectWidth, rectHeight);
+        }
     }
 }
