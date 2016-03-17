@@ -73,6 +73,7 @@ public class PhasesPApplet extends PApplet {
 	
 	//screen size
 	private int prevWidth, prevHeight;
+	private static boolean initialWindowSizeGiven = false;
 	private static int initialWidthSize = 800, initialHeightSize = 600; //default window size if given no command line args
 	
 	//save folder location
@@ -94,6 +95,7 @@ public class PhasesPApplet extends PApplet {
 		if (width >= 800 && height >= 600) {
 			initialWidthSize = width;
 			initialHeightSize = height;
+			initialWindowSizeGiven = true;
 		}
 	}
 	
@@ -134,15 +136,18 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void setup() {
 		initStaticVariables();
+		initPlayerInfo();
 		surface.setResizable(true);
-		initCurrentScale();		
-		initPlayerInfo();		
+		initCurrentScale();				
 		initCurrentPhrase();
 		initScreens();
 		currentScreen = presenter;
 		initCP5Objects(currentScreen);
 		manipulateControllers();
 		currentScreen.onEnter();
+		if (!initialWindowSizeGiven && playerInfo.isWindowSizeInitialized()) {
+			this.resize(playerInfo.getWindowWidth(), playerInfo.getWindowHeight());
+		}
 	}
 	
 	/**
@@ -298,7 +303,6 @@ public class PhasesPApplet extends PApplet {
 		int buttonHeight = 12;
 		float x1 = Util.getX2(helpToggle) + 15;
 		float y1 = Util.getY1(helpToggle);
-		System.out.println("x1: " + x1 + ", y1: " + y1);
 		phraseRepoButton = cp5.addButton("toPhraseRepo")
 				              .setLabel("Phrase Repo")
 				              .setPosition(x1, y1)
@@ -718,9 +722,8 @@ public class PhasesPApplet extends PApplet {
 	/**
 	 * Callback from ControlP5.
 	 * Controls changing the screen from Presentation screen to Editor screen and vice versa.
-	 * @param e
 	 */
-	public void changeScreen(ControlEvent e) {
+	public void changeScreen() {
 		if (currentScreen == editor) {
 			changeScreenTo(presenter);	
 		}
@@ -728,7 +731,7 @@ public class PhasesPApplet extends PApplet {
 			changeScreenTo(editor);
 		}
 		else if (currentScreen == phraseRepo) {
-			changeScreenTo(phraseRepo);
+			changeScreenTo(editor);
 		}
 	}
 	
@@ -790,7 +793,7 @@ public class PhasesPApplet extends PApplet {
 			return "Rehearse";
 		}
 		else if (screen == phraseRepo) {
-			return "Go Back";
+			return "Compose";
 		}
 		else {
 			return "";
@@ -900,6 +903,12 @@ public class PhasesPApplet extends PApplet {
 	 ***** Other Events *****
 	 ************************/
 	
+	/**
+	 * The way to resize the PhasesPApplet through code logic.
+	 * 
+	 * @param width The new width for the window.
+	 * @param height The new height for the window.
+	 */
 	public void resize(int width, int height) {
 		surface.setSize(width, height);
 		checkForWindowResizeEvent();
@@ -912,6 +921,7 @@ public class PhasesPApplet extends PApplet {
 	 */
 	private void checkForWindowResizeEvent() {
 		if (prevWidth != width || prevHeight != height) {
+			playerInfo.setSize(width, height);
 			repositionControllers();
 			prevWidth = width;
 			prevHeight = height;

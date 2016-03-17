@@ -13,6 +13,7 @@ import processing.data.JSONObject;
  * --> how many times the player has visited the editor.
  * --> the index of the phrase the current phrase derives from.
  * --> the last saved state of view options
+ * --> the last saved window size
  * 
  * @author James Morrow
  *
@@ -22,6 +23,9 @@ public class PlayerInfo {
 	public int nextMusicianUnlockIndex, nextPhaseShifterUnlockIndex, nextLiveScorerUnlockIndex;
 	public int numEditorVisits;
 	public HashMap<String, Integer> viewOptionValueMap = new HashMap<String, Integer>();
+	
+	private boolean windowSizeInitialized = false;
+	private int windowWidth, windowHeight;
 	
 	public PlayerInfo(boolean everythingUnlocked) {
 		this((everythingUnlocked) ? 10000f : 0, (everythingUnlocked) ? 10000f : 0, (everythingUnlocked) ? 10000f : 0,
@@ -59,6 +63,32 @@ public class PlayerInfo {
 				viewOptionValueMap.put(optionName, optionValue);
 			}
 		}
+		
+		if (json.hasKey("windowWidth") && json.hasKey("windowHeight")) {
+			windowWidth = json.getInt("windowWidth", -1);
+			windowHeight = json.getInt("windowHeight", -1);
+			if (windowWidth != -1 && windowHeight != -1) {
+				windowSizeInitialized = true;
+			}
+		}
+	}
+	
+	public void setSize(int width, int height) {
+		this.windowWidth = width;
+		this.windowHeight = height;
+		windowSizeInitialized = true;
+	}
+	
+	public boolean isWindowSizeInitialized() {
+		return windowSizeInitialized;
+	}
+	
+	public int getWindowWidth() {
+		return windowSizeInitialized ? windowWidth : -1;
+	}
+	
+	public int getWindowHeight() {
+		return windowSizeInitialized ? windowHeight : -1;
 	}
 	
 	public JSONObject toJSON() {
@@ -81,6 +111,11 @@ public class PlayerInfo {
 			jsonPair.setInt("optionValue", pair.getValue());
 			jsonMap.setJSONObject(i, jsonPair);
 			i++;
+		}
+		
+		if (windowSizeInitialized && windowWidth > 200 && windowHeight > 200) {
+			json.setInt("windowWidth", windowWidth);
+			json.setInt("windowHeight", windowHeight);
 		}
 		
 		return json;
