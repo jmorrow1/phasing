@@ -54,6 +54,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	// playback
 	private SCScorePlus player1 = new SCScorePlus();
 	private SCScorePlus player2 = new SCScorePlus();
+	private int instrument = 0;
 	private boolean playing;
 
 	// to smooth animation
@@ -80,7 +81,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private float iconRadius = 25;
 	private float icon_dx = iconRadius * 2.25f;
 	private float iconStartX1 = 0.75f * iconRadius;
-	//private float iconStartY1 = pa.height - 2.75f * iconRadius;
 	private float iconStartY1() {
 		return pa.height - 2.75f * iconRadius;
 	}
@@ -88,7 +88,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	//controlp5
 	private ControlP5 cp5;
 	private Button upButton, downButton;
-	
+
 	/**************************
 	 ***** Initialization *****
 	 **************************/
@@ -206,7 +206,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 * Repositions the up and down buttons according to the activeIconIndex.
 	 */
 	private void repositionDirectionalButtons() {
-		//TODO troubleshoot why when the screen is resized to a certain height these buttons no longer work
 		upButton.setPosition(directionalButtonX1(activeIconIndex), upButtonY1());
 		downButton.setPosition(directionalButtonX1(activeIconIndex), downButtonY1());
 	}
@@ -224,6 +223,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		int newValue = PhasesPApplet.remainder(activeVar.toInt() - 1, availability);
 		activeVar.setValue(newValue);
 		view.settingsChanged();
+		checkForInstrumentChange();
 		checkViewType();
 	}
 	
@@ -240,6 +240,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		int newValue = PhasesPApplet.remainder(activeVar.toInt() + 1, availability);
 		activeVar.setValue(newValue);
 		view.settingsChanged();
+		checkForInstrumentChange();
 		checkViewType();
 	}
 	
@@ -285,27 +286,64 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 	}
 	
+	/**
+	 * Checks if the players' instruments should change.
+	 * If it should, the method changes them.
+	 */
+	public void checkForInstrumentChange() {
+		if (instrumentShouldChange()) {
+			changeInstrument();
+			musicianView.wakeUp(0, 0);
+			liveScorerView.wakeUp(0, 0);
+			phaseShifterView.wakeUp(0, 0);
+			setupPlayback();
+		}
+	}
+	
+	/**
+	 * Changes the instrument variable to the appropriate up-to-date value.
+	 */
+	private void changeInstrument() {
+		switch (musicianView.instrument.toInt()) {
+			case PIANO : instrument = 0; break;
+			case MARIMBA : instrument = 13; break;
+		}
+	}
+	
+	/**
+	 * Tells whether or not the players' instruments should change.
+	 * @return True, if they should change, false otherwise.
+	 */
+	private boolean instrumentShouldChange() {
+		return (view == musicianView) &&
+			   ((instrument == 13 && musicianView.instrument.toInt() != MARIMBA) ||
+				(instrument == 0 && musicianView.instrument.toInt() != PIANO));
+	}
+	
 	/*********************************
 	 ***** Screen Event Handling *****
 	 *********************************/
 	
 	@Override
 	public void windowResized() {
-		resizeView(musicianView);
-		resizeView(phaseShifterView);
-		resizeView(liveScorerView);
+		musicianView.setSize(pa.width, pa.height);
+		phaseShifterView.setSize(pa.width, pa.height);
+		liveScorerView.setSize(pa.width, pa.height);
 		initCP5Objects();
 		repositionDirectionalButtons();
-	}
-	
-	private void resizeView(View view) {
-		view.setSize(pa.width, pa.height);
 	}
 	
 	@Override
 	public void onEnter() {
 		initViews();
-
+		setupIconLists();
+		activeIconIndex = 0;
+		repositionDirectionalButtons();
+		cp5.show();	
+		setupPlayback();
+	}
+	
+	private void setupPlayback() {
 		prev_notept1 = 0;
 		prev_notept2 = 0;
 		totalNotept1 = 0;
@@ -315,17 +353,9 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		accountBalance1 = 0;
 		accountBalance2 = 0;
 		dataPts = 0;
-
-		setupIconLists();
 		
-		activeIconIndex = 0;
-		
-		repositionDirectionalButtons();
-		
-		cp5.show();
-		
-		pa.currentPhrase.addToScore(player1, 0, 0, 0);
-		pa.currentPhrase.addToScore(player2, 0, 0, 0);
+		pa.currentPhrase.addToScore(player1, 0, 0, instrument);
+		pa.currentPhrase.addToScore(player2, 0, 0, instrument);
 		player1.tempo(pa.getBPM1());
 		player2.tempo(pa.getBPM2());
 		player1.repeat(-1);
