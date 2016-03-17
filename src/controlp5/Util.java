@@ -12,6 +12,24 @@ public class Util {
 	private Util() {}
 	
 	/**
+	 * Changes the given Controller's leftmost x-coordinate value.
+	 * @param c The Controller.
+	 * @param x1 The new value for the Controller's leftmost x-coordinate.
+	 */
+	public static void setX1(Controller c, float x1) {
+		c.setPosition(x1, c.getPosition()[1]);
+	}
+	
+	/**
+	 * Changes the given Controller's rightmost x-coordinate value.
+	 * @param c The Controller.
+	 * @param x2 The new value for the Controller's rightmost x-coordinate.
+	 */
+	public static void setX2(Controller c, float x2) {
+		c.setPosition(x2 - c.getWidth(), c.getPosition()[1]);
+	}
+	
+	/**
 	 * Changes the given Controller's lower y-coordinate value.
 	 * @param c The Controller.
 	 * @param y2 The new value for the Controller's lower y-coordinate.

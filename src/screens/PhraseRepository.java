@@ -290,9 +290,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	}
 	
 	@Override
-	public void drawWhilePaused() {
-		
-	}
+	public void drawWhilePaused() {}
 	
 	@Override
 	public void draw() {

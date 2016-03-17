@@ -2,7 +2,7 @@
   "minutesSpentWithPhaseShifter": 10000.623046875,
   "nextLiveScorerUnlockIndex": 1000,
   "nextPhaseShifterUnlockIndex": 1000,
-  "numEditorVisits": 1026,
+  "numEditorVisits": 1028,
   "nextMusicianUnlockIndex": 1000,
   "viewOptionValueMap": [
     {
@@ -50,6 +50,6 @@
       "optionName": "colorScheme"
     }
   ],
-  "minutesSpentWithMusician": 10043.234375,
+  "minutesSpentWithMusician": 10044.8095703125,
   "minutesSpentWithLiveScorer": 10001.404296875
 }

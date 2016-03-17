@@ -68,6 +68,7 @@ public class PhasesPApplet extends PApplet {
 	private ControlP5 cp5;
 	private Button changeScreenButton;
 	private Button helpToggle;
+	private Button phraseRepoButton;
 	private boolean helpOn;
 	
 	//screen size
@@ -138,9 +139,9 @@ public class PhasesPApplet extends PApplet {
 		initPlayerInfo();		
 		initCurrentPhrase();
 		initScreens();
-		
 		currentScreen = presenter;
 		initCP5Objects(currentScreen);
+		manipulateControllers();
 		currentScreen.onEnter();
 	}
 	
@@ -156,6 +157,7 @@ public class PhasesPApplet extends PApplet {
 		cp5.setAutoDraw(false);
 		initChangeScreenButton(currentScreen);
 		initHelpToggle(changeScreenButton);
+		initPhraseRepoButton(helpToggle);	
 	}
 	
 	/**
@@ -218,7 +220,8 @@ public class PhasesPApplet extends PApplet {
 	 * @return The proper lowermost y-coordinate of the top toolbar.
 	 */
 	public int topToolbarY2() {
-		return (int)PApplet.constrain(PApplet.map(this.height, 0, 600, 0, 60), 60, 150);
+		return 60;
+		//return (int)PApplet.constrain(PApplet.map(this.height, 0, 600, 0, 60), 60, 150);
 	}
 	
 	/**
@@ -227,6 +230,18 @@ public class PhasesPApplet extends PApplet {
 	 */
 	private int changeScreenButtonY2() {
 		return topToolbarY2() - 10;
+	}
+	
+	/**
+	 * Gives the proper height of the change screen button, depending on what the current screen is.
+	 * @return The proper height of the change screen button.
+	 */
+	private int changeScreenButtonHeight() {
+		return (currentScreen != phraseRepo) ? 40 : 33;
+	}
+	
+	private int helpToggleWidth() {
+		return (currentScreen == editor) ? 110 : changeScreenButton.getWidth();
 	}
 	
 	/**
@@ -242,7 +257,7 @@ public class PhasesPApplet extends PApplet {
 	 */
 	private void initChangeScreenButton(Screen currentScreen) {
 		int width = 125;
-		int height = 33;
+		int height = changeScreenButtonHeight();
 		changeScreenButton = cp5.addButton("changeScreen")
 			                    .setPosition(changeScreenButtonX2() - width, changeScreenButtonY2() - height)
 			                    .setSize(width, height)
@@ -259,21 +274,39 @@ public class PhasesPApplet extends PApplet {
 	 * @param changeScreenButton This is here to make explicit that this method relies on changeScreenButton being already initialized.
 	 */
 	private void initHelpToggle(Button changeScreenButton) {
-		int width = changeScreenButton.getWidth();
-		int height = 12;
+		int toggleWidth = helpToggleWidth();
+		int toggleHeight = 12;
+		float x1 = Util.getX2(changeScreenButton) + 15;
+		float y1 = Util.getY1(changeScreenButton);
 		helpToggle = cp5.addButton("toggleHelp")
 				        .setLabel("Help")
-				        .setPosition(Util.getX1(changeScreenButton), Util.getY1(changeScreenButton) - 5 - height)
-				        .setSize(width, height)
+				        .setPosition(x1, y1)
+				        .setSize(toggleWidth, toggleHeight)
 				        ;
 		helpToggle.getCaptionLabel().toUpperCase(false);
 		helpToggle.getCaptionLabel().setFont(pfont12);
-		/*helpToggle.setColorCaptionLabel(0xffffffff);
-	    helpToggle.setColorValueLabel(0xffffffff);
-		helpToggle.setColorBackground(getColor1());
-		helpToggle.setColorForeground(getColor1());
-		helpToggle.setColorActive(getColor1Bold());*/
-		this.colorControllerShowingLabel(helpToggle);
+		colorControllerShowingLabel(helpToggle);
+	}
+	
+	/**
+	 * Initializes the button that takes the program to the phraseRepo screen.
+	 * @param helpToggle This is here to make explicit that this method relies on helpToggle being already initialized.
+
+	 */
+	private void initPhraseRepoButton(Button helpToggle) {
+		int buttonWidth = 110;
+		int buttonHeight = 12;
+		float x1 = Util.getX2(helpToggle) + 15;
+		float y1 = Util.getY1(helpToggle);
+		System.out.println("x1: " + x1 + ", y1: " + y1);
+		phraseRepoButton = cp5.addButton("toPhraseRepo")
+				              .setLabel("Phrase Repo")
+				              .setPosition(x1, y1)
+		                      .setSize(buttonWidth, buttonHeight)
+		                      ;
+		phraseRepoButton.getCaptionLabel().toUpperCase(false);
+		phraseRepoButton.getCaptionLabel().setFont(pfont12);
+		colorControllerShowingLabel(phraseRepoButton);
 	}
 	
 	/**
@@ -644,6 +677,7 @@ public class PhasesPApplet extends PApplet {
 	public void hideAllControllers() {
 		helpToggle.hide();
 		changeScreenButton.hide();
+		phraseRepoButton.hide();
 	}
 	
 	/**
@@ -652,6 +686,7 @@ public class PhasesPApplet extends PApplet {
 	public void showAllControllers() {
 		helpToggle.show();
 		changeScreenButton.show();
+		phraseRepoButton.show();
 	}
 	
 	/**
@@ -687,7 +722,7 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void changeScreen(ControlEvent e) {
 		if (currentScreen == editor) {
-			changeScreenTo(presenter);
+			changeScreenTo(presenter);	
 		}
 		else if (currentScreen == presenter) {
 			changeScreenTo(editor);
@@ -698,16 +733,48 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
-	 * Changes the screen to the given destination screen and
-	 * does all the maintenance work that comes along with doing that.
+	 * Changes the current screen from what it currently is to the given screen.
 	 * @param destination The screen to change to.
 	 */
 	private void changeScreenTo(Screen destination) {
 		currentScreen.onExit();
-		changeScreenButton.show();
 		currentScreen = destination;
-		destination.onEnter();
+		manipulateControllers();
+		currentScreen.onEnter();
 		changeScreenButton.setCaptionLabel(captionLabel(currentScreen));
+	}
+	
+	/**
+	 * Manipulates the controllers based on the value of currentScreen.
+	 */
+	private void manipulateControllers() {
+		if (currentScreen == editor) {
+			helpToggle.show();
+			phraseRepoButton.show();
+			changeScreenButton.setHeight(changeScreenButtonHeight());
+			Util.setY2(changeScreenButton, changeScreenButtonY2());
+			helpToggle.setWidth(helpToggleWidth());
+			Util.setX1(helpToggle, Util.getX2(changeScreenButton) + 15);
+			Util.setY1(helpToggle, Util.getY1(changeScreenButton));
+			Util.setX1(phraseRepoButton, Util.getX2(helpToggle) + 15);
+			Util.setY1(phraseRepoButton, Util.getY1(helpToggle));
+		}
+		else if (currentScreen == presenter) {
+			helpToggle.hide();
+			phraseRepoButton.hide();
+		}
+		else if (currentScreen == phraseRepo) {
+			phraseRepoButton.hide();
+			helpToggle.show();
+			changeScreenButton.setHeight(changeScreenButtonHeight());
+			helpToggle.setWidth(helpToggleWidth());
+			Util.setY2(changeScreenButton, changeScreenButtonY2());
+			Util.setX1(helpToggle, Util.getX1(changeScreenButton));
+			Util.setY2(helpToggle, Util.getY1(changeScreenButton) - 5);
+		}
+		
+		
+		
 	}
 	
 	/**
@@ -744,6 +811,14 @@ public class PhasesPApplet extends PApplet {
 		else {
 			helpToggle.setColorBackground(getColor1());
 		}
+	}
+	
+	/**
+	 * Calback from ControlP5.
+	 * Sends the program to the phraseRepo screen.
+	 */
+	public void toPhraseRepo() {
+		changeScreenTo(phraseRepo);
 	}
 	
 	/*********************
@@ -837,12 +912,20 @@ public class PhasesPApplet extends PApplet {
 	 */
 	private void checkForWindowResizeEvent() {
 		if (prevWidth != width || prevHeight != height) {
-			repositionChangeScreenButton();
-			repositionHelpToggle(changeScreenButton);
+			repositionControllers();
 			prevWidth = width;
 			prevHeight = height;
 			currentScreen.windowResized();
 		}
+	}
+	
+	/**
+	 * Repositions all the controllers that need to be repositioned in the case of a window resize event.
+	 */
+	private void repositionControllers() {
+		repositionChangeScreenButton();
+		repositionHelpToggle(changeScreenButton);
+		repositionPhraseRepoButton(helpToggle);
 	}
 	
 	/**
@@ -858,6 +941,14 @@ public class PhasesPApplet extends PApplet {
 	 */
 	private void repositionHelpToggle(Button changeScreenButton) {
 		Util.setY2(helpToggle, Util.getY1(changeScreenButton) - 5);
+	}
+	
+	/**
+	 * Repositions the phraseREpoButton based on the current height of the window.
+	 * @param changeScreenButton Indicates that the changeScreenButton should be up to date before calling this method.
+	 */
+	private void repositionPhraseRepoButton(Button changeScreenButton) {
+		Util.setY2(phraseRepoButton, Util.getY1(changeScreenButton) - 5);
 	}
 	
 	/************************************************

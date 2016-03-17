@@ -182,6 +182,7 @@ class Cell {
 		pa.noFill();
 		if (selected) pa.strokeWeight(2); else pa.strokeWeight(1);
 		pa.stroke(selected ? pa.getColor1Bold() : 150);
+		pa.rectMode(pa.CORNER);
 		pa.rect(rect.getX1(), rect.getY1(), rect.getWidth() - 1, rect.getHeight() - 1);
 	}
 	
