@@ -67,12 +67,43 @@ public class LiveScorer extends View {
 	 * @param pa The PhasesPApplet instance.
 	 */
 	public LiveScorer(Rect viewBox, int opacity, PhasesPApplet pa) {
+		super(viewBox, opacity, pa);	
+		init();
+	}
+	
+	/**
+	 * Constructs a LiveScorer whose option values are taken from the another LiveScorer.
+	 * 
+	 * @param ls The LiveScorer this one derives its option values from.
+	 * @param viewBox The area in which to draw.
+	 * @param opacity The opacity of notes.
+	 * @param pa The PhasesPApplet instance.
+	 */
+	public LiveScorer(LiveScorer ls, Rect viewBox, int opacity, PhasesPApplet pa) {
 		super(viewBox, opacity, pa);
-		
+		copyOptionValues(ls);
+		init();
+	}
+	
+
+	/**
+	 * Copies the given LiveScorer object's option values into this LiveScorer object's option variables.
+	 * @param ls The given LiveScorer.
+	 */
+	private void copyOptionValues(LiveScorer ls) {
+		this.sineWave.setValue(ls.sineWave.toInt());
+		this.scoreMode.setValue(ls.scoreMode.toInt());
+		this.noteGraphic.setValue(ls.noteGraphic.toInt());
+		this.colorScheme.setValue(ls.colorScheme.toInt());
+	}
+	
+	/**
+	 * Initializes the LiveScorer object.
+	 */
+	private void init() {
 		initNoteSize();
 		initPhraseReaders();
-		initSpawnPoint();
-		initSpawnBoundaries();
+		initSpawnVariables();
 		initPossibleYValuesForMoveNotesMode();
 	}
 	
@@ -118,17 +149,10 @@ public class LiveScorer extends View {
 	}
 	
 	/**
-	 * Initializes the spawn point, which depends on the scoreMode.
-	 */
-	private void initSpawnPoint() {
-		spawnX = (scoreMode.toInt() == MOVE_SPAWN_POINT) ? startSpawnX : 0;
-		spawnY = (scoreMode.toInt() == MOVE_SPAWN_POINT) ? startSpawnY : 0;
-	}
-	
-	/**
 	 * Initializes variables for that define the boundaries of the note spawn point, which depends on the scoreMode.
+	 * Then initializes the spawn point.
 	 */
-	private void initSpawnBoundaries() {
+	private void initSpawnVariables() {	
 		startSpawnX = -getWidth() * 0.5f;
 		startSpawnY = -getHeight() * 0.15f - noteSize/2f;
 		endSpawnX = getWidth() * 0.5f;
@@ -136,6 +160,9 @@ public class LiveScorer extends View {
 		
 		halfWidth = (scoreMode.toInt() == MOVE_NOTES) ? (getWidth() * 0.5f) : (getWidth() * 0.25f);
 		halfHeight = (scoreMode.toInt() == MOVE_NOTES) ? (getHeight() * 0.3f) : (getHeight() * 0.15f);
+		
+		spawnX = (scoreMode.toInt() == MOVE_SPAWN_POINT) ? startSpawnX : 0;
+		spawnY = (scoreMode.toInt() == MOVE_SPAWN_POINT) ? startSpawnY : 0;
 	}
 	
 	/**************************
@@ -146,7 +173,7 @@ public class LiveScorer extends View {
 	protected void resized(float prevWidth, float prevHeight) {
 		float prevHalfHeight = halfHeight;
 		initNoteSize();
-		initSpawnBoundaries();
+		initSpawnVariables();
 		for (int i=0; i<ys.length; i++) {
 			ys[i] = PApplet.map(ys[i], prevHalfHeight, -prevHalfHeight, halfHeight, -halfHeight);
 		}
@@ -172,8 +199,7 @@ public class LiveScorer extends View {
 				                    (scoreMode.toInt() == MOVE_SPAWN_POINT && spawnX == 0 && spawnY == 0));
 		
 		if (scoreModeChanged) {
-			initSpawnPoint();
-			initSpawnBoundaries();
+			initSpawnVariables();
 		}
 	}
 	

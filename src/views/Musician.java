@@ -48,6 +48,37 @@ public class Musician extends View {
 	 */
 	public Musician(Rect viewBox, int opacity, PhasesPApplet pa) {
 		super(viewBox, opacity, pa);
+		init();
+	}
+	
+	/**
+	 * Constructs a Musician whose option values are taken from the another Musician.
+	 * 
+	 * @param m The Musician this one derives its option values from.
+	 * @param viewBox The area in which to draw.
+	 * @param opacity The opacity of notes.
+	 * @param pa The PhasesPApplet instance.
+	 */
+	public Musician(Musician m, Rect viewBox, int opacity, PhasesPApplet pa) {
+		super(viewBox, opacity, pa);
+		copyOptionValues(m);
+		init();
+	}
+	
+	/**
+	 * Copies the given Musician object's option values into this Musician object's option variables.
+	 * @param m The given Musician.
+	 */
+	private void copyOptionValues(Musician m) {
+		this.superimposedOrSeparated.setValue(m.superimposedOrSeparated.toInt());
+		this.colorScheme.setValue(m.colorScheme.toInt());
+		this.instrument.setValue(m.instrument.toInt());
+	}
+	
+	/**
+	 * Initializes the Musician.
+	 */
+	private void init() {
 		initInstruments();
 		assignInstruments();
 		initInstrumentPlayers();

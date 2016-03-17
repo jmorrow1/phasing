@@ -60,8 +60,40 @@ public class PhaseShifter extends View {
 	 */
 	public PhaseShifter(Rect viewBox, int opacity, PhasesPApplet pa) {
 		super(viewBox, opacity, pa);
-		this.pa = pa;
-		
+		init();
+	}
+	
+	/**
+	 * Constructs a PhaseShifter whose option values are taken from the another PhaseShifter.
+	 * 
+	 * @param ps The PhaseShifter this one derives its option values from.
+	 * @param viewBox The area in which to draw.
+	 * @param opacity The opacity of notes.
+	 * @param pa The PhasesPApplet instance.
+	 */
+	public PhaseShifter(PhaseShifter ps, Rect viewBox, int opacity, PhasesPApplet pa) {
+		super(viewBox, opacity, pa);
+		copyOptionValues(ps);
+		init();
+	}
+	
+	/**
+	 * Copies the given PhaseShifter object's option values into this PhaseShifter object's option variables.
+	 * @param ps The given PhaseShifter.
+	 */
+	private void copyOptionValues(PhaseShifter ps) {
+		this.activeNoteMode.setValue(ps.activeNoteMode.toInt());
+		this.transformation.setValue(ps.transformation.toInt());
+		this.cameraMode.setValue(ps.cameraMode.toInt());
+		this.noteGraphic.setValue(ps.noteGraphic.toInt());
+		this.plotPitchMode.setValue(ps.plotPitchMode.toInt());
+		this.colorScheme.setValue(ps.colorScheme.toInt());
+	}
+	
+	/**
+	 * Initializes the PhaseShifter object.
+	 */
+	private void init() {
 		initBounds();
 		initPhraseReaders();		
 		initData();

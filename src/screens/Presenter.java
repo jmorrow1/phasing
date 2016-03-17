@@ -110,9 +110,13 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 */
 	private void initViews() {
 		Rect area = new Rect(viewCenx(), viewCeny(), pa.width, viewHeight(), pa.CENTER);
-		musicianView = new Musician(area, 150, pa);
-		phaseShifterView = new PhaseShifter(area, 150, pa);
-		liveScorerView = new LiveScorer(area, 150, pa);
+		musicianView = (musicianView == null) ? new Musician(area, 150, pa)
+				                              : new Musician(musicianView, area, 150, pa);
+		phaseShifterView = (phaseShifterView == null) ? new PhaseShifter(area, 150, pa)
+				                                      : new PhaseShifter(phaseShifterView, area, 150, pa);
+		liveScorerView = (liveScorerView == null) ? new LiveScorer(area, 150, pa) :
+			                                        new LiveScorer(liveScorerView, area, 150, pa);
+		
 		switch(viewType.toInt()) {
 			case MUSICIAN : view = musicianView; break;
 			case PHASE_SHIFTER : view = phaseShifterView; break;
@@ -358,12 +362,11 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	}
 	
 	@Override
-	public void onEnter() {
-		
+	public void onEnter() {	
+		initViews();
 		setupIconLists();
 		activeIconIndex = 0;
-		repositionDirectionalButtons();
-		initViews();
+		repositionDirectionalButtons();	
 		cp5.show();	
 		setupPlayback();
 	}
