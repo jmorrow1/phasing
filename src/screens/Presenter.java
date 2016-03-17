@@ -109,15 +109,39 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 * Initializes an instance of each view type.
 	 */
 	private void initViews() {
-		//TODO Make the view Rects smaller, to stay out of the way of the UI, and update the documentation to reflect this change.
-		musicianView = new Musician(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		phaseShifterView = new PhaseShifter(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
-		liveScorerView = new LiveScorer(new Rect(0, 0, pa.width, pa.height, pa.CORNER), 150, pa);
+		Rect area = new Rect(viewCenx(), viewCeny(), pa.width, viewHeight(), pa.CENTER);
+		musicianView = new Musician(area, 150, pa);
+		phaseShifterView = new PhaseShifter(area, 150, pa);
+		liveScorerView = new LiveScorer(area, 150, pa);
 		switch(viewType.toInt()) {
 			case MUSICIAN : view = musicianView; break;
 			case PHASE_SHIFTER : view = phaseShifterView; break;
 			case LIVE_SCORER : view = liveScorerView; break;
 		}
+	}
+	
+	/**
+	 * Returns what the center x-coordinate of a view should be.
+	 * @return What the center x-coordinate of a view should be.
+	 */
+	private float viewCenx() {
+		return pa.width/2f;
+	}
+	
+	/**
+	 * Returns what the center y-coordinate of a view should be.
+	 * @return What the center y-coordinate of a view should be.
+	 */
+	private float viewCeny() {
+		return (upButtonY1() + pa.getChangeScreenButtonY2()) / 2f;
+	}
+	
+	/**
+	 * Returns what the height of a view should be.
+	 * @return What the height of a view should be.
+	 */
+	private float viewHeight() {
+		return PApplet.max(1, upButtonY1() - pa.getChangeScreenButtonY2());
 	}
 	
 	/**
@@ -326,19 +350,20 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	
 	@Override
 	public void windowResized() {
-		musicianView.setSize(pa.width, pa.height);
-		phaseShifterView.setSize(pa.width, pa.height);
-		liveScorerView.setSize(pa.width, pa.height);
+		musicianView.setSize(viewCenx(), viewCeny(), pa.width, viewHeight());
+		phaseShifterView.setSize(viewCenx(), viewCeny(), pa.width, viewHeight());
+		liveScorerView.setSize(viewCenx(), viewCeny(), pa.width, viewHeight());
 		initCP5Objects();
 		repositionDirectionalButtons();
 	}
 	
 	@Override
 	public void onEnter() {
-		initViews();
+		
 		setupIconLists();
 		activeIconIndex = 0;
 		repositionDirectionalButtons();
+		initViews();
 		cp5.show();	
 		setupPlayback();
 	}

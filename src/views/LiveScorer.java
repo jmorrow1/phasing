@@ -62,7 +62,7 @@ public class LiveScorer extends View {
 	
 	/**
 	 * 
-	 * @param viewBox The area in which to draw (usually just the entirety of the window). //TODO Make this parenthetical statement wrong.
+	 * @param viewBox The area in which to draw.
 	 * @param opacity The opacity of notes.
 	 * @param pa The PhasesPApplet instance.
 	 */
@@ -296,42 +296,45 @@ public class LiveScorer extends View {
 	 */
 	public void plotNote(PhraseReader reader) {
 		int noteIndex = reader.getNoteIndex();
-		ArrayList<DataPoint> dataPts = (reader.getId() == ONE_ID) ? dataPts1 : dataPts2;
 		
-		float y1 = -1;
-		float y2 = -1;
-		
-		if (sineWave.toInt() == IS_SINE_WAVE &&
-				!pa.currentPhrase.isRest(reader.getNoteIndex())) {
-			float notept = -1;
+		if (!pa.currentPhrase.isRest(noteIndex)) {
+			ArrayList<DataPoint> dataPts = (reader.getId() == ONE_ID) ? dataPts1 : dataPts2;
 			
-			if (reader.getId() == ONE_ID) {
-				durationAcc1 = (noteIndex == 0) ? 0 : durationAcc1 + pa.currentPhrase.getSCDuration(noteIndex-1);
-				notept = durationAcc1;
+			float y1 = -1;
+			float y2 = -1;
+			
+			if (sineWave.toInt() == IS_SINE_WAVE &&
+					!pa.currentPhrase.isRest(reader.getNoteIndex())) {
+				float notept = -1;
+				
+				if (reader.getId() == ONE_ID) {
+					durationAcc1 = (noteIndex == 0) ? 0 : durationAcc1 + pa.currentPhrase.getSCDuration(noteIndex-1);
+					notept = durationAcc1;
+				}
+				else if (reader.getId() == TWO_ID) {
+					durationAcc2 = (noteIndex == 0) ? 0 : durationAcc2 + pa.currentPhrase.getSCDuration(noteIndex-1);
+					notept = durationAcc2;
+				}
+				
+				float angle1 = PApplet.map(notept,
+						                   0, pa.currentPhrase.getTotalDuration(),
+						                   0, PApplet.TWO_PI);
+				float angle2 = PApplet.map(notept+pa.currentPhrase.getSCDuration(noteIndex),
+										   0, pa.currentPhrase.getTotalDuration(),
+										   0, PApplet.TWO_PI);
+				
+				y1 = spawnY + PApplet.sin(angle1)*halfHeight;
+				y2 = spawnY + PApplet.sin(angle2)*halfHeight;
 			}
-			else if (reader.getId() == TWO_ID) {
-				durationAcc2 = (noteIndex == 0) ? 0 : durationAcc2 + pa.currentPhrase.getSCDuration(noteIndex-1);
-				notept = durationAcc2;
+			else {
+				y1 = noteIndexToY(noteIndex);
+				y2 = noteIndexToY((noteIndex+1) % ys.length);
 			}
 			
-			float angle1 = PApplet.map(notept,
-					                   0, pa.currentPhrase.getTotalDuration(),
-					                   0, PApplet.TWO_PI);
-			float angle2 = PApplet.map(notept+pa.currentPhrase.getSCDuration(noteIndex),
-									   0, pa.currentPhrase.getTotalDuration(),
-									   0, PApplet.TWO_PI);
-			
-			y1 = spawnY + PApplet.sin(angle1)*halfHeight;
-			y2 = spawnY + PApplet.sin(angle2)*halfHeight;
+			dataPts.add(new DataPoint(spawnX, y1,
+	                	spawnX + PIXELS_PER_WHOLE_NOTE*pa.currentPhrase.getSCDuration(noteIndex),
+	                	opacity));
 		}
-		else {
-			y1 = noteIndexToY(noteIndex);
-			y2 = noteIndexToY((noteIndex+1) % ys.length);
-		}
-		
-		dataPts.add(new DataPoint(spawnX, y1,
-                	spawnX + PIXELS_PER_WHOLE_NOTE*pa.currentPhrase.getSCDuration(noteIndex),
-                	opacity));
 	}
 	
 	/**

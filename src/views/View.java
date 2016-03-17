@@ -60,14 +60,15 @@ public abstract class View extends Rect implements ViewVariableInfo {
 	 * Sets the width and height of this View.
 	 * @param width
 	 * @param height
+	 * @param cenx
+	 * @param ceny
 	 */
-	public void setSize(float width, float height) {
+	public void setSize(float cenx, float ceny, float width, float height) {
 		float prevWidth = getWidth();
 		float prevHeight = getHeight();
 		super.setWidth(width);
 		super.setHeight(height);
-		super.setX1(0);
-		super.setY1(0);
+		super.setCenter(cenx, ceny);
 		resized(prevWidth, prevHeight);
 	}
 	

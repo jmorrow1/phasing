@@ -54,7 +54,7 @@ public class PhaseShifter extends View {
 	
 	/**
 	 * 
-	 * @param viewBox The area in which to draw (usually just the entirety of the window). //TODO Make this parenthetical statement wrong.
+	 * @param viewBox The area in which to draw.
 	 * @param opacity The opacity of notes.
 	 * @param pa The PhasesPApplet instance.
 	 */
@@ -76,9 +76,8 @@ public class PhaseShifter extends View {
 		halfWidth = width*0.5f;
 		halfHeight = height*0.5f;
 		
-		//TODO: incorporate the number of notes into this calculation (the more notes the larger the radius):
-		maxRadius = pa.min(pa.lerp(getHeight(), getWidth(), 0.2f) * 0.3f, pa.height/2f - FONT_SIZE/2f);
-		minRadius = maxRadius / 2;
+		maxRadius = pa.min(pa.lerp(getHeight(), getWidth(), 0.2f) * 0.35f, pa.height/2f - FONT_SIZE/2f);
+		minRadius = maxRadius * 0.45f;
 	}
 	
 	/**

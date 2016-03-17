@@ -42,7 +42,7 @@ public class Musician extends View {
 	
 	/**
 	 * 
-	 * @param viewBox The area in which to draw (usually just the entirety of the window). //TODO Make this parenthetical statement wrong.
+	 * @param viewBox The area in which to draw.
 	 * @param opacity The opacity of notes.
 	 * @param pa The PhasesPApplet instance.
 	 */
