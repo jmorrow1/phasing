@@ -40,7 +40,6 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		super(pa);
 		
 		cp5 = new ControlP5(pa);
-		initCells();
 		initDirectionalButtons();
 		cp5.hide();
 	}
@@ -141,15 +140,6 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 			addPhrasePicture(i+1, new PhrasePicture(p));
 		}
 	}
-
-	/*@Override
-	public void load(Cell cell) {
-		int i = cells.indexOf(cell) + currPageNum*cells.size();
-		if (i < pa.phrasePictures.size()) {
-			pa.currentPhrasePicture = pa.phrasePictures.get(i);
-			pa.currentPhrase = pa.currentPhrasePicture.getPhrase();
-		}
-	}*/
 	
 	@Override
 	public void delete(Cell cell) {
@@ -214,6 +204,9 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 
 	@Override
 	public void onEnter() {
+		cp5.dispose();
+		cp5 = new ControlP5(pa);
+		initCells();
 		cp5.show();
 		currPageNum = 0;
 		updatePageButtonStates();

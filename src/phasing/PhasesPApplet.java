@@ -67,6 +67,7 @@ public class PhasesPApplet extends PApplet {
 	//controlp5
 	private ControlP5 cp5;
 	private Button changeScreenButton;
+	private static final int CHANGE_SCREEN_BUTTON_X2 = 135;
 	private Button helpToggle;
 	private Button phraseRepoButton;
 	private boolean helpOn;
@@ -143,7 +144,6 @@ public class PhasesPApplet extends PApplet {
 		initScreens();
 		currentScreen = editor;
 		initCP5Objects(currentScreen);
-		manipulateControllers();
 		currentScreen.onEnter();
 		if (!initialWindowSizeGiven && playerInfo.isWindowSizeInitialized()) {
 			this.resize(playerInfo.getWindowWidth(), playerInfo.getWindowHeight());
@@ -161,8 +161,9 @@ public class PhasesPApplet extends PApplet {
 		cp5 = new ControlP5(this);
 		cp5.setAutoDraw(false);
 		initChangeScreenButton(currentScreen);
-		initHelpToggle(changeScreenButton);
-		initPhraseRepoButton(helpToggle);	
+		initPhraseRepoButton(changeScreenButton);	
+		initHelpToggle(phraseRepoButton);
+		
 	}
 	
 	/**
@@ -220,51 +221,21 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
-	 * Gives the proper value for the lowermost y-coordinate of the top toolbar,
-	 * which is dependent on the height of the window.
-	 * @return The proper lowermost y-coordinate of the top toolbar.
+	 * Gives the lowermost y-coordinate of the top-toolbar.
+	 * @return The lowermost y-coordinate of the top-toolbar.
 	 */
 	public int topToolbarY2() {
-		return 60;
-		//return (int)PApplet.constrain(PApplet.map(this.height, 0, 600, 0, 60), 60, 150);
-	}
-	
-	/**
-	 * Gives the proper height of the change screen button, depending on the height of the screen.
-	 * @return The proper height of the changeScreenButton.
-	 */
-	private int changeScreenButtonY2() {
-		return topToolbarY2() - 10;
-	}
-	
-	/**
-	 * Gives the proper height of the change screen button, depending on what the current screen is.
-	 * @return The proper height of the change screen button.
-	 */
-	private int changeScreenButtonHeight() {
-		return (currentScreen != phraseRepo) ? 40 : 33;
-	}
-	
-	private int helpToggleWidth() {
-		return (currentScreen == editor) ? 110 : changeScreenButton.getWidth();
-	}
-	
-	/**
-	 * Gives the proper width of the change screen button.
-	 * @return The proper width of the changeScreenButton.
-	 */
-	private int changeScreenButtonX2() {
-		return 135;
+		return 70;
 	}
 	
 	/**
 	 * Initializes the changeScreenButton.
 	 */
 	private void initChangeScreenButton(Screen currentScreen) {
-		int width = 125;
-		int height = changeScreenButtonHeight();
+		int width = CHANGE_SCREEN_BUTTON_X2 - 10;
+		int height = 26;
 		changeScreenButton = cp5.addButton("changeScreen")
-			                    .setPosition(changeScreenButtonX2() - width, changeScreenButtonY2() - height)
+				                .setPosition(10, 0)
 			                    .setSize(width, height)
 			                    ;
 		changeScreenButton.getCaptionLabel().toUpperCase(false);
@@ -278,11 +249,11 @@ public class PhasesPApplet extends PApplet {
 	 * Initializes the helpToggle;
 	 * @param changeScreenButton This is here to make explicit that this method relies on changeScreenButton being already initialized.
 	 */
-	private void initHelpToggle(Button changeScreenButton) {
-		int toggleWidth = helpToggleWidth();
+	private void initHelpToggle(Button phraseRepoButton) {
+		int toggleWidth = phraseRepoButton.getWidth();
 		int toggleHeight = 12;
-		float x1 = Util.getX2(changeScreenButton) + 15;
-		float y1 = Util.getY1(changeScreenButton);
+		float x1 = Util.getX1(phraseRepoButton);
+		float y1 = Util.getY2(phraseRepoButton) + 5;
 		helpToggle = cp5.addButton("toggleHelp")
 				        .setLabel("Help")
 				        .setPosition(x1, y1)
@@ -300,13 +271,13 @@ public class PhasesPApplet extends PApplet {
 	 * @param helpToggle This is here to make explicit that this method relies on helpToggle being already initialized.
 
 	 */
-	private void initPhraseRepoButton(Button helpToggle) {
-		int buttonWidth = 110;
+	private void initPhraseRepoButton(Button changeScreenButton) {
+		int buttonWidth = changeScreenButton.getWidth();
 		int buttonHeight = 12;
-		float x1 = Util.getX2(helpToggle) + 15;
-		float y1 = Util.getY1(helpToggle);
+		float x1 = Util.getX1(changeScreenButton);
+		float y1 = Util.getY2(changeScreenButton) + 5;
 		phraseRepoButton = cp5.addButton("toPhraseRepo")
-				              .setLabel("Phrase Repo")
+				              .setLabel("Save / Load")
 				              .setPosition(x1, y1)
 		                      .setSize(buttonWidth, buttonHeight)
 		                      ;
@@ -744,42 +715,8 @@ public class PhasesPApplet extends PApplet {
 	private void changeScreenTo(Screen destination) {
 		currentScreen.onExit();
 		currentScreen = destination;
-		manipulateControllers();
 		currentScreen.onEnter();
 		changeScreenButton.setCaptionLabel(captionLabel(currentScreen));
-	}
-	
-	/**
-	 * Manipulates the controllers based on the value of currentScreen.
-	 */
-	private void manipulateControllers() {
-		if (currentScreen == editor) {
-			helpToggle.show();
-			phraseRepoButton.show();
-			changeScreenButton.setHeight(changeScreenButtonHeight());
-			Util.setY2(changeScreenButton, changeScreenButtonY2());
-			helpToggle.setWidth(helpToggleWidth());
-			Util.setX1(helpToggle, Util.getX2(changeScreenButton) + 15);
-			Util.setY1(helpToggle, Util.getY1(changeScreenButton));
-			Util.setX1(phraseRepoButton, Util.getX2(helpToggle) + 15);
-			Util.setY1(phraseRepoButton, Util.getY1(helpToggle));
-		}
-		else if (currentScreen == presenter) {
-			helpToggle.hide();
-			phraseRepoButton.hide();
-		}
-		else if (currentScreen == phraseRepo) {
-			phraseRepoButton.hide();
-			helpToggle.show();
-			changeScreenButton.setHeight(changeScreenButtonHeight());
-			helpToggle.setWidth(helpToggleWidth());
-			Util.setY2(changeScreenButton, changeScreenButtonY2());
-			Util.setX1(helpToggle, Util.getX1(changeScreenButton));
-			Util.setY2(helpToggle, Util.getY1(changeScreenButton) - 5);
-		}
-		
-		
-		
 	}
 	
 	/**
@@ -1269,7 +1206,7 @@ public class PhasesPApplet extends PApplet {
 	 * @return The lowermost y-coordinate of the change screen button.
 	 */
 	public float getChangeScreenButtonY2() {
-		return (changeScreenButton != null) ? Util.getY2(changeScreenButton) : changeScreenButtonY2();
+		return (changeScreenButton != null) ? Util.getY2(changeScreenButton) : topToolbarY2() - 10;
 	}
 	
 	/**
@@ -1289,7 +1226,7 @@ public class PhasesPApplet extends PApplet {
 	 * @return The rightmost x-coordinate of the change screen button.
 	 */
 	public float getChangeScreenButtonX2() {
-		return (changeScreenButton != null) ? Util.getX2(changeScreenButton) : changeScreenButtonX2();
+		return (changeScreenButton != null) ? Util.getX2(changeScreenButton) : CHANGE_SCREEN_BUTTON_X2;
 	}
 	
 	/**
