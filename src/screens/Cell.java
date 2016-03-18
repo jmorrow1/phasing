@@ -110,7 +110,7 @@ class Cell {
 		float y1 = rect.getY2() - height - 0.2f * rect.getHeight();	
 		this.generateButton = cp5.addButton("Generate Phrase " + (char)nextId)
 				                 .setLabel("Generate Phrase")
-				                 .setPosition(x1, y1)
+				                 .setPosition((int)x1, (int)y1)
 				                 .setSize((int)width, (int)height)
 				                 .setId(GENERATE)
 				                 .plugTo(this)

@@ -706,7 +706,7 @@ public class PhasesPApplet extends PApplet {
 			changeScreenTo(editor);
 		}
 		else if (currentScreen == phraseRepo) {
-			changeScreenTo((prevScreen != null) ? prevScreen : editor);
+			changeScreenTo((prevScreen != null && prevScreen != phraseRepo) ? prevScreen : editor);
 		}
 		
 		prevScreen = currentScreen;
