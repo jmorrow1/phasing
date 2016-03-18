@@ -51,7 +51,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		int size = 40;
 		pageLeftButton = consDirectionalButton("pageLeft", 10, pa.height - size - 5, size, pa.PI);
 		pageRightButton = consDirectionalButton("pageRight", pa.width - size - 10, pa.height - size - 5, size, 0);
-		updatePageButtonStates();
+		updateDirectionalButtonStates();
 	}
 	
 	/**
@@ -116,7 +116,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	 */
 	public void pageLeft(ControlEvent e) {
 		currPageNum--;
-		updatePageButtonStates();
+		updateDirectionalButtonStates();
 	}
 	
 	/**
@@ -125,7 +125,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	 */
 	public void pageRight(ControlEvent e) {
 		currPageNum++;
-		updatePageButtonStates();
+		updateDirectionalButtonStates();
 	}
 	
 	/****************************
@@ -171,7 +171,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	 */
 	private void removePhrasePicture(int i) {
 		pa.phrasePictures.remove(i);
-		updatePageButtonStates();
+		updateDirectionalButtonStates();
 	}
 	
 	/**
@@ -189,7 +189,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	 */
 	private void addPhrasePicture(int i, PhrasePicture p) {
 		pa.phrasePictures.add(i, p);
-		updatePageButtonStates();
+		updateDirectionalButtonStates();
 	}
 	
 	/*********************************
@@ -201,6 +201,9 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		cp5.dispose();
 		cp5 = new ControlP5(pa);
 		initCells();
+		while (currPageNum*cells.size() > pa.phrasePictures.size()) {
+			currPageNum--;
+		}
 		initDirectionalButtons();
 	}
 
@@ -211,7 +214,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		initCells();
 		cp5.show();
 		currPageNum = 0;
-		updatePageButtonStates();
+		initDirectionalButtons();
 	}
 
 	@Override
@@ -269,7 +272,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	/**
 	 * Sets whether the left and right page buttons are hidden or shown.
 	 */
-	private void updatePageButtonStates() {
+	private void updateDirectionalButtonStates() {
 		if (currPageNum > 0) {
 			pageLeftButton.show();
 		}
