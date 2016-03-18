@@ -135,8 +135,8 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	@Override
 	public void copy(Cell cell) {
 		int i = cells.indexOf(cell) + currPageNum*cells.size();
-		if (i < pa.phrasePictures.size()) {
-			PhrasePicture p = pa.phrasePictures.get(i);
+		if (i < pa.getNumPhrasePictures()) {
+			PhrasePicture p = pa.getPhrasePicture(i);
 			addPhrasePicture(i+1, new PhrasePicture(p));
 		}
 	}
@@ -170,25 +170,26 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	 * @param i
 	 */
 	private void removePhrasePicture(int i) {
-		pa.phrasePictures.remove(i);
+		String name = pa.getPhrasePicture(i).getName();
+		pa.removePhrasePicture(i);
 		updateDirectionalButtonStates();
 	}
 	
 	/**
 	 * Adds a PhrasePicture to the end of the list and sets whether the page buttons are hidden or shown.
-	 * @param p
+	 * @param p The PhrasePicture
 	 */
 	private void addPhrasePicture(PhrasePicture p) {
-		addPhrasePicture(pa.phrasePictures.size(), p);
+		addPhrasePicture(pa.getNumPhrasePictures(), p);
 	}
 	
 	/**
 	 * Adds a PhrasePicture to the list and sets whether the page buttons are hidden or shown.
-	 * @param i
-	 * @param p
+	 * @param i The index.
+	 * @param p The PhrasePicture.
 	 */
 	private void addPhrasePicture(int i, PhrasePicture p) {
-		pa.phrasePictures.add(i, p);
+		pa.addPhrasePicture(i, p);
 		updateDirectionalButtonStates();
 	}
 	
@@ -201,7 +202,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		cp5.dispose();
 		cp5 = new ControlP5(pa);
 		initCells();
-		while (currPageNum*cells.size() > pa.phrasePictures.size()) {
+		while (currPageNum*cells.size() > pa.getNumPhrasePictures()) {
 			currPageNum--;
 		}
 		initDirectionalButtons();
@@ -243,8 +244,8 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	
 	private void load(Cell cell) {
 		int i = cells.indexOf(cell) + currPageNum*cells.size();
-		if (i < pa.phrasePictures.size()) {
-			pa.currentPhrasePicture = pa.phrasePictures.get(i);
+		if (i < pa.getNumPhrasePictures()) {
+			pa.currentPhrasePicture = pa.getPhrasePicture(i);
 			pa.currentPhrase = pa.currentPhrasePicture.getPhrase();
 			pa.setCurrentScale(pa.currentPhrase.getScaleClassName(), pa.currentPhrase.getScaleRootName());
 		}
@@ -280,7 +281,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 			pageLeftButton.hide();
 		}
 		
-		if (pa.phrasePictures.size() - currPageNum*cells.size() >= this.cells.size()) {
+		if (pa.getNumPhrasePictures() - currPageNum*cells.size() >= this.cells.size()) {
 			pageRightButton.show();
 		}
 		else {
@@ -299,10 +300,10 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		int j = currPageNum*cells.size();
 		while (i < cells.size()) {
 			Cell c = cells.get(i);
-			if (j < pa.phrasePictures.size()) {
-				c.draw(pa.phrasePictures.get(j), pa);
+			if (j < pa.getNumPhrasePictures()) {
+				c.draw(pa.getPhrasePicture(j), pa);
 			}
-			else if (j == pa.phrasePictures.size()) {
+			else if (j == pa.getNumPhrasePictures()) {
 				c.draw(true, pa);
 			}
 			else {

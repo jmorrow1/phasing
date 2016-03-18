@@ -47,7 +47,7 @@ public class PhasesPApplet extends PApplet {
 	public Phrase currentPhrase;
 	public PhrasePicture currentPhrasePicture;
 	public Scale currentScale;
-	public ArrayList<PhrasePicture> phrasePictures;
+	private ArrayList<PhrasePicture> phrasePictures;
 	private float bpm1 = 60;
 	private float bpms1 = bpm1 / 60000f;
 	private float bpm2 = 60.5f;
@@ -434,14 +434,11 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
-	 * Saves the phrase pictures to the phrases subfolder in the save folder.
-	 * @param phrasePictures
+	 * Saves the given PhrasePicture to the phrases subfolder of the save folder.
+	 * @param p The PhrasePicture.
 	 */
-	public void savePhrasePictures() {
-		for (int i=0; i<phrasePictures.size(); i++) {
-			PhrasePicture p = phrasePictures.get(i);
-			saveJSONObject(p.toJSON(), saveFolderPath + "phrases\\" + p.getName() + ".json");
-		}
+	private void savePhrasePicture(PhrasePicture p) {
+		saveJSONObject(p.toJSON(), saveFolderPath + "phrases\\" + p.getName() + ".json");
 	}
 	
 	/**
@@ -465,6 +462,27 @@ public class PhasesPApplet extends PApplet {
 		catch (IOException e) {
 			e.printStackTrace();
 			return false;
+		}
+	}
+	
+	/**
+	 * Tries to delete the PhrasePicture located in the phrases subfolder of the save folder that 
+	 * has the given name and should succeed in doing so if the file exists.
+	 * 
+	 * @param name The name (w/o the extension) of the file.
+	 */
+	private void deletePhrasePictureFile(String name) {
+		//TODO Implement
+		File file = new File(saveFolderPath + "phrases\\" + name + ".json");
+		if (file.exists()) {
+			try {
+				file.delete();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		else {
+			System.out.println("file does not exist.");
 		}
 	}
 	
@@ -1266,6 +1284,51 @@ public class PhasesPApplet extends PApplet {
 		if (newScale != null) {
 			this.currentScale = newScale;
 		}
+	}
+	
+	/**
+	 * Gives the number of PhrasePictures contained by this PhasesPApplet.
+	 * @return The number of PhrasePictures
+	 */
+	public int getNumPhrasePictures() {
+		return phrasePictures.size();
+	}
+	
+	/**
+	 * Gives the PhrasePicture at the given index.
+	 * @param i The index.
+	 * @return The PhrasePicture.
+	 */
+	public PhrasePicture getPhrasePicture(int i) {
+		return phrasePictures.get(i);
+	}
+	
+	/**
+	 * Adds the given PhrasePicture to the end of this PhasesPApplet's list of PhrasePictures.
+	 * @param p The PhrasePicture.
+	 */
+	public void addPhrasePicture(PhrasePicture p) {
+		phrasePictures.add(p);
+		savePhrasePicture(p);
+	}
+	
+	/**
+	 * Adds the given PhrasePicture at the ith index in this PhasesPApplet's list of PhrasePictures.
+	 * @param i The index.
+	 * @param p The PhrasePicture.
+	 */
+	public void addPhrasePicture(int i, PhrasePicture p) {
+		phrasePictures.add(i, p);
+		savePhrasePicture(p);
+	}
+	
+	/**
+	 * Removes the ith index PhrasePicture from the PhasesPApplet's list of PhrasePictures.
+	 * @param i The index.
+	 */
+	public void removePhrasePicture(int i) {
+		this.deletePhrasePictureFile(phrasePictures.get(i).getName());
+		phrasePictures.remove(i);
 	}
 	
 	/**
