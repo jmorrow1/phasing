@@ -58,7 +58,7 @@ public class PhasesPApplet extends PApplet {
 	private Editor editor;
 	private PhraseRepository phraseRepo;
 	private boolean presenterEntered = false;
-	private Screen currentScreen;
+	private Screen prevScreen, currentScreen;
 	
 	//visual variables
 	private static ColorScheme colorScheme;
@@ -593,7 +593,6 @@ public class PhasesPApplet extends PApplet {
 		}
 		
 		Phrase phrase = new Phrase(pitches, dynamics, cellTypes, scale.getClassName(), scale.getName());
-		System.out.println(scale.toString());
 		
 		return phrase;
 	}
@@ -699,7 +698,7 @@ public class PhasesPApplet extends PApplet {
 	 * Callback from ControlP5.
 	 * Controls changing the screen from Presentation screen to Editor screen and vice versa.
 	 */
-	public void changeScreen() {
+	public void changeScreen() {	
 		if (currentScreen == editor) {
 			changeScreenTo(presenter);	
 		}
@@ -707,8 +706,10 @@ public class PhasesPApplet extends PApplet {
 			changeScreenTo(editor);
 		}
 		else if (currentScreen == phraseRepo) {
-			changeScreenTo(editor);
+			changeScreenTo((prevScreen != null) ? prevScreen : editor);
 		}
+		
+		prevScreen = currentScreen;
 	}
 	
 	/**
@@ -720,6 +721,20 @@ public class PhasesPApplet extends PApplet {
 		currentScreen = destination;
 		currentScreen.onEnter();
 		changeScreenButton.setCaptionLabel(captionLabel(currentScreen));
+		
+		if (currentScreen == phraseRepo) {
+			int y1 = (int)Util.getY1(changeScreenButton);
+			int y2 = (int)Util.getY2(phraseRepoButton);
+		    changeScreenButton.setSize(changeScreenButton.getWidth(), y2 - y1);
+			phraseRepoButton.hide();
+		}
+		else {
+			int y1 = (int)Util.getY1(changeScreenButton);
+			int y2 = (int)Util.getY1(phraseRepoButton) - 5;
+			changeScreenButton.setHeight(y2 - y1);
+			Util.setY2(changeScreenButton, y2);		
+			phraseRepoButton.show();
+		}
 	}
 	
 	/**
@@ -735,7 +750,7 @@ public class PhasesPApplet extends PApplet {
 			return "Rehearse";
 		}
 		else if (screen == phraseRepo) {
-			return "Compose";
+			return "Back";
 		}
 		else {
 			return "";
@@ -1250,7 +1265,6 @@ public class PhasesPApplet extends PApplet {
 		Scale newScale = getScale(scaleRootName, scaleClassName);
 		if (newScale != null) {
 			this.currentScale = newScale;
-			System.out.println("here");
 		}
 	}
 	

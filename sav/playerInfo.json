@@ -1,8 +1,8 @@
 {
-  "minutesSpentWithPhaseShifter": 10000.623046875,
+  "minutesSpentWithPhaseShifter": 10012.244140625,
   "nextLiveScorerUnlockIndex": 1000,
   "nextPhaseShifterUnlockIndex": 1000,
-  "numEditorVisits": 1040,
+  "numEditorVisits": 1051,
   "nextMusicianUnlockIndex": 1000,
   "viewOptionValueMap": [
     {
@@ -10,19 +10,19 @@
       "optionName": "sineWave"
     },
     {
-      "optionValue": 0,
+      "optionValue": 1,
       "optionName": "cameraMode"
     },
     {
-      "optionValue": 0,
+      "optionValue": 1,
       "optionName": "plotPitchMode"
     },
     {
-      "optionValue": 1,
+      "optionValue": 0,
       "optionName": "scoreMode"
     },
     {
-      "optionValue": 1,
+      "optionValue": 0,
       "optionName": "superimposedOrSeparated"
     },
     {
@@ -30,15 +30,15 @@
       "optionName": "instrument"
     },
     {
-      "optionValue": 1,
+      "optionValue": 2,
       "optionName": "activeNoteMode"
     },
     {
-      "optionValue": 3,
+      "optionValue": 0,
       "optionName": "noteGraphic1"
     },
     {
-      "optionValue": 1,
+      "optionValue": 0,
       "optionName": "transformation"
     },
     {
@@ -50,8 +50,8 @@
       "optionName": "colorScheme"
     }
   ],
-  "windowHeight": 667,
-  "minutesSpentWithMusician": 10055.6123046875,
-  "windowWidth": 995,
-  "minutesSpentWithLiveScorer": 10001.404296875
+  "windowHeight": 651,
+  "minutesSpentWithMusician": 10059.1923828125,
+  "windowWidth": 939,
+  "minutesSpentWithLiveScorer": 10001.57421875
 }

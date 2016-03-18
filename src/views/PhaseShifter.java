@@ -271,6 +271,7 @@ public class PhaseShifter extends View {
 						styleNoteGraphics(nonActiveColor);
 					}
 					else if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
+						//TODO Here a bug manifests when a phrase starts with a rest.
 						drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
 					}
 					j++;
