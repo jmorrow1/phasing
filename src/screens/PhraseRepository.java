@@ -151,9 +151,10 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	
 	@Override
 	public void newPhrase() {
-		pa.currentPhrase = new Phrase();
+		pa.currentPhrase = new Phrase("Major", "C");
 		pa.currentPhrasePicture = new PhrasePicture(pa.currentPhrase, pa);
 		addPhrasePicture(pa.currentPhrasePicture);
+		pa.setCurrentScale(pa.currentPhrase.getScaleClassName(), pa.currentPhrase.getScaleRootName());
 	}
 	
 	@Override
@@ -161,6 +162,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		pa.currentPhrase = pa.generateReichLikePhrase();
 		pa.currentPhrasePicture = new PhrasePicture(pa.currentPhrase, pa);
 		addPhrasePicture(pa.currentPhrasePicture);
+		pa.setCurrentScale(pa.currentPhrase.getScaleClassName(), pa.currentPhrase.getScaleRootName());
 	}
 	
 	/**
@@ -241,6 +243,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		if (i < pa.phrasePictures.size()) {
 			pa.currentPhrasePicture = pa.phrasePictures.get(i);
 			pa.currentPhrase = pa.currentPhrasePicture.getPhrase();
+			pa.setCurrentScale(pa.currentPhrase.getScaleClassName(), pa.currentPhrase.getScaleRootName());
 		}
 	}
 	

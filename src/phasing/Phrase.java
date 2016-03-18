@@ -53,6 +53,9 @@ public class Phrase implements JSONable {
 	//other
 	protected float[] scIndexToPercentDuration;
 	
+	//meta data
+	private String scaleClassName, scaleRootName;
+	
 	/**************************
 	 ***** Initialization *****
 	 **************************/
@@ -60,13 +63,15 @@ public class Phrase implements JSONable {
 	/**
 	 * Constructs an empty phrase.
 	 */
-	public Phrase() {
+	public Phrase(String scaleClassName, String scaleRootName) {
 		gridPitches = new float[] {};
 		gridDynamics = new float[] {};
 		gridArts = new float[] {};
 		gridPans = new float[] {};
 		cellTypes = new int[] {};
 		scArraysUpToDate = false;
+		this.scaleClassName = scaleClassName;
+		this.scaleRootName = scaleRootName;
 	}
 	
 	/**
@@ -75,8 +80,9 @@ public class Phrase implements JSONable {
 	 * @param gridDynamics The sequence of dynamic values
 	 * @param cellTypes The sequence of cell types
 	 */
-	public Phrase(float[] gridPitches, float[] gridDynamics, int[] cellTypes) {
-		this(gridPitches, gridDynamics, cellTypes, 0.5f, 63);
+	public Phrase(float[] gridPitches, float[] gridDynamics, int[] cellTypes,
+			String scaleClassName, String scaleRootName) {
+		this(gridPitches, gridDynamics, cellTypes, 0.5f, 63, scaleClassName, scaleRootName);
 	}
 	
 	/**
@@ -87,7 +93,8 @@ public class Phrase implements JSONable {
 	 * @param defaultArt The articulation value to give each note
 	 * @param defaultPan The pan value to give each note
 	 */
-	public Phrase(float[] gridPitches, float[] gridDynamics, int[] cellTypes, float defaultArt, float defaultPan) {
+	public Phrase(float[] gridPitches, float[] gridDynamics, int[] cellTypes, float defaultArt, float defaultPan,
+			String scaleClassName, String scaleRootName) {
 		if (gridPitches.length == gridDynamics.length && gridDynamics.length == cellTypes.length) {
 			this.gridPitches = gridPitches;
 			this.gridDynamics = gridDynamics;
@@ -102,6 +109,8 @@ public class Phrase implements JSONable {
 				gridPans[i] = defaultPan;
 			}
 			scArraysUpToDate = false;
+			this.scaleClassName = scaleClassName;
+			this.scaleRootName = scaleRootName;
 		}
 		else {
 			System.err.println("Cannot construct phrase.");
@@ -116,7 +125,8 @@ public class Phrase implements JSONable {
 	 * @param gridArts The sequence of articulation values
 	 * @param gridPans The sequence of pan values
 	 */
-	public Phrase(float[] gridPitches, float[] gridDynamics, int[] cellTypes, float[] gridArts, float[] gridPans) {
+	public Phrase(float[] gridPitches, float[] gridDynamics, int[] cellTypes, float[] gridArts, float[] gridPans,
+			String scaleClassName, String scaleRootName) {
 		if (gridPitches.length == gridDynamics.length && gridDynamics.length == cellTypes.length &&
 				cellTypes.length == gridArts.length && gridArts.length == gridPans.length) {
 			this.gridPitches = gridPitches;
@@ -125,6 +135,8 @@ public class Phrase implements JSONable {
 			this.gridArts = gridArts;
 			this.gridPans = gridPans;
 			scArraysUpToDate = false;
+			this.scaleClassName = scaleClassName;
+			this.scaleRootName = scaleRootName;
 		}
 		else {
 			System.err.println("Cannot construct phrase.");
@@ -147,6 +159,10 @@ public class Phrase implements JSONable {
 			this.gridArts = Arrays.copyOf(phrase.gridArts, phrase.gridArts.length);
 			this.gridPans = Arrays.copyOf(phrase.gridPans, phrase.gridPans.length);
 			this.cellTypes = Arrays.copyOf(phrase.cellTypes, phrase.cellTypes.length);
+	
+			this.scaleClassName = new String(phrase.scaleClassName);
+			this.scaleRootName = new String(phrase.scaleRootName);
+			
 			scArraysUpToDate = false;
 		}
 		else {
@@ -156,6 +172,9 @@ public class Phrase implements JSONable {
 			gridPans = new float[] {};
 			cellTypes = new int[] {};
 			scArraysUpToDate = false;
+			
+			this.scaleClassName = "Chromatic";
+			this.scaleRootName = "C";
 		}
 	}
 	
@@ -172,6 +191,9 @@ public class Phrase implements JSONable {
 			gridPans = Util.toFloatArray(json.getJSONArray("gridPans"));
 			cellTypes = Util.toIntArray(json.getJSONArray("cellTypes"));
 			scArraysUpToDate = false;
+			
+			this.scaleClassName = json.getString("scaleClassName", "Chromatic");
+			this.scaleRootName = json.getString("scaleRootName", "C");
 		}
 		else {
 			gridPitches = new float[] {};
@@ -180,6 +202,9 @@ public class Phrase implements JSONable {
 			gridPans = new float[] {};
 			cellTypes = new int[] {};
 			scArraysUpToDate = false;
+			
+			this.scaleClassName = "Chromatic";
+			this.scaleRootName = "C";
 		}
 		
 		unitDuration = json.getFloat("unitDuration", unitDuration);
@@ -194,6 +219,8 @@ public class Phrase implements JSONable {
 		json.setJSONArray("gridPans", Util.jsonify(gridPans));
 		json.setJSONArray("cellTypes", Util.jsonify(cellTypes));
 		json.setFloat("unitDuration", unitDuration);
+		json.setString("scaleClassName", scaleClassName);
+		json.setString("scaleRootName", scaleRootName);
 		return json;
 	}
 	
@@ -208,6 +235,8 @@ public class Phrase implements JSONable {
 		this.gridPans = Arrays.copyOf(phrase.gridPans, phrase.gridPans.length);
 		this.cellTypes = Arrays.copyOf(phrase.cellTypes, phrase.cellTypes.length);
 		this.unitDuration = phrase.unitDuration;
+		this.scaleClassName = new String(phrase.scaleClassName);
+		this.scaleRootName = new String(phrase.scaleRootName);
 		scArraysUpToDate = false;
 	}
 	
@@ -665,6 +694,38 @@ public class Phrase implements JSONable {
 	 */
 	public float getUnitDuration() {
 		return unitDuration;
+	}
+	
+	/**
+	 * Sets the name of the scale class.
+	 * @param scaleClassName The name of the scale class.
+	 */
+	public void setScaleClassName(String scaleClassName) {
+		this.scaleClassName = scaleClassName;
+	}
+	
+	/**
+	 * Gives the name of the scale class.
+	 * @return The name of the scale class.
+	 */
+	public String getScaleClassName() {
+		return scaleClassName;
+	}
+	
+	/**
+	 * Sets the name of the scale root.
+	 * @param scaleRootName The name of the scale root.
+	 */
+	public void setScaleRootName(String scaleRootName) {
+		this.scaleRootName = scaleRootName;
+	}
+	
+	/**
+	 * Gives the name of the scale root.
+	 * @return The name of the scale root.
+	 */
+	public String getScaleRootName() {
+		return scaleRootName;
 	}
 	
 	/*********************

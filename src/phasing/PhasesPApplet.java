@@ -480,7 +480,8 @@ public class PhasesPApplet extends PApplet {
 		int n = Phrase.NOTE_START;
 		return currentPhrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
 	                                      new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
-	                                      new int[] {n, n, n, n, n, n, n, n, n, n, n, n});
+	                                      new int[] {n, n, n, n, n, n, n, n, n, n, n, n},
+	                                      "Chromatic", "E");
 	}
 	
 	/**
@@ -551,7 +552,8 @@ public class PhasesPApplet extends PApplet {
 	 * @param allowRests A boolean that indicates whether or not a rest can stand in for a pitch.
 	 * @return The generated phrase.
 	 */
-	public Phrase generatePhraseFromTemplates(final String[] templates, final Scale scale, final int minOctave, final boolean allowRests) {
+	public Phrase generatePhraseFromTemplates(final String[] templates,
+			final Scale scale, final int minOctave, final boolean allowRests) {
 		//choose template
 		final int REST = -1; 
 		String template = templates[(int)random(templates.length)];
@@ -590,9 +592,10 @@ public class PhasesPApplet extends PApplet {
 			cellTypes[i] = (pitch == REST) ? Phrase.REST : Phrase.NOTE_START;
 		}
 		
-		Phrase phrase = new Phrase(pitches, dynamics, cellTypes);
+		Phrase phrase = new Phrase(pitches, dynamics, cellTypes, scale.getClassName(), scale.getName());
+		System.out.println(scale.toString());
 		
-		return new Phrase(pitches, dynamics, cellTypes);
+		return phrase;
 	}
 	
 	/**
@@ -1055,7 +1058,7 @@ public class PhasesPApplet extends PApplet {
 	 * 
 	 * The first string, doubleName, should be one of two things. If it represents a note with an accidental--
 	 * for example "A#"--then it will refer to both names i.e. "A#/Bb". If it represents a note without
-	 * an accidental--"C" for example-- then it simply be "C".
+	 * an accidental--"C" for example-- then it will simply be "C".
 	 * 
 	 * The second string should only ever contain one name. So it could equal to "A#". It could equal "Bb".
 	 * But it could not equal "A#/Bb".
@@ -1235,6 +1238,20 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public float getChangeScreenButtonHeight() {
 		return changeScreenButton.getHeight();
+	}
+
+	/**
+	 * Sets the current scale according to the given scale name.
+	 * 
+	 * @param scaleClassName
+	 * @param scaleRootName
+	 */
+	public void setCurrentScale(String scaleClassName, String scaleRootName) {
+		Scale newScale = getScale(scaleRootName, scaleClassName);
+		if (newScale != null) {
+			this.currentScale = newScale;
+			System.out.println("here");
+		}
 	}
 	
 	/**

@@ -79,12 +79,13 @@ public class PhrasePicture implements JSONable {
 	 * @param json A JSONObject representing a PhrasePicture.
 	 */
 	public PhrasePicture(JSONObject json) {
-		this.phrase = json.hasKey("phrase") ? new Phrase(json.getJSONObject("phrase")) : new Phrase();
+		this.phrase = json.hasKey("phrase") ? new Phrase(json.getJSONObject("phrase")) : new Phrase("Major", "C");
 		this.blendAmt = json.getFloat("blendAmt", (float)Math.random());
 		initDrawNoteFuncs(json.getInt("noteStyleType", CIRCLE));
 		this.name = json.getString("name", "?");
 	}
 	
+	@Override
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
 		json.setJSONObject("phrase", phrase.toJSON());

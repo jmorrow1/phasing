@@ -2,7 +2,7 @@
   "minutesSpentWithPhaseShifter": 10000.623046875,
   "nextLiveScorerUnlockIndex": 1000,
   "nextPhaseShifterUnlockIndex": 1000,
-  "numEditorVisits": 1035,
+  "numEditorVisits": 1040,
   "nextMusicianUnlockIndex": 1000,
   "viewOptionValueMap": [
     {
@@ -51,7 +51,7 @@
     }
   ],
   "windowHeight": 667,
-  "minutesSpentWithMusician": 10051.96484375,
+  "minutesSpentWithMusician": 10055.6123046875,
   "windowWidth": 995,
   "minutesSpentWithLiveScorer": 10001.404296875
 }

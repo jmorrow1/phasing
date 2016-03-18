@@ -589,6 +589,10 @@ public class Editor extends Screen {
 		else {
 			windowResized();
 		}
+		
+		initMusicPlayer();
+		scaleMenu.setLabel(pa.currentScale.getClassName());
+		rootMenu.setLabel(pa.currentScale.getName());
 	}
 	
 	@Override
@@ -928,6 +932,8 @@ public class Editor extends Screen {
 		}
 
 		pa.currentScale = newScale;
+		pa.currentPhrase.setScaleClassName(newScale.getClassName());
+		pa.currentPhrase.setScaleRootName(newScale.getName());
 		
 		for (int i=0; i<pa.currentPhrase.getGridRowSize(); i++) {
 			if (pa.currentPhrase.getGridPitch(i) > 0) {
