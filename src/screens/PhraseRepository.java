@@ -10,6 +10,7 @@ import geom.Rect;
 import phasing.PhasesPApplet;
 import phasing.Phrase;
 import phasing.PhrasePicture;
+import util.NameGenerator;
 
 /**
  * A screen for saving and loading Phrases.
@@ -20,6 +21,7 @@ import phasing.PhrasePicture;
 public class PhraseRepository extends Screen implements CellEventHandler {
 	//cells
 	private ArrayList<Cell> cells = new ArrayList<Cell>();
+	private Cell selectedCell;
 	
 	//current page number
 	private int currPageNum;
@@ -163,6 +165,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		pa.currentPhrasePicture = new PhrasePicture(pa.currentPhrase, pa);
 		addPhrasePicture(pa.currentPhrasePicture);
 		pa.setCurrentScale(pa.currentPhrase.getScaleClassName(), pa.currentPhrase.getScaleRootName());
+		setSelectedCellTitle();
 	}
 	
 	/**
@@ -236,14 +239,33 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	
 	@Override
 	public void mousePressed() {
-		Cell c = cellTouching(pa.mouseX, pa.mouseY);
-		if (c != null) {
-			load(c);
-			int index = cells.indexOf(c);
-			if (index < pa.getNumPhrasePictures()) {
-				pa.currentPhrasePicture = pa.getPhrasePicture(index);
-				pa.currentPhrase = pa.currentPhrasePicture.getPhrase();
+		Cell prevSelectedCell = selectedCell;
+		selectedCell = cellTouching(pa.mouseX, pa.mouseY);
+
+		if (selectedCell != null) {
+			if (prevSelectedCell != null) {
+				String name = prevSelectedCell.getTitle();
+				if (pa.hasAnotherPhrasePictureWithName(pa.currentPhrasePicture, name)) {
+					pa.removePhrasePicture(pa.currentPhrasePicture);
+					pa.currentPhrasePicture.setName(pa.phrasePictureNameGenerator.getUniqueNameFrom(name));
+					pa.addPhrasePicture(pa.currentPhrasePicture);
+				}
 			}
+			
+			load(selectedCell);
+			setSelectedCellTitle();		
+		}
+	}
+	
+	/**
+	 * Sets the selectedCell's title based on the name of the currentPhrasePicture.
+	 */
+	private void setSelectedCellTitle() {
+		int index = cells.indexOf(selectedCell);
+		if (index < pa.getNumPhrasePictures()) {
+			pa.currentPhrasePicture = pa.getPhrasePicture(index);
+			pa.currentPhrase = pa.currentPhrasePicture.getPhrase();
+			selectedCell.setTitle(pa.currentPhrasePicture.getName());
 		}
 	}
 	
@@ -263,7 +285,8 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	 * @return The Cell that touches (x,y) or null.
 	 */
 	private Cell cellTouching(int x, int y) {
-		for (Cell c : cells) {
+		for (int i=0; i<cells.size(); i++) {
+			Cell c = cells.get(i);
 			if (c.touches(x, y)) {
 				return c;
 			}

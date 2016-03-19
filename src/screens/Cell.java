@@ -1,13 +1,11 @@
 package screens;
 
-import java.util.ArrayList;
-
 import controlP5.Button;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
+import controlP5.Textfield;
 import geom.Rect;
 import phasing.PhasesPApplet;
-import phasing.Phrase;
 import phasing.PhrasePicture;
 
 /**
@@ -18,7 +16,7 @@ import phasing.PhrasePicture;
 class Cell {
 	//class-scope
 	private static int nextId = (int)'a';
-	private final static int GENERATE = -2, COPY = -3, NEW = -4, DELETE = -5;
+	private final static int TITLE = -1, GENERATE = -2, COPY = -3, NEW = -4, DELETE = -5;
 	
 	//outside world
 	private CellEventHandler eventHandler;
@@ -31,6 +29,7 @@ class Cell {
 	private Button deleteButton;
 	private Button generateButton;
 	private Button newPhraseButton;
+	private Textfield titleForm;
 	
 	/**************************
 	 ***** Initialization *****
@@ -44,12 +43,39 @@ class Cell {
 	 */
 	protected Cell(Rect rect, ControlP5 cp5, PhraseRepository phraseRepo) {
 		this.rect = rect;
+		initTitleForm(cp5);
 		initCopyButton(cp5);
 		initGenerateButton(cp5);
 		initNewPhraseButton(cp5);
 		initDeleteButton(cp5);
 		nextId++;
 		this.eventHandler = phraseRepo;
+	}
+	
+	/**
+	 * Initializes the form used to edit the title of the phrase picture.
+	 * 
+	 * @param cp5 The ControlP5 instance to add the button to.
+	 * @parm name The name of the title
+	 */
+	private void initTitleForm(ControlP5 cp5) {
+		int width = (int)rect.getWidth() - 2;
+		int height = (int)(rect.getHeight() * 0.1f);
+		
+		titleForm = cp5.addTextfield((char)nextId + " title")
+				       .setPosition(rect.getX1() + 1, rect.getY1())
+				       .setSize(width, height)
+				       .setId(TITLE)
+				       .setAutoClear(false)
+				       .plugTo(this)
+				       ;
+
+		titleForm.setColorBackground(0xffffffff);
+		titleForm.setColorActive(PhasesPApplet.getColor1Bold());
+		titleForm.setColorValue(0);
+		titleForm.setColorCursor(PhasesPApplet.getColor1Bold());
+		titleForm.getValueLabel().setFont(PhasesPApplet.pfont12);
+		titleForm.getCaptionLabel().setVisible(false);
 	}
 	
 	/**
@@ -64,12 +90,12 @@ class Cell {
 		float width = 0.4f * rect.getWidth();
 		float height = 0.1f * rect.getHeight();
 		this.copyButton = cp5.addButton((char)nextId + " copy")
-				                  .setLabel("Copy")
-			                      .setPosition(x1, y1)
-			                      .setSize((int)width, (int)height)
-			                      .setId(COPY)
-			                      .plugTo(this);
-			                      ;
+				             .setLabel("Copy")
+			                 .setPosition(x1, y1)
+			                 .setSize((int)width, (int)height)
+			                 .setId(COPY)
+			                 .plugTo(this);
+			                 ;
         copyButton.getCaptionLabel().setFont(PhasesPApplet.pfont12);
         copyButton.getCaptionLabel().toUpperCase(false);
   		PhasesPApplet.colorControllerShowingLabel(copyButton);
@@ -145,13 +171,16 @@ class Cell {
 	/*******************************
 	 ***** ControlP5 Callbacks *****
 	 *******************************/
-	
+
 	/**
 	 * Handles events sent from ControlP5.
 	 * @param e
 	 */
 	public void controlEvent(ControlEvent e) {
 		switch (e.getId()) {
+			case TITLE :
+				System.out.println(e);
+				break;
 			case COPY :
 				eventHandler.copy(this);
 				break;
@@ -196,6 +225,7 @@ class Cell {
 		drawRect(false, pa);
 		deleteButton.hide();
 		copyButton.hide();
+		titleForm.hide();
 		if (showNewPhraseButtons) {
 			generateButton.show();
 			newPhraseButton.show();
@@ -218,16 +248,20 @@ class Cell {
 		
 		phrasePicture.draw(rect, pa);
 		
-		String name = phrasePicture.getName();
 		if (isCurrentPhrase) {
-			pa.fill(0);
+			titleForm.show();
+			titleForm.setFocus(true);
 		}
 		else {
-			pa.fill(100);
+			titleForm.setFocus(false);
+			titleForm.hide();
+			String name = phrasePicture.getName();
+			pa.fill(0);
+			pa.textAlign(pa.CENTER, pa.TOP);
+			pa.textSize(12);
+			pa.rectMode(pa.CORNER);
+			pa.text(name, rect.getX1(), rect.getY1(), rect.getWidth(), 0.1f*rect.getHeight());
 		}
-		pa.textAlign(pa.CENTER, pa.TOP);
-		pa.textSize(14);
-		pa.text(name, rect.getCenx(), rect.getY1());
 		
 		deleteButton.show();
 		copyButton.show();
@@ -240,13 +274,31 @@ class Cell {
 	 ****************/
 	
 	/**
+	 * Sets the title that is displayed on the text form.
+	 * 
+	 * @param title
+	 */
+	protected void setTitle(String title) {
+		titleForm.setValue(title);
+	}
+	
+	/**
+	 * Gives the title that is displayed on the text form.
+	 * @return The title from the text form.
+	 */
+	protected String getTitle() {
+		return titleForm.getText();
+	}
+	
+	/**
 	 * Removes the controllers this Cell generated from the given ControlP5 object.
 	 */
-	protected void disposeControllers(ControlP5 cp5) {
+	protected void removeControllers(ControlP5 cp5) {
 		cp5.remove(copyButton.getName());
 		cp5.remove(deleteButton.getName());
 		cp5.remove(generateButton.getName());
 		cp5.remove(newPhraseButton.getName());
+		cp5.remove(titleForm.getName());
 	}
 	
 	/**

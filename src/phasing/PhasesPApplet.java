@@ -126,8 +126,9 @@ public class PhasesPApplet extends PApplet {
 		initColorScheme();
 		//initSimpleColorScheme();
 		
+		
 		//init save folder path
-		saveFolderPath = "C:/Users/James/Desktop/" + "/sav/"; //TODO Change
+		saveFolderPath = "C:/Users/James/Desktop/sav/"; //TODO Change
 		
 		initPhrasePictures();
 		
@@ -143,10 +144,11 @@ public class PhasesPApplet extends PApplet {
 		initPlayerInfo();
 		initBPMData(playerInfo);
 		surface.setResizable(true);
+		initScales();
 		initCurrentPhrase();
-		initScales(currentPhrase);
+		initCurrentScale(currentPhrase);
 		initScreens();
-		currentScreen = editor;
+		currentScreen = phraseRepo;
 		initCP5Objects(currentScreen);
 		currentScreen.onEnter();
 		if (!initialWindowSizeGiven && playerInfo.isWindowSizeInitialized()) {
@@ -210,11 +212,18 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
-	 * Initializes the scales in general and the current scale.
+	 * Initializes the scales in general.
+	 
+	 */
+	private void initScales() {
+		loadScales();
+	}
+	
+	/**
+	 * Initializes the current scale.
 	 * @param currentPhrase This must be initialized before this method can execute.
 	 */
-	private void initScales(Phrase currentPhrase) {
-		loadScales();
+	private void initCurrentScale(Phrase currentPhrase) {
 		boolean currentScaleLoaded = setCurrentScale(currentPhrase.getScaleClassName(), currentPhrase.getScaleRootName());
 		if (!currentScaleLoaded) {
 			currentScale = getRandomScale();
@@ -227,7 +236,8 @@ public class PhasesPApplet extends PApplet {
 	private void initCurrentPhrase() {
 		boolean currentPhraseLoaded = loadCurrentPhrasePicture();
 		if (!currentPhraseLoaded) {
-			currentPhrase = generateReichLikePhrase(currentScale);
+			currentPhrase = generateReichLikePhrase(getRandomScale());
+			
 			currentPhrasePicture = new PhrasePicture(currentPhrase, "Current Phrase", this);
 			saveCurrentPhrasePicture();
 		}
@@ -389,7 +399,7 @@ public class PhasesPApplet extends PApplet {
 	 * Saves the phrase picture of the current phrase to the phrases subfolder in the save folder.
 	 */
 	public void saveCurrentPhrasePicture() {
-		saveJSONObject(currentPhrasePicture.toJSON(), saveFolderPath + "phrases/" + currentPhrasePicture.getName() + ".json");
+		saveJSONObject(currentPhrasePicture.toJSON(), saveFolderPath + "phrases/Current Phrase.json");
 	}
 	
 	/**
@@ -456,7 +466,8 @@ public class PhasesPApplet extends PApplet {
 			phrasePictures = new ArrayList<PhrasePicture>();
 			Files.walk(Paths.get(saveFolderPath + "phrases/")).forEach(filePath -> {
 				if (filePath.toString().endsWith(".json") &&
-						!filePath.toString().equals(saveFolderPath + "phrases/Current Phrase.json")) {
+						!filePath.toString().contains("Current Phrase.json")) {
+						
 					BufferedReader reader = createReader(filePath.toString());
 					JSONObject json = new JSONObject(reader);
 					phrasePictures.add(new PhrasePicture(json));
@@ -466,6 +477,7 @@ public class PhasesPApplet extends PApplet {
 						e.printStackTrace();
 					}
 				}
+				
 			});
 			return true;
 		}
@@ -1358,6 +1370,35 @@ public class PhasesPApplet extends PApplet {
 	public void removePhrasePicture(int i) {
 		this.deletePhrasePictureFile(phrasePictures.get(i).getName());
 		phrasePictures.remove(i);
+	}
+	
+	/**
+	 * Removes the given PhrasePicture from the PhasesPApplet's list of PhrasePictures.
+	 * @param p The PhrasePicture to remove.
+	 */
+	public void removePhrasePicture(PhrasePicture p) {
+		try {
+			removePhrasePicture(phrasePictures.indexOf(p));
+		} catch (IndexOutOfBoundsException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Tells whether or not there is another PhrasePicture, other than the given PhrasePicture,
+	 * that has the given name.
+	 * 
+	 * @param phrasePicture The given PhrasePicture.
+	 * @param name The given name.
+	 * @return True if there is such a PhrasePicture, false otherwise.
+	 */
+	public boolean hasAnotherPhrasePictureWithName(PhrasePicture phrasePicture, String name) {
+		for (PhrasePicture p : phrasePictures) {
+			if (p.getName().equals(name) && p != phrasePicture) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**

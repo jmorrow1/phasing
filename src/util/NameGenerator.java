@@ -62,6 +62,16 @@ public class NameGenerator {
 	}
 	
 	/**
+	 * Tells whether or not this NameGenerator excludes the given name.
+	 * 
+	 * @param name The name to test.
+	 * @return True, if the name is unique, false otherwise.
+	 */
+	public boolean isUnique(String name) {
+		return !names.contains(name);
+	}
+	
+	/**
 	 * Returns a name that derives from the given name.
 	 * @param The given name.
 	 * @return The derivative name.
