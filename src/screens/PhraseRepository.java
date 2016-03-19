@@ -217,7 +217,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		cp5 = new ControlP5(pa);
 		initCells();
 		cp5.show();
-		currPageNum = 0;
+		currPageNum = pa.indexOfCurrentPhrasePicture() != -1 ? pa.indexOfCurrentPhrasePicture() / cells.size() : 0;
 		initDirectionalButtons();
 	}
 

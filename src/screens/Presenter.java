@@ -138,7 +138,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 * @return What the center y-coordinate of a view should be.
 	 */
 	private float viewCeny() {
-		return (upButtonY1() + pa.getChangeScreenButtonY2()) / 2f;
+		return (upButtonY1() + pa.topToolbarY2()) / 2f;
 	}
 	
 	/**
@@ -146,7 +146,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 * @return What the height of a view should be.
 	 */
 	private float viewHeight() {
-		return PApplet.max(1, upButtonY1() - pa.getChangeScreenButtonY2());
+		return PApplet.max(1, upButtonY1() - pa.topToolbarY2());
 	}
 	
 	/**
@@ -362,7 +362,8 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	}
 	
 	@Override
-	public void onEnter() {	
+	public void onEnter() {
+		initCP5Objects();
 		initViews(pa.playerInfo);
 		setupIconLists();
 		activeIconIndex = 0;
@@ -399,9 +400,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	public void onExit() {
 		player1.stop();
 		player2.stop();
-		musicianView.saveSettings(pa.playerInfo);
-		phaseShifterView.saveSettings(pa.playerInfo);
-		liveScorerView.saveSettings(pa.playerInfo);
 		pa.savePlayerInfo();
 		cp5.hide();
 	}
@@ -916,5 +914,15 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			default:
 				return 0;
 		}
+	}
+	
+	/******************
+	 ***** Saving *****
+	 ******************/
+	
+	public void save() {
+		musicianView.saveSettings(pa.playerInfo);
+		phaseShifterView.saveSettings(pa.playerInfo);
+		liveScorerView.saveSettings(pa.playerInfo);
 	}
 }

@@ -147,7 +147,7 @@ public class PhasesPApplet extends PApplet {
 		initCurrentPhrase();
 		initCurrentScale(currentPhrase);
 		initScreens();
-		currentScreen = phraseRepo;
+		currentScreen = presenter;
 		initCP5Objects(currentScreen);
 		changeScreenTo(currentScreen);
 		currentScreen.onEnter();
@@ -178,7 +178,6 @@ public class PhasesPApplet extends PApplet {
 		initChangeScreenButton(currentScreen);
 		initPhraseRepoButton(changeScreenButton);	
 		initHelpToggle(phraseRepoButton);
-		
 	}
 	
 	/**
@@ -752,10 +751,9 @@ public class PhasesPApplet extends PApplet {
 			changeScreenTo(editor);
 		}
 		else if (currentScreen == phraseRepo) {
+			System.out.println(prevScreen);
 			changeScreenTo((prevScreen != null && prevScreen != phraseRepo) ? prevScreen : editor);
 		}
-		
-		prevScreen = currentScreen;
 	}
 	
 	/**
@@ -766,6 +764,7 @@ public class PhasesPApplet extends PApplet {
 		if (currentScreen != null) {
 			currentScreen.onExit();
 		}
+		prevScreen = currentScreen;
 		currentScreen = destination;
 		currentScreen.onEnter();
 		changeScreenButton.setCaptionLabel(captionLabel(currentScreen));
@@ -910,9 +909,10 @@ public class PhasesPApplet extends PApplet {
 	
 	@Override
 	public void exit() {
+		presenter.save();
 		this.savePlayerInfo();
 		this.saveCurrentPhrasePicture();
-		this.savePhrasePictures();
+		this.savePhrasePictures();	
 		super.exit();
 	}
 	
