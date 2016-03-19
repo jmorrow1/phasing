@@ -400,8 +400,10 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	public void onExit() {
 		player1.stop();
 		player2.stop();
+		save();
 		pa.savePlayerInfo();
 		cp5.hide();
+		
 	}
 	
 	@Override
