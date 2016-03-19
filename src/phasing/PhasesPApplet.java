@@ -1,5 +1,6 @@
 package phasing;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,7 +11,6 @@ import java.util.Map;
 
 import arb.soundcipher.SCScore;
 import controlP5.Button;
-import controlP5.ControlEvent;
 import controlP5.ControlP5;
 import controlP5.Controller;
 import controlp5.Util;
@@ -127,7 +127,7 @@ public class PhasesPApplet extends PApplet {
 		//initSimpleColorScheme();
 		
 		//init save folder path
-		saveFolderPath = sketchPath() + "\\sav\\"; //TODO Change
+		saveFolderPath = "C:/Users/James/Desktop/" + "/sav/"; //TODO Change
 		
 		initPhrasePictures();
 		
@@ -343,10 +343,16 @@ public class PhasesPApplet extends PApplet {
 			int i=0;
 			Files.walk(Paths.get("src/data/scales")).forEach(filePath -> {
 				if (filePath.toString().endsWith(".json")) {
-					JSONObject json = loadJSONObject(filePath.toString());
+					BufferedReader reader = createReader(filePath.toString());
+					JSONObject json = new JSONObject(reader);
 					ScaleSet ss = new ScaleSet(json);
 					scaleSets.put(ss.getName(), ss);
 					scaleTypes.add(ss.getName());
+					try {
+						reader.close();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			});
 		} catch (IOException e) {
@@ -359,15 +365,17 @@ public class PhasesPApplet extends PApplet {
 	 * @return True, if it succeeds. False if it fails.
 	 */
 	private boolean loadCurrentPhrasePicture() {
-		File file = new File(saveFolderPath + "phrases\\Current Phrase.json");
+		File file = new File(saveFolderPath + "phrases/Current Phrase.json");
 		if (file.exists()) {
 			try {
-				JSONObject json = loadJSONObject(file);
+				BufferedReader reader = createReader(file);
+				JSONObject json = new JSONObject(reader);
 				currentPhrasePicture = new PhrasePicture(json);
 				currentPhrase = currentPhrasePicture.getPhrase();
+				reader.close();
 				return true;
 			}
-			catch (RuntimeException e) {
+			catch (IOException | RuntimeException e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -381,7 +389,7 @@ public class PhasesPApplet extends PApplet {
 	 * Saves the phrase picture of the current phrase to the phrases subfolder in the save folder.
 	 */
 	public void saveCurrentPhrasePicture() {
-		saveJSONObject(currentPhrasePicture.toJSON(), saveFolderPath + "phrases\\" + currentPhrasePicture.getName() + ".json");
+		saveJSONObject(currentPhrasePicture.toJSON(), saveFolderPath + "phrases/" + currentPhrasePicture.getName() + ".json");
 	}
 	
 	/**
@@ -393,10 +401,12 @@ public class PhasesPApplet extends PApplet {
 		File playerInfoFile = new File(playerInfoFileName);
 		if (playerInfoFile.exists()) {
 			try {
-				JSONObject json = loadJSONObject(playerInfoFileName);
+				BufferedReader reader = createReader(playerInfoFile);
+				JSONObject json = new JSONObject(reader);
 				playerInfo = new PlayerInfo(json);
+				reader.close();
 				return true;
-			} catch (RuntimeException e) {
+			} catch (IOException | RuntimeException e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -423,13 +433,15 @@ public class PhasesPApplet extends PApplet {
 	 * @return True, if it succeeds. False, if it fails.
 	 */
 	public boolean loadCurrentScale() {
-		File file = new File(saveFolderPath + "\\Current Scale.json");
+		File file = new File(saveFolderPath + "/Current Scale.json");
 		if (file.exists()) {
 			try {
-				JSONObject json = loadJSONObject(file);
+				BufferedReader reader = createReader(file);
+				JSONObject json = new JSONObject(reader);
 				currentScale = new Scale(json);
+				reader.close();
 				return true;
-			} catch (RuntimeException e) {
+			} catch (IOException | RuntimeException e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -443,7 +455,7 @@ public class PhasesPApplet extends PApplet {
 	 * Saves the current scale to the save folder.
 	 */
 	public void saveCurrentScale() {
-		saveJSONObject(currentScale.toJSON(), saveFolderPath + "\\Current Scale.json");
+		saveJSONObject(currentScale.toJSON(), saveFolderPath + "/Current Scale.json");
 	}
 	
 	/**
@@ -451,7 +463,7 @@ public class PhasesPApplet extends PApplet {
 	 * @param p The PhrasePicture.
 	 */
 	private void savePhrasePicture(PhrasePicture p) {
-		saveJSONObject(p.toJSON(), saveFolderPath + "phrases\\" + p.getName() + ".json");
+		saveJSONObject(p.toJSON(), saveFolderPath + "phrases/" + p.getName() + ".json");
 	}
 	
 	/**
@@ -472,11 +484,17 @@ public class PhasesPApplet extends PApplet {
 	public boolean loadPhrasePictures() {
 		try {
 			phrasePictures = new ArrayList<PhrasePicture>();
-			Files.walk(Paths.get(saveFolderPath + "phrases\\")).forEach(filePath -> {
+			Files.walk(Paths.get(saveFolderPath + "phrases/")).forEach(filePath -> {
 				if (filePath.toString().endsWith(".json") &&
-						!filePath.toString().equals(saveFolderPath + "phrases\\Current Phrase.json")) {
-					JSONObject json = loadJSONObject(filePath.toString());
+						!filePath.toString().equals(saveFolderPath + "phrases/Current Phrase.json")) {
+					BufferedReader reader = createReader(filePath.toString());
+					JSONObject json = new JSONObject(reader);
 					phrasePictures.add(new PhrasePicture(json));
+					try {
+						reader.close();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			});
 			return true;
@@ -495,10 +513,16 @@ public class PhasesPApplet extends PApplet {
 	 */
 	private void deletePhrasePictureFile(String name) {
 		//TODO Implement
-		File file = new File(saveFolderPath + "phrases\\" + name + ".json");
+		File file = new File(saveFolderPath + "phrases/" + name + ".json");
 		if (file.exists()) {
 			try {
-				file.delete();
+				boolean success = file.delete();
+				if (success) {
+					System.out.println(file.toString() + " deleted");
+				}
+				else {
+					System.out.println(file.toString() + " not deleted.");
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -1359,7 +1383,7 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void removePhrasePicture(int i) {
 		this.deletePhrasePictureFile(phrasePictures.get(i).getName());
-		phrasePictures.remove(i);
+		phrasePictures.remove(i);		
 	}
 	
 	/**

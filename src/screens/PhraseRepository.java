@@ -239,6 +239,11 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		Cell c = cellTouching(pa.mouseX, pa.mouseY);
 		if (c != null) {
 			load(c);
+			int index = cells.indexOf(c);
+			if (index < pa.getNumPhrasePictures()) {
+				pa.currentPhrasePicture = pa.getPhrasePicture(index);
+				pa.currentPhrase = pa.currentPhrasePicture.getPhrase();
+			}
 		}
 	}
 	
