@@ -243,17 +243,30 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		selectedCell = cellTouching(pa.mouseX, pa.mouseY);
 
 		if (selectedCell != null) {
+			
+			//deal with previously selected cell (whose PhrasePicture may have been renamed)
 			if (prevSelectedCell != null) {
 				String name = prevSelectedCell.getTitle();
-				if (pa.hasAnotherPhrasePictureWithName(pa.currentPhrasePicture, name)) {
+				
+				int i = pa.indexOfCurrentPhrasePicture();
+				
+				if (i != -1) {
 					pa.removePhrasePicture(pa.currentPhrasePicture);
-					pa.currentPhrasePicture.setName(pa.phrasePictureNameGenerator.getUniqueNameFrom(name));
-					pa.addPhrasePicture(pa.currentPhrasePicture);
+					
+					if (pa.hasAnotherPhrasePictureWithName(pa.currentPhrasePicture, name)) {
+						pa.currentPhrasePicture.setName(pa.phrasePictureNameGenerator.getUniqueNameFrom(name));
+					}
+					else {
+						pa.currentPhrasePicture.setName(name);
+					}
+					
+					pa.addPhrasePicture(i, pa.currentPhrasePicture);
 				}
 			}
 			
+			//deal with newly selected cell
 			load(selectedCell);
-			setSelectedCellTitle();		
+			setSelectedCellTitle();
 		}
 	}
 	
@@ -261,7 +274,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	 * Sets the selectedCell's title based on the name of the currentPhrasePicture.
 	 */
 	private void setSelectedCellTitle() {
-		int index = cells.indexOf(selectedCell);
+		int index = cells.indexOf(selectedCell) + currPageNum*cells.size();
 		if (index < pa.getNumPhrasePictures()) {
 			pa.currentPhrasePicture = pa.getPhrasePicture(index);
 			pa.currentPhrase = pa.currentPhrasePicture.getPhrase();
@@ -269,6 +282,10 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		}
 	}
 	
+	/**
+	 * Loads the PhrasePicture at the given cell's location.
+	 * @param cell
+	 */
 	private void load(Cell cell) {
 		int i = cells.indexOf(cell) + currPageNum*cells.size();
 		if (i < pa.getNumPhrasePictures()) {

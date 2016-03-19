@@ -344,4 +344,9 @@ public class PhrasePicture implements JSONable {
 		}
 		return names;
 	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

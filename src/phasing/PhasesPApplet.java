@@ -126,7 +126,6 @@ public class PhasesPApplet extends PApplet {
 		initColorScheme();
 		//initSimpleColorScheme();
 		
-		
 		//init save folder path
 		saveFolderPath = "C:/Users/James/Desktop/sav/"; //TODO Change
 		
@@ -150,6 +149,7 @@ public class PhasesPApplet extends PApplet {
 		initScreens();
 		currentScreen = phraseRepo;
 		initCP5Objects(currentScreen);
+		changeScreenTo(currentScreen);
 		currentScreen.onEnter();
 		if (!initialWindowSizeGiven && playerInfo.isWindowSizeInitialized()) {
 			this.resize(playerInfo.getWindowWidth(), playerInfo.getWindowHeight());
@@ -763,7 +763,9 @@ public class PhasesPApplet extends PApplet {
 	 * @param destination The screen to change to.
 	 */
 	private void changeScreenTo(Screen destination) {
-		currentScreen.onExit();
+		if (currentScreen != null) {
+			currentScreen.onExit();
+		}
 		currentScreen = destination;
 		currentScreen.onEnter();
 		changeScreenButton.setCaptionLabel(captionLabel(currentScreen));
@@ -1399,6 +1401,14 @@ public class PhasesPApplet extends PApplet {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Gives the index of the current phrase picture.
+	 * @return The index.
+	 */
+	public int indexOfCurrentPhrasePicture() {
+		return phrasePictures.indexOf(currentPhrasePicture);
 	}
 	
 	/**
