@@ -45,7 +45,7 @@ public class Editor extends Screen {
 	
 	//piano
 	private boolean labelPianoKeys = true;
-	private int minOctave = 5;
+	private int minOctave = 4;
 	private final static int W=0xffffffff, B=PhasesPApplet.getColor2();
 	private final static int[] keyColors = new int[] {W, B, W, B, W, W, B, W, B, W, B, W};
 	
@@ -792,7 +792,8 @@ public class Editor extends Screen {
 	 */
 	private int mouseToPitch() {
 		int pitchIndex = (int)pa.map(pa.mouseY, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys());
-		return pa.currentScale.getNoteValue(pitchIndex) + minOctave*12;
+		int pitch = pa.currentScale.getNoteValue(pitchIndex) + minOctave*12;
+		return pitch;
 	}
 	
 	/*********************************
@@ -806,7 +807,8 @@ public class Editor extends Screen {
 	 */
 	private int yToPitch(float y) {
 		int pitchIndex = (int)pa.map(y + cellHeight/2f, gridFrame.getY2(), gridFrame.getY1(), 0, numKeys());
-		return pa.currentScale.getNoteValue(pitchIndex) + minOctave*12;
+		int pitch = pa.currentScale.getNoteValue(pitchIndex) + minOctave*12;
+		return pitch;
 	}
 	
 	/**
@@ -816,7 +818,8 @@ public class Editor extends Screen {
 	 */
 	private float pitchToY(int pitch) {
 		int pitchIndex = pa.currentScale.getIndexOfNoteValue(pitch - minOctave*12) + 1;
-		return pa.map(pitchIndex, 0, numKeys(), gridFrame.getY2(), gridFrame.getY1());
+		float y = pa.map(pitchIndex, 0, numKeys(), gridFrame.getY2(), gridFrame.getY1());
+		return y;
 	}
 	
 	/******************************
@@ -931,8 +934,11 @@ public class Editor extends Screen {
 				}
 				
 				int pitch = pa.currentPhrase.getSCPitch(i);
+				
 				float y = pitchToY(pitch);
-				pa.rect(x, y, cellWidth*numCellsWide, cellHeight);
+				if (y >= gridFrame.getY1() - 1f) {
+					pa.rect(x, y, cellWidth*numCellsWide, cellHeight);
+				}
 			}
 			
 			x += (cellWidth*numCellsWide);

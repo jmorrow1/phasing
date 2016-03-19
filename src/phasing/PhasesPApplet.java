@@ -51,7 +51,7 @@ public class PhasesPApplet extends PApplet {
 	
 	public final static float DEFAULT_BPM_1 = 60;
 	public final static float DEFAULT_BPM_DIFFERENCE = 0.5f;
-	private float bpm1 = 60;
+	private float bpm1 = DEFAULT_BPM_1;
 	private float bpms1 = bpm1 / 60000f;
 	private float bpm2 = bpm1 + DEFAULT_BPM_DIFFERENCE;
 	private float bpms2 = bpm2 / 60000f;
@@ -452,6 +452,15 @@ public class PhasesPApplet extends PApplet {
 	 */
 	private void savePhrasePicture(PhrasePicture p) {
 		saveJSONObject(p.toJSON(), saveFolderPath + "phrases\\" + p.getName() + ".json");
+	}
+	
+	/**
+	 * Saves all the PhrasePictures contained in the phrasePictures list.
+	 */
+	private void savePhrasePictures() {
+		for (PhrasePicture p : phrasePictures) {
+			savePhrasePicture(p);
+		}
 	}
 	
 	/**
@@ -896,6 +905,7 @@ public class PhasesPApplet extends PApplet {
 		this.saveCurrentScale();
 		this.savePlayerInfo();
 		this.saveCurrentPhrasePicture();
+		this.savePhrasePictures();
 		super.exit();
 	}
 	
