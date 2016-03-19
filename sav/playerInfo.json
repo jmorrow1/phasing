@@ -1,8 +1,9 @@
 {
-  "minutesSpentWithPhaseShifter": 10012.4150390625,
+  "minutesSpentWithPhaseShifter": 10012.998046875,
   "nextLiveScorerUnlockIndex": 1000,
+  "phaseDifference": -1.75,
   "nextPhaseShifterUnlockIndex": 1000,
-  "numEditorVisits": 1055,
+  "numEditorVisits": 1056,
   "nextMusicianUnlockIndex": 1000,
   "viewOptionValueMap": [
     {
@@ -34,7 +35,7 @@
       "optionName": "activeNoteMode"
     },
     {
-      "optionValue": 0,
+      "optionValue": 3,
       "optionName": "noteGraphic1"
     },
     {
@@ -51,7 +52,8 @@
     }
   ],
   "windowHeight": 651,
-  "minutesSpentWithMusician": 10060.201171875,
-  "windowWidth": 939,
-  "minutesSpentWithLiveScorer": 10001.57421875
+  "minutesSpentWithMusician": 10060.255859375,
+  "bpm1": 58,
+  "windowWidth": 800,
+  "minutesSpentWithLiveScorer": 10002.326171875
 }

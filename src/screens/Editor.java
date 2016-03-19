@@ -309,7 +309,7 @@ public class Editor extends Screen {
 	 * @return The slider.
 	 */
 	private Slider consBPMDifferenceSlider(float x, float y, int w, int h) {
-		return consBPMSlider("bpmDifference", "Difference", BPM_DIFFERENCE,
+		return consBPMSlider("bpmDifference", "Difference ", BPM_DIFFERENCE,
 			                x, y, w, h,
 			                pa.getBPM2() - pa.getBPM1(),
 			                -maxPhaseDifferenceAmplitude, maxPhaseDifferenceAmplitude,
@@ -523,6 +523,8 @@ public class Editor extends Screen {
 		pa.setBPM1(e.getValue());
 		livePlayer.tempo(pa.getBPM1());
 		pa.setBPM2(e.getValue() + bpmDifferenceSlider.getValue());
+		pa.playerInfo.bpm1 = pa.getBPM1();
+		pa.playerInfo.bpmDifference = pa.getBPM2() - pa.getBPM1();
 	}
 	
 	/**
@@ -531,6 +533,7 @@ public class Editor extends Screen {
 	 */
 	public void bpmDifference(ControlEvent e) {
 		pa.setBPM2(pa.getBPM1() + e.getValue());
+		pa.playerInfo.bpmDifference = pa.getBPM2() - pa.getBPM1();
 	}
 	
 	/**

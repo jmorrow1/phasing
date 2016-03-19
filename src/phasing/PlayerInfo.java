@@ -14,6 +14,8 @@ import processing.data.JSONObject;
  * --> the index of the phrase the current phrase derives from.
  * --> the last saved state of view options
  * --> the last saved window size
+ * --> the last saved bpm1 value
+ * --> the last saved phase difference value
  * 
  * @author James Morrow
  *
@@ -26,6 +28,9 @@ public class PlayerInfo {
 	
 	private boolean windowSizeInitialized = false;
 	private int windowWidth, windowHeight;
+
+	public float bpm1 = PhasesPApplet.DEFAULT_BPM_1;
+	public float bpmDifference = PhasesPApplet.DEFAULT_BPM_DIFFERENCE;
 	
 	public PlayerInfo(boolean everythingUnlocked) {
 		this((everythingUnlocked) ? 10000f : 0, (everythingUnlocked) ? 10000f : 0, (everythingUnlocked) ? 10000f : 0,
@@ -71,6 +76,9 @@ public class PlayerInfo {
 				windowSizeInitialized = true;
 			}
 		}
+		
+		bpm1 = json.getFloat("bpm1", PhasesPApplet.DEFAULT_BPM_1);
+		bpmDifference = json.getFloat("phaseDifference", PhasesPApplet.DEFAULT_BPM_DIFFERENCE);
 	}
 	
 	public void setSize(int width, int height) {
@@ -117,6 +125,9 @@ public class PlayerInfo {
 			json.setInt("windowWidth", windowWidth);
 			json.setInt("windowHeight", windowHeight);
 		}
+		
+		json.setFloat("bpm1", bpm1);
+		json.setFloat("phaseDifference", bpmDifference);
 		
 		return json;
 	}

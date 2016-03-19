@@ -48,9 +48,12 @@ public class PhasesPApplet extends PApplet {
 	public PhrasePicture currentPhrasePicture;
 	public Scale currentScale;
 	private ArrayList<PhrasePicture> phrasePictures;
+	
+	public final static float DEFAULT_BPM_1 = 60;
+	public final static float DEFAULT_BPM_DIFFERENCE = 0.5f;
 	private float bpm1 = 60;
 	private float bpms1 = bpm1 / 60000f;
-	private float bpm2 = 60.5f;
+	private float bpm2 = bpm1 + DEFAULT_BPM_DIFFERENCE;
 	private float bpms2 = bpm2 / 60000f;
 	
 	//screens
@@ -138,6 +141,7 @@ public class PhasesPApplet extends PApplet {
 	public void setup() {
 		initStaticVariables();
 		initPlayerInfo();
+		initBPMData(playerInfo);
 		surface.setResizable(true);
 		initCurrentScale();				
 		initCurrentPhrase();
@@ -148,6 +152,15 @@ public class PhasesPApplet extends PApplet {
 		if (!initialWindowSizeGiven && playerInfo.isWindowSizeInitialized()) {
 			this.resize(playerInfo.getWindowWidth(), playerInfo.getWindowHeight());
 		}
+	}
+	
+	/**
+	 * Initializes the program-wide BPM (beats per minute) data.
+	 * @param playerInfo Indicates that the playerInfo variable should be initialized before this method is called.
+	 */
+	private void initBPMData(PlayerInfo playerInfo) {
+		setBPM1(playerInfo.bpm1);
+		setBPM2(playerInfo.bpm1 + playerInfo.bpmDifference);
 	}
 	
 	/**
@@ -877,6 +890,14 @@ public class PhasesPApplet extends PApplet {
 	/************************
 	 ***** Other Events *****
 	 ************************/
+	
+	@Override
+	public void exit() {
+		this.saveCurrentScale();
+		this.savePlayerInfo();
+		this.saveCurrentPhrasePicture();
+		super.exit();
+	}
 	
 	/**
 	 * The way to resize the PhasesPApplet through code logic.
