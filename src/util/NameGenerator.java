@@ -26,7 +26,7 @@ public class NameGenerator {
 	 */
 	public NameGenerator(String[] excludedNames) {
 		for (int i=0; i<excludedNames.length; i++) {
-			names.add(excludedNames[i]);
+			addNameToExclude(excludedNames[i]);
 		}
 	}
 	
@@ -56,8 +56,9 @@ public class NameGenerator {
 		}
 		
 		addNameToExclude(nextName);
+		String uniqueName = nextName;
 		incrementNextName();
-		return nextName;
+		return uniqueName;
 	}
 	
 	/**
