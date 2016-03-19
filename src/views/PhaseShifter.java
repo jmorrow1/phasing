@@ -122,10 +122,15 @@ public class PhaseShifter extends View {
 	 */
 	private void initData() {
 		dataPoints.clear();
-		for (int i=0; i<=pa.currentPhrase.getNumNotes(); i++) {
-			if (pa.currentPhrase.getNumNotes() > 0 && 
-					pa.currentPhrase.getSCDynamic(i % pa.currentPhrase.getNumNotes()) > 0) {
+		for (int i=0; i<pa.currentPhrase.getNumNotes(); i++) {
+			if (pa.currentPhrase.getNumNotes() > 0 && pa.currentPhrase.getSCDynamic(i) > 0) {
 				dataPoints.add(new DataPoint(i));
+			}
+		}
+		for (int i=0; i<pa.currentPhrase.getNumNotes(); i++) {
+			if (pa.currentPhrase.getSCDynamic(i) > 0) {
+				dataPoints.add(new DataPoint(i));
+				break;
 			}
 		}
 		
@@ -143,8 +148,8 @@ public class PhaseShifter extends View {
 			Method callback = PhaseShifter.class.getMethod("changeActiveNote", PhraseReader.class);
 			readerA = new PhraseReader(pa.currentPhrase, ONE_ID, this, callback);
 			readerB = new PhraseReader(pa.currentPhrase, TWO_ID, this, callback);
-
-		} catch (NoSuchMethodException | SecurityException e) {
+		}
+		catch (NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 		}
 	}
@@ -264,14 +269,14 @@ public class PhaseShifter extends View {
 			int j=0; //loops through data points
 			while (i < pa.currentPhrase.getNumNotes()) {
 				if (pa.currentPhrase.getSCDynamic(i) > 0) {
-					if ( (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE)
+					if ( (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || 
+							activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE)
 							&& i == activeNote) {
 						styleNoteGraphics(activeColor);
 						drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
 						styleNoteGraphics(nonActiveColor);
 					}
 					else if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
-						//TODO Here a bug manifests when a phrase starts with a rest.
 						drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
 					}
 					j++;

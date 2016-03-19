@@ -1,8 +1,8 @@
 {
-  "minutesSpentWithPhaseShifter": 10012.244140625,
+  "minutesSpentWithPhaseShifter": 10012.4150390625,
   "nextLiveScorerUnlockIndex": 1000,
   "nextPhaseShifterUnlockIndex": 1000,
-  "numEditorVisits": 1051,
+  "numEditorVisits": 1055,
   "nextMusicianUnlockIndex": 1000,
   "viewOptionValueMap": [
     {
@@ -14,7 +14,7 @@
       "optionName": "cameraMode"
     },
     {
-      "optionValue": 1,
+      "optionValue": 0,
       "optionName": "plotPitchMode"
     },
     {
@@ -30,7 +30,7 @@
       "optionName": "instrument"
     },
     {
-      "optionValue": 2,
+      "optionValue": 1,
       "optionName": "activeNoteMode"
     },
     {
@@ -51,7 +51,7 @@
     }
   ],
   "windowHeight": 651,
-  "minutesSpentWithMusician": 10059.1923828125,
+  "minutesSpentWithMusician": 10060.201171875,
   "windowWidth": 939,
   "minutesSpentWithLiveScorer": 10001.57421875
 }

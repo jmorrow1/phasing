@@ -78,7 +78,7 @@ public class PhasesPApplet extends PApplet {
 	private static int initialWidthSize = 800, initialHeightSize = 600; //default window size if given no command line args
 	
 	//save folder location
-	public String saveFolderPath; //TODO: Phase this variable out
+	public String saveFolderPath;
 	
 	//player
 	public PlayerInfo playerInfo;
@@ -124,7 +124,7 @@ public class PhasesPApplet extends PApplet {
 		//initSimpleColorScheme();
 		
 		//init save folder path
-		saveFolderPath = sketchPath() + "\\sav\\";
+		saveFolderPath = sketchPath() + "\\sav\\"; //TODO Change
 		
 		initPhrasePictures();
 		
@@ -142,7 +142,7 @@ public class PhasesPApplet extends PApplet {
 		initCurrentScale();				
 		initCurrentPhrase();
 		initScreens();
-		currentScreen = editor;
+		currentScreen = presenter;
 		initCP5Objects(currentScreen);
 		currentScreen.onEnter();
 		if (!initialWindowSizeGiven && playerInfo.isWindowSizeInitialized()) {
