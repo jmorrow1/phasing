@@ -142,7 +142,7 @@ public class PhasesPApplet extends PApplet {
 		initCurrentScale();				
 		initCurrentPhrase();
 		initScreens();
-		currentScreen = presenter;
+		currentScreen = editor;
 		initCP5Objects(currentScreen);
 		currentScreen.onEnter();
 		if (!initialWindowSizeGiven && playerInfo.isWindowSizeInitialized()) {

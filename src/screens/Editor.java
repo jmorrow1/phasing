@@ -493,7 +493,8 @@ public class Editor extends Screen {
 			hScrollbar.setNumTickMarks(pa.currentPhrase.getGridRowSize());
 			hScrollbar.setTicksPerScroller(rowSize());
 		}
-		//drawBody();		
+		
+		pa.saveCurrentPhrasePicture();
 	}
 	
 	/**
@@ -510,7 +511,8 @@ public class Editor extends Screen {
 			hScrollbar.setNumTickMarks(pa.currentPhrase.getGridRowSize());
 			hScrollbar.setTicksPerScroller(rowSize());
 		}
-		//drawBody();
+		
+		pa.saveCurrentPhrasePicture();
 	}
 	
 	/**
@@ -521,7 +523,6 @@ public class Editor extends Screen {
 		pa.setBPM1(e.getValue());
 		livePlayer.tempo(pa.getBPM1());
 		pa.setBPM2(e.getValue() + bpmDifferenceSlider.getValue());
-		//drawBody();
 	}
 	
 	/**
@@ -530,7 +531,6 @@ public class Editor extends Screen {
 	 */
 	public void bpmDifference(ControlEvent e) {
 		pa.setBPM2(pa.getBPM1() + e.getValue());
-		//drawBody();
 	}
 	
 	/**
@@ -578,7 +578,6 @@ public class Editor extends Screen {
 		cp5.show();
 		showUnlockedControllers();
 		drawToolbar();
-		//drawBody();
 		timeEntered = pa.millis();
 		prev_t = pa.millis();
 		playToggle.setValue(false);
@@ -601,8 +600,8 @@ public class Editor extends Screen {
 		pa.println("visit time: " + (pa.millis() - timeEntered));
 		if (pa.millis() - timeEntered > 10000) {
 			pa.playerInfo.numEditorVisits++;
-			pa.savePlayerInfo();
 		}
+		pa.savePlayerInfo();
 		pa.saveCurrentPhrasePicture();
 		pa.saveCurrentScale();
 	}
@@ -639,7 +638,6 @@ public class Editor extends Screen {
 	@Override
 	public void mouseWheel(MouseEvent event) {
 		hScrollbar.myOnScroll(event.getCount());
-		//drawBody();
 	}
 	
 	@Override
@@ -676,7 +674,6 @@ public class Editor extends Screen {
 				}
 			}
 		}
-		//drawBody();
 	}
 	
 	/**
@@ -695,7 +692,9 @@ public class Editor extends Screen {
 				pa.currentPhrase.setNoteType(index+1, Phrase.NOTE_START);
 			}
 			
-			drawState = DRAWING_NOTE;	
+			drawState = DRAWING_NOTE;
+			
+			pa.saveCurrentPhrasePicture();
 		}
 	}
 	
@@ -715,6 +714,8 @@ public class Editor extends Screen {
 			if (editSubsequentNote) {
 				pa.currentPhrase.setNoteType(index+1, Phrase.NOTE_START);
 			}
+			
+			pa.saveCurrentPhrasePicture();
 		}	
 	}
 	
@@ -741,7 +742,6 @@ public class Editor extends Screen {
 						indexMousePressed++;
 					}
 					pa.currentPhrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_SUSTAIN);
-					//drawBody();
 				}
 				else if (newIndex < indexMousePressed && newIndex < startIndexOfUserDrawnNote) {
 					pa.currentPhrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
@@ -750,7 +750,6 @@ public class Editor extends Screen {
 						indexMousePressed++;
 					}
 					startIndexOfUserDrawnNote = newIndex;
-					//drawBody();
 				}
 			}
 			else {
@@ -764,9 +763,6 @@ public class Editor extends Screen {
 				writeRest(index, pitch);
 			}
 		}
-		/*else {
-			userIsDrawingNote = false;
-		}*/
 	}
 	
 	/**
@@ -831,10 +827,10 @@ public class Editor extends Screen {
 	
 	@Override
 	public void draw() {
+		pa.background(255);
 		if (playToggle.getValue() != 0) {
 			int dt = pa.millis() - prev_t;
 			livePlayer.update(dt * pa.getBPMS1());
-			//drawBody();
 		}
 		prev_t = pa.millis();
 		
@@ -847,20 +843,6 @@ public class Editor extends Screen {
 	 * Draws the stuff apart from the grid.
 	 */
 	private void drawToolbar() {
-		//top toolbar background
-		pa.noStroke();
-		pa.fill(255);
-		pa.rectMode(pa.CORNER);
-		pa.rect(0, 0, pa.width, gridFrame.getY1());
-		
-		//bottom toolbar background
-		pa.rectMode(pa.CORNERS);
-		pa.rect(0, gridFrame.getY2() + 1, pa.width, pa.height);
-		
-		//left toolbar background
-		pa.rect(0, 0, gridFrame.getX1(), pa.height);
-		
-		//controllers
 		cp5.draw();
 		checkMenus();
 	}
@@ -869,26 +851,11 @@ public class Editor extends Screen {
 	 * Draws the grid and the stuff behind the grid.
 	 */
 	private void drawBody() {
-		//draw blank background behind grid
-		pa.noStroke();
-		pa.fill(255);
-		pa.rectMode(pa.CORNERS);
-		pa.rect(0, gridFrame.getY1(), pa.width, gridFrame.getY2());
-		
 		//draw ghost image of grid
 		float ghostCellWidth = cellWidth * pa.getBPM2() / pa.getBPM1();
 		drawGrid(pa.lerpColor(PhasesPApplet.getColor2(), pa.color(255), 0.8f), ghostCellWidth);
 		drawPhrase(pa.lerpColor(PhasesPApplet.getColor1(), pa.color(255), 0.8f),
 				   pa.lerpColor(PhasesPApplet.getColor2(), pa.color(255), 0.8f), pa.color(255), ghostCellWidth);
-		
-		/*if (pa.phrase.getNumNotes() < rowSize) {
-			//draw outline of grid frame
-			pa.noStroke();
-			pa.fill(pa.getColor2(), 25);
-			pa.rectMode(pa.CORNERS);
-			pa.rect(gridFrame.getX1() + cellWidth * (pa.phrase.getNumNotes()+1), gridFrame.getY1(),
-					gridFrame.getX2(), gridFrame.getY2());
-		}*/
 			
 		//draw grid
 		drawGrid(PhasesPApplet.getColor2(), cellWidth);
@@ -911,13 +878,7 @@ public class Editor extends Screen {
 			scaleLabel = scaleMenu.getLabel();
 			Scale newScale = pa.getScale(rootLabel, scaleLabel);
 			changeScale(newScale);
-			//drawBody();
 		}
-		//else if (rootMenu.isOpen() != rootMenuOpen || scaleMenu.isOpen() != scaleMenuOpen) {
-		//	rootMenuOpen = rootMenu.isOpen();
-		//	scaleMenuOpen = scaleMenu.isOpen();
-			//drawBody();
-		//}
 	}
 	
 	/**
@@ -1045,8 +1006,6 @@ public class Editor extends Screen {
 	 * @return The default dynamic value for notes created in the Editor
 	 */
 	private float defaultDynamic() {
-		//TODO Bookmarking this in case there's no better way to
-		//manipulate the volume than by changing the dynamic directly
 		return 50 + pa.random(-5, 5);
 	}
 }
