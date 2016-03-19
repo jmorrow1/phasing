@@ -606,7 +606,6 @@ public class Editor extends Screen {
 		}
 		pa.savePlayerInfo();
 		pa.saveCurrentPhrasePicture();
-		pa.saveCurrentScale();
 	}
 	
 	@Override

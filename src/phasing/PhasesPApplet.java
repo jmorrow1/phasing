@@ -143,8 +143,8 @@ public class PhasesPApplet extends PApplet {
 		initPlayerInfo();
 		initBPMData(playerInfo);
 		surface.setResizable(true);
-		initCurrentScale();				
 		initCurrentPhrase();
+		initScales(currentPhrase);
 		initScreens();
 		currentScreen = editor;
 		initCP5Objects(currentScreen);
@@ -210,14 +210,14 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
-	 * Initializes the currentScale.
+	 * Initializes the scales in general and the current scale.
+	 * @param currentPhrase This must be initialized before this method can execute.
 	 */
-	private void initCurrentScale() {
+	private void initScales(Phrase currentPhrase) {
 		loadScales();
-		boolean currentScaleLoaded = loadCurrentScale();
+		boolean currentScaleLoaded = setCurrentScale(currentPhrase.getScaleClassName(), currentPhrase.getScaleRootName());
 		if (!currentScaleLoaded) {
 			currentScale = getRandomScale();
-			saveCurrentScale();
 		}
 	}
 	
@@ -426,36 +426,6 @@ public class PhasesPApplet extends PApplet {
 		} catch (RuntimeException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	/**
-	 * Tries to initialize the current scale variable by loading the appropriate file.
-	 * @return True, if it succeeds. False, if it fails.
-	 */
-	public boolean loadCurrentScale() {
-		File file = new File(saveFolderPath + "/Current Scale.json");
-		if (file.exists()) {
-			try {
-				BufferedReader reader = createReader(file);
-				JSONObject json = new JSONObject(reader);
-				currentScale = new Scale(json);
-				reader.close();
-				return true;
-			} catch (IOException | RuntimeException e) {
-				e.printStackTrace();
-				return false;
-			}
-		}
-		else {
-			return false;
-		}
-	}
-	
-	/**
-	 * Saves the current scale to the save folder.
-	 */
-	public void saveCurrentScale() {
-		saveJSONObject(currentScale.toJSON(), saveFolderPath + "/Current Scale.json");
 	}
 	
 	/**
@@ -926,7 +896,6 @@ public class PhasesPApplet extends PApplet {
 	
 	@Override
 	public void exit() {
-		this.saveCurrentScale();
 		this.savePlayerInfo();
 		this.saveCurrentPhrasePicture();
 		this.savePhrasePictures();
@@ -1333,11 +1302,16 @@ public class PhasesPApplet extends PApplet {
 	 * 
 	 * @param scaleClassName
 	 * @param scaleRootName
+	 * @return True, if the current scale was successfully assigned a value, false if no value was assigned to it.
 	 */
-	public void setCurrentScale(String scaleClassName, String scaleRootName) {
+	public boolean setCurrentScale(String scaleClassName, String scaleRootName) {
 		Scale newScale = getScale(scaleRootName, scaleClassName);
 		if (newScale != null) {
 			this.currentScale = newScale;
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 	
@@ -1383,7 +1357,7 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void removePhrasePicture(int i) {
 		this.deletePhrasePictureFile(phrasePictures.get(i).getName());
-		phrasePictures.remove(i);		
+		phrasePictures.remove(i);
 	}
 	
 	/**
