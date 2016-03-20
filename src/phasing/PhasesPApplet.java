@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -127,7 +128,7 @@ public class PhasesPApplet extends PApplet {
 		//initSimpleColorScheme();
 		
 		//init save folder path
-		saveFolderPath = "C:/Users/James/Desktop/sav/"; //TODO Change
+		saveFolderPath = this.sketchPath() + "/sav/";
 		
 		initPhrasePictures();
 		
@@ -463,7 +464,9 @@ public class PhasesPApplet extends PApplet {
 	public boolean loadPhrasePictures() {
 		try {
 			phrasePictures = new ArrayList<PhrasePicture>();
-			Files.walk(Paths.get(saveFolderPath + "phrases/")).forEach(filePath -> {
+			Path path = Paths.get(saveFolderPath + "phrases/");
+			System.out.println(path);
+			Files.walk(path).forEach(filePath -> {
 				if (filePath.toString().endsWith(".json") &&
 						!filePath.toString().contains("Current Phrase.json")) {
 						
@@ -493,7 +496,6 @@ public class PhasesPApplet extends PApplet {
 	 * @param name The name (w/o the extension) of the file.
 	 */
 	private void deletePhrasePictureFile(String name) {
-		//TODO Implement
 		File file = new File(saveFolderPath + "phrases/" + name + ".json");
 		if (file.exists()) {
 			try {
@@ -1417,7 +1419,6 @@ public class PhasesPApplet extends PApplet {
 	 * @author James Morrow
 	 *
 	 */
-	//TODO: Make ColorSchemes possess a light version of each color (color 1, color 2, and the blended color)
 	private class ColorScheme {
 		final int color1, color2, color1Bold, color2Bold, color1VeryBold, color2VeryBold;
 		final int blendedColor, blendedColorVeryBold, blendedColorBold;

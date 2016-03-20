@@ -610,12 +610,12 @@ public class Editor extends Screen {
 	
 	@Override
 	public void onPause() {
-		//TODO: if player is playing, pause it.
+		//NOT IMPLEMENTED
 	}
 	
 	@Override
 	public void onResume() {
-		//TODO: if player was playing prior to the pause, resume it.
+		//NOT IMPLEMENTED
 	}
 	
 	/********************************

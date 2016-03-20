@@ -408,11 +408,11 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	
 	@Override
 	public void onPause() {
-		//TODO bookmark place in music and stop playing
+		//TODO NOT IMPLEMENTED
 	}
 	
 	public void onResume() {
-		//TODO resume music at bookmarked place
+		//TODO NOT IMPLEMENTED
 	}
 	
 	/******************************

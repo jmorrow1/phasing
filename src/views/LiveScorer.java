@@ -310,8 +310,6 @@ public class LiveScorer extends View {
 		}
 		else {
 			spawnX = startSpawnX;
-			//TODO Bug: The spawnY might have a greater value than it should under some unusual circumstances having to do
-			//with screen resizing
 			if (spawnY < endSpawnY) {
 				spawnY += dy;
 			}
