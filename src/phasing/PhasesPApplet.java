@@ -83,6 +83,7 @@ public class PhasesPApplet extends PApplet {
 	
 	//save folder location
 	public String saveFolderPath;
+	public String dataFolderPath;
 	
 	//player
 	public PlayerInfo playerInfo;
@@ -94,7 +95,7 @@ public class PhasesPApplet extends PApplet {
 	/**
 	 * Sets the initial width and height of the window.
      * But PhasesPApplet reverts to its defaults if the given
-     * width is less than 800 or the given height is less than 600.
+     * width is less than 800 or the given height is less than 600.`
 	 */
 	protected static void setInitialScreenSize(int width, int height) {
 		if (width >= 800 && height >= 600) {
@@ -127,8 +128,9 @@ public class PhasesPApplet extends PApplet {
 		initColorScheme();
 		//initSimpleColorScheme();
 		
-		//init save folder path
+		//init folder paths
 		saveFolderPath = this.sketchPath() + "/sav/";
+		dataFolderPath = this.sketchPath() + "/data/";
 		
 		initPhrasePictures();
 		
@@ -206,7 +208,7 @@ public class PhasesPApplet extends PApplet {
 	private void initPlayerInfo() {
 		boolean playerInfoLoaded = loadPlayerInfo();
 		if (!playerInfoLoaded) {
-			playerInfo = new PlayerInfo(true);
+			playerInfo = new PlayerInfo(false);
 			savePlayerInfo();
 		}
 	}
@@ -351,7 +353,7 @@ public class PhasesPApplet extends PApplet {
 	private void loadScales() {
 		try {
 			int i=0;
-			Files.walk(Paths.get("src/data/scales")).forEach(filePath -> {
+			Files.walk(Paths.get(dataFolderPath + "scales")).forEach(filePath -> {
 				if (filePath.toString().endsWith(".json")) {
 					BufferedReader reader = createReader(filePath.toString());
 					JSONObject json = new JSONObject(reader);
