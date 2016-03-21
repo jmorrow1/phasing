@@ -597,7 +597,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	}
 
 	@Override
-	public void mousePressed() {
+	public void mousePressed() {		
 		int iconIndex = iconIndexTouches(pa.mouseX, pa.mouseY);
 		if (iconIndex != -1) {
 			activeIconIndex = iconIndex;

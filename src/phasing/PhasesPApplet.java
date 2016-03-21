@@ -855,7 +855,7 @@ public class PhasesPApplet extends PApplet {
 	/********************************
 	 ***** Input Event Handling *****
 	 ********************************/
-	
+
 	/**
 	 * Sends mouse pressed events to the current screen.
 	 */
@@ -889,6 +889,9 @@ public class PhasesPApplet extends PApplet {
 	 * Sends key pressed events to the current screen.
 	 */
 	public void keyPressed() {
+		if (key == 'p') {
+			save("10.png");
+		}
 		if (key == 'h') {
 			toggleHelp();
 		}
@@ -1120,6 +1123,7 @@ public class PhasesPApplet extends PApplet {
 	 * @return The matching scale, or null if no scale matches.
 	 */
 	public Scale getScale(String root, String scaleName) {
+		System.out.println("root = " + root + ", scaleName = " + scaleName);
 		for (String name : scaleTypes) {
 			if (name.equals(scaleName)) {
 				ScaleSet ss = scaleSets.get(name);
@@ -1137,22 +1141,49 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
-	 * Helper to recognize the equivalence between two strings that refer to the same pitch.
+	 * Takes two strings, which presumably represent note names, and compares them,
+	 * returning true if the two strings represent the same note.
 	 * 
-	 * The first string, doubleName, should be one of two things. If it represents a note with an accidental--
-	 * for example "A#"--then it will refer to both names i.e. "A#/Bb". If it represents a note without
-	 * an accidental--"C" for example-- then it will simply be "C".
+	 * There are 4 cases in which the two strings are taken to be equal.
+	 * (1) name1.equals(name2)
+	 * (2) name1.contains(name2).
+	 * (3) name2.contains(name1)
+	 * (4) The two strings reference the same pitch, but by different aliases.
 	 * 
-	 * The second string should only ever contain one name. So it could equal to "A#". It could equal "Bb".
-	 * But it could not equal "A#/Bb".
+	 * Cases (2) and (3) are present so to the method returns true on instances like:
+	 * name1.equals("A#/Bb") and name2.equals("A#").
 	 * 
-	 * @param doubleName 
-	 * @param singleName
+	 * Example of case (4): name1.equals("A#") && name2.equals("Bb").
 	 * 
-	 * @return True, if the two strings represent equivalent pitches, false otherwise.
+	 * @param name1 The first note name. 
+	 * @param name2 The second note name.
+	 * @return True, if the two strings are taken to refer to the same note, false otherwise.
 	 */
-	private static boolean noteNamesAreEquivalent(String doubleName, String singleName) {
-		return (singleName.length() > 1 && doubleName.contains(singleName)) || doubleName.equals(singleName);
+	private static boolean noteNamesAreEquivalent(String name1, String name2) {
+		if (name1.equals(name2)) {
+			return true;
+		}
+		else if (name1.contains(name2)) {
+			return true;
+		}
+		else if (name2.contains(name1)) {
+			return true;
+		}
+		else {
+			switch (name1) {
+				case "A#" : if (name2.equals("Bb")) return true; break;
+				case "Bb" : if (name2.equals("A#")) return true; break;
+				case "C#" : if (name2.equals("Db")) return true; break;
+				case "Db" : if (name2.equals("C#")) return true; break;
+				case "D#" : if (name2.equals("Eb")) return true; break;
+				case "Eb" : if (name2.equals("D#")) return true; break;
+				case "F#" : if (name2.equals("Gb")) return true; break;
+				case "Gb" : if (name2.equals("F#")) return true; break;
+				case "G#" : if (name2.equals("Ab")) return true; break;
+				case "Ab" : if (name2.equals("G#")) return true; break;
+			}
+			return false;
+		}
 	}
 	
 	/**

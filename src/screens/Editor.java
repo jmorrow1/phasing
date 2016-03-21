@@ -887,7 +887,8 @@ public class Editor extends Screen {
 	}
 	
 	/**
-	 * Changes the scale to the new scale.
+	 * Changes the current scale to the new scale, w/r/t to the global
+	 * currentScale variable and w/r/t to the Editor's own state.
 	 * @param newScale The new scale.
 	 */
 	private void changeScale(Scale newScale) {
