@@ -129,7 +129,7 @@ public class PhaseShifter extends View {
 		}
 		for (int i=0; i<pa.currentPhrase.getNumNotes(); i++) {
 			if (pa.currentPhrase.getSCDynamic(i) > 0) {
-				dataPoints.add(new DataPoint(i));
+				dataPoints.add(new DataPoint(i + pa.currentPhrase.getNumNotes()));
 				break;
 			}
 		}

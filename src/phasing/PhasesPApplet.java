@@ -890,7 +890,7 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void keyPressed() {
 		if (key == 'p') {
-			save("10.png");
+			save("11.png");
 		}
 		if (key == 'h') {
 			toggleHelp();
@@ -1123,7 +1123,6 @@ public class PhasesPApplet extends PApplet {
 	 * @return The matching scale, or null if no scale matches.
 	 */
 	public Scale getScale(String root, String scaleName) {
-		System.out.println("root = " + root + ", scaleName = " + scaleName);
 		for (String name : scaleTypes) {
 			if (name.equals(scaleName)) {
 				ScaleSet ss = scaleSets.get(name);
