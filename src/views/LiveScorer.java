@@ -166,7 +166,7 @@ public class LiveScorer extends View {
 		halfWidth = (scoreMode.toInt() == MOVE_NOTES) ? (getWidth() * 0.5f) : (getWidth() * 0.25f);
 		halfHeight = (scoreMode.toInt() == MOVE_NOTES) ? (getHeight() * 0.3f) : (getHeight() * 0.15f);
 		
-		spawnX = (scoreMode.toInt() == MOVE_SPAWN_POINT) ? startSpawnX : 0;
+		spawnX = (scoreMode.toInt() == MOVE_SPAWN_POINT) ? startSpawnX : 0 + getWidth()/6;
 		spawnY = (scoreMode.toInt() == MOVE_SPAWN_POINT) ? startSpawnY : 0;
 	}
 	

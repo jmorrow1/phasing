@@ -33,6 +33,8 @@ import util.NameGenerator;
  *
  */
 public class PhasesPApplet extends PApplet {
+	private final static boolean unlockEverything = true;
+	
 	//phrase picture name generator
 	public static NameGenerator phrasePictureNameGenerator;
 	
@@ -206,10 +208,16 @@ public class PhasesPApplet extends PApplet {
 	 * Initializes the playerInfo.
 	 */
 	private void initPlayerInfo() {
-		boolean playerInfoLoaded = loadPlayerInfo();
-		if (!playerInfoLoaded) {
-			playerInfo = new PlayerInfo(false);
+		if (unlockEverything) {
+			playerInfo = new PlayerInfo(unlockEverything);
 			savePlayerInfo();
+		}
+		else {
+			boolean playerInfoLoaded = loadPlayerInfo();
+			if (!playerInfoLoaded) {
+				playerInfo = new PlayerInfo(unlockEverything);
+				savePlayerInfo();
+			}
 		}
 	}
 	
