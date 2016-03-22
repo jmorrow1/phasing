@@ -28,8 +28,8 @@ public interface ViewVariableInfo {
 	public final int ONLY_SHOW_ACTIVE_NOTE=0, SHOW_ACTIVE_NOTE=1, DONT_SHOW_ACTIVE_NOTE=2;
 	
 	public final String noteGraphicSet1Name = "Note Graphic Set 1";
-	public final int numNoteGraphicSet1s=5;
-	public final int SYMBOLS=0, DOTS1=1, CONNECTED_DOTS=2, RECTS_OR_SECTORS=3, SINE_WAVE=4;
+	public final int numNoteGraphicSet1s=6;
+	public final int SYMBOLS=0, DOTS1=1, CONNECTED_DOTS=2, LINE_SEGMENTS = 3, RECTS_OR_SECTORS=4, SINE_WAVE=5;
 	
 	public final String cameraModeName = "Camera Mode";
 	public final int numCameraModes = 3;

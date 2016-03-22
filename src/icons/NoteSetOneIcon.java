@@ -36,8 +36,10 @@ public class NoteSetOneIcon implements Icon {
 	            pa.ellipseMode(pa.CENTER);
 	            pa.ellipse(x - radius*0.4f, y, radius*0.4f, radius*0.4f);
 	            pa.ellipse(x + radius*0.4f, y, radius*0.4f, radius*0.4f);
-	            pa.strokeWeight(radius/20f);
-	            pa.stroke(0);
+	            //falls through
+	        case LINE_SEGMENTS:
+	        	pa.strokeWeight(radius/10f);
+	        	pa.stroke(0);
 	            pa.line(x - radius*0.5f, y, x + radius*0.5f, y);
 	            break;
 	        case RECTS_OR_SECTORS:

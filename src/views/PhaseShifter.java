@@ -243,6 +243,15 @@ public class PhaseShifter extends View {
 	}
 	
 	/**
+	 * Tells whether or not active notes should be shown.
+	 * @return True if active notes should be shown, false otherwise.
+	 */
+	private boolean showActiveNotes() {
+		return (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || 
+					activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE);
+	}
+	
+	/**
 	 * Draws the wave (graph).
 	 * 
 	 * @param activeNote The index of the note (or rest) that is currently being played.
@@ -265,13 +274,34 @@ public class PhaseShifter extends View {
 			transform(waveNum);
 			styleNoteGraphics(nonActiveColor);
 			
+			if (noteGraphic.toInt() == LINE_SEGMENTS) {
+				pa.beginShape();
+				int i = 0;
+				int j = 0;
+				while (i < pa.currentPhrase.getNumNotes()) {
+					if (!pa.currentPhrase.isRest(i)) {
+						if (showActiveNotes() && i == activeNote) {
+							styleNoteGraphics(activeColor);
+							DataPoint pt = dataPoints.get(j);
+							pa.vertex(pt.x() - this.width, pt.y());
+							styleNoteGraphics(nonActiveColor);
+						}
+						else if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
+							DataPoint pt = dataPoints.get(j);
+							pa.vertex(pt.x() - this.width, pt.y());
+						}
+						j++;
+					}
+					i++;
+				}
+			}
+		
+			
 			int i=0; //loops through notes in phrase
 			int j=0; //loops through data points
 			while (i < pa.currentPhrase.getNumNotes()) {
-				if (pa.currentPhrase.getSCDynamic(i) > 0) {
-					if ( (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || 
-							activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE)
-							&& i == activeNote) {
+				if (!pa.currentPhrase.isRest(i)) {
+					if (showActiveNotes() && i == activeNote) {
 						styleNoteGraphics(activeColor);
 						drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
 						styleNoteGraphics(nonActiveColor);
@@ -282,6 +312,28 @@ public class PhaseShifter extends View {
 					j++;
 				}
 				i++;
+			}
+			
+			if (noteGraphic.toInt() == LINE_SEGMENTS) {
+				i = 0;
+				j = 0;
+				while (i < pa.currentPhrase.getNumNotes()) {
+					if (!pa.currentPhrase.isRest(i)) {
+						if (showActiveNotes() && i == activeNote) {
+							styleNoteGraphics(activeColor);
+							DataPoint pt = dataPoints.get(j);
+							pa.vertex(pt.x() + this.width, pt.y());
+							styleNoteGraphics(nonActiveColor);
+						}
+						else if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
+							DataPoint pt = dataPoints.get(j);
+							pa.vertex(pt.x() + this.width, pt.y());
+						}
+						j++;
+					}
+					i++;
+				}
+				pa.endShape();
 			}
 			
 			//draw connections between dots
@@ -356,8 +408,16 @@ public class PhaseShifter extends View {
 	 * @param color The color.
 	 */
 	private void styleNoteGraphics(int color) {
-		pa.noStroke();
-		pa.fill(color);
+		switch (noteGraphic.toInt()) {
+			case LINE_SEGMENTS :
+				pa.stroke(color);
+				pa.noFill();
+				break;
+			default :
+				pa.noStroke();
+				pa.fill(color);
+				break;
+		}		
 	}
 	
 	/**
@@ -426,6 +486,9 @@ public class PhaseShifter extends View {
 			else {
 				d.curvedRect().display(pa);
 			}
+		}
+		else if (noteGraphic.toInt() == LINE_SEGMENTS) {
+			pa.vertex(d.x(), d.y());
 		}
 	}
 	

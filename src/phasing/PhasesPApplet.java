@@ -890,13 +890,13 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void keyPressed() {
 		if (key == 'p') {
-			save("11.png");
+			save("13.png");
 		}
 		if (key == 'h') {
 			toggleHelp();
 		}
 		else if (key == ESC) {
-			key = 0; //disable Processing's default behavior to close the program when ESC is pressed
+			key = 0; //disables Processing's default behavior to close the program when ESC is pressed
 		}
 		else  {
 			currentScreen.keyPressed();
