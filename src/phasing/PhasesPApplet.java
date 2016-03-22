@@ -68,14 +68,13 @@ public class PhasesPApplet extends PApplet {
 	
 	//visual variables
 	private static ColorScheme colorScheme;
-	public static PFont pfont12, pfont18, pfont42, musicFont;
+	public static PFont pfont12, pfont14, pfont18, pfont42, musicFont;
 	
 	//controlp5
 	private ControlP5 cp5;
-	private Button changeScreenButton;
+	private Button presenterButton, editorButton, phraseRepoButton;
 	private static final int CHANGE_SCREEN_BUTTON_X2 = 135;
 	private Button helpToggle;
-	private Button phraseRepoButton;
 	private boolean helpOn;
 	
 	//screen size
@@ -122,6 +121,7 @@ public class PhasesPApplet extends PApplet {
 	private void initStaticVariables() {
 		//init font variables
 		pfont12 = loadFont("DejaVuSans-12.vlw");
+		pfont14 = loadFont("DejaVuSans-14.vlw");
 		pfont18 = loadFont("DejaVuSans-18.vlw");
 		pfont42 = loadFont("DejaVuSans-42.vlw");
 		musicFont = loadFont("MaestroWide-48.vlw");
@@ -180,8 +180,7 @@ public class PhasesPApplet extends PApplet {
 		}
 		cp5 = new ControlP5(this);
 		cp5.setAutoDraw(false);
-		initChangeScreenButton(currentScreen);
-		initPhraseRepoButton(changeScreenButton);	
+		initChangeScreenButtons(currentScreen);
 		initHelpToggle(phraseRepoButton);
 	}
 	
@@ -262,20 +261,80 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
-	 * Initializes the changeScreenButton.
+	 * Initializes the buttons that change the screen.
 	 */
-	private void initChangeScreenButton(Screen currentScreen) {
+	private void initChangeScreenButtons(Screen currentScreen) {
+		int x1 = 10;
+		int y1 = 2;	
 		int width = CHANGE_SCREEN_BUTTON_X2 - 10;
-		int height = 26;
-		changeScreenButton = cp5.addButton("changeScreen")
-				                .setPosition(10, 0)
-			                    .setSize(width, height)
-			                    ;
-		changeScreenButton.getCaptionLabel().toUpperCase(false);
-		changeScreenButton.getCaptionLabel().setFont(pfont18);
-		colorControllerShowingLabel(changeScreenButton);
+		int height = 16;
 		
-		changeScreenButton.setCaptionLabel(captionLabel(currentScreen));
+		presenterButton = consChangeScreenButton("toPresenter", "Present", x1, y1, width, height);
+		y1 += height + 5;		
+		editorButton = consChangeScreenButton("toEditor", "Compose", x1, y1, width, height);	
+		y1 += height + 5;		
+		phraseRepoButton = consChangeScreenButton("toPhraseRepo", "Save / Load", x1, y1, width, height);
+		
+		updateHighlightedChangeScreenButton(currentScreen);
+	}
+	
+	/**
+	 * Constructs a change screen button.
+	 * 
+	 * @param callbackName The name of the callback that is called when the change screen button produces an event.
+	 * @param labelText The name that appears on the button.
+	 * @param x1 The leftmost x-coordinate of the button.
+	 * @param y1 The uppermost y-coordinate of the button.
+	 * @param width The width of the button.
+	 * @param height The height of the button.
+	 * @return The button.
+	 */
+	private Button consChangeScreenButton(String callbackName, String labelText, int x1, int y1, int width, int height) {
+		Button b = cp5.addButton(callbackName)
+	                  .setPosition(x1, y1)
+                      .setSize(width, height)
+                      .setLabel(labelText)
+                      ;
+		b.getCaptionLabel().toUpperCase(false);
+		b.getCaptionLabel().setFont(pfont14);
+		colorControllerShowingLabel(b);
+		return b;
+	}
+	
+	/**
+	 * Updates the change screen button that is highlighted based on what the current screen is.
+	 * 
+	 * @param currentScreen The current screen.
+	 */
+	private void updateHighlightedChangeScreenButton(Screen currentScreen) {
+		if (currentScreen == presenter) {
+			highlight(presenterButton);
+		}
+		else if (currentScreen == editor) {
+			highlight(editorButton);
+		}
+		else if (currentScreen == phraseRepo) {
+			highlight(phraseRepoButton);
+		}
+	}
+	
+	/**
+	 * Highlights the given change screen button, and un-highlights all other change screen buttons.
+	 * 
+	 * @param changeScreenButton The change screen button to highlight.
+	 */
+	private void highlight(Button changeScreenButton) {
+		changeScreenButton.setColorBackground(getColor1Bold());
+		
+		if (changeScreenButton != presenterButton) {
+			presenterButton.setColorBackground(getColor1());
+		}
+		if (changeScreenButton != editorButton) {
+			editorButton.setColorBackground(getColor1());
+		}
+		if (changeScreenButton != phraseRepoButton) {
+			phraseRepoButton.setColorBackground(getColor1());
+		}
 	}
 	
 	/**
@@ -296,27 +355,7 @@ public class PhasesPApplet extends PApplet {
 		helpToggle.getCaptionLabel().setFont(pfont12);
 		colorControllerShowingLabel(helpToggle);
 		
-		System.out.println(Util.getY1(helpToggle) + ", " + helpToggle.getHeight());
-	}
-	
-	/**
-	 * Initializes the button that takes the program to the phraseRepo screen.
-	 * @param helpToggle This is here to make explicit that this method relies on helpToggle being already initialized.
-
-	 */
-	private void initPhraseRepoButton(Button changeScreenButton) {
-		int buttonWidth = changeScreenButton.getWidth();
-		int buttonHeight = 12;
-		float x1 = Util.getX1(changeScreenButton);
-		float y1 = Util.getY2(changeScreenButton) + 5;
-		phraseRepoButton = cp5.addButton("toPhraseRepo")
-				              .setLabel("Save / Load")
-				              .setPosition(x1, y1)
-		                      .setSize(buttonWidth, buttonHeight)
-		                      ;
-		phraseRepoButton.getCaptionLabel().toUpperCase(false);
-		phraseRepoButton.getCaptionLabel().setFont(pfont12);
-		colorControllerShowingLabel(phraseRepoButton);
+		helpToggle.hide();
 	}
 	
 	/**
@@ -712,7 +751,8 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void hideAllControllers() {
 		helpToggle.hide();
-		changeScreenButton.hide();
+		presenterButton.hide();
+		editorButton.hide();
 		phraseRepoButton.hide();
 	}
 	
@@ -721,7 +761,8 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void showAllControllers() {
 		helpToggle.show();
-		changeScreenButton.show();
+		presenterButton.show();
+		editorButton.show();
 		phraseRepoButton.show();
 	}
 	
@@ -753,20 +794,27 @@ public class PhasesPApplet extends PApplet {
 	
 	/**
 	 * Callback from ControlP5.
-	 * Controls changing the screen from Presentation screen to Editor screen and vice versa.
+	 * Changes the current screen to the Presenter screen.
 	 */
-	public void changeScreen() {	
-		if (currentScreen == editor) {
-			changeScreenTo(presenter);	
-		}
-		else if (currentScreen == presenter) {
-			changeScreenTo(editor);
-		}
-		else if (currentScreen == phraseRepo) {
-			System.out.println(prevScreen);
-			changeScreenTo((prevScreen != null && prevScreen != phraseRepo) ? prevScreen : editor);
-		}
+	public void toPresenter() {
+		changeScreenTo(presenter);
 	}
+	
+	/**
+	 * Callback from ControlP5.
+	 * Changes the current screen to the Editor screen.
+	 */
+	public void toEditor() {
+		changeScreenTo(editor);
+	}
+	
+	/**
+	 * Callback from ControlP5.
+	 * Changes the current screen to the PhraseRepo screen.
+	 */
+	public void toPhraseRepo() {
+		changeScreenTo(phraseRepo);
+	}	
 	
 	/**
 	 * Changes the current screen from what it currently is to the given screen.
@@ -779,21 +827,7 @@ public class PhasesPApplet extends PApplet {
 		prevScreen = currentScreen;
 		currentScreen = destination;
 		currentScreen.onEnter();
-		changeScreenButton.setCaptionLabel(captionLabel(currentScreen));
-		
-		if (currentScreen == phraseRepo) {
-			int y1 = (int)Util.getY1(changeScreenButton);
-			int y2 = (int)Util.getY2(phraseRepoButton);
-		    changeScreenButton.setSize(changeScreenButton.getWidth(), y2 - y1);
-			phraseRepoButton.hide();
-		}
-		else {
-			int y1 = (int)Util.getY1(changeScreenButton);
-			int y2 = (int)Util.getY1(phraseRepoButton) - 5;
-			changeScreenButton.setHeight(y2 - y1);
-			Util.setY2(changeScreenButton, y2);		
-			phraseRepoButton.show();
-		}
+		updateHighlightedChangeScreenButton(currentScreen);
 	}
 	
 	/**
@@ -830,14 +864,6 @@ public class PhasesPApplet extends PApplet {
 		else {
 			helpToggle.setColorBackground(getColor1());
 		}
-	}
-	
-	/**
-	 * Calback from ControlP5.
-	 * Sends the program to the phraseRepo screen.
-	 */
-	public void toPhraseRepo() {
-		changeScreenTo(phraseRepo);
 	}
 	
 	/*********************
@@ -1318,39 +1344,11 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
-	 * Gives the lowermost y-coordinate of the change screen button.
-	 * @return The lowermost y-coordinate of the change screen button.
-	 */
-	public float getChangeScreenButtonY2() {
-		return (changeScreenButton != null) ? Util.getY2(changeScreenButton) : topToolbarY2() - 10;
-	}
-	
-	/**
-	 * Sets the lowermost y-coordinate of the change screen button.
-	 * @param y2 The new value for the lowermost y-coordinate of the change screen button.
-	 */
-	public void setChangeScreenButtonY2(float y2) {
-		float currX1 = changeScreenButton.getPosition()[0];
-		float currY1 = changeScreenButton.getPosition()[1];
-		float currY2 = currY1 + changeScreenButton.getHeight();
-		float newY1 = currY1 + (y2 - currY2);
-		changeScreenButton.setPosition(currX1, newY1);
-	}
-	
-	/**
 	 * Gives the rightmost x-coordinate of the change screen button.
 	 * @return The rightmost x-coordinate of the change screen button.
 	 */
 	public float getChangeScreenButtonX2() {
-		return (changeScreenButton != null) ? Util.getX2(changeScreenButton) : CHANGE_SCREEN_BUTTON_X2;
-	}
-	
-	/**
-	 * Gives the width of the change screen button.
-	 * @return The width of the change screen button.
-	 */
-	public float getChangeScreenButtonHeight() {
-		return changeScreenButton.getHeight();
+		return CHANGE_SCREEN_BUTTON_X2;
 	}
 
 	/**
