@@ -1188,7 +1188,8 @@ public class PhasesPApplet extends PApplet {
 	 * (3) name2.contains("/") && name2.contains(name1)
 	 * (4) The two strings reference the same pitch, but by different aliases.
 	 * 
-	 * Cases (2) and (3) are present so to the method returns true on instances like:
+	 * Cases (2) and (3) are present so to the method returns true on instances where
+	 * a name gives two aliases for a note, like:
 	 * name1.equals("A#/Bb") and name2.equals("A#").
 	 * 
 	 * Example of case (4): name1.equals("A#") && name2.equals("Bb").

@@ -246,7 +246,7 @@ public class PhaseShifter extends View {
 	 * Tells whether or not active notes should be shown.
 	 * @return True if active notes should be shown, false otherwise.
 	 */
-	private boolean showActiveNotes() {
+	private boolean showActiveNote() {
 		return (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || 
 					activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE);
 	}
@@ -268,40 +268,16 @@ public class PhaseShifter extends View {
 			activeColor = pa.color(activeColor, opacity);
 		}
 		
-		//draw non-sine wave graphics
-		if (noteGraphic.toInt() != SINE_WAVE) {
+		if (noteGraphic.toInt() != SINE_WAVE && noteGraphic.toInt() != LINE_SEGMENTS) {
 			pa.pushMatrix();
 			transform(waveNum);
 			styleNoteGraphics(nonActiveColor);
-			
-			if (noteGraphic.toInt() == LINE_SEGMENTS) {
-				pa.beginShape();
-				int i = 0;
-				int j = 0;
-				while (i < pa.currentPhrase.getNumNotes()) {
-					if (!pa.currentPhrase.isRest(i)) {
-						if (showActiveNotes() && i == activeNote) {
-							styleNoteGraphics(activeColor);
-							DataPoint pt = dataPoints.get(j);
-							pa.vertex(pt.x() - this.width, pt.y());
-							styleNoteGraphics(nonActiveColor);
-						}
-						else if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
-							DataPoint pt = dataPoints.get(j);
-							pa.vertex(pt.x() - this.width, pt.y());
-						}
-						j++;
-					}
-					i++;
-				}
-			}
-		
 			
 			int i=0; //loops through notes in phrase
 			int j=0; //loops through data points
 			while (i < pa.currentPhrase.getNumNotes()) {
 				if (!pa.currentPhrase.isRest(i)) {
-					if (showActiveNotes() && i == activeNote) {
+					if (showActiveNote() && i == activeNote) {
 						styleNoteGraphics(activeColor);
 						drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
 						styleNoteGraphics(nonActiveColor);
@@ -312,28 +288,6 @@ public class PhaseShifter extends View {
 					j++;
 				}
 				i++;
-			}
-			
-			if (noteGraphic.toInt() == LINE_SEGMENTS) {
-				i = 0;
-				j = 0;
-				while (i < pa.currentPhrase.getNumNotes()) {
-					if (!pa.currentPhrase.isRest(i)) {
-						if (showActiveNotes() && i == activeNote) {
-							styleNoteGraphics(activeColor);
-							DataPoint pt = dataPoints.get(j);
-							pa.vertex(pt.x() + this.width, pt.y());
-							styleNoteGraphics(nonActiveColor);
-						}
-						else if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
-							DataPoint pt = dataPoints.get(j);
-							pa.vertex(pt.x() + this.width, pt.y());
-						}
-						j++;
-					}
-					i++;
-				}
-				pa.endShape();
 			}
 			
 			//draw connections between dots
@@ -376,6 +330,65 @@ public class PhaseShifter extends View {
 				pa.ellipseMode(pa.RADIUS);
 				pa.ellipse(0, 0, radius, radius);
 			}
+		}		
+		else if (noteGraphic.toInt() == LINE_SEGMENTS) {
+			pa.pushMatrix();
+			transform(waveNum);
+			if (showActiveNote()) {
+				styleNoteGraphics(activeColor);
+				DataPoint a = dataPoints.get(activeNote);
+				DataPoint b = dataPoints.get(activeNote+1);
+				pa.line(a.x() - width, a.y(), b.x() - width, b.y());
+				pa.line(a.x(), a.y(), b.x(), b.y());
+				pa.line(a.x() + width, a.y(), b.x() + width, b.y());
+			}
+			
+			if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
+				styleNoteGraphics(nonActiveColor);
+				pa.beginShape();
+				if (transformation.toInt() == TRANSLATE) {
+					int i = 0;
+					int j = 0;
+					while (i < pa.currentPhrase.getNumNotes()) {
+						if (!pa.currentPhrase.isRest(i)) {
+							DataPoint pt = dataPoints.get(j);
+							pa.vertex(pt.x() - this.width, pt.y());
+							j++;
+						}
+						i++;
+					}
+				}
+				
+				int i = 0;
+				int j = 0;
+				while (i < pa.currentPhrase.getNumNotes()) {
+					if (!pa.currentPhrase.isRest(i)) {
+						DataPoint pt = dataPoints.get(j);
+						pa.vertex(pt.x(), pt.y());
+						j++;
+					}
+					i++;
+				}
+				
+				if (transformation.toInt() == TRANSLATE) {	
+					i = 0;
+					j = 0;
+					while (i < pa.currentPhrase.getNumNotes()) {
+						if (!pa.currentPhrase.isRest(i)) {
+							DataPoint pt = dataPoints.get(j);
+							pa.vertex(pt.x() + this.width, pt.y());
+							j++;
+						}
+					
+						i++;
+					}
+					pa.endShape();
+				}
+				else {
+					pa.endShape(pa.CLOSE);
+				}
+			}
+			pa.popMatrix();
 		}
 	}
 	
