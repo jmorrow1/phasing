@@ -492,13 +492,14 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 * 
 	 * @param x The x-coordinate in pixels.
 	 * @param y The y-coordinate in pixels.
-	 * @return
+	 * @return The index of the icon that the given (x,y) touches.
 	 */
 	private int iconIndexTouches(int x, int y) {
-		float iconEndX = iconStartX1 + icon_dx*iconLists.size() + 2*iconRadius;
+		float iconEndX = iconStartX1 + icon_dx*(iconLists.size()-1) + 2*iconRadius;
 		float iconStartY1 = iconStartY1();
-		if (iconStartX1-iconRadius <= x && x <= iconEndX && iconStartY1 - iconRadius <= y && y <= iconStartY1 + 3f*iconRadius) {
-			return (int)((x - iconStartX1) / icon_dx);
+		if (iconStartX1-iconRadius <= x && x < iconEndX && iconStartY1 - iconRadius <= y && y <= iconStartY1 + 3f*iconRadius) {
+			int result = (int)((x - iconStartX1) / icon_dx);
+			return PApplet.constrain(result, 0, iconLists.size()-1);
 		}
 		else {
 			return -1;
