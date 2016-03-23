@@ -10,7 +10,6 @@ import processing.data.JSONObject;
 /**
  * A data container of information related to the player. More specifically:
  * --> data that determines what the player has and hasn't unlocked.
- * --> how many times the player has visited the editor.
  * --> the index of the phrase the current phrase derives from.
  * --> the last saved state of view options
  * --> the last saved window size
@@ -23,7 +22,8 @@ import processing.data.JSONObject;
 public class PlayerInfo {
 	public float minutesSpentWithMusician, minutesSpentWithPhaseShifter, minutesSpentWithLiveScorer;
 	public int nextMusicianUnlockIndex, nextPhaseShifterUnlockIndex, nextLiveScorerUnlockIndex;
-	public int numEditorVisits;
+	public float minutesSpentWithEditor;
+	public int nextEditorUnlockIndex;
 	public HashMap<String, Integer> viewOptionValueMap = new HashMap<String, Integer>();
 	
 	private boolean windowSizeInitialized = false;
@@ -35,19 +35,20 @@ public class PlayerInfo {
 	public PlayerInfo(boolean everythingUnlocked) {
 		this((everythingUnlocked) ? 10000f : 0, (everythingUnlocked) ? 10000f : 0, (everythingUnlocked) ? 10000f : 0,
 				(everythingUnlocked) ? 1000 : 0, (everythingUnlocked) ? 1000 : 0, (everythingUnlocked) ? 1000 : 0,
-				(everythingUnlocked) ? 1000 : 0);
+				(everythingUnlocked) ? 1000 : 0, (everythingUnlocked) ? 1000 : 0);
 	}
 	
 	public PlayerInfo(float minutesSpentWithMusician, float minutesSpentWithPhaseShifter, float minutesSpentWithLiveScorer,
 			int nextMusicianUnlockIndex, int nextPhaseShifterUnlockIndex, int nextLiveScorerUnlockIndex,
-			int numEditorVisits) {
+			float minutesSpentWithEditor, int nextEditorUnlockIndex) {
 		this.minutesSpentWithMusician = minutesSpentWithMusician;
 		this.minutesSpentWithPhaseShifter = minutesSpentWithPhaseShifter;
 		this.minutesSpentWithLiveScorer = minutesSpentWithLiveScorer;
 		this.nextMusicianUnlockIndex = nextMusicianUnlockIndex;
 		this.nextPhaseShifterUnlockIndex = nextPhaseShifterUnlockIndex;
 		this.nextLiveScorerUnlockIndex = nextLiveScorerUnlockIndex;
-		this.numEditorVisits = numEditorVisits;
+		this.minutesSpentWithEditor = minutesSpentWithEditor;
+		this.nextEditorUnlockIndex = nextEditorUnlockIndex;
 	}
 	
 	public PlayerInfo(JSONObject json) {
@@ -57,7 +58,8 @@ public class PlayerInfo {
 		     json.getInt("nextMusicianUnlockIndex", 0),
 		     json.getInt("nextPhaseShifterUnlockIndex", 0),
 		     json.getInt("nextLiveScorerUnlockIndex", 0),
-		     json.getInt("numEditorVisits", 0));
+		     json.getFloat("minutesSpentWithEditor", 0),
+		     json.getInt("nextEditorUnlockIndex", 0));
 		
 		if (json.hasKey("viewOptionValueMap")) {
 			JSONArray optionValuePairs = json.getJSONArray("viewOptionValueMap");
@@ -107,7 +109,8 @@ public class PlayerInfo {
 		json.setInt("nextMusicianUnlockIndex", nextMusicianUnlockIndex);
 		json.setInt("nextPhaseShifterUnlockIndex", nextPhaseShifterUnlockIndex);
 		json.setInt("nextLiveScorerUnlockIndex", nextLiveScorerUnlockIndex);
-		json.setInt("numEditorVisits", numEditorVisits);
+		json.setFloat("minutesSpentWithEditor", minutesSpentWithEditor);
+		json.setInt("nextEditorUnlockIndex", nextEditorUnlockIndex);
 		
 		JSONArray jsonMap = new JSONArray();
 		json.setJSONArray("viewOptionValueMap", jsonMap);

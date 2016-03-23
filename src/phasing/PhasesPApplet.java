@@ -33,7 +33,10 @@ import util.NameGenerator;
  *
  */
 public class PhasesPApplet extends PApplet {
-	private final static boolean unlockEverything = true;
+	private final static boolean unlockEverything = false;
+	
+	//time
+	private final static float minutesPerMillisecond = 1f / 60000f;
 	
 	//phrase picture name generator
 	public static NameGenerator phrasePictureNameGenerator;
@@ -273,7 +276,7 @@ public class PhasesPApplet extends PApplet {
 		y1 += height + 5;		
 		editorButton = consChangeScreenButton("toEditor", "Compose", x1, y1, width, height);	
 		y1 += height + 5;		
-		phraseRepoButton = consChangeScreenButton("toPhraseRepo", "Save / Load", x1, y1, width, height);
+		phraseRepoButton = consChangeScreenButton("toPhraseRepo", "Load", x1, y1, width, height);
 		
 		updateHighlightedChangeScreenButton(currentScreen);
 	}
@@ -1135,6 +1138,16 @@ public class PhasesPApplet extends PApplet {
 		if (0 <= num && num < denom) return num;
 		else if (num > 0) return num % denom;
 		else return denom - ((-num) % denom);
+	}
+	
+	/**
+	 * Takes an amount in milliseconds and converts that amount to minutes.
+	 * 
+	 * @param amt The amount in milliseconds.
+	 * @return The amount in minutes.
+	 */
+	public static float millisToMinutes(int amt) {
+		return amt * minutesPerMillisecond;
 	}
 	
 	/*******************************

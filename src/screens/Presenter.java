@@ -41,7 +41,6 @@ import views.ViewVariableInfo;
 public class Presenter extends Screen implements ViewVariableInfo {
 	// real time
 	private int dt, prev_t; //milliseconds
-	private final float minutesPerMillisecond = 1f / 60000f;
 	
 	// unlock sequences (in terms of minutes to unlock thing 1, minutes to unlock thing 2, etc.)
 	private final float[] musicianUnlockSeq = {0.5f, 1, 4};
@@ -444,10 +443,11 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		int t = pa.millis();
 		dt = t - prev_t;
 		prev_t = t;
+		float changeInMinutes = PhasesPApplet.millisToMinutes(dt);
 		switch (viewType.toInt()) {
-			case MUSICIAN : pa.playerInfo.minutesSpentWithMusician += dt * minutesPerMillisecond; break;
-			case PHASE_SHIFTER : pa.playerInfo.minutesSpentWithPhaseShifter += dt * minutesPerMillisecond; break;
-			case LIVE_SCORER : pa.playerInfo.minutesSpentWithLiveScorer += dt * minutesPerMillisecond; break;
+			case MUSICIAN : pa.playerInfo.minutesSpentWithMusician += changeInMinutes; break;
+			case PHASE_SHIFTER : pa.playerInfo.minutesSpentWithPhaseShifter += changeInMinutes; break;
+			case LIVE_SCORER : pa.playerInfo.minutesSpentWithLiveScorer += changeInMinutes; break;
 		}
 	}
 

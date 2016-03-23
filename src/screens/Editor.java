@@ -33,7 +33,7 @@ import util.FloatFormatter;
 public class Editor extends Screen {
 	//time
 	private int prev_t;
-	private int timeEntered;
+	private float[] unlockTimes = new float[] {0, 1, 2, 3, 4, 5};
 	
 	//playback
 	private SoundCipherPlus livePlayer;
@@ -62,7 +62,7 @@ public class Editor extends Screen {
 	
 	//cp5
 	private final static int BPM_1 = 1, BPM_DIFFERENCE = 2;
-	private int maxPhaseDifferenceAmplitude = 10;
+	private int maxPhaseDifferenceAmplitude = 5;
 	private ControlP5 cp5;
 	private Toggle playToggle;
 	private Slider bpmSlider, bpmDifferenceSlider;
@@ -270,12 +270,12 @@ public class Editor extends Screen {
 		int sliderHeight = 23;
 		bpmSlider = consBPMSlider(Util.getX2(scaleMenu) + controller_dx, 
 				                  pa.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
-				                  sliderWidth,
+				                  (int)(1.1f * sliderWidth),
 				                  sliderHeight);
 		
 		bpmDifferenceSlider = consBPMDifferenceSlider(Util.getX2(bpmSlider) + controller_dx,
 				                                     pa.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
-				                                     sliderWidth, 
+				                                     (int)(0.9f * sliderWidth), 
 				                                     sliderHeight);
 	}
 	
@@ -420,17 +420,17 @@ public class Editor extends Screen {
 	 * Makes all the controllers that, according to the pa.playerInfo object, the player has unlocked visible.
 	 */
 	private void showUnlockedControllers() {
-		if (pa.playerInfo.numEditorVisits >= 1) {
+		if (pa.playerInfo.nextEditorUnlockIndex >= 0) {
 			playToggle.show();
-			if (pa.playerInfo.numEditorVisits >= 2) {
+			if (pa.playerInfo.nextEditorUnlockIndex >= 1) {
 				rootMenu.show();
-				if (pa.playerInfo.numEditorVisits >= 3) {
+				if (pa.playerInfo.nextEditorUnlockIndex >= 2) {
 					scaleMenu.show();
-					if (pa.playerInfo.numEditorVisits >= 4) {
+					if (pa.playerInfo.nextEditorUnlockIndex >= 3) {
 						bpmSlider.show();
-						if (pa.playerInfo.numEditorVisits >= 5) {
+						if (pa.playerInfo.nextEditorUnlockIndex >= 4) {
 							bpmDifferenceSlider.show();
-							if (pa.playerInfo.numEditorVisits >= 6) {
+							if (pa.playerInfo.nextEditorUnlockIndex >= 5) {
 								hScrollbar.show();
 								addNoteButton.show();
 								subNoteButton.show();
@@ -581,7 +581,6 @@ public class Editor extends Screen {
 		cp5.show();
 		showUnlockedControllers();
 		drawToolbar();
-		timeEntered = pa.millis();
 		prev_t = pa.millis();
 		playToggle.setValue(false);
 		
@@ -600,10 +599,6 @@ public class Editor extends Screen {
 	@Override
 	public void onExit() {
 		cp5.hide();
-		pa.println("visit time: " + (pa.millis() - timeEntered));
-		if (pa.millis() - timeEntered > 10000) {
-			pa.playerInfo.numEditorVisits++;
-		}
 		pa.savePlayerInfo();
 		pa.saveCurrentPhrasePicture();
 	}
@@ -833,15 +828,31 @@ public class Editor extends Screen {
 	@Override
 	public void draw() {
 		pa.background(255);
+		
+		int dt = pa.millis() - prev_t;
+		pa.playerInfo.minutesSpentWithEditor += PhasesPApplet.millisToMinutes(dt);
 		if (playToggle.getValue() != 0) {
-			int dt = pa.millis() - prev_t;
 			livePlayer.update(dt * pa.getBPMS1());
 		}
 		prev_t = pa.millis();
 		
+		checkUnlocks();
+		
 		drawBody();
 		drawToolbar();
 		pa.drawControlP5();
+	}
+	
+	/**
+	 * Checks if any Editor-related thing should be unlocked,
+	 * and performs the unlocking for anything that should be unlocked.
+	 */
+	private void checkUnlocks() {
+		if (pa.playerInfo.nextEditorUnlockIndex < unlockTimes.length
+				&& pa.playerInfo.minutesSpentWithEditor >= unlockTimes[pa.playerInfo.nextEditorUnlockIndex]) {
+			pa.playerInfo.nextEditorUnlockIndex++;
+			showUnlockedControllers();
+		}
 	}
 	
 	/**
