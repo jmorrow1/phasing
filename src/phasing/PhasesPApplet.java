@@ -1184,8 +1184,8 @@ public class PhasesPApplet extends PApplet {
 	 * 
 	 * There are 4 cases in which the two strings are taken to be equal.
 	 * (1) name1.equals(name2)
-	 * (2) name1.contains(name2).
-	 * (3) name2.contains(name1)
+	 * (2) name1.contains("/") && name1.contains(name2)
+	 * (3) name2.contains("/") && name2.contains(name1)
 	 * (4) The two strings reference the same pitch, but by different aliases.
 	 * 
 	 * Cases (2) and (3) are present so to the method returns true on instances like:
@@ -1201,10 +1201,10 @@ public class PhasesPApplet extends PApplet {
 		if (name1.equals(name2)) {
 			return true;
 		}
-		else if (name1.contains(name2)) {
+		else if (name1.contains("/") && name1.contains(name2)) {
 			return true;
 		}
-		else if (name2.contains(name1)) {
+		else if (name2.contains("/") && name2.contains(name1)) {
 			return true;
 		}
 		else {
