@@ -33,7 +33,7 @@ import util.NameGenerator;
  *
  */
 public class PhasesPApplet extends PApplet {
-	private final static boolean unlockEverything = true;
+	private final static boolean unlockEverything = false;
 	
 	//time
 	private final static float minutesPerMillisecond = 1f / 60000f;
@@ -972,7 +972,7 @@ public class PhasesPApplet extends PApplet {
 	
 	@Override
 	public void exit() {
-		presenter.save();
+		presenter.saveViewSettings();
 		this.savePlayerInfo();
 		this.saveCurrentPhrasePicture();
 		this.savePhrasePictures();	

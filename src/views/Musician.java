@@ -46,7 +46,7 @@ public class Musician extends View {
 	 * @param pa The PhasesPApplet instance.
 	 */
 	public Musician(Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
-		super(viewBox, opacity, playerInfo, pa);
+		super(viewBox, opacity, pa);
 		init();
 		loadSettings(playerInfo);
 	}
@@ -57,14 +57,12 @@ public class Musician extends View {
 	 * @param m The Musician this one derives its option values from.
 	 * @param viewBox The area in which to draw.
 	 * @param opacity The opacity of notes.
-	 * @param playerInfo Contains information (potentially) about how to initialize the view's settings.
 	 * @param pa The PhasesPApplet instance.
 	 */
-	public Musician(Musician m, Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
-		super(viewBox, opacity, playerInfo, pa);
+	public Musician(Musician m, Rect viewBox, int opacity, PhasesPApplet pa) {
+		super(viewBox, opacity, pa);
 		copyOptionValues(m);
 		init();
-		loadSettings(playerInfo);
 	}
 	
 	/**

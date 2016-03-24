@@ -61,7 +61,7 @@ public class PhaseShifter extends View {
 	 * @param pa The PhasesPApplet instance.
 	 */
 	public PhaseShifter(Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
-		super(viewBox, opacity, playerInfo, pa);
+		super(viewBox, opacity, pa);
 		init();
 		loadSettings(playerInfo);
 	}
@@ -75,11 +75,10 @@ public class PhaseShifter extends View {
 	 * @param playerInfo Contains information (potentially) about how to initialize the view's settings.
 	 * @param pa The PhasesPApplet instance.
 	 */
-	public PhaseShifter(PhaseShifter ps, Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
-		super(viewBox, opacity, playerInfo, pa);
+	public PhaseShifter(PhaseShifter ps, Rect viewBox, int opacity, PhasesPApplet pa) {
+		super(viewBox, opacity, pa);
 		copyOptionValues(ps);
 		init();
-		loadSettings(playerInfo);
 	}
 	
 	/**

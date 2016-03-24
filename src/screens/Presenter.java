@@ -111,11 +111,11 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private void initViews(PlayerInfo playerInfo) {
 		Rect area = new Rect(viewCenx(), viewCeny(), pa.width, viewHeight(), pa.CENTER);
 		musicianView = (musicianView == null) ? new Musician(area, 150, playerInfo, pa)
-				                              : new Musician(musicianView, area, 150, playerInfo, pa);
+				                              : new Musician(musicianView, area, 150, pa);
 		phaseShifterView = (phaseShifterView == null) ? new PhaseShifter(area, 150, playerInfo, pa)
-				                                      : new PhaseShifter(phaseShifterView, area, 150, playerInfo, pa);
+				                                      : new PhaseShifter(phaseShifterView, area, 150, pa);
 		liveScorerView = (liveScorerView == null) ? new LiveScorer(area, 150, playerInfo, pa) :
-			                                        new LiveScorer(liveScorerView, area, 150, playerInfo, pa);
+			                                        new LiveScorer(liveScorerView, area, 150, pa);
 		
 		switch(viewType.toInt()) {
 			case MUSICIAN : view = musicianView; break;
@@ -363,7 +363,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	@Override
 	public void onEnter() {
 		initCP5Objects();
-		initViews(pa.playerInfo);
 		setupIconLists();
 		activeIconIndex = 0;
 		repositionDirectionalButtons();
@@ -410,8 +409,6 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	public void onExit() {
 		player1.stop();
 		player2.stop();
-		save();
-		pa.savePlayerInfo();
 		cp5.hide();
 		
 	}
@@ -956,7 +953,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 ***** Saving *****
 	 ******************/
 	
-	public void save() {
+	public void saveViewSettings() {
 		musicianView.saveSettings(pa.playerInfo);
 		phaseShifterView.saveSettings(pa.playerInfo);
 		liveScorerView.saveSettings(pa.playerInfo);
