@@ -504,6 +504,46 @@ public class Phrase implements JSONable {
 	}
 	
 	/**
+	 * Copies the scPitches array and returns it.
+	 * @return A copy of the Phrase's pitch values.
+	 */
+	public float[] getSCPitches() {
+		return Arrays.copyOf(scPitches, scPitches.length);
+	}
+	
+	/**
+	 * Copies the scDynamics array and returns it.
+	 * @return A copy of the Phrase's dynamic values.
+	 */
+	public float[] getSCDynamics() {
+		return Arrays.copyOf(scDynamics, scDynamics.length);
+	}
+	
+	/**
+	 * Copies the scDurations array and returns it.
+	 * @return A copy of the Phrase's duration values.
+	 */
+	public float[] getSCDurations() {
+		return Arrays.copyOf(scDurations, scDurations.length);
+	}
+	
+	/**
+	 * Copies the scArts array and returns it.
+	 * @return A copy of the Phrase's articulation values.
+	 */
+	public float[] getSCArticulations() {
+		return Arrays.copyOf(scArts, scArts.length);
+	}
+	
+	/**
+	 * Copies the scPans array and returns it.
+	 * @return A copy of the Phrase's pan values.
+	 */
+	public float[] getSCPans() {
+		return Arrays.copyOf(scPans, scPans.length);
+	}
+	
+	/**
 	 * It looks up the note at the given scIndex. Then it looks up the start time of that note.
 	 * It compares that start time to the total duration of the phrase and returns that ratio.
 	 * 

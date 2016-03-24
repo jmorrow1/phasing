@@ -937,7 +937,11 @@ public class PhasesPApplet extends PApplet {
 	 * Sends key pressed events to the current screen.
 	 */
 	public void keyPressed() {
-		if (key == 'p') {
+		if (key == 'm') { //TODO eliminate when no longer needed
+			this.phraseToMidiFile(currentPhrase, saveFolderPath, "cycle");
+		}
+		
+		if (key == 'p') { //TODO eliminate when no longer needed
 			save("13.png");
 		}
 		if (key == 'h') {
@@ -1114,10 +1118,43 @@ public class PhasesPApplet extends PApplet {
 	 ***** Utility Functions *****
 	 *****************************/
 	
-	//TODO: implement this function
-	public static void phraseToMidiFile(String location, String name) {
+	//Algorithm is somewhat sound, but score.writeMidiFile() won't produce a playable MIDI file.
+	public void phraseToMidiFile(Phrase phrase, String location, String name) {	
 		SCScore score = new SCScore();
-		//THE IMPORTANT PART GOES HERE
+		
+		final float ERROR_TOLERANCE = 0.01f;
+		final int NOTE = 0, REST = 1;
+		float multiplier = PApplet.max(bpm1, bpm2) / PApplet.min(bpm1, bpm2);
+		float notept1 = 0, notept2 = 0;
+		do {
+			
+			//add all the notes from player 1
+			for (int i=0; i<phrase.getNumNotes(); i++) {
+				float dur = phrase.getSCDuration(i);
+				score.addNote(notept1, 0, 0, phrase.getSCPitch(i),
+						                     phrase.getSCDynamic(i),
+						                     dur,
+						                     phrase.getSCArticulation(i),
+						                     phrase.getSCPan(i));
+				notept1 += dur;
+			}
+			
+			//add all the notes from player 2
+			if (notept2 < notept1) {
+				for (int i=0; i<phrase.getNumNotes(); i++) {
+					float dur = phrase.getSCDuration(i) * multiplier;
+					score.addNote(notept2, 0, 0, phrase.getSCPitch(i),
+		                                         phrase.getSCDynamic(i),
+		                                         dur,
+		                                         phrase.getSCArticulation(i),
+		                                         phrase.getSCPan(i));
+					notept2 += dur;
+				}
+			}
+		} 
+		while (abs(notept1 - notept2) > ERROR_TOLERANCE);
+
+		score.tempo(PApplet.min(bpm1, bpm2));
 		score.writeMidiFile(location + "/" + name + ".mid");
 	}
 	
