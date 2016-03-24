@@ -363,6 +363,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	@Override
 	public void onEnter() {
 		initCP5Objects();
+		initViews(pa.playerInfo);
 		setupIconLists();
 		activeIconIndex = 0;
 		repositionDirectionalButtons();

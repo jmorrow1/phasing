@@ -937,13 +937,12 @@ public class PhasesPApplet extends PApplet {
 	 * Sends key pressed events to the current screen.
 	 */
 	public void keyPressed() {
-		if (key == 'm') { //TODO eliminate when no longer needed
+		/*if (key == 'm') { //TODO eliminate when no longer needed
 			this.phraseToMidiFile(currentPhrase, saveFolderPath, "cycle");
-		}
-		
+		}		
 		if (key == 'p') { //TODO eliminate when no longer needed
 			save("13.png");
-		}
+		}*/
 		if (key == 'h') {
 			toggleHelp();
 		}
