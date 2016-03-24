@@ -12,7 +12,6 @@ import processing.data.JSONObject;
  * --> data that determines what the player has and hasn't unlocked.
  * --> the index of the phrase the current phrase derives from.
  * --> the last saved state of view options
- * --> the last saved window size
  * --> the last saved bpm1 value
  * --> the last saved phase difference value
  * 
@@ -25,9 +24,6 @@ public class PlayerInfo {
 	public float minutesSpentWithEditor;
 	public int nextEditorUnlockIndex;
 	public HashMap<String, Integer> viewOptionValueMap = new HashMap<String, Integer>();
-	
-	private boolean windowSizeInitialized = false;
-	private int windowWidth, windowHeight;
 
 	public float bpm1 = PhasesPApplet.DEFAULT_BPM_1;
 	public float bpmDifference = PhasesPApplet.DEFAULT_BPM_DIFFERENCE;
@@ -71,34 +67,8 @@ public class PlayerInfo {
 			}
 		}
 		
-		if (json.hasKey("windowWidth") && json.hasKey("windowHeight")) {
-			windowWidth = json.getInt("windowWidth", -1);
-			windowHeight = json.getInt("windowHeight", -1);
-			if (windowWidth != -1 && windowHeight != -1) {
-				windowSizeInitialized = true;
-			}
-		}
-		
 		bpm1 = json.getFloat("bpm1", PhasesPApplet.DEFAULT_BPM_1);
 		bpmDifference = json.getFloat("phaseDifference", PhasesPApplet.DEFAULT_BPM_DIFFERENCE);
-	}
-	
-	public void setSize(int width, int height) {
-		this.windowWidth = width;
-		this.windowHeight = height;
-		windowSizeInitialized = true;
-	}
-	
-	public boolean isWindowSizeInitialized() {
-		return windowSizeInitialized;
-	}
-	
-	public int getWindowWidth() {
-		return windowSizeInitialized ? windowWidth : -1;
-	}
-	
-	public int getWindowHeight() {
-		return windowSizeInitialized ? windowHeight : -1;
 	}
 	
 	public JSONObject toJSON() {
@@ -123,12 +93,7 @@ public class PlayerInfo {
 			jsonMap.setJSONObject(i, jsonPair);
 			i++;
 		}
-		
-		if (windowSizeInitialized && windowWidth > 200 && windowHeight > 200) {
-			json.setInt("windowWidth", windowWidth);
-			json.setInt("windowHeight", windowHeight);
-		}
-		
+
 		json.setFloat("bpm1", bpm1);
 		json.setFloat("phaseDifference", bpmDifference);
 		

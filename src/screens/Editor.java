@@ -420,17 +420,17 @@ public class Editor extends Screen {
 	 * Makes all the controllers that, according to the pa.playerInfo object, the player has unlocked visible.
 	 */
 	private void showUnlockedControllers() {
-		if (pa.playerInfo.nextEditorUnlockIndex >= 0) {
+		if (pa.playerInfo.nextEditorUnlockIndex > 0) {
 			playToggle.show();
-			if (pa.playerInfo.nextEditorUnlockIndex >= 1) {
+			if (pa.playerInfo.nextEditorUnlockIndex > 1) {
 				rootMenu.show();
-				if (pa.playerInfo.nextEditorUnlockIndex >= 2) {
+				if (pa.playerInfo.nextEditorUnlockIndex > 2) {
 					scaleMenu.show();
-					if (pa.playerInfo.nextEditorUnlockIndex >= 3) {
+					if (pa.playerInfo.nextEditorUnlockIndex > 3) {
 						bpmSlider.show();
-						if (pa.playerInfo.nextEditorUnlockIndex >= 4) {
+						if (pa.playerInfo.nextEditorUnlockIndex > 4) {
 							bpmDifferenceSlider.show();
-							if (pa.playerInfo.nextEditorUnlockIndex >= 5) {
+							if (pa.playerInfo.nextEditorUnlockIndex > 5) {
 								hScrollbar.show();
 								addNoteButton.show();
 								subNoteButton.show();

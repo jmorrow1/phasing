@@ -47,6 +47,7 @@ public class LiveScorer extends View {
 	private final float ROUND_STROKE_CAP_SURPLUS = PIXELS_PER_WHOLE_NOTE/8f;
 	
 	//other
+	private float fadeRate;
 	private final int ONE_ID = 1, TWO_ID = 2;
 	private int startingPitch = 0;
 	private float noteSize;
@@ -106,10 +107,22 @@ public class LiveScorer extends View {
 	 * Initializes the LiveScorer object.
 	 */
 	private void init() {
+		initFadeRate();
 		initNoteSize();
 		initPhraseReaders();
 		initSpawnVariables();
 		initPossibleYValuesForMoveNotesMode();
+	}
+	
+	/**
+	 * Initializes a number that determines the rate of note fading.
+	 */
+	private void initFadeRate() {
+		//The fadeRate increases as the width decreases
+		fadeRate = 1.69139f * PApplet.pow(10f, -14f) * PApplet.pow(pa.width, 4f)
+					- 9.13027f * PApplet.pow(10f, -11f) * PApplet.pow(pa.width, 3f)
+					+ 1.81626f * PApplet.pow(10f, -7f) * PApplet.pow(pa.width, 2f)
+					- 0.000163378f * pa.width + 0.0642531f;
 	}
 	
 	/**
@@ -188,6 +201,7 @@ public class LiveScorer extends View {
 		for (DataPoint pt : dataPts2) {
 			pt.startY = PApplet.map(pt.startY, prevHalfHeight, -prevHalfHeight, halfHeight, -halfHeight);
 		}
+		initFadeRate();
 	}
 	
 	@Override
@@ -200,8 +214,8 @@ public class LiveScorer extends View {
 	
 	@Override
 	public void settingsChanged() {
-		boolean scoreModeChanged = ((scoreMode.toInt() == MOVE_NOTES && spawnX != 0 && spawnY != 0) || 
-				                    (scoreMode.toInt() == MOVE_SPAWN_POINT && spawnX == 0 && spawnY == 0));
+		boolean scoreModeChanged = ((scoreMode.toInt() == MOVE_NOTES && spawnY != 0) || 
+				                    (scoreMode.toInt() == MOVE_SPAWN_POINT && spawnY == 0));
 		
 		if (scoreModeChanged) {
 			initSpawnVariables();
@@ -291,10 +305,12 @@ public class LiveScorer extends View {
 	 */
 	private float fadeAmt(int dt) {
 		if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
-			return (10000 - pa.width) * 0.00000075f * dt;
+			float amt = 0.5f * dt * fadeRate;
+			return amt;
 		}
 		else {
-			return (10000 - pa.width) * 0.0000015f * dt;
+			float amt = dt * fadeRate;
+			return amt;
 		}
 	}
 	

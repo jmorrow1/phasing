@@ -43,7 +43,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	private int dt, prev_t; //milliseconds
 	
 	// unlock sequences (in terms of minutes to unlock thing 1, minutes to unlock thing 2, etc.)
-	private final float[] musicianUnlockSeq = {0.5f, 1, 4};
+	private final float[] musicianUnlockSeq = {0.75f, 1.5f, 6};
 	private final float[] phaseShifterUnlockSeq = {1, 3, 5, 8, 9.5f, 11, 14, 17, 20, 25, 30};
 	private final float[] liveScorerUnlockSeq = {4, 8};
 	
@@ -366,12 +366,23 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		initViews(pa.playerInfo);
 		setupIconLists();
 		activeIconIndex = 0;
-		repositionDirectionalButtons();	
+		repositionDirectionalButtons();
 		cp5.show();	
 		setupPlayback();
 		checkForInstrumentChange();
+		if (pa.playerInfo.nextMusicianUnlockIndex != 0) {
+			upButton.show();
+			downButton.show();
+		}
+		else {
+			upButton.hide();
+			downButton.hide();
+		}
 	}
 	
+	/**
+	 * Sets up music playback.
+	 */
 	private void setupPlayback() {
 		prev_notept1 = 0;
 		prev_notept2 = 0;
@@ -643,6 +654,22 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		if (unlockedSomething) {
 			pa.savePlayerInfo();
 		}
+		
+		if (pa.playerInfo.nextMusicianUnlockIndex != 0) {
+			upButton.show();
+			downButton.show();
+		}
+		else {
+			upButton.hide();
+			downButton.hide();
+		}
+		
+		if (pa.playerInfo.minutesSpentWithMusician < 2.5f) {
+			pa.hideChangeScreenButtons();
+		}
+		else {
+			pa.showChangeScreenButtons();
+		}
 	}
 	
 	/*******************************
@@ -650,7 +677,8 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 *******************************/
 	
 	/**
-	 * Adds all the unlocked view type icons to the container called "iconLists", which stores all the icons that are currently available to the player.
+	 * Adds all the unlocked view type icons to the container called "iconLists",
+	 * which stores all the icons that are currently available to the player.
 	 */
 	private void setupViewTypeIcons() {
 		int availability = getIconAvailability(viewTypeName);
@@ -778,7 +806,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 				if (pa.playerInfo.minutesSpentWithMusician + pa.playerInfo.minutesSpentWithPhaseShifter > 25f) {
 					return 3;
 				}
-				else if (pa.playerInfo.minutesSpentWithMusician > 2f) {
+				else if (pa.playerInfo.minutesSpentWithMusician > 3f) {
 					return 2;
 				}
 				else {

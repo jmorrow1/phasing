@@ -33,7 +33,7 @@ import util.NameGenerator;
  *
  */
 public class PhasesPApplet extends PApplet {
-	private final static boolean unlockEverything = false;
+	private final static boolean unlockEverything = true;
 	
 	//time
 	private final static float minutesPerMillisecond = 1f / 60000f;
@@ -159,9 +159,6 @@ public class PhasesPApplet extends PApplet {
 		initCP5Objects(currentScreen);
 		changeScreenTo(currentScreen);
 		currentScreen.onEnter();
-		if (!initialWindowSizeGiven && playerInfo.isWindowSizeInitialized()) {
-			this.resize(playerInfo.getWindowWidth(), playerInfo.getWindowHeight());
-		}
 	}
 	
 	/**
@@ -248,9 +245,17 @@ public class PhasesPApplet extends PApplet {
 	private void initCurrentPhrase() {
 		boolean currentPhraseLoaded = loadCurrentPhrasePicture();
 		if (!currentPhraseLoaded) {
-			currentPhrase = generateReichLikePhrase(getRandomScale());
 			
-			currentPhrasePicture = new PhrasePicture(currentPhrase, "Current Phrase", this);
+			//preclude a chromatic scale pattern from being the first kind of pattern the player hears:
+			Scale scale = getRandomScale();
+			if (scaleSets.size() > 1) {
+				while (scale.getClassName().equals("Chromatic")) {
+					scale = getRandomScale();
+				}
+			}
+			currentPhrase = generateReichLikePhrase(scale);
+			currentPhrasePicture = new PhrasePicture(currentPhrase, "a", this);
+			addPhrasePicture(currentPhrasePicture);
 			saveCurrentPhrasePicture();
 		}
 	}
@@ -754,6 +759,13 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void hideAllControllers() {
 		helpToggle.hide();
+		hideChangeScreenButtons();
+	}
+	
+	/**
+	 * Makes all the PhasesPApplet's controllers related to changing the screen invisible.
+	 */
+	public void hideChangeScreenButtons() {
 		presenterButton.hide();
 		editorButton.hide();
 		phraseRepoButton.hide();
@@ -764,6 +776,13 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public void showAllControllers() {
 		helpToggle.show();
+		showChangeScreenButtons();
+	}
+	
+	/**
+	 * Makes all the PhasesPApplet's controllers related to changing the screen visible.
+	 */
+	public void showChangeScreenButtons() {
 		presenterButton.show();
 		editorButton.show();
 		phraseRepoButton.show();
@@ -978,7 +997,6 @@ public class PhasesPApplet extends PApplet {
 	 */
 	private void checkForWindowResizeEvent() {
 		if (prevWidth != width || prevHeight != height) {
-			playerInfo.setSize(width, height);
 			prevWidth = width;
 			prevHeight = height;
 			currentScreen.windowResized();
