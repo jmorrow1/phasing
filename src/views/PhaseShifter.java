@@ -335,11 +335,15 @@ public class PhaseShifter extends View {
 			transform(waveNum);
 			if (showActiveNote()) {
 				styleNoteGraphics(activeColor);
-				DataPoint a = dataPoints.get(activeNote);
-				DataPoint b = dataPoints.get(activeNote+1);
-				pa.line(a.x() - width, a.y(), b.x() - width, b.y());
-				pa.line(a.x(), a.y(), b.x(), b.y());
-				pa.line(a.x() + width, a.y(), b.x() + width, b.y());
+				float ax = dataPoints.get(activeNote).x();
+				float ay = dataPoints.get(activeNote).y();
+				float bx = (activeNote+1 < dataPoints.size()) ? dataPoints.get(activeNote+1).x()
+						                                      : dataPoints.get(0).x() + width;
+				float by = (activeNote+1 < dataPoints.size()) ? dataPoints.get(activeNote+1).y()
+						                                      : dataPoints.get(0).y();
+				pa.line(ax - width, ay, bx - width, by);
+				pa.line(ax, ay, bx, by);
+				pa.line(ax + width, ay, bx + width, by);
 			}
 			
 			if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {

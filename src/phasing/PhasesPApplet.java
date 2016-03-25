@@ -939,10 +939,10 @@ public class PhasesPApplet extends PApplet {
 	public void keyPressed() {
 		/*if (key == 'm') { //TODO eliminate when no longer needed
 			this.phraseToMidiFile(currentPhrase, saveFolderPath, "cycle");
-		}		
+		}*/		
 		if (key == 'p') { //TODO eliminate when no longer needed
-			save("13.png");
-		}*/
+			save("15.png");
+		}
 		if (key == 'h') {
 			toggleHelp();
 		}
