@@ -819,7 +819,9 @@ public class PhasesPApplet extends PApplet {
 	 * Changes the current screen to the Presenter screen.
 	 */
 	public void toPresenter() {
-		changeScreenTo(presenter);
+		if (currentScreen != presenter) {
+			changeScreenTo(presenter);
+		}
 	}
 	
 	/**
@@ -827,7 +829,9 @@ public class PhasesPApplet extends PApplet {
 	 * Changes the current screen to the Editor screen.
 	 */
 	public void toEditor() {
-		changeScreenTo(editor);
+		if (currentScreen != editor) {
+			changeScreenTo(editor);
+		}
 	}
 	
 	/**
@@ -835,7 +839,9 @@ public class PhasesPApplet extends PApplet {
 	 * Changes the current screen to the PhraseRepo screen.
 	 */
 	public void toPhraseRepo() {
-		changeScreenTo(phraseRepo);
+		if (currentScreen != phraseRepo) {
+			changeScreenTo(phraseRepo);
+		}
 	}	
 	
 	/**

@@ -120,22 +120,45 @@ public class PhaseShifter extends View {
 	 * Initializes note graphic positioning data and stores it so it doesn't have to be constantly recomputed.
 	 */
 	private void initData() {
+		boolean phraseContainsNonRests = false;
+		boolean phraseContainsMultipleNonRests = false;
+		
 		dataPoints.clear();
 		for (int i=0; i<pa.currentPhrase.getNumNotes(); i++) {
-			if (pa.currentPhrase.getNumNotes() > 0 && pa.currentPhrase.getSCDynamic(i) > 0) {
-				dataPoints.add(new DataPoint(i));
-			}
-		}
-		for (int i=0; i<pa.currentPhrase.getNumNotes(); i++) {
-			if (pa.currentPhrase.getSCDynamic(i) > 0) {
-				dataPoints.add(new DataPoint(i + pa.currentPhrase.getNumNotes()));
-				break;
+			dataPoints.add(new DataPoint(i));
+			if (!pa.currentPhrase.isRest(i)) {
+				if (phraseContainsNonRests) {
+					phraseContainsMultipleNonRests = true;
+				}
+				phraseContainsNonRests = true;
 			}
 		}
 		
 		dataConnections.clear();
-		for (int i=0; i<dataPoints.size()-1; i++) {
-			dataConnections.add(new DataConnection(dataPoints.get(i), dataPoints.get(i+1)));
+		
+		if (phraseContainsMultipleNonRests) {
+			DataPoint startPt = null;
+			for (int i=0; i<dataPoints.size(); i++) {
+				if (!pa.currentPhrase.isRest(i)) {
+					if (startPt == null) {
+						startPt = dataPoints.get(i);
+					}
+					else {
+						dataConnections.add(new DataConnection(startPt, dataPoints.get(i)));
+						startPt = dataPoints.get(i);
+					}
+				}
+			}
+			
+			DataPoint lastPt = null;
+			for (int i=0; i<pa.currentPhrase.getNumNotes(); i++) {
+				if (!pa.currentPhrase.isRest(i)) {
+					lastPt = new DataPoint(i + pa.currentPhrase.getNumNotes());
+					break;
+				}
+			}
+		
+			dataConnections.add(new DataConnection(startPt, lastPt));
 		}
 	}
 	
@@ -247,7 +270,7 @@ public class PhaseShifter extends View {
 	 */
 	private boolean showActiveNote() {
 		return (activeNoteMode.toInt() == SHOW_ACTIVE_NOTE || 
-					activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE);
+				activeNoteMode.toInt() == ONLY_SHOW_ACTIVE_NOTE);
 	}
 	
 	/**
@@ -272,47 +295,48 @@ public class PhaseShifter extends View {
 			transform(waveNum);
 			styleNoteGraphics(nonActiveColor);
 			
-			int i=0; //loops through notes in phrase
-			int j=0; //loops through data points
-			while (i < pa.currentPhrase.getNumNotes()) {
+			for (int i=0; i < pa.currentPhrase.getNumNotes(); i++) {
 				if (!pa.currentPhrase.isRest(i)) {
 					if (showActiveNote() && i == activeNote) {
 						styleNoteGraphics(activeColor);
-						drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
+						drawNoteGraphic(dataPoints.get(i));
 						styleNoteGraphics(nonActiveColor);
 					}
 					else if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
-						drawNoteGraphic(dataPoints.get(j), dataPoints.get(j+1));
+						drawNoteGraphic(dataPoints.get(i));
 					}
-					j++;
 				}
-				i++;
 			}
 			
 			//draw connections between dots
 			if (noteGraphic.toInt() == CONNECTED_DOTS) {
-				if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
-					for (int k=0; k<dataConnections.size(); k++) {
-						DataConnection c = dataConnections.get(k);
-						if (k == activeNote && activeNoteMode.toInt() != DONT_SHOW_ACTIVE_NOTE) {
+				
+				int i = 0; //loops through the Phrase's notes
+				int j = 0; //loops through the data connections
+				while (i < pa.currentPhrase.getNumNotes()) {
+					boolean drawConnection = (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE || i == activeNote)
+							&& !pa.currentPhrase.isRest(i) && dataConnections.size() > 0;
+					if (drawConnection) {
+						DataConnection c = dataConnections.get(j);						
+						if (i == activeNote && activeNoteMode.toInt() != DONT_SHOW_ACTIVE_NOTE) {
 							pa.stroke(activeColor);
 						}
 						else {
 							pa.stroke(nonActiveColor);
 						}
-				
 						c.drawLine();
+						j++;
 					}
+					i++;
 				}
-				else {
-					pa.stroke(activeColor);
-					DataConnection c = dataConnections.get(activeNote);
-					c.drawLine();
-				}
+				
 			}
+			
 			pa.popMatrix();
 		}
-		//draw sine wave graphics
+		else if (noteGraphic.toInt() == LINE_SEGMENTS) {
+			drawLineSegments(waveNum, activeNote, nonActiveColor, activeColor);
+		}
 		else if (noteGraphic.toInt() == SINE_WAVE) {
 			pa.stroke(nonActiveColor);
 			if (transformation.toInt() == TRANSLATE) {
@@ -329,71 +353,77 @@ public class PhaseShifter extends View {
 				pa.ellipseMode(pa.RADIUS);
 				pa.ellipse(0, 0, radius, radius);
 			}
-		}		
-		else if (noteGraphic.toInt() == LINE_SEGMENTS) {
-			pa.pushMatrix();
-			transform(waveNum);
-			if (showActiveNote()) {
-				styleNoteGraphics(activeColor);
-				float ax = dataPoints.get(activeNote).x();
-				float ay = dataPoints.get(activeNote).y();
-				float bx = (activeNote+1 < dataPoints.size()) ? dataPoints.get(activeNote+1).x()
-						                                      : (transformation.toInt() == ROTATE) ? dataPoints.get(0).x()
-						                                    		                               : dataPoints.get(0).x() + width;
-				float by = (activeNote+1 < dataPoints.size()) ? dataPoints.get(activeNote+1).y()
-						                                      : dataPoints.get(0).y();
-				pa.line(ax - width, ay, bx - width, by);
-				pa.line(ax, ay, bx, by);
-				pa.line(ax + width, ay, bx + width, by);
+		}	
+	}
+	
+	private void drawLineSegments(int waveNum, int activeNote, int nonActiveColor, int activeColor) {
+		pa.pushMatrix();
+		transform(waveNum);
+		
+		if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
+			pa.stroke(nonActiveColor);
+			pa.beginShape();
+			if (transformation.toInt() == TRANSLATE) {
+				drawLineSegments(waveNum, activeNote, nonActiveColor, activeColor, -width);
 			}
-			
-			if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
-				styleNoteGraphics(nonActiveColor);
-				pa.beginShape();
-				if (transformation.toInt() == TRANSLATE) {
-					int i = 0;
-					int j = 0;
-					while (i < pa.currentPhrase.getNumNotes()) {
-						if (!pa.currentPhrase.isRest(i)) {
-							DataPoint pt = dataPoints.get(j);
-							pa.vertex(pt.x() - this.width, pt.y());
-							j++;
-						}
-						i++;
-					}
-				}
-				
-				int i = 0;
-				int j = 0;
-				while (i < pa.currentPhrase.getNumNotes()) {
-					if (!pa.currentPhrase.isRest(i)) {
-						DataPoint pt = dataPoints.get(j);
-						pa.vertex(pt.x(), pt.y());
-						j++;
-					}
-					i++;
-				}
-				
-				if (transformation.toInt() == TRANSLATE) {	
-					i = 0;
-					j = 0;
-					while (i < pa.currentPhrase.getNumNotes()) {
-						if (!pa.currentPhrase.isRest(i)) {
-							DataPoint pt = dataPoints.get(j);
-							pa.vertex(pt.x() + this.width, pt.y());
-							j++;
-						}
-					
-						i++;
-					}
-					pa.endShape();
-				}
-				else {
-					pa.endShape(pa.CLOSE);
-				}
+			drawLineSegments(waveNum, activeNote, nonActiveColor, activeColor, 0);
+			if (transformation.toInt() == TRANSLATE) {
+				drawLineSegments(waveNum, activeNote, nonActiveColor, activeColor, width);
 			}
-			pa.popMatrix();
+			pa.endShape();
 		}
+		
+		if (showActiveNote()) {
+			pa.stroke(activeColor);
+			drawActiveLineSegment(waveNum, activeNote, nonActiveColor, activeColor, 0);
+			if (transformation.toInt() == TRANSLATE) {
+				drawActiveLineSegment(waveNum, activeNote, nonActiveColor, activeColor, -width);
+				drawActiveLineSegment(waveNum, activeNote, nonActiveColor, activeColor, width);
+			}
+		}
+		
+		pa.popMatrix();
+	}
+	
+	private void drawActiveLineSegment(int waveNum, int activeNote, int nonActiveColor, int activeColor, float xOffset) {
+		if (dataConnections.size() > 0) {
+			int i = 0; //loops through the Phrase's notes
+			int j = 0; //loops through the data connections
+			while (i < pa.currentPhrase.getNumNotes()) {
+				if (!pa.currentPhrase.isRest(i)) {
+					if (i == activeNote) {
+						DataConnection c = dataConnections.get(j);
+						pa.line(c.d.x() + xOffset, c.d.y(), c.e.x() + xOffset, c.e.y());
+					}
+					j++;
+				}
+
+				i++;
+			}
+		}
+		
+	}
+	
+	private void drawLineSegments(int waveNum, int activeNote, int nonActiveColor, int activeColor, float xOffset) {
+
+		int i = 0; //loops through the Phrase's notes
+		int j = 0; //loops through the data connections
+		while (i < pa.currentPhrase.getNumNotes()) {
+			boolean drawConnection = (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE || i == activeNote)
+					&& !pa.currentPhrase.isRest(i) && dataConnections.size() > 0;
+			if (drawConnection) {
+				DataConnection c = dataConnections.get(j);
+				pa.vertex(c.d.x() + xOffset, c.d.y());
+				pa.vertex(c.e.x() + xOffset, c.e.y());
+				j++;
+			}
+			else {
+				pa.endShape();
+				pa.beginShape();
+			}
+			i++;
+		}
+		
 	}
 	
 	/**
@@ -463,9 +493,8 @@ public class PhaseShifter extends View {
 	 * Draws the note graphic.
 	 * 
 	 * @param d The note DataPoint to draw.
-	 * @param e The subsequent note DataPoint.
 	 */
-	private void drawNoteGraphic(DataPoint d, DataPoint e) {
+	private void drawNoteGraphic(DataPoint d) {
 		if (noteGraphic.toInt()== SYMBOLS) {
 			pa.pushMatrix();
 				pa.translate(d.x(), d.y());
@@ -504,9 +533,6 @@ public class PhaseShifter extends View {
 				d.curvedRect().display(pa);
 			}
 		}
-		else if (noteGraphic.toInt() == LINE_SEGMENTS) {
-			pa.vertex(d.x(), d.y());
-		}
 	}
 	
 	/********************************
@@ -526,10 +552,14 @@ public class PhaseShifter extends View {
 		float tx1Alt, ty1Alt, tx2Alt, ty2Alt;
 		float rx1, ry1, rx2, ry2;
 		float rx1Alt, ry1Alt, rx2Alt, ry2Alt;
+		DataPoint d, e;
 		
 		private DataConnection(DataPoint d, DataPoint e) {
 			float lineDist = pa.dist(d.tx, d.ty, e.tx, e.ty);
 			float amt = (DOT_RADIUS / lineDist);
+			
+			this.d = d;
+			this.e = e;
 			
 			tx1 = pa.lerp(d.tx, e.tx, amt);
 			ty1 = pa.lerp(d.ty, e.ty, amt);
@@ -562,28 +592,41 @@ public class PhaseShifter extends View {
 		}
 		
 		void drawLine() {
-			if (transformation.toInt() == TRANSLATE) {
-				if (plotPitchMode.toInt() == PLOT_PITCH) {
-					pa.line(tx1, ty1, tx2, ty2);
-					pa.line(tx1 - width, ty1, tx2 - width, ty2);
-					pa.line(tx1 + width, ty1, tx2 + width, ty2);
+			if (noteGraphic.toInt() == CONNECTED_DOTS) {
+				if (transformation.toInt() == TRANSLATE) {
+					if (plotPitchMode.toInt() == PLOT_PITCH) {
+						pa.line(tx1, ty1, tx2, ty2);
+						pa.line(tx1 - width, ty1, tx2 - width, ty2);
+						pa.line(tx1 + width, ty1, tx2 + width, ty2);
+					}
+					else {
+						pa.line(tx1Alt, ty1Alt, tx2Alt, ty2Alt);
+						pa.line(tx1Alt - width, ty1Alt, tx2Alt - width, ty2Alt);
+						pa.line(tx1Alt + width, ty1Alt, tx2Alt + width, ty2Alt);
+					}
 				}
-				else {
-					pa.line(tx1Alt, ty1Alt, tx2Alt, ty2Alt);
-					pa.line(tx1Alt - width, ty1Alt, tx2Alt - width, ty2Alt);
-					pa.line(tx1Alt + width, ty1Alt, tx2Alt + width, ty2Alt);
+				else if (transformation.toInt() == ROTATE) {
+					if (plotPitchMode.toInt() == PLOT_PITCH) {
+						pa.line(rx1, ry1, rx2, ry2);
+					}
+					else {
+						pa.line(rx1Alt, ry1Alt, rx2Alt, ry2Alt);
+					}
 				}
 			}
-			else {
-				if (plotPitchMode.toInt() == PLOT_PITCH) {
-					pa.line(rx1, ry1, rx2, ry2);
-					pa.line(rx1 - width, ry1, rx2 - width, ry2);
-					pa.line(rx1 + width, ry1, rx2 + width, ry2);
+			else if (noteGraphic.toInt() == LINE_SEGMENTS) {
+				if (transformation.toInt() == TRANSLATE) {
+					pa.line(d.x(), d.y(), e.x(), e.y());
+					pa.line(d.x() - width, d.y(), e.x() - width, e.y());
+					pa.line(d.x() + width, d.y(), e.x() + width, e.y());
 				}
-				else {
-					pa.line(rx1Alt, ry1Alt, rx2Alt, ry2Alt);
-					pa.line(rx1Alt - width, ry1Alt, rx2Alt - width, ry2Alt);
-					pa.line(rx1Alt + width, ry1Alt, rx2Alt + width, ry2Alt);
+				else if (transformation.toInt() == ROTATE) {
+					if (plotPitchMode.toInt() == PLOT_PITCH) {
+						pa.line(d.x(), d.y(), e.x(), e.y());
+					}
+					else {
+						pa.line(d.x(), d.y(), e.x(), e.y());
+					}
 				}
 			}
 		}
@@ -612,16 +655,25 @@ public class PhaseShifter extends View {
 		final CurvedRect curvedRect, sectorAlt;
 		
 		private DataPoint(int i) {
-			float normalStart = (i == pa.currentPhrase.getNumNotes()) ? 1 : pa.currentPhrase.getPercentDurationOfSCIndex(i);
+			float normalStart = pa.currentPhrase.getPercentDurationOfSCIndex(i % pa.currentPhrase.getNumNotes());
+			if (i >= pa.currentPhrase.getNumNotes()) {
+				normalStart += 1;
+			}
 			i %= pa.currentPhrase.getNumNotes();
 			float normalWidth = pa.currentPhrase.getSCDuration(i) / pa.currentPhrase.getTotalDuration();
 			tx = pa.map(normalStart, 0, 1, -halfWidth, halfWidth);
-			ty = pa.map(pa.currentPhrase.getSCPitch(i), pa.currentPhrase.minPitch(), pa.currentPhrase.maxPitch(), halfHeight, -halfHeight);
+			ty = (pa.currentPhrase.minPitch() != pa.currentPhrase.maxPitch()) ? pa.map(pa.currentPhrase.getSCPitch(i),
+					                                                                   pa.currentPhrase.minPitch(), pa.currentPhrase.maxPitch(),
+					                                                                   halfHeight, -halfHeight)
+					                                                          : 0;
 			twidth = normalWidth * width;
 			theta1 = pa.map(normalStart, 0, 1, 0, pa.TWO_PI);
 			theta2 = pa.map(normalWidth, 0, 1, 0, pa.TWO_PI) + theta1;
 			pitchName = pa.currentScale.getNoteNameByPitchValue(pa.currentPhrase.getSCPitch(i));
-			radius = pa.map(pa.currentPhrase.getSCPitch(i), pa.currentPhrase.minPitch(), pa.currentPhrase.maxPitch(), minRadius, maxRadius);
+			radius = (pa.currentPhrase.minPitch() != pa.currentPhrase.maxPitch()) ? pa.map(pa.currentPhrase.getSCPitch(i),
+						                                                                   pa.currentPhrase.minPitch(), pa.currentPhrase.maxPitch(),
+						                                                                   minRadius, maxRadius)
+					                                                              : pa.lerp(minRadius, maxRadius, 0.5f);
 			rx = pa.cos(theta1 - pa.HALF_PI) * radius;
 			ry = pa.sin(theta1 - pa.HALF_PI) * radius;
 			rxAlt = pa.cos(theta1 - pa.HALF_PI)*pa.lerp(minRadius, maxRadius, 0.5f);
@@ -647,7 +699,7 @@ public class PhaseShifter extends View {
 		}
 	
 		float y() {
-			if (transformation.toInt() == TRANSLATE) {
+		    if (transformation.toInt() == TRANSLATE) {
 				return (plotPitchMode.toInt() == PLOT_PITCH) ? ty : tyAlt;
 			}
 			else {
