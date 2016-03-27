@@ -92,6 +92,8 @@ public class Phrase implements JSONable {
 	 * @param cellTypes The sequence of cell types
 	 * @param defaultArt The articulation value to give each note
 	 * @param defaultPan The pan value to give each note
+	 * @param scaleClassName
+	 * @param scaleRootName
 	 */
 	public Phrase(float[] gridPitches, float[] gridDynamics, int[] cellTypes, float defaultArt, float defaultPan,
 			String scaleClassName, String scaleRootName) {
@@ -123,10 +125,14 @@ public class Phrase implements JSONable {
 	 * @param gridDynamics The sequence of dynamic values
 	 * @param cellTypes The sequence of cell types
 	 * @param gridArts The sequence of articulation values
-	 * @param gridPans The sequence of pan values
+	 * @param gridPans The sequence of pan value
+	 * @param defaultArt
+	 * @param defaultPan
+	 * @param scaleClassName
+	 * @param scaleRootName
 	 */
 	public Phrase(float[] gridPitches, float[] gridDynamics, int[] cellTypes, float[] gridArts, float[] gridPans,
-			String scaleClassName, String scaleRootName) {
+			float defaultArt, float defaultPan, String scaleClassName, String scaleRootName) {
 		if (gridPitches.length == gridDynamics.length && gridDynamics.length == cellTypes.length &&
 				cellTypes.length == gridArts.length && gridArts.length == gridPans.length) {
 			this.gridPitches = gridPitches;
@@ -134,6 +140,8 @@ public class Phrase implements JSONable {
 			this.cellTypes = cellTypes;
 			this.gridArts = gridArts;
 			this.gridPans = gridPans;
+			this.defaultArt = defaultArt;
+			this.defaultPan = defaultPan;
 			scArraysUpToDate = false;
 			this.scaleClassName = scaleClassName;
 			this.scaleRootName = scaleRootName;
@@ -190,6 +198,8 @@ public class Phrase implements JSONable {
 			gridArts = Util.toFloatArray(json.getJSONArray("gridArts"));
 			gridPans = Util.toFloatArray(json.getJSONArray("gridPans"));
 			cellTypes = Util.toIntArray(json.getJSONArray("cellTypes"));
+			defaultPan = json.getFloat("defaultPan", defaultPan);
+			defaultArt = json.getFloat("defaultArt", defaultArt);
 			scArraysUpToDate = false;
 			
 			this.scaleClassName = json.getString("scaleClassName", "Chromatic");
@@ -218,6 +228,8 @@ public class Phrase implements JSONable {
 		json.setJSONArray("gridArts", Util.jsonify(gridArts));
 		json.setJSONArray("gridPans", Util.jsonify(gridPans));
 		json.setJSONArray("cellTypes", Util.jsonify(cellTypes));
+		json.setFloat("defaultPan", defaultPan);
+		json.setFloat("defaultArt", defaultArt);
 		json.setFloat("unitDuration", unitDuration);
 		json.setString("scaleClassName", scaleClassName);
 		json.setString("scaleRootName", scaleRootName);
@@ -229,6 +241,8 @@ public class Phrase implements JSONable {
 	 * @param phrase The phrase to copy from.
 	 */
 	public void set(Phrase phrase) {
+		this.defaultArt = phrase.defaultArt;
+		this.defaultPan = phrase.defaultPan;
 		this.gridPitches = Arrays.copyOf(phrase.gridPitches, phrase.gridPitches.length);
 		this.gridDynamics = Arrays.copyOf(phrase.gridDynamics, phrase.gridDynamics.length);
 		this.gridArts = Arrays.copyOf(phrase.gridArts, phrase.gridArts.length);
@@ -796,6 +810,139 @@ public class Phrase implements JSONable {
 			+ ", durations: " + Arrays.toString(scDurations);
 	}
 	
+	/****************************
+	 ***** Static Functions *****
+	 ****************************/
+	
+	/**
+	 * Gives a new Phrase that is the given Phrase played backwards.
+	 * 
+	 * @param phrase The given Phrase.
+	 * @return The new Phrase.
+	 */
+	public static Phrase reverse(Phrase phrase) {
+		float[] gridPitches = reverse(phrase.gridPitches);
+		float[] gridDynamics = reverse(phrase.gridDynamics);
+		int[] cellTypes = readCellTypesBackwards(phrase.cellTypes);
+		float[] gridArts = reverse(phrase.gridArts);
+		float[] gridPans = reverse(phrase.gridPans);
+		float defaultArt = phrase.defaultArt;
+		float defaultPan = phrase.defaultPan;
+		String scaleClassName = phrase.scaleClassName;
+		String scaleRootName = phrase.scaleRootName;	
+		
+		return new Phrase(gridPitches, gridDynamics, cellTypes, gridArts, gridPans,
+				defaultArt, defaultPan, scaleClassName, scaleRootName);
+	}
+	
+	/**
+	 * Takes an array of cell types and reads it in backwards order, returning a new array of cell types.
+	 * 
+	 * @param in The array of cell types.
+	 * @return The result of reading the array of cell types in backwards order.
+	 */
+	private static int[] readCellTypesBackwards(int[] in) {
+		int[] out = new int[in.length];
+		
+		//initiate a state machine-esque computation:
+		if (in.length != 0) {
+			int cell = in[in.length - 1];
+			switch (cell) {
+				case REST : sA(in, out, 0); break;
+				case NOTE_START : sB(in, out, 0); break;
+				case NOTE_SUSTAIN : sC1(in, out, 0); break;
+			}
+		}
+		
+		return out;
+	}
+	
+	//read a rest.
+	private static void sA(int[] src, int[] dest, int i) {
+		dest[i] = REST;
+		i++;
+		if (i < src.length) {
+			int nextCell = src[src.length - 1 - i];
+			switch (nextCell) {
+				case REST : sA(src, dest, i); break;
+				case NOTE_START : sB(src, dest, i); break;
+				case NOTE_SUSTAIN : sC1(src, dest, i); break;
+			}
+		}
+	}
+	
+	//read a one-cell note.
+	private static void sB(int[] src, int[] dest, int i) {
+		dest[i] = NOTE_START;
+		i++;
+		if (i < src.length) {
+			int nextCell = src[src.length - 1 - i];
+			switch (nextCell) {
+				case REST : sA(src, dest, i); break;
+				case NOTE_START : sB(src, dest, i); break;
+				case NOTE_SUSTAIN : sC1(src, dest, i); break;
+			}
+		}
+	}
+	
+	//start reading a sustained note backwards
+	private static void sC1(int[] src, int[] dest, int i) {
+		dest[i] = NOTE_START;
+		i++;
+		if (i < src.length) {
+			int nextCell = src[src.length - 1 - i];
+			switch (nextCell) {
+				case NOTE_START : sC3(src, dest, i); break;
+				case NOTE_SUSTAIN : sC2(src, dest, i); break;
+			}
+		}
+	}
+	
+	//continue to read a sustained note backwards
+	private static void sC2(int[] src, int[] dest, int i) {
+		dest[i] = NOTE_SUSTAIN;
+		i++;
+		if (i < src.length) {
+			int nextCell = src[src.length - 1 - i];
+			switch (nextCell) {
+				case NOTE_START : sC3(src, dest, i); break;
+				case NOTE_SUSTAIN : sC2(src, dest, i); break;
+			}
+		}
+	}
+	
+	//finish reading a sustained note backwards
+	private static void sC3(int[] src, int[] dest, int i) {
+		dest[i] = NOTE_SUSTAIN;
+		i++;
+		if (i < src.length) {
+			int nextCell = src[src.length - 1 - i];
+			switch (nextCell) {
+				case REST : sA(src, dest, i); break;
+				case NOTE_START : sB(src, dest, i); break;
+				case NOTE_SUSTAIN : sC1(src, dest, i); break;
+			}
+		}
+	}
+	
+	/**
+	 * Returns a new array that is the input array with its values reversed.
+	 * 
+	 * @param xs The input array.
+	 * @return The new array.
+	 */
+	private static float[] reverse(float[] xs) {
+		float[] ys = new float[xs.length];
+		int i = 0;
+		int j = ys.length - 1;
+		while (i < ys.length) {
+			ys[i] = xs[j];
+			i++;
+			j--;
+		}
+		return ys;
+	}
+
 	/**
 	 * Given a MIDI pitch value, returns a string representation of that note.
 	 * For example returns the string "C" given 60 as a MIDI pitch value.

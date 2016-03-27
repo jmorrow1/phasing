@@ -941,7 +941,7 @@ public class PhasesPApplet extends PApplet {
 			this.phraseToMidiFile(currentPhrase, saveFolderPath, "cycle");
 		}*/		
 		if (key == 'p') { //TODO eliminate when no longer needed
-			save("15.png");
+			save("17.png");
 		}
 		if (key == 'h') {
 			toggleHelp();
