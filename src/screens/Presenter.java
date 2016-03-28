@@ -14,6 +14,7 @@ import icons.Icon;
 import icons.InstrumentIcon;
 import icons.NoteSetOneIcon;
 import icons.NoteSetTwoIcon;
+import icons.OrientationIcon;
 import icons.PlotPitchIcon;
 import icons.ScoreModeIcon;
 import icons.ShowActiveNoteIcon;
@@ -22,6 +23,7 @@ import icons.SuperimposedOrSeparatedIcon;
 import icons.TransformIcon;
 import icons.ViewTypeIcon;
 import phasing.PhasesPApplet;
+import phasing.Phrase;
 import phasing.PlayerInfo;
 import processing.core.PApplet;
 import soundcipher.SCScorePlus;
@@ -45,7 +47,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	// unlock sequences (in terms of minutes to unlock thing 1, minutes to unlock thing 2, etc.)
 	private final float[] musicianUnlockSeq = {0.75f, 1.5f, 6};
 	private final float[] phaseShifterUnlockSeq = {1, 3, 5, 8, 9.5f, 11, 14, 17, 20, 25, 30};
-	private final float[] liveScorerUnlockSeq = {4, 8};
+	private final float[] liveScorerUnlockSeq = {4, 8, 12};
 	
 	// musical time
 	private float prev_notept1, prev_notept2;
@@ -87,6 +89,10 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	//controlp5
 	private ControlP5 cp5;
 	private Button upButton, downButton;
+	
+	//phrase
+	//private Phrase reversedPhrase;
+	//private boolean phraseIsReversed;
 
 	/**************************
 	 ***** Initialization *****
@@ -252,6 +258,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		activeVar.setValue(newValue);
 		view.settingsChanged();
 		checkForInstrumentChange();
+		//checkPhraseOrientation();
 		checkViewType();
 	}
 	
@@ -269,6 +276,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		activeVar.setValue(newValue);
 		view.settingsChanged();
 		checkForInstrumentChange();
+		//checkPhraseOrientation();
 		checkViewType();
 	}
 	
@@ -315,8 +323,32 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	}
 	
 	/**
-	 * Checks if the players' instruments should change.
-	 * If it should, the method changes them.
+	 * Checks if the current phrase should change orientation.
+	 * If it should, the method changes it.
+	 */
+	/*private void checkPhraseOrientation() {
+		if (phraseOrientationShouldChange()) {
+			phraseIsReversed = !phraseIsReversed;
+			musicianView.wakeUp(0, 0);
+			liveScorerView.wakeUp(0, 0);
+			phaseShifterView.wakeUp(0, 0);
+			setupPlayback();
+		}
+	}*/
+	
+	/**
+	 * Tells whether or not the current phrase should change orientation.
+	 * @return True, if it should change, false otherwise.
+	 */
+	/*private boolean phraseOrientationShouldChange() {
+		return (phraseIsReversed && liveScorerView.orientationMode.toInt() == NON_REVERSED) ||
+				(!phraseIsReversed && liveScorerView.orientationMode.toInt() == REVERSED);
+	}*/
+	
+	
+	/**
+	 * Checks if the instrument sound should change.
+	 * If it should, the method changes it.
 	 */
 	public void checkForInstrumentChange() {
 		if (instrumentShouldChange()) {
@@ -339,8 +371,8 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	}
 	
 	/**
-	 * Tells whether or not the players' instruments should change.
-	 * @return True, if they should change, false otherwise.
+	 * Tells whether or not the instrument sound should change.
+	 * @return True, if it should change, false otherwise.
 	 */
 	private boolean instrumentShouldChange() {
 		return (instrument == 13 && musicianView.instrument.toInt() != MARIMBA) ||
@@ -362,6 +394,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	
 	@Override
 	public void onEnter() {
+		//reversedPhrase = Phrase.reverse(pa.currentPhrase);
 		initCP5Objects();
 		initViews(pa.playerInfo);
 		setupIconLists();
@@ -395,7 +428,13 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		dataPts = 0;
 		
 		pa.currentPhrase.addToScore(player1, 0, 0, instrument);
-		pa.currentPhrase.addToScore(player2, 0, 0, instrument);
+		//if (liveScorerView.orientationMode.toInt() == NON_REVERSED) {
+			pa.currentPhrase.addToScore(player2, 0, 0, instrument);
+		//}
+		//else {
+		//	reversedPhrase.addToScore(player2, 0, 0, instrument);
+		//}
+		
 		player1.tempo(pa.getBPM1());
 		player2.tempo(pa.getBPM2());
 		player1.repeat(-1);
@@ -773,6 +812,12 @@ public class Presenter extends Screen implements ViewVariableInfo {
 								iconList[i] = new SineWaveIcon(i, pa);
 							}
 							break;
+						case orientationModeName:
+							iconList = new Icon[availability];
+							for (int i = 0; i < availability; i++) {
+								iconList[i] = new OrientationIcon(i);
+							}
+							break;
 						default:
 							iconList = new Icon[availability];
 							for (int i = 0; i < availability; i++) {
@@ -940,6 +985,13 @@ public class Presenter extends Screen implements ViewVariableInfo {
 				}
 			case sineWaveName:
 				if (pa.playerInfo.minutesSpentWithLiveScorer > liveScorerUnlockSeq[1]) {
+					return 2;
+				}
+				else {
+					return 0;
+				}
+			case orientationModeName:
+				if (pa.playerInfo.minutesSpentWithLiveScorer > liveScorerUnlockSeq[2]) {
 					return 2;
 				}
 				else {

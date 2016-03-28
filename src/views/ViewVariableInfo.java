@@ -54,4 +54,9 @@ public interface ViewVariableInfo {
 	public final String sineWaveName = "Sine Wave";
 	public final int numWaysOfBeingASineWaveOrNot=2;
 	public final int IS_NOT_SINE_WAVE=0, IS_SINE_WAVE=1;
+	
+	public final String orientationModeName = "Orientation";
+	public final int numOrientationModes = 2;
+	public final int NON_REVERSED = 0, REVERSED = 1;
+	
 }

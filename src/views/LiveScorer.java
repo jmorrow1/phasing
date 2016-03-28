@@ -57,6 +57,7 @@ public class LiveScorer extends View {
 	public ModInt scoreMode = new ModInt(0, numScoreModes, scoreModeName);
 	public ModInt noteGraphic = new ModInt(0, numNoteGraphicSet2s, noteGraphicSet2Name);
 	public ModInt colorScheme = new ModInt(1, numColorSchemes, colorSchemeName);
+	//public ModInt orientationMode = new ModInt(0, numOrientationModes, orientationModeName);
 
 	/**************************
 	 ***** Initialization *****
