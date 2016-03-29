@@ -652,7 +652,6 @@ public class Phrase implements JSONable {
 			return true;
 		}
 		else {
-			System.err.println("Index out of bounds in method setNote(" + i + ") in Phrase");
 			return false;
 		}
 	}

@@ -157,6 +157,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 		pa.currentPhrasePicture = new PhrasePicture(pa.currentPhrase, pa);
 		addPhrasePicture(pa.currentPhrasePicture);
 		pa.setCurrentScale(pa.currentPhrase.getScaleClassName(), pa.currentPhrase.getScaleRootName());
+		setSelectedCellTitle();
 	}
 	
 	@Override
@@ -275,7 +276,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	 */
 	private void setSelectedCellTitle() {
 		int index = cells.indexOf(selectedCell) + currPageNum*cells.size();
-		if (index < pa.getNumPhrasePictures()) {
+		if (0 <= index && index < pa.getNumPhrasePictures()) {
 			pa.currentPhrasePicture = pa.getPhrasePicture(index);
 			pa.currentPhrase = pa.currentPhrasePicture.getPhrase();
 			selectedCell.setTitle(pa.currentPhrasePicture.getName());

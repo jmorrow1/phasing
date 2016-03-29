@@ -40,9 +40,9 @@ public class Marimba implements Instrument {
 		this.numBars = numOctaves * 12;
 		int numWhiteBars = numOctaves * 7;
 		bars = new Shape[numBars];
-		float dx = r.getWidth() / numWhiteBars;
-		float barWidth = 0.75f*dx;
-		float widthBetweenBars = 0.25f*dx;
+		int dx = (int)(r.getWidth() / numWhiteBars);
+		int barWidth = PApplet.ceil(0.75f*dx);
+		int widthBetweenBars = PApplet.floor(0.25f*dx);
 		float unitBarHeight = r.getHeight() / 2f;
 		initBars(r.getX1(), r.getY1() + 0.4f*r.getHeight(), barWidth, unitBarHeight, widthBetweenBars);
 	}
@@ -61,7 +61,7 @@ public class Marimba implements Instrument {
 		
 		float prevBarHeight = 0;
 	    float barHeight = 0;
-	    float nextBarHeight = (int)barHeight(0, unitBarHeight); 	    
+	    float nextBarHeight = (int)barHeight(0, unitBarHeight);  
 	    int i=0;
 		while (i < numBars) {
 	        barHeight = nextBarHeight;

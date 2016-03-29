@@ -34,7 +34,7 @@ import util.NameGenerator;
  */
 public class PhasesPApplet extends PApplet {
 	private final static boolean unlockEverything = false;
-	
+
 	//time
 	private final static float minutesPerMillisecond = 1f / 60000f;
 	
@@ -159,6 +159,7 @@ public class PhasesPApplet extends PApplet {
 		initCP5Objects(currentScreen);
 		changeScreenTo(currentScreen);
 		currentScreen.onEnter();
+
 	}
 	
 	/**
@@ -522,7 +523,6 @@ public class PhasesPApplet extends PApplet {
 		try {
 			phrasePictures = new ArrayList<PhrasePicture>();
 			Path path = Paths.get(saveFolderPath + "phrases/");
-			System.out.println(path);
 			Files.walk(path).forEach(filePath -> {
 				if (filePath.toString().endsWith(".json") &&
 						!filePath.toString().contains("Current Phrase.json")) {
@@ -541,7 +541,6 @@ public class PhasesPApplet extends PApplet {
 			return true;
 		}
 		catch (IOException e) {
-			e.printStackTrace();
 			return false;
 		}
 	}
@@ -557,12 +556,6 @@ public class PhasesPApplet extends PApplet {
 		if (file.exists()) {
 			try {
 				boolean success = file.delete();
-				if (success) {
-					System.out.println(file.toString() + " deleted");
-				}
-				else {
-					System.out.println(file.toString() + " not deleted.");
-				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

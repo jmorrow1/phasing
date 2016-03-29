@@ -314,17 +314,19 @@ public class PhaseShifter extends View {
 				int i = 0; //loops through the Phrase's notes
 				int j = 0; //loops through the data connections
 				while (i < pa.currentPhrase.getNumNotes()) {
-					boolean drawConnection = (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE || i == activeNote)
-							&& !pa.currentPhrase.isRest(i) && dataConnections.size() > 0;
-					if (drawConnection) {
-						DataConnection c = dataConnections.get(j);						
-						if (i == activeNote && activeNoteMode.toInt() != DONT_SHOW_ACTIVE_NOTE) {
-							pa.stroke(activeColor);
+					boolean increment_j = !pa.currentPhrase.isRest(i) && dataConnections.size() > 0;
+					if (increment_j) {
+						boolean drawConnection = (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE || i == activeNote);
+						if (drawConnection) {
+							DataConnection c = dataConnections.get(j);						
+							if (i == activeNote && activeNoteMode.toInt() != DONT_SHOW_ACTIVE_NOTE) {
+								pa.stroke(activeColor);
+							}
+							else {
+								pa.stroke(nonActiveColor);
+							}
+							c.drawLine();
 						}
-						else {
-							pa.stroke(nonActiveColor);
-						}
-						c.drawLine();
 						j++;
 					}
 					i++;
