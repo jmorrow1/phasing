@@ -717,6 +717,10 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 			pa.playerInfo.nextLiveScorerUnlockIndex++;
 			unlockedSomething = true;
 		}
+		else if ( (phaseShifterUnlocked() && viewTypeIcons.length < 2) || 
+				(liveScorerUnlocked() && viewTypeIcons.length < 3)) {
+			setupIconLists();
+		}
 		
 		if (unlockedSomething) {
 			pa.savePlayerInfo();
@@ -749,8 +753,9 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 */
 	private void setupViewTypeIcons() {
 		int availability = getIconAvailability(viewTypeName);
+		viewTypeIcons = new Icon[availability];
 		if (availability > 0) {
-			viewTypeIcons = new Icon[availability];
+			
 			for (int i = 0; i < availability; i++) {
 				viewTypeIcons[i] = new ViewTypeIcon(i);
 			}
@@ -876,10 +881,10 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	private int getIconAvailability(String name) {
 		switch (name) {
 			case viewTypeName:
-				if (pa.playerInfo.minutesSpentWithMusician + pa.playerInfo.minutesSpentWithPhaseShifter > 25f) {
+				if (liveScorerUnlocked()) {
 					return 3;
 				}
-				else if (pa.playerInfo.minutesSpentWithMusician > 3f) {
+				else if (phaseShifterUnlocked()) {
 					return 2;
 				}
 				else {
@@ -893,6 +898,22 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 					default: return 0;
 				}
 		}	
+	}
+	
+	/**
+	 *  
+	 * @return True if the conditions are met for the PhaseShifter icon to be unlocked, false otherwise.
+	 */
+	private boolean phaseShifterUnlocked() {
+		return pa.playerInfo.minutesSpentWithMusician > 3f;
+	}
+	
+	/**
+	 * 
+	 * @return True if the conditions are met for the LiveScorer icon to be unlocked, false otherwise.
+	 */
+	private boolean liveScorerUnlocked() {
+		return pa.playerInfo.minutesSpentWithMusician + pa.playerInfo.minutesSpentWithPhaseShifter > 25f;
 	}
 	
 	/**

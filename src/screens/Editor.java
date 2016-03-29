@@ -738,7 +738,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		//resets the Editor's state w/r/t the grid:
 		drawState = NOT_DRAWING;
 		startIndexOfUserDrawnNote = -1;
-		pa.saveCurrentPhrasePicture(); //TODO Is it a good idea to put this here?
+		pa.saveCurrentPhrasePicture();
 	}
 	
 	@Override
