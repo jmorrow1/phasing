@@ -46,7 +46,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	private int dt, prev_t; //milliseconds
 	
 	// unlock sequences (in terms of minutes to unlock thing 1, minutes to unlock thing 2, etc.)
-	private final float[] musicianUnlockSeq = {0.75f, 1.5f, 6};
+	private final float[] musicianUnlockSeq = {0f, 0.5f, 6};
 	private final float[] phaseShifterUnlockSeq = {1, 3, 5, 8, 9.5f, 11, 14, 17, 20, 25, 30};
 	private final float[] liveScorerUnlockSeq = {4, 8, 12};
 	
@@ -905,7 +905,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 * @return True if the conditions are met for the PhaseShifter icon to be unlocked, false otherwise.
 	 */
 	private boolean phaseShifterUnlocked() {
-		return pa.playerInfo.minutesSpentWithMusician > 3f;
+		return pa.playerInfo.minutesSpentWithMusician > 1f;
 	}
 	
 	/**

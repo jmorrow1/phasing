@@ -32,7 +32,7 @@ import util.FloatFormatter;
 public class Editor extends Screen implements SoundCipherPlusListener {
 	//time
 	private int prev_t;
-	private float[] unlockTimes = new float[] {0, 1, 2, 3, 4, 5};
+	private float[] unlockTimes = new float[] {0, 0, 1, 2, 3, 4};
 	
 	//playback
 	private SoundCipherPlus livePlayer;
@@ -422,17 +422,17 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		if (pa.playerInfo.nextEditorUnlockIndex > 0) {
 			playToggle.show();
 			if (pa.playerInfo.nextEditorUnlockIndex > 1) {
-				rootMenu.show();
+				bpmDifferenceSlider.show();		
 				if (pa.playerInfo.nextEditorUnlockIndex > 2) {
-					scaleMenu.show();
+					bpmSlider.show();
 					if (pa.playerInfo.nextEditorUnlockIndex > 3) {
-						bpmSlider.show();
+						hScrollbar.show();
+						addNoteButton.show();
+						subNoteButton.show();
 						if (pa.playerInfo.nextEditorUnlockIndex > 4) {
-							bpmDifferenceSlider.show();
+							rootMenu.show();
 							if (pa.playerInfo.nextEditorUnlockIndex > 5) {
-								hScrollbar.show();
-								addNoteButton.show();
-								subNoteButton.show();
+								scaleMenu.show();
 							}
 						}
 					}

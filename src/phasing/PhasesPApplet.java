@@ -254,7 +254,7 @@ public class PhasesPApplet extends PApplet {
 					scale = getRandomScale();
 				}
 			}
-			currentPhrase = generateReichLikePhrase(scale);
+			currentPhrase = generateShortReichLikePhrase(scale);
 			currentPhrasePicture = new PhrasePicture(currentPhrase, "a", this);
 			addPhrasePicture(currentPhrasePicture);
 			saveCurrentPhrasePicture();
@@ -616,7 +616,24 @@ public class PhasesPApplet extends PApplet {
 	 * @return The generated phrase.
 	 */
 	public Phrase generateReichLikePhrase(final Scale scale) {
-		return generateReichLikePhrase(scale, 5, (random(1) < 0.5f) ? true : false);
+		return generateReichLikePhrase(scale, 5, (random(1) < 0.5f));
+	}
+	
+	/**
+	 * Generates a Reich-like Phrase that is guarenteed to be short (not contain many notes).
+	 * 
+	 * Generates a phrase that has the property of being like the phrase in Steve Reich's Piano Phase
+	 * in this sense: every pitch in the phrase occurs periodically.
+	 * 
+	 * A phasing process over a phrase like this as opposed to a generic phrase results in a
+	 * greater frequence of unisons (two notes of the same pitch playing at the same time).
+	 * 
+	 * @param scale The set of pitches the phrase draws from.
+	 * 
+	 * @return The generated phrase.
+	 */
+	public Phrase generateShortReichLikePhrase(final Scale scale) {
+		return generatePhraseFromTemplates(new String[] {"ABCDAECF", "ABCDABCE"}, scale, 5, random(1) < 0.5);
 	}
 	
 	/**
@@ -634,7 +651,8 @@ public class PhasesPApplet extends PApplet {
 	 * @return The generated phrase.
 	 */
 	public Phrase generateReichLikePhrase(final Scale scale, final int octave, final boolean allowRests) {
-		return generatePhraseFromTemplates(new String[] {"ABCDAECF", "ABCDABCE", "ABCDEBADCBED", "ABCDEBADCBED", "ABCDEBADFBEDABGDEBADHBED", "ABCDAECFADCEAGCDAECHADCE"}, scale, octave, allowRests);
+		return generatePhraseFromTemplates(new String[] {"ABCDAECF", "ABCDABCE", "ABCDEBADCBED",
+				"ABCDEBADCBED", "ABCDEBADFBEDABGDEBADHBED", "ABCDAECFADCEAGCDAECHADCE"}, scale, octave, allowRests);
 	}
 	
 	/**
