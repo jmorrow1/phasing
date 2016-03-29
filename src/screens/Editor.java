@@ -493,8 +493,6 @@ public class Editor extends Screen {
 			hScrollbar.setNumTickMarks(pa.currentPhrase.getGridRowSize());
 			hScrollbar.setTicksPerScroller(rowSize());
 		}
-		
-		pa.saveCurrentPhrasePicture();
 	}
 	
 	/**
@@ -511,8 +509,6 @@ public class Editor extends Screen {
 			hScrollbar.setNumTickMarks(pa.currentPhrase.getGridRowSize());
 			hScrollbar.setTicksPerScroller(rowSize());
 		}
-		
-		pa.saveCurrentPhrasePicture();
 	}
 	
 	/**
@@ -599,8 +595,8 @@ public class Editor extends Screen {
 	@Override
 	public void onExit() {
 		cp5.hide();
-		pa.savePlayerInfo();
-		pa.saveCurrentPhrasePicture();
+		pa.savePlayerInfo(); //TODO Is this line necessary?
+		pa.saveCurrentPhrasePicture(); //TODO Is this line necessary?
 	}
 	
 	@Override
@@ -690,8 +686,6 @@ public class Editor extends Screen {
 			}
 			
 			drawState = DRAWING_NOTE;
-			
-			pa.saveCurrentPhrasePicture();
 		}
 	}
 	
@@ -711,8 +705,6 @@ public class Editor extends Screen {
 			if (editSubsequentNote) {
 				pa.currentPhrase.setNoteType(index+1, Phrase.NOTE_START);
 			}
-			
-			pa.saveCurrentPhrasePicture();
 		}	
 	}
 	
@@ -721,6 +713,7 @@ public class Editor extends Screen {
 		//resets the Editor's state w/r/t the grid:
 		drawState = NOT_DRAWING;
 		startIndexOfUserDrawnNote = -1;
+		pa.saveCurrentPhrasePicture(); //TODO Is it a good idea to put this here?
 	}
 	
 	@Override
