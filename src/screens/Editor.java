@@ -1,7 +1,5 @@
 package screens;
 
-import java.lang.reflect.Method;
-
 import controlP5.Button;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
@@ -23,6 +21,7 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.event.MouseEvent;
 import soundcipher.SoundCipherPlus;
+import soundcipher.SoundCipherPlus.SoundCipherPlusListener;
 import util.FloatFormatter;
 
 /**
@@ -30,7 +29,7 @@ import util.FloatFormatter;
  * @author James Morrow
  *
  */
-public class Editor extends Screen {
+public class Editor extends Screen implements SoundCipherPlusListener {
 	//time
 	private int prev_t;
 	private float[] unlockTimes = new float[] {0, 1, 2, 3, 4, 5};
@@ -142,12 +141,7 @@ public class Editor extends Screen {
 	 * Initializes the object that plays music in the editor.
 	 */
 	private void initMusicPlayer() {
-		try {
-			Method callback = Editor.class.getMethod("animate", SoundCipherPlus.class);
-			livePlayer = new SoundCipherPlus(pa, pa.currentPhrase, this, callback);
-		} catch (NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-		}
+		livePlayer = new SoundCipherPlus(pa, pa.currentPhrase, this);
 	}
 	
 	/**
@@ -551,11 +545,8 @@ public class Editor extends Screen {
 	 ***** Music Callback *****
 	 **************************/
 	
-	/**
-	 * Callback from livePlayer
-	 * @param livePlayer
-	 */
-	public void animate(SoundCipherPlus livePlayer) {
+	@Override
+	public void noteEvent(SoundCipherPlus livePlayer) {
 		activeNoteIndex = livePlayer.getNoteIndex();
 	}
 	

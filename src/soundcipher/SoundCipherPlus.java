@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import arb.soundcipher.SoundCipher;
 import phasing.Phrase;
 import phasing.PhraseReader;
+import phasing.PhraseReader.PhraseReaderListener;
 import processing.core.PApplet;
 
 /**
@@ -18,12 +19,10 @@ import processing.core.PApplet;
  * @author James Morrow
  *
  */
-public class SoundCipherPlus extends SoundCipher {
+public class SoundCipherPlus extends SoundCipher implements PhraseReaderListener {
 	private PhraseReader phraseReader;
 	private Phrase phrase;
-	
-	private Object callee;
-	private Method callback;
+	private SoundCipherPlusListener listener;
 	
 	/**
 	 * 
@@ -32,18 +31,11 @@ public class SoundCipherPlus extends SoundCipher {
 	 * @param callee The object on which to invoke the callback
 	 * @param callback The method to call when playNote is called
 	 */
-	public SoundCipherPlus(PApplet pa, Phrase phrase, Object callee, Method callback) {
+	public SoundCipherPlus(PApplet pa, Phrase phrase, SoundCipherPlusListener listener) {
 		super(pa);
 		this.phrase = phrase;
-		try {
-			Method scCall = SoundCipherPlus.class.getMethod("playNote", PhraseReader.class);
-			phraseReader = new PhraseReader(phrase, 0, this, scCall);
-		} catch (NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-		}
-		
-		this.callee = callee;
-		this.callback = callback;
+		phraseReader = new PhraseReader(phrase, 0, this);
+		this.listener = listener;
 	}
 	
 	/**
@@ -55,19 +47,12 @@ public class SoundCipherPlus extends SoundCipher {
 		phraseReader.update(dNotept);
 	}
 	
-	/**
-	 * Callback for the PhraseReader.
-	 * Plays the note that the PhraseReader is currently reading.
-	 */
-	public void playNote(PhraseReader phraseReader) {
+	@Override
+	public void noteEvent(PhraseReader phraseReader) {
 		int i = phraseReader.getNoteIndex();
 		if (!phrase.isRest(i)) {
 			super.playNote(phrase.getSCPitch(i), phrase.getSCDynamic(i), 0.9f*phrase.getSCDuration(i));
-			try {
-				callback.invoke(callee, this);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
-			}
+			listener.noteEvent(this);
 		}
 	}
 	
@@ -78,4 +63,19 @@ public class SoundCipherPlus extends SoundCipher {
 	public int getNoteIndex() {
 		return phraseReader.getNoteIndex();
 	}
+	
+	/**
+	 * 
+	 * @author James Morrow
+	 *
+	 */
+	public interface SoundCipherPlusListener {
+		/**
+		 * Responds to a note event.
+		 * 
+		 * @param scPlus The SoundCipherPlus sending the note events.
+		 */
+		public void noteEvent(SoundCipherPlus scPlus);
+	}
+
 }

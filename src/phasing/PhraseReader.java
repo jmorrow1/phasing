@@ -22,9 +22,7 @@ public class PhraseReader {
 	private int noteIndex;
 	private float noteTimeTillNextNote;
 	
-	//callback
-	private Object callee;
-	private Method callback;
+	PhraseReaderListener listener;
 	
 	/**
 	 * 
@@ -33,12 +31,10 @@ public class PhraseReader {
 	 * @param callee The object on which to invoke the callback method
 	 * @param callback The callback method
 	 */
-	public PhraseReader(Phrase phrase, int id, Object callee, Method callback) {
+	public PhraseReader(Phrase phrase, int id, PhraseReaderListener listener) {
 		this.phrase = phrase;
 		this.id = id;
-		
-		this.callee = callee;
-		this.callback = callback;
+		this.listener = listener;
 		
 		noteIndex = -1;
 		noteTimeTillNextNote = 0;
@@ -56,11 +52,7 @@ public class PhraseReader {
 		if (noteTimeTillNextNote <= 0 && phrase.getNumNotes() > 0) {
 			noteIndex = (noteIndex+1) % phrase.getNumNotes();
 			noteTimeTillNextNote = noteTimeTillNextNote + phrase.getSCDuration(noteIndex);
-			try {
-				callback.invoke(callee, this);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
-			}
+			listener.noteEvent(this);	
 		}
 	}
 	
@@ -79,33 +71,7 @@ public class PhraseReader {
 			}
 		}
 	}
-	
-	/**
-	 * Sets the callback.
-	 * @param callee The object to call.
-	 * @param callback The method to call.
-	 */
-	public void setCallback(Object callee, Method callback) {
-		this.callee = callee;
-		this.callback = callback;
-	}
-	
-	/**
-	 * Sets the object on which callbacks are called.
-	 * @param callee The object to call.
-	 */
-	public void setCallee(Object callee) {
-		this.callee = callee;
-	}
-	
-	/**
-	 * Sets the method to call.
-	 * @param callback The method to call.
-	 */
-	public void setCallback(Method callback) {
-		this.callback = callback;
-	}
-	
+
 	/**
 	 * 
 	 * @return The integer identifier of this PhraseReader.
@@ -121,4 +87,19 @@ public class PhraseReader {
 	public int getNoteIndex() {
 		return noteIndex;
 	}
+	
+	/**
+	 * 
+	 * @author James Morrow
+	 *
+	 */
+	public static interface PhraseReaderListener {
+		/**
+		 * Responds to a note event.
+		 * 
+		 * @param reader The PhraseReader sending the note events.
+		 */
+		public void noteEvent(PhraseReader reader);
+	}
+
 }

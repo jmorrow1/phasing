@@ -1,7 +1,6 @@
 package screens;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import controlP5.Button;
@@ -24,8 +23,8 @@ import icons.SuperimposedOrSeparatedIcon;
 import icons.TransformIcon;
 import icons.ViewTypeIcon;
 import phasing.PhasesPApplet;
-import phasing.Phrase;
 import phasing.PhraseReader;
+import phasing.PhraseReader.PhraseReaderListener;
 import phasing.PlayerInfo;
 import processing.core.PApplet;
 import soundcipher.SCScorePlus;
@@ -42,7 +41,7 @@ import views.ViewVariableInfo;
  * @author James Morrow
  *
  */
-public class Presenter extends Screen implements ViewVariableInfo {
+public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderListener {
 	// real time
 	private int dt, prev_t; //milliseconds
 	
@@ -121,16 +120,8 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 * Initializes reader1 and reader2.
 	 */
 	private void initPhraseReaders() {
-		try {
-			reader1 = new PhraseReader(pa.currentPhrase, READER_ONE_ID,
-					this, Presenter.class.getMethod("noteEvent", PhraseReader.class));
-			
-			reader2 = new PhraseReader(pa.currentPhrase, READER_TWO_ID,
-					this, Presenter.class.getMethod("noteEvent", PhraseReader.class));
-		}
-		catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		}
+		reader1 = new PhraseReader(pa.currentPhrase, READER_ONE_ID, this);
+		reader2 = new PhraseReader(pa.currentPhrase, READER_TWO_ID, this);
 	}
 	
 	/**
@@ -688,6 +679,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 ***** Note Event Handling *****
 	 *******************************/
 	
+	@Override
 	public void noteEvent(PhraseReader reader) {
 		view.noteEvent(reader);
 	}
