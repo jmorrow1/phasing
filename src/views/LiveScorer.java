@@ -303,7 +303,7 @@ public class LiveScorer extends View {
 	 */
 	private float fadeAmt(int dt) {
 		if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
-			float amt = 0.4f * dt * fadeRate;
+			float amt = 0.6f * dt * fadeRate;
 			return amt;
 		}
 		else {
