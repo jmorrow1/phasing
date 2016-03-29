@@ -1,14 +1,14 @@
 package views;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import geom.CurvedRect;
 import geom.Rect;
 import phasing.PhasesPApplet;
 import phasing.PhraseReader;
 import phasing.PlayerInfo;
-import geom.CurvedRect;
 import processing.core.PApplet;
+import screens.Presenter;
 import util.ModInt;
 
 /**
@@ -27,10 +27,6 @@ public class PhaseShifter extends View {
 	
 	//movement:
 	private float normalTransform1, normalTransform2;
-	
-	//phrase readers:
-	private PhraseReader readerA, readerB;
-	private final int ONE_ID = 1, TWO_ID = 2;
 	
 	//active note:
 	private int activeNote1, activeNote2;
@@ -98,8 +94,7 @@ public class PhaseShifter extends View {
 	 * Initializes the PhaseShifter object.
 	 */
 	private void init() {
-		initBounds();
-		initPhraseReaders();		
+		initBounds();	
 		initData();
 	}
 	
@@ -162,20 +157,6 @@ public class PhaseShifter extends View {
 		}
 	}
 	
-	/**
-	 * Initializes the PhraseReaders, the things that send event upon reading new notes (and rests) so the PhaseShifter can draw things in response.
-	 */
-	private void initPhraseReaders() {
-		try {
-			Method callback = PhaseShifter.class.getMethod("changeActiveNote", PhraseReader.class);
-			readerA = new PhraseReader(pa.currentPhrase, ONE_ID, this, callback);
-			readerB = new PhraseReader(pa.currentPhrase, TWO_ID, this, callback);
-		}
-		catch (NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	/**************************
 	 ***** Event Handling *****
 	 **************************/
@@ -187,20 +168,22 @@ public class PhaseShifter extends View {
 	}
 	
 	@Override
-	public void wakeUp(float notept1, float notept2) {
-		readerA.wakeUp(notept1);
-		readerB.wakeUp(notept2);
+	public void wakeUp(float notept1, float notept2) {}
+	
+	@Override
+	public void noteEvent(PhraseReader reader) {
+		changeActiveNote(reader);
 	}
 	
 	/**
 	 * Callback from PhraseReaders, for when a new note (or rest) is read.
 	 * @param reader The callee.
 	 */
-	public void changeActiveNote(PhraseReader reader) {
-		if (reader.getId() == ONE_ID) {
+	private void changeActiveNote(PhraseReader reader) {
+		if (reader.getId() == Presenter.READER_ONE_ID) {
 			activeNote1 = reader.getNoteIndex();
 		}
-		else if (reader.getId() == TWO_ID) {
+		else if (reader.getId() == Presenter.READER_TWO_ID) {
 			activeNote2 = reader.getNoteIndex();
 		}
 	}
@@ -212,9 +195,6 @@ public class PhaseShifter extends View {
 	@Override
 	public void update(int dt, float dNotept1, float dNotept2) {
 		if (pa.currentPhrase.getNumNotes() > 0) {
-			readerA.update(dNotept1);
-			readerB.update(dNotept2);
-			
 			pa.pushMatrix();
 			
 			pa.translate(this.getCenx(), this.getCeny());

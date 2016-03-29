@@ -1,6 +1,5 @@
 package views;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import geom.Rect;
@@ -8,6 +7,7 @@ import phasing.PhasesPApplet;
 import phasing.PhraseReader;
 import phasing.PlayerInfo;
 import processing.core.PApplet;
+import screens.Presenter;
 import util.ModInt;
 
 /**
@@ -18,9 +18,6 @@ import util.ModInt;
  *
  */
 public class LiveScorer extends View {
-	//phrase readers:
-	private PhraseReader readerA, readerB;
-	
 	//where to spawn new points:
 	private float spawnX;
 	private float spawnY;
@@ -48,7 +45,6 @@ public class LiveScorer extends View {
 	
 	//other
 	private float fadeRate;
-	private final int ONE_ID = 1, TWO_ID = 2;
 	private int startingPitch = 0;
 	private float noteSize;
 	
@@ -107,7 +103,6 @@ public class LiveScorer extends View {
 	private void init() {
 		initFadeRate();
 		initNoteSize();
-		initPhraseReaders();
 		initSpawnVariables();
 		initPossibleYValuesForMoveNotesMode();
 	}
@@ -129,20 +124,6 @@ public class LiveScorer extends View {
 	private void initNoteSize() {
 		float h = getHeight();
 		noteSize = (0 < h && h < 800) ? PApplet.map(h, 0, 800, 12, 24) : 24;
-	}
-	
-	/**
-	 * Initializes the PhraseReaders, which read the Phrase and send events to the LiveScorer object whenever they encounter a new note.
-	 * When a LiveScorer object receives a note event, it draws it.
-	 */
-	private void initPhraseReaders() {
-		try {
-			Method callback = LiveScorer.class.getMethod("plotNote", PhraseReader.class);
-			readerA = new PhraseReader(pa.currentPhrase, ONE_ID, this, callback);
-			readerB = new PhraseReader(pa.currentPhrase, TWO_ID, this, callback);
-		} catch (NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	/**
@@ -206,8 +187,6 @@ public class LiveScorer extends View {
 	public void wakeUp(float notept1, float notept2) {
 		dataPts1.clear();
 		dataPts2.clear();
-		readerA.wakeUp(notept1);
-		readerB.wakeUp(notept2);
 	}
 	
 	@Override
@@ -217,6 +196,58 @@ public class LiveScorer extends View {
 		
 		if (scoreModeChanged) {
 			initSpawnVariables();
+		}
+	}
+	
+	@Override
+	public void noteEvent(PhraseReader reader) {
+		plotNote(reader);
+	}
+
+	/**
+	 * Callback from the PhraseReader. When the PhraseReader reads a new note it calls this method to plot that note.
+	 * @param reader The PhraseReader invoking the callback.
+	 */
+	private void plotNote(PhraseReader reader) {
+		int noteIndex = reader.getNoteIndex();
+		
+		if (!pa.currentPhrase.isRest(noteIndex)) {
+			ArrayList<DataPoint> dataPts = (reader.getId() == Presenter.READER_ONE_ID) ? dataPts1 : dataPts2;
+			
+			float y1 = -1;
+			float y2 = -1;
+			
+			if (sineWave.toInt() == IS_SINE_WAVE &&
+					!pa.currentPhrase.isRest(reader.getNoteIndex())) {
+				float notept = -1;
+				
+				if (reader.getId() == Presenter.READER_ONE_ID) {
+					durationAcc1 = (noteIndex == 0) ? 0 : durationAcc1 + pa.currentPhrase.getSCDuration(noteIndex-1);
+					notept = durationAcc1;
+				}
+				else if (reader.getId() == Presenter.READER_TWO_ID) {
+					durationAcc2 = (noteIndex == 0) ? 0 : durationAcc2 + pa.currentPhrase.getSCDuration(noteIndex-1);
+					notept = durationAcc2;
+				}
+				
+				float angle1 = PApplet.map(notept,
+						                   0, pa.currentPhrase.getTotalDuration(),
+						                   0, PApplet.TWO_PI);
+				float angle2 = PApplet.map(notept+pa.currentPhrase.getSCDuration(noteIndex),
+										   0, pa.currentPhrase.getTotalDuration(),
+										   0, PApplet.TWO_PI);
+				
+				y1 = spawnY + PApplet.sin(angle1)*halfHeight;
+				y2 = spawnY + PApplet.sin(angle2)*halfHeight;
+			}
+			else {
+				y1 = noteIndexToY(noteIndex);
+				y2 = noteIndexToY((noteIndex+1) % ys.length);
+			}
+			
+			dataPts.add(new DataPoint(spawnX, y1,
+	                	spawnX + PIXELS_PER_WHOLE_NOTE*pa.currentPhrase.getSCDuration(noteIndex),
+	                	opacity));
 		}
 	}
 	
@@ -230,9 +261,6 @@ public class LiveScorer extends View {
 			pa.pushMatrix();
 			
 			pa.translate(getCenx(), getCeny());
-			
-			readerA.update(dNotept1);
-			readerB.update(dNotept2);
 			
 			float dx = -dNotept1 * PIXELS_PER_WHOLE_NOTE;
 			
@@ -330,53 +358,6 @@ public class LiveScorer extends View {
 			else {
 				spawnY = startSpawnY;
 			}
-		}
-	}
-
-	/**
-	 * Callback from the PhraseReader. When the PhraseReader reads a new note it calls this method to plot that note.
-	 * @param reader The PhraseReader invoking the callback.
-	 */
-	public void plotNote(PhraseReader reader) {
-		int noteIndex = reader.getNoteIndex();
-		
-		if (!pa.currentPhrase.isRest(noteIndex)) {
-			ArrayList<DataPoint> dataPts = (reader.getId() == ONE_ID) ? dataPts1 : dataPts2;
-			
-			float y1 = -1;
-			float y2 = -1;
-			
-			if (sineWave.toInt() == IS_SINE_WAVE &&
-					!pa.currentPhrase.isRest(reader.getNoteIndex())) {
-				float notept = -1;
-				
-				if (reader.getId() == ONE_ID) {
-					durationAcc1 = (noteIndex == 0) ? 0 : durationAcc1 + pa.currentPhrase.getSCDuration(noteIndex-1);
-					notept = durationAcc1;
-				}
-				else if (reader.getId() == TWO_ID) {
-					durationAcc2 = (noteIndex == 0) ? 0 : durationAcc2 + pa.currentPhrase.getSCDuration(noteIndex-1);
-					notept = durationAcc2;
-				}
-				
-				float angle1 = PApplet.map(notept,
-						                   0, pa.currentPhrase.getTotalDuration(),
-						                   0, PApplet.TWO_PI);
-				float angle2 = PApplet.map(notept+pa.currentPhrase.getSCDuration(noteIndex),
-										   0, pa.currentPhrase.getTotalDuration(),
-										   0, PApplet.TWO_PI);
-				
-				y1 = spawnY + PApplet.sin(angle1)*halfHeight;
-				y2 = spawnY + PApplet.sin(angle2)*halfHeight;
-			}
-			else {
-				y1 = noteIndexToY(noteIndex);
-				y2 = noteIndexToY((noteIndex+1) % ys.length);
-			}
-			
-			dataPts.add(new DataPoint(spawnX, y1,
-	                	spawnX + PIXELS_PER_WHOLE_NOTE*pa.currentPhrase.getSCDuration(noteIndex),
-	                	opacity));
 		}
 	}
 	

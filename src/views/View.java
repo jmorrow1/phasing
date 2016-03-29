@@ -2,6 +2,7 @@ package views;
 
 import geom.Rect;
 import phasing.PhasesPApplet;
+import phasing.PhraseReader;
 import phasing.PlayerInfo;
 import util.ModInt;
 
@@ -121,4 +122,11 @@ public abstract class View extends Rect implements ViewVariableInfo {
 			var.setValue(playerInfo.viewOptionValueMap.get(key));
 		}
 	}
+	
+	/**
+	 * Receives note events and responds with animation.
+	 * 
+	 * @param phraseReader The PhraseReader that is sending the event.
+	 */
+	public abstract void noteEvent(PhraseReader phraseReader);
 }

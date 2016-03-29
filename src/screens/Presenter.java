@@ -1,6 +1,7 @@
 package screens;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import controlP5.Button;
@@ -24,6 +25,7 @@ import icons.TransformIcon;
 import icons.ViewTypeIcon;
 import phasing.PhasesPApplet;
 import phasing.Phrase;
+import phasing.PhraseReader;
 import phasing.PlayerInfo;
 import processing.core.PApplet;
 import soundcipher.SCScorePlus;
@@ -93,6 +95,10 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	//phrase
 	//private Phrase reversedPhrase;
 	//private boolean phraseIsReversed;
+	
+	//phrase reading
+	private PhraseReader reader1, reader2;
+	public static final int READER_ONE_ID = 1, READER_TWO_ID = 2;
 
 	/**************************
 	 ***** Initialization *****
@@ -105,9 +111,26 @@ public class Presenter extends Screen implements ViewVariableInfo {
 	 */
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
+		initPhraseReaders();
 		initViews(pa.playerInfo);	
 		initCP5Objects();
 		cp5.hide();
+	}
+	
+	/**
+	 * Initializes reader1 and reader2.
+	 */
+	private void initPhraseReaders() {
+		try {
+			reader1 = new PhraseReader(pa.currentPhrase, READER_ONE_ID,
+					this, Presenter.class.getMethod("noteEvent", PhraseReader.class));
+			
+			reader2 = new PhraseReader(pa.currentPhrase, READER_TWO_ID,
+					this, Presenter.class.getMethod("noteEvent", PhraseReader.class));
+		}
+		catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -397,6 +420,7 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		//reversedPhrase = Phrase.reverse(pa.currentPhrase);
 		initCP5Objects();
 		initViews(pa.playerInfo);
+		initPhraseReaders();
 		setupIconLists();
 		activeIconIndex = 0;
 		repositionDirectionalButtons();
@@ -614,6 +638,8 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		prev_notept1 = notept1;
 		prev_notept2 = notept2;
 
+		reader1.update(dNotept1);
+		reader2.update(dNotept2);
 		view.update(dt, dNotept1, dNotept2);
 
 		if (view != phaseShifterView) {
@@ -637,9 +663,13 @@ public class Presenter extends Screen implements ViewVariableInfo {
 		}
 		else {
 			switch (pa.key) {
+				case 'A' :
 				case 'a' : iconLeft(); break;
+				case 'D' :
 				case 'd' : iconRight(); break;
+				case 'W' :
 				case 'w' : iconUp(); break;
+				case 'S' :
 				case 's' : iconDown(); break;
 			}
 		}
@@ -652,6 +682,14 @@ public class Presenter extends Screen implements ViewVariableInfo {
 			activeIconIndex = iconIndex;
 			repositionDirectionalButtons();
 		}
+	}
+	
+	/*******************************
+	 ***** Note Event Handling *****
+	 *******************************/
+	
+	public void noteEvent(PhraseReader reader) {
+		view.noteEvent(reader);
 	}
 	
 	/********************************

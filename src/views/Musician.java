@@ -9,6 +9,7 @@ import phasing.PhasesPApplet;
 import phasing.PhraseReader;
 import phasing.PlayerInfo;
 import processing.core.PApplet;
+import screens.Presenter;
 import util.ModInt;
 
 /**
@@ -19,7 +20,7 @@ import util.ModInt;
  */
 public class Musician extends View {
 	//phrase readers:
-	private PhraseReader readerA, readerB;
+	//private PhraseReader readerA, readerB;
 	
 	//instruments:
 	private Piano pianoA, pianoB, pianoAB;
@@ -82,7 +83,6 @@ public class Musician extends View {
 		initInstruments();
 		assignInstruments();
 		initInstrumentPlayers();
-		initPhraseReaders();
 	}
 	
 	/**
@@ -180,21 +180,6 @@ public class Musician extends View {
 	}
 	
 	/**
-	 * Initializes the PhraseReaders, the things that send events to the InstrumentPlayers whenever new notes are read.
-	 */
-	private void initPhraseReaders() {
-		try {
-			readerA = new PhraseReader(pa.currentPhrase, -1, playerA,
-					                   InstrumentPlayer.class.getMethod("setActiveKey", PhraseReader.class));
-			readerB = new PhraseReader(pa.currentPhrase, -1, playerB,
-					                   InstrumentPlayer.class.getMethod("setActiveKey", PhraseReader.class));
-
-		} catch (NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
 	 * Assigns instruments to variables accordinate to what the "instrument" option is set to.
 	 */
 	private void assignInstruments() {
@@ -226,14 +211,19 @@ public class Musician extends View {
 	public void settingsChanged() {
 		assignInstruments();
 		resetInstrumentPlayers();
-		readerA.setCallee(playerA);
-		readerB.setCallee(playerB);
 	}
 	
 	@Override
-	public void wakeUp(float notept1, float notept2) {
-		readerA.wakeUp(notept1);
-		readerB.wakeUp(notept2);
+	public void wakeUp(float notept1, float notept2) {}
+	
+	@Override
+	public void noteEvent(PhraseReader reader) {
+		if (reader.getId() == Presenter.READER_ONE_ID) {
+			playerA.setActiveKey(reader);
+		}
+		else if (reader.getId() == Presenter.READER_TWO_ID) {
+			playerB.setActiveKey(reader);
+		}
 	}
 	
 	/******************
@@ -243,9 +233,6 @@ public class Musician extends View {
 	@Override
 	public void update(int dt, float dNotept1, float dNotept2) {
 		if (pa.currentPhrase.getNumNotes() > 0) {
-			readerA.update(dNotept1);
-			readerB.update(dNotept2);	
-			
 			if (superimposedOrSeparated.toInt() == SUPERIMPOSED) {
 				instrumentAB.display(pa);
 			}
