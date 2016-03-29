@@ -58,6 +58,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	private int drawState = NOT_DRAWING;
 	private int startIndexOfUserDrawnNote = -1;
 	private int indexMousePressed=-1, pitchMousePressed=-1;
+	private boolean shiftPressed;
 	
 	//cp5
 	private final static int BPM_1 = 1, BPM_DIFFERENCE = 2;
@@ -74,6 +75,10 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	//controller layout
 	private int controller_dx = 15;
 	private int margin_btwn_top_toolbar_y2_and_controllers = 10;
+	
+	//cursor
+	private boolean cursorIsX;
+	private float xCursorRadius = 4;
 	
 	/**************************
 	 ***** Initialization *****
@@ -609,6 +614,22 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		if (pa.key == ' ') {
 			playToggle.setState(!playToggle.getState());
 		}
+		else if (pa.key == pa.CODED && pa.keyCode == pa.SHIFT) {
+			shiftPressed = true;
+			if (shiftClick()) {
+				xCursor();
+			}
+		}
+	}
+	
+	@Override
+	public void keyReleased() {
+		if (pa.key == pa.CODED && pa.keyCode == pa.SHIFT) {
+			shiftPressed = false;
+			if (!pa.mousePressed || pa.mouseButton != pa.RIGHT) {
+				defaultCursor();
+			}
+		}
 	}
 	
 	/**
@@ -616,7 +637,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @return True if user is simultaneously holding shift and pressing the left or right mouse button, false otherwise.
 	 */
 	private boolean shiftClick() {
-		return pa.keyPressed && pa.key == pa.CODED && pa.keyCode == pa.SHIFT && pa.mousePressed && (pa.mouseButton == pa.LEFT || pa.mouseButton == pa.RIGHT);
+		return pa.keyPressed && shiftPressed && pa.mousePressed && (pa.mouseButton == pa.LEFT || pa.mouseButton == pa.RIGHT);
 	}
 	
 	@Override
@@ -626,6 +647,14 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	
 	@Override
 	public void mousePressed() {
+		boolean shiftClick = shiftClick();
+		if (pa.mouseButton == pa.LEFT && !shiftClick) {
+			defaultCursor();
+		}
+		else if (pa.mouseButton == pa.RIGHT || shiftClick) {
+			xCursor();
+		}
+		
 		if (mouseInGrid()) {
 			mousePressedOnGrid();
 		}
@@ -701,6 +730,11 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	
 	@Override
 	public void mouseReleased() {
+		if ( (cursorIsX && pa.mouseButton == pa.RIGHT) ||
+				(pa.mouseButton == pa.LEFT && shiftPressed)) {
+			defaultCursor();
+		}
+		
 		//resets the Editor's state w/r/t the grid:
 		drawState = NOT_DRAWING;
 		startIndexOfUserDrawnNote = -1;
@@ -825,6 +859,24 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		drawBody();
 		drawToolbar();
 		pa.drawControlP5();
+		
+		drawCursor();
+	}
+	
+	/**
+	 * Draws the cursor when the PApplet is not already drawing the cursor.
+	 */
+	private void drawCursor() {
+		if (cursorIsX) {
+			pa.stroke(0);
+			pa.strokeWeight(4);
+			
+			float component = 1.414f * xCursorRadius;
+			pa.line(pa.mouseX - component, pa.mouseY - component,
+					pa.mouseX + component, pa.mouseY + component);
+			pa.line(pa.mouseX - component, pa.mouseY + component,
+					pa.mouseX + component, pa.mouseY - component);
+		}
 	}
 	
 	/**
@@ -1004,6 +1056,22 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	/*************************
 	 ***** Miscellaneous *****
 	 *************************/
+	
+	/**
+	 * Sets the cursor to be the cursor given by PApplet.cursor().
+	 */
+	private void defaultCursor() {
+		pa.cursor();
+		cursorIsX = false;
+	}
+	
+	/**
+	 * Sets the cursor to be in the shape of an x.
+	 */
+	private void xCursor() {
+		pa.noCursor();
+		cursorIsX = true;
+	}
 	
 	/**
 	 * 
