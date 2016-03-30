@@ -59,7 +59,6 @@ public class PhaseShifter extends View {
 	public PhaseShifter(Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
 		super(viewBox, opacity, pa);
 		init();
-		loadSettings(playerInfo);
 	}
 	
 	/**
@@ -688,30 +687,5 @@ public class PhaseShifter extends View {
 				return (plotPitchMode.toInt() == PLOT_PITCH) ? ry : ryAlt;
 			}
 		}
-	}
-	
-	/***************************************
-	 ***** Saving and Loading Settings *****
-	 ***************************************/
-	
-	@Override
-	public void saveSettings(PlayerInfo playerInfo) {
-		save(activeNoteMode, "activeNoteMode", playerInfo);
-		save(transformation, "transformation", playerInfo);
-		save(cameraMode, "cameraMode", playerInfo);
-		save(noteGraphic, "noteGraphic1", playerInfo);
-		save(plotPitchMode, "plotPitchMode", playerInfo);
-		save(colorScheme, "colorScheme", playerInfo);
-	}
-	
-	@Override
-	protected void loadSettings(PlayerInfo playerInfo) {
-		tryToSet(activeNoteMode, "activeNoteMode", playerInfo);
-		tryToSet(transformation, "transformation", playerInfo);
-		tryToSet(cameraMode, "cameraMode", playerInfo);
-		tryToSet(noteGraphic, "noteGraphic1", playerInfo);
-		tryToSet(plotPitchMode, "plotPitchMode", playerInfo);
-		tryToSet(colorScheme, "colorScheme", playerInfo);
-		settingsChanged();
 	}
 }

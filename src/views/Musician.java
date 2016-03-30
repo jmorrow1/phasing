@@ -49,7 +49,6 @@ public class Musician extends View {
 	public Musician(Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
 		super(viewBox, opacity, pa);
 		init();
-		loadSettings(playerInfo);
 	}
 	
 	/**
@@ -257,24 +256,5 @@ public class Musician extends View {
 			}
 			playerB.draw(pa);
 		}
-	}
-	
-	/***************************************
-	 ***** Saving and Loading Settings *****
-	 ***************************************/
-	
-	@Override
-	public void saveSettings(PlayerInfo playerInfo) {
-		save(superimposedOrSeparated, "superimposedOrSeparated", playerInfo);
-		save(colorScheme, "colorScheme", playerInfo);
-		save(instrument, "instrument", playerInfo);
-	}
-	
-	@Override
-	protected void loadSettings(PlayerInfo playerInfo) {
-		tryToSet(superimposedOrSeparated, "superimposedOrSeparated", playerInfo);
-		tryToSet(colorScheme, "colorScheme", playerInfo);
-		tryToSet(instrument, "instrument", playerInfo);
-		settingsChanged();
 	}
 }

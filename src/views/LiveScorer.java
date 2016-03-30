@@ -68,7 +68,6 @@ public class LiveScorer extends View {
 	public LiveScorer(Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
 		super(viewBox, opacity, pa);	
 		init();
-		loadSettings(playerInfo);
 	}
 	
 	/**
@@ -438,26 +437,5 @@ public class LiveScorer extends View {
 			}
 			pa.strokeCap(pa.ROUND); //back to default stroke cap
 		}
-	}
-	
-	/***************************************
-	 ***** Saving and Loading Settings *****
-	 ***************************************/
-	
-	@Override
-	public void saveSettings(PlayerInfo playerInfo) {
-		save(sineWave, "sineWave", playerInfo);
-		save(scoreMode, "scoreMode", playerInfo);
-		save(noteGraphic, "noteGraphic2", playerInfo);
-		save(colorScheme, "colorScheme", playerInfo);
-	}
-	
-	@Override
-	protected void loadSettings(PlayerInfo playerInfo) {
-		tryToSet(sineWave, "sineWave", playerInfo);
-		tryToSet(scoreMode, "scoreMode", playerInfo);
-		tryToSet(noteGraphic, "noteGraphic2", playerInfo);
-		tryToSet(colorScheme, "colorScheme", playerInfo);
-		settingsChanged();
 	}
 }

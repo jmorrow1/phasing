@@ -465,8 +465,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	public void onExit() {
 		player1.stop();
 		player2.stop();
-		cp5.hide();
-		
+		cp5.hide();	
 	}
 	
 	@Override
@@ -598,6 +597,9 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 		
 		float dNotept1 = notept1 - prev_notept1;
 		float dNotept2 = notept2 - prev_notept2;
+		
+		prev_notept1 = notept1;
+		prev_notept2 = notept2;
 
 		if (dNotept1 < 0) {
 			dNotept1 += pa.currentPhrase.getTotalDuration();
@@ -612,20 +614,15 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 		totalNotept1 += dNotept1;
 		totalNotept2 += dNotept2;
 		float avg_dNotept1 = totalNotept1 / dataPts;
-		float avg_dNotept2 = totalNotept2 / dataPts;
-		
+		float avg_dNotept2 = totalNotept2 / dataPts;	
 		float actual_dNotept1 = avg_dNotept1 + 0.01f * accountBalance1;
 		float actual_dNotept2 = avg_dNotept2 + 0.01f * accountBalance2;
-		
 		accountBalance1 += (dNotept1 - actual_dNotept1);
 		accountBalance2 += (dNotept2 - actual_dNotept2);
 	
 		if (PRINT_OUT_ANIMATION_ACCURACY) {
 			System.out.println("accountBalance1: " + accountBalance1 + ", accountBalance2: " + accountBalance2);
 		}
-			
-		prev_notept1 = notept1;
-		prev_notept2 = notept2;
 
 		reader1.update(actual_dNotept1);
 		reader2.update(actual_dNotept2);
@@ -1050,15 +1047,5 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 			default:
 				return 0;
 		}
-	}
-	
-	/******************
-	 ***** Saving *****
-	 ******************/
-	
-	public void saveViewSettings() {
-		musicianView.saveSettings(pa.playerInfo);
-		phaseShifterView.saveSettings(pa.playerInfo);
-		liveScorerView.saveSettings(pa.playerInfo);
 	}
 }
