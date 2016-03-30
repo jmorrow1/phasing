@@ -159,6 +159,7 @@ public class PhasesPApplet extends PApplet {
 		initCP5Objects(currentScreen);
 		changeScreenTo(currentScreen);
 		currentScreen.onEnter();
+
 	}
 	
 	/**
@@ -991,6 +992,7 @@ public class PhasesPApplet extends PApplet {
 	
 	@Override
 	public void exit() {
+		presenter.saveViewSettings();
 		this.savePlayerInfo();
 		this.saveCurrentPhrasePicture();
 		this.savePhrasePictures();	

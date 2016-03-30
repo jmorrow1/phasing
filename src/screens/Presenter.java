@@ -110,13 +110,11 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
 		initPhraseReaders();
-		initViews();
-		randomizeViewSettings();
+		initViews(pa.playerInfo);	
 		initCP5Objects();
 		cp5.hide();
-		
 	}
-
+	
 	/**
 	 * Initializes reader1 and reader2.
 	 */
@@ -129,13 +127,13 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 * Initializes an instance of each view type.
 	 * @param playerInfo The PlayerInfo object to initialize each view with.
 	 */
-	private void initViews() {
+	private void initViews(PlayerInfo playerInfo) {
 		Rect area = new Rect(viewCenx(), viewCeny(), pa.width, viewHeight(), pa.CENTER);
-		musicianView = (musicianView == null) ? new Musician(area, 150, pa)
+		musicianView = (musicianView == null) ? new Musician(area, 150, playerInfo, pa)
 				                              : new Musician(musicianView, area, 150, pa);
-		phaseShifterView = (phaseShifterView == null) ? new PhaseShifter(area, 150, pa)
+		phaseShifterView = (phaseShifterView == null) ? new PhaseShifter(area, 150, playerInfo, pa)
 				                                      : new PhaseShifter(phaseShifterView, area, 150, pa);
-		liveScorerView = (liveScorerView == null) ? new LiveScorer(area, 150, pa) :
+		liveScorerView = (liveScorerView == null) ? new LiveScorer(area, 150, playerInfo, pa) :
 			                                        new LiveScorer(liveScorerView, area, 150, pa);
 		
 		switch(viewType.toInt()) {
@@ -268,7 +266,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 */
 	public void iconUp() {
 		ModInt activeVar = variables.get(activeIconIndex);
-		int availability = this.getIconAvailability(activeVar.getName(), viewType.toInt());
+		int availability = this.getIconAvailability(activeVar.getName());
 		int newValue = PhasesPApplet.remainder(activeVar.toInt() - 1, availability);
 		activeVar.setValue(newValue);
 		view.settingsChanged();
@@ -286,7 +284,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 */
 	public void iconDown() {
 		ModInt activeVar = variables.get(activeIconIndex);
-		int availability = this.getIconAvailability(activeVar.getName(), viewType.toInt());
+		int availability = this.getIconAvailability(activeVar.getName());
 		int newValue = PhasesPApplet.remainder(activeVar.toInt() + 1, availability);
 		activeVar.setValue(newValue);
 		view.settingsChanged();
@@ -367,6 +365,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 */
 	public void checkForInstrumentChange() {
 		if (instrumentShouldChange()) {
+			System.out.println("here");
 			changeInstrument();
 			musicianView.wakeUp(0, 0);
 			liveScorerView.wakeUp(0, 0);
@@ -400,25 +399,18 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	
 	@Override
 	public void windowResized() {
-		resizeViews();
-		initCP5Objects();
-		repositionDirectionalButtons();
-	}
-	
-	/**
-	 * Resizes the views.
-	 */
-	private void resizeViews() {
 		musicianView.setSize(viewCenx(), viewCeny(), pa.width, viewHeight());
 		phaseShifterView.setSize(viewCenx(), viewCeny(), pa.width, viewHeight());
 		liveScorerView.setSize(viewCenx(), viewCeny(), pa.width, viewHeight());
+		initCP5Objects();
+		repositionDirectionalButtons();
 	}
 	
 	@Override
 	public void onEnter() {
 		//reversedPhrase = Phrase.reverse(pa.currentPhrase);
 		initCP5Objects();
-		initViews();
+		initViews(pa.playerInfo);
 		initPhraseReaders();
 		setupIconLists();
 		activeIconIndex = 0;
@@ -473,7 +465,8 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	public void onExit() {
 		player1.stop();
 		player2.stop();
-		cp5.hide();	
+		cp5.hide();
+		
 	}
 	
 	@Override
@@ -605,9 +598,6 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 		
 		float dNotept1 = notept1 - prev_notept1;
 		float dNotept2 = notept2 - prev_notept2;
-		
-		prev_notept1 = notept1;
-		prev_notept2 = notept2;
 
 		if (dNotept1 < 0) {
 			dNotept1 += pa.currentPhrase.getTotalDuration();
@@ -622,15 +612,20 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 		totalNotept1 += dNotept1;
 		totalNotept2 += dNotept2;
 		float avg_dNotept1 = totalNotept1 / dataPts;
-		float avg_dNotept2 = totalNotept2 / dataPts;	
+		float avg_dNotept2 = totalNotept2 / dataPts;
+		
 		float actual_dNotept1 = avg_dNotept1 + 0.01f * accountBalance1;
 		float actual_dNotept2 = avg_dNotept2 + 0.01f * accountBalance2;
+		
 		accountBalance1 += (dNotept1 - actual_dNotept1);
 		accountBalance2 += (dNotept2 - actual_dNotept2);
 	
 		if (PRINT_OUT_ANIMATION_ACCURACY) {
 			System.out.println("accountBalance1: " + accountBalance1 + ", accountBalance2: " + accountBalance2);
 		}
+			
+		prev_notept1 = notept1;
+		prev_notept2 = notept2;
 
 		reader1.update(actual_dNotept1);
 		reader2.update(actual_dNotept2);
@@ -750,37 +745,15 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 ***** Icon Initialization *****
 	 *******************************/
 	
-	//TODO
-	private void randomizeViewSettings() {
-		randomizeViewSettings(musicianView, MUSICIAN);
-		randomizeViewSettings(phaseShifterView, PHASE_SHIFTER);
-		randomizeViewSettings(liveScorerView, LIVE_SCORER);
-	}
-	
-	//TODO
-	private void randomizeViewSettings(View view, int viewType) {
-		Field[] fields = view.getClass().getDeclaredFields();
-		try {
-			for (Field f : fields) {
-				if (f.getType().equals(ModInt.class)) {
-					ModInt x = (ModInt) f.get(view);
-					int availability = getIconAvailability(x.getName(), viewType);
-					x.setValue((int)pa.random(availability));
-				}
-			}
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	/**
 	 * Adds all the unlocked view type icons to the container called "iconLists",
 	 * which stores all the icons that are currently available to the player.
 	 */
 	private void setupViewTypeIcons() {
-		int availability = getIconAvailability(viewTypeName, viewType.toInt());
+		int availability = getIconAvailability(viewTypeName);
 		viewTypeIcons = new Icon[availability];
-		if (availability > 0) {		
+		if (availability > 0) {
+			
 			for (int i = 0; i < availability; i++) {
 				viewTypeIcons[i] = new ViewTypeIcon(i);
 			}
@@ -803,7 +776,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 					ModInt x = (ModInt) f.get(view);
 					String name = x.getName();
 					Icon[] iconList = null;
-					int availability = getIconAvailability(name, viewType.toInt());
+					int availability = getIconAvailability(name);
 					if (availability > 0) {
 						switch (name) {
 						case activeNoteModeName:
@@ -900,11 +873,10 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	
 	/**
 	 * 
-	 * @param name The String identifier for a type of icon related to the given view type. All of these kinds of names are given in views.ViewVariableInfo.java.
-	 * @param viewType The given view type.
+	 * @param name The String identifier for a type of icon related to the current view type. All of these kinds of names are given in views.ViewVariableInfo.java.
 	 * @return The number of icons that are available (unlocked) of the icon type associated with the given identifier.
 	 */
-	private int getIconAvailability(String name, int viewType) {
+	private int getIconAvailability(String name) {
 		switch (name) {
 			case viewTypeName:
 				if (liveScorerUnlocked()) {
@@ -917,7 +889,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 					return 0;
 				}
 			default : 
-				switch (viewType) {
+				switch (viewType.toInt()) {
 					case MUSICIAN: return getMusicianIconAvailability(name);
 					case PHASE_SHIFTER: return getPhaseShifterIconAvailability(name);
 					case LIVE_SCORER: return getLiveScorerIconAvailability(name);
@@ -1077,5 +1049,15 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 			default:
 				return 0;
 		}
+	}
+	
+	/******************
+	 ***** Saving *****
+	 ******************/
+	
+	public void saveViewSettings() {
+		musicianView.saveSettings(pa.playerInfo);
+		phaseShifterView.saveSettings(pa.playerInfo);
+		liveScorerView.saveSettings(pa.playerInfo);
 	}
 }

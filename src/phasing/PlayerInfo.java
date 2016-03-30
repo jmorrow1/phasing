@@ -11,6 +11,7 @@ import processing.data.JSONObject;
  * A data container of information related to the player. More specifically:
  * --> data that determines what the player has and hasn't unlocked.
  * --> the index of the phrase the current phrase derives from.
+ * --> the last saved state of view options
  * --> the last saved bpm1 value
  * --> the last saved phase difference value
  * 
@@ -22,6 +23,7 @@ public class PlayerInfo {
 	public int nextMusicianUnlockIndex, nextPhaseShifterUnlockIndex, nextLiveScorerUnlockIndex;
 	public float minutesSpentWithEditor;
 	public int nextEditorUnlockIndex;
+	public HashMap<String, Integer> viewOptionValueMap = new HashMap<String, Integer>();
 
 	public float bpm1 = PhasesPApplet.DEFAULT_BPM_1;
 	public float bpmDifference = PhasesPApplet.DEFAULT_BPM_DIFFERENCE;
@@ -55,6 +57,16 @@ public class PlayerInfo {
 		     json.getFloat("minutesSpentWithEditor", 0),
 		     json.getInt("nextEditorUnlockIndex", 0));
 		
+		if (json.hasKey("viewOptionValueMap")) {
+			JSONArray optionValuePairs = json.getJSONArray("viewOptionValueMap");
+			for (int i=0; i<optionValuePairs.size(); i++) {
+				JSONObject pair = optionValuePairs.getJSONObject(i, new JSONObject());
+				String optionName = pair.getString("optionName", "");
+				Integer optionValue = pair.getInt("optionValue", -1);
+				viewOptionValueMap.put(optionName, optionValue);
+			}
+		}
+		
 		bpm1 = json.getFloat("bpm1", PhasesPApplet.DEFAULT_BPM_1);
 		bpmDifference = json.getFloat("phaseDifference", PhasesPApplet.DEFAULT_BPM_DIFFERENCE);
 	}
@@ -69,6 +81,18 @@ public class PlayerInfo {
 		json.setInt("nextLiveScorerUnlockIndex", nextLiveScorerUnlockIndex);
 		json.setFloat("minutesSpentWithEditor", minutesSpentWithEditor);
 		json.setInt("nextEditorUnlockIndex", nextEditorUnlockIndex);
+		
+		JSONArray jsonMap = new JSONArray();
+		json.setJSONArray("viewOptionValueMap", jsonMap);
+		Set<Map.Entry<String, Integer>> entrySet = viewOptionValueMap.entrySet();
+		int i=0;
+		for (Map.Entry<String, Integer> pair : entrySet) {
+			JSONObject jsonPair = new JSONObject();
+			jsonPair.setString("optionName", pair.getKey());
+			jsonPair.setInt("optionValue", pair.getValue());
+			jsonMap.setJSONObject(i, jsonPair);
+			i++;
+		}
 
 		json.setFloat("bpm1", bpm1);
 		json.setFloat("phaseDifference", bpmDifference);

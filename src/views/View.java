@@ -88,6 +88,42 @@ public abstract class View extends Rect implements ViewVariableInfo {
 	}
 	
 	/**
+	 * Saves the settings of the view to the given playerInfo object.
+	 * @param playerInfo
+	 */
+	public abstract void saveSettings(PlayerInfo playerInfo);
+	
+	/**
+	 * Saves the option's value to the given playerInfo object under the given name.
+	 * @param var The option.
+	 * @param name The name.
+	 * @param playerInfo The playerInfo object.
+	 */
+	protected void save(ModInt var, String name, PlayerInfo playerInfo) {
+		playerInfo.viewOptionValueMap.put(name, var.toInt());
+	}
+	
+	/**
+	 * Changes the settings of the view to values given by the playerInfo object.
+	 * @param playerInfo
+	 */
+	protected abstract void loadSettings(PlayerInfo playerInfo);
+	
+	/**
+	 * Trys to set the given ModInt's value to a value in the playerInfo object.
+	 * If the playerInfo object doesn't contain the desired value, then nothing happens.
+	 * 
+	 * @param var The ModInt.
+	 * @param key The name of the value, used to look up the value in the playerInfo object.
+	 * @param playerInfo The playerInfo object.
+	 */
+	protected void tryToSet(ModInt var, String key, PlayerInfo playerInfo) {
+		if (playerInfo.viewOptionValueMap.containsKey(key)) {
+			var.setValue(playerInfo.viewOptionValueMap.get(key));
+		}
+	}
+	
+	/**
 	 * Receives note events and responds with animation.
 	 * 
 	 * @param phraseReader The PhraseReader that is sending the event.

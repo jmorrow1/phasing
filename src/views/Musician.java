@@ -46,9 +46,10 @@ public class Musician extends View {
 	 * @param playerInfo Contains information (potentially) about how to initialize the view's settings.
 	 * @param pa The PhasesPApplet instance.
 	 */
-	public Musician(Rect viewBox, int opacity, PhasesPApplet pa) {
+	public Musician(Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
 		super(viewBox, opacity, pa);
 		init();
+		loadSettings(playerInfo);
 	}
 	
 	/**
@@ -256,5 +257,24 @@ public class Musician extends View {
 			}
 			playerB.draw(pa);
 		}
+	}
+	
+	/***************************************
+	 ***** Saving and Loading Settings *****
+	 ***************************************/
+	
+	@Override
+	public void saveSettings(PlayerInfo playerInfo) {
+		save(superimposedOrSeparated, "superimposedOrSeparated", playerInfo);
+		save(colorScheme, "colorScheme", playerInfo);
+		save(instrument, "instrument", playerInfo);
+	}
+	
+	@Override
+	protected void loadSettings(PlayerInfo playerInfo) {
+		tryToSet(superimposedOrSeparated, "superimposedOrSeparated", playerInfo);
+		tryToSet(colorScheme, "colorScheme", playerInfo);
+		tryToSet(instrument, "instrument", playerInfo);
+		settingsChanged();
 	}
 }
