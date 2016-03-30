@@ -110,11 +110,13 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	public Presenter(PhasesPApplet pa) {
 		super(pa);
 		initPhraseReaders();
-		initViews(pa.playerInfo);	
+		initViews();
+		randomizeViewSettings();
 		initCP5Objects();
 		cp5.hide();
+		
 	}
-	
+
 	/**
 	 * Initializes reader1 and reader2.
 	 */
@@ -127,13 +129,13 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 * Initializes an instance of each view type.
 	 * @param playerInfo The PlayerInfo object to initialize each view with.
 	 */
-	private void initViews(PlayerInfo playerInfo) {
+	private void initViews() {
 		Rect area = new Rect(viewCenx(), viewCeny(), pa.width, viewHeight(), pa.CENTER);
-		musicianView = (musicianView == null) ? new Musician(area, 150, playerInfo, pa)
+		musicianView = (musicianView == null) ? new Musician(area, 150, pa)
 				                              : new Musician(musicianView, area, 150, pa);
-		phaseShifterView = (phaseShifterView == null) ? new PhaseShifter(area, 150, playerInfo, pa)
+		phaseShifterView = (phaseShifterView == null) ? new PhaseShifter(area, 150, pa)
 				                                      : new PhaseShifter(phaseShifterView, area, 150, pa);
-		liveScorerView = (liveScorerView == null) ? new LiveScorer(area, 150, playerInfo, pa) :
+		liveScorerView = (liveScorerView == null) ? new LiveScorer(area, 150, pa) :
 			                                        new LiveScorer(liveScorerView, area, 150, pa);
 		
 		switch(viewType.toInt()) {
@@ -266,7 +268,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 */
 	public void iconUp() {
 		ModInt activeVar = variables.get(activeIconIndex);
-		int availability = this.getIconAvailability(activeVar.getName());
+		int availability = this.getIconAvailability(activeVar.getName(), viewType.toInt());
 		int newValue = PhasesPApplet.remainder(activeVar.toInt() - 1, availability);
 		activeVar.setValue(newValue);
 		view.settingsChanged();
@@ -284,7 +286,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 */
 	public void iconDown() {
 		ModInt activeVar = variables.get(activeIconIndex);
-		int availability = this.getIconAvailability(activeVar.getName());
+		int availability = this.getIconAvailability(activeVar.getName(), viewType.toInt());
 		int newValue = PhasesPApplet.remainder(activeVar.toInt() + 1, availability);
 		activeVar.setValue(newValue);
 		view.settingsChanged();
@@ -365,7 +367,6 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 */
 	public void checkForInstrumentChange() {
 		if (instrumentShouldChange()) {
-			System.out.println("here");
 			changeInstrument();
 			musicianView.wakeUp(0, 0);
 			liveScorerView.wakeUp(0, 0);
@@ -399,18 +400,25 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	
 	@Override
 	public void windowResized() {
+		resizeViews();
+		initCP5Objects();
+		repositionDirectionalButtons();
+	}
+	
+	/**
+	 * Resizes the views.
+	 */
+	private void resizeViews() {
 		musicianView.setSize(viewCenx(), viewCeny(), pa.width, viewHeight());
 		phaseShifterView.setSize(viewCenx(), viewCeny(), pa.width, viewHeight());
 		liveScorerView.setSize(viewCenx(), viewCeny(), pa.width, viewHeight());
-		initCP5Objects();
-		repositionDirectionalButtons();
 	}
 	
 	@Override
 	public void onEnter() {
 		//reversedPhrase = Phrase.reverse(pa.currentPhrase);
 		initCP5Objects();
-		initViews(pa.playerInfo);
+		initViews();
 		initPhraseReaders();
 		setupIconLists();
 		activeIconIndex = 0;
@@ -649,7 +657,6 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 		}
 		else {
 			switch (pa.key) {
-				case '1' : pa.delay(500); break; //test
 				case 'A' :
 				case 'a' : iconLeft(); break;
 				case 'D' :
@@ -743,15 +750,37 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 ***** Icon Initialization *****
 	 *******************************/
 	
+	//TODO
+	private void randomizeViewSettings() {
+		randomizeViewSettings(musicianView, MUSICIAN);
+		randomizeViewSettings(phaseShifterView, PHASE_SHIFTER);
+		randomizeViewSettings(liveScorerView, LIVE_SCORER);
+	}
+	
+	//TODO
+	private void randomizeViewSettings(View view, int viewType) {
+		Field[] fields = view.getClass().getDeclaredFields();
+		try {
+			for (Field f : fields) {
+				if (f.getType().equals(ModInt.class)) {
+					ModInt x = (ModInt) f.get(view);
+					int availability = getIconAvailability(x.getName(), viewType);
+					x.setValue((int)pa.random(availability));
+				}
+			}
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Adds all the unlocked view type icons to the container called "iconLists",
 	 * which stores all the icons that are currently available to the player.
 	 */
 	private void setupViewTypeIcons() {
-		int availability = getIconAvailability(viewTypeName);
+		int availability = getIconAvailability(viewTypeName, viewType.toInt());
 		viewTypeIcons = new Icon[availability];
-		if (availability > 0) {
-			
+		if (availability > 0) {		
 			for (int i = 0; i < availability; i++) {
 				viewTypeIcons[i] = new ViewTypeIcon(i);
 			}
@@ -774,7 +803,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 					ModInt x = (ModInt) f.get(view);
 					String name = x.getName();
 					Icon[] iconList = null;
-					int availability = getIconAvailability(name);
+					int availability = getIconAvailability(name, viewType.toInt());
 					if (availability > 0) {
 						switch (name) {
 						case activeNoteModeName:
@@ -871,10 +900,11 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	
 	/**
 	 * 
-	 * @param name The String identifier for a type of icon related to the current view type. All of these kinds of names are given in views.ViewVariableInfo.java.
+	 * @param name The String identifier for a type of icon related to the given view type. All of these kinds of names are given in views.ViewVariableInfo.java.
+	 * @param viewType The given view type.
 	 * @return The number of icons that are available (unlocked) of the icon type associated with the given identifier.
 	 */
-	private int getIconAvailability(String name) {
+	private int getIconAvailability(String name, int viewType) {
 		switch (name) {
 			case viewTypeName:
 				if (liveScorerUnlocked()) {
@@ -887,7 +917,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 					return 0;
 				}
 			default : 
-				switch (viewType.toInt()) {
+				switch (viewType) {
 					case MUSICIAN: return getMusicianIconAvailability(name);
 					case PHASE_SHIFTER: return getPhaseShifterIconAvailability(name);
 					case LIVE_SCORER: return getLiveScorerIconAvailability(name);

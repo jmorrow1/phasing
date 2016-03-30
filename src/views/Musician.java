@@ -46,7 +46,7 @@ public class Musician extends View {
 	 * @param playerInfo Contains information (potentially) about how to initialize the view's settings.
 	 * @param pa The PhasesPApplet instance.
 	 */
-	public Musician(Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
+	public Musician(Rect viewBox, int opacity, PhasesPApplet pa) {
 		super(viewBox, opacity, pa);
 		init();
 	}

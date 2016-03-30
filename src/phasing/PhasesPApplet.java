@@ -159,7 +159,6 @@ public class PhasesPApplet extends PApplet {
 		initCP5Objects(currentScreen);
 		changeScreenTo(currentScreen);
 		currentScreen.onEnter();
-
 	}
 	
 	/**

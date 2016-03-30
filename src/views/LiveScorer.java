@@ -65,7 +65,7 @@ public class LiveScorer extends View {
 	 * @param opacity The opacity of notes.
 	 * @param pa The PhasesPApplet instance.
 	 */
-	public LiveScorer(Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
+	public LiveScorer(Rect viewBox, int opacity, PhasesPApplet pa) {
 		super(viewBox, opacity, pa);	
 		init();
 	}
