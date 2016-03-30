@@ -87,15 +87,15 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 		return pa.height - 2.75f * iconRadius;
 	}
 	
-	//controlp5
+	// controlp5
 	private ControlP5 cp5;
 	private Button upButton, downButton;
 	
-	//phrase
+	// phrase
 	//private Phrase reversedPhrase;
 	//private boolean phraseIsReversed;
 	
-	//phrase reading
+	// phrase reading
 	private PhraseReader reader1, reader2;
 	public static final int READER_ONE_ID = 1, READER_TWO_ID = 2;
 
@@ -366,6 +366,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 */
 	public void checkForInstrumentChange() {
 		if (instrumentShouldChange()) {
+			System.out.println("here");
 			changeInstrument();
 			musicianView.wakeUp(0, 0);
 			liveScorerView.wakeUp(0, 0);
@@ -449,7 +450,10 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 		//else {
 		//	reversedPhrase.addToScore(player2, 0, 0, instrument);
 		//}
-		
+			
+		reader1.wakeUp(0);
+		reader2.wakeUp(0);
+
 		player1.tempo(pa.getBPM1());
 		player2.tempo(pa.getBPM2());
 		player1.repeat(-1);
