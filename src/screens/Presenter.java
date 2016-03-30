@@ -49,9 +49,6 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	private final float[] musicianUnlockSeq = {0f, 0.5f, 6};
 	private final float[] phaseShifterUnlockSeq = {1, 3, 5, 8, 9.5f, 11, 14, 17, 20, 25, 30};
 	private final float[] liveScorerUnlockSeq = {4, 8, 12};
-	
-	// musical time
-	private float prev_notept1, prev_notept2;
 
 	// playback
 	private SCScorePlus player1 = new SCScorePlus();
@@ -59,10 +56,12 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	private int instrument = 0;
 	private boolean playing;
 
-	// to smooth animation
+	// musical time
+	private final boolean PRINT_OUT_ANIMATION_ACCURACY = false;
+	private float prev_notept1, prev_notept2;
 	private float accountBalance1 = 0, accountBalance2 = 0;
 	private float totalNotept1, totalNotept2;
-	private float avg_dNotept1, avg_dNotept2;
+	private float target_dNotept1, target_dNotept2;
 	private int dataPts = 0;
 	private float acceptableAccountSize = 0.05f;
 
@@ -437,8 +436,6 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 		prev_notept2 = 0;
 		totalNotept1 = 0;
 		totalNotept2 = 0;
-		avg_dNotept1 = 0;
-		avg_dNotept2 = 0;
 		accountBalance1 = 0;
 		accountBalance2 = 0;
 		dataPts = 0;
@@ -614,31 +611,28 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 		dataPts++;
 		totalNotept1 += dNotept1;
 		totalNotept2 += dNotept2;
-		avg_dNotept1 = totalNotept1 / dataPts;
-		avg_dNotept2 = totalNotept2 / dataPts;
-		accountBalance1 += (dNotept1 - avg_dNotept1);
-		accountBalance2 += (dNotept2 - avg_dNotept2);
-		dNotept1 = avg_dNotept1;
-		dNotept2 = avg_dNotept2;
+		float avg_dNotept1 = totalNotept1 / dataPts;
+		float avg_dNotept2 = totalNotept2 / dataPts;
 		
-		if (pa.abs(accountBalance1) > acceptableAccountSize) {
-			accountBalance1 = 0;
-			dNotept1 += accountBalance1;
+		float actual_dNotept1 = avg_dNotept1 + 0.01f * accountBalance1;
+		float actual_dNotept2 = avg_dNotept2 + 0.01f * accountBalance2;
+		
+		accountBalance1 += (dNotept1 - actual_dNotept1);
+		accountBalance2 += (dNotept2 - actual_dNotept2);
+	
+		if (PRINT_OUT_ANIMATION_ACCURACY) {
+			System.out.println("accountBalance1: " + accountBalance1 + ", accountBalance2: " + accountBalance2);
 		}
-		if (pa.abs(accountBalance2) > acceptableAccountSize) {
-			accountBalance2 = 0;
-			dNotept2 += accountBalance2;
-		}
-
+			
 		prev_notept1 = notept1;
 		prev_notept2 = notept2;
 
-		reader1.update(dNotept1);
-		reader2.update(dNotept2);
-		view.update(dt, dNotept1, dNotept2);
+		reader1.update(actual_dNotept1);
+		reader2.update(actual_dNotept2);
+		view.update(dt, actual_dNotept1, actual_dNotept2);
 
 		if (view != phaseShifterView) {
-			phaseShifterView.updateNormalTransforms(dNotept1, dNotept2);
+			phaseShifterView.updateNormalTransforms(actual_dNotept1, actual_dNotept2);
 		}
 	}
 	
@@ -658,6 +652,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 		}
 		else {
 			switch (pa.key) {
+				case '1' : pa.delay(500); break; //test
 				case 'A' :
 				case 'a' : iconLeft(); break;
 				case 'D' :
