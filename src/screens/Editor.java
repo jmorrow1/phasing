@@ -382,7 +382,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 			DropdownList scaleMenu, ControlP5 cp5, Object listener) {
 		int sliderWidth = getSliderWidth(windowWidth);
 		int sliderHeight = getSliderHeight();
-		return consBPMSlider("beatsPerMinute", "Beats Per Minute", BPM_1,
+		return consBPMSlider("beatsPerMinute", "Tempo 1", BPM_1,
 							Util.getX2(scaleMenu) + PhasesPApplet.CONTROLLER_DX, 
 			                PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
 			                (int)(1.1f * sliderWidth),
@@ -410,7 +410,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 				Slider bpmSlider, ControlP5 cp5, Object listener) {
 		int sliderWidth = getSliderWidth(windowWidth);
 		int sliderHeight = getSliderHeight();
-		return consBPMSlider("bpmDifference", "Difference ", BPM_DIFFERENCE,
+		return consBPMSlider("bpmDifference", "Tempo Difference ", BPM_DIFFERENCE,
 				            Util.getX2(bpmSlider) + PhasesPApplet.CONTROLLER_DX,
                             PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
                             (int)(0.9f * sliderWidth), 
