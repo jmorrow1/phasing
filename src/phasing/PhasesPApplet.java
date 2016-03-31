@@ -160,7 +160,6 @@ public class PhasesPApplet extends PApplet {
 		initCP5Objects(currentScreen);
 		changeScreenTo(currentScreen);
 		currentScreen.onEnter();
-
 	}
 	
 	/**
@@ -266,7 +265,7 @@ public class PhasesPApplet extends PApplet {
 	 * Gives the lowermost y-coordinate of the top-toolbar.
 	 * @return The lowermost y-coordinate of the top-toolbar.
 	 */
-	public int topToolbarY2() {
+	public static int topToolbarY2() {
 		return 70;
 	}
 	
@@ -1433,7 +1432,7 @@ public class PhasesPApplet extends PApplet {
 	 * Gives the rightmost x-coordinate of the change screen button.
 	 * @return The rightmost x-coordinate of the change screen button.
 	 */
-	public float getChangeScreenButtonX2() {
+	public static float getChangeScreenButtonX2() {
 		return CHANGE_SCREEN_BUTTON_X2;
 	}
 

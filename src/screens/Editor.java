@@ -1,5 +1,7 @@
 package screens;
 
+import java.util.Arrays;
+
 import controlP5.Button;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
@@ -50,8 +52,8 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	
 	//grid
 	private Rect gridFrame;
-	private int cellHeight = 20;
-	private int cellWidth = 60;
+	private final static int cellHeight = 20;
+	private final static int cellWidth = 60;
 	
 	//interaction w/ grid
 	private final int NOT_DRAWING=-1, DRAWING_NOTE=0, DRAWING_REST=1;
@@ -66,15 +68,15 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	private ControlP5 cp5;
 	private Toggle playToggle;
 	private Slider bpmSlider, bpmDifferenceSlider;
-	private DropdownList rootMenu, scaleMenu;
+	private DropdownListPlus rootMenu, scaleMenu;
 	private Scrollbar hScrollbar;
 	private Button subNoteButton, addNoteButton;
 	private String rootLabel, scaleLabel;
 	private boolean rootMenuOpen, scaleMenuOpen;
 	
 	//controller layout
-	private int controller_dx = 15;
-	private int margin_btwn_top_toolbar_y2_and_controllers = 10;
+	private final static int controller_dx = 15;
+	private final static int margin_btwn_top_toolbar_y2_and_controllers = 10;
 	
 	//cursor
 	private boolean cursorIsX;
@@ -92,7 +94,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		super(pa);
 		initMusicPlayer();
 		initGridFrame();
-		initCP5Objects();
+		initCP5Objects(gridFrame);
 		hideAllControllers();
 		cp5.hide();
 	}
@@ -114,7 +116,17 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @return The proper uppermost y-coordinate of the bottom toolbar.
 	 */
 	private float botToolbarY1() {
-		return pa.height - 40;
+		return botToolbarY1(pa.height);
+	}
+	
+	/**
+	 * Gives the proper value for the uppermost y-coordinate of the bottom tollbar,
+	 * which is dependent on the height of the window.
+	 * @param windowHeight The height of the window.
+	 * @return The proper uppermost y-coordinate of the bottom toolbar.
+	 */
+	private static float botToolbarY1(float windowHeight) {
+		return windowHeight - 40;
 	}
 	
 	/**
@@ -123,6 +135,16 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @return The proper width of the hScrollbar.
 	 */
 	private int hScrollbarWidth() {
+		return hScrollbarWidth(gridFrame);
+	}
+	
+	/**
+	 * Gives the proper value for the width of the hScrollbar,
+	 * which is dependent on the width of the grid.
+	 * @param gridFrame The grid frame which this controller is sized in relation to.
+	 * @return The proper width of the hScrollbar.
+	 */
+	private static int hScrollbarWidth(Rect gridFrame) {
 		return (int)(gridFrame.getWidth() - 80);
 	}
 	
@@ -138,8 +160,13 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * Initializes the gridFrame.
 	 */
 	private void initGridFrame() {
-		float gridHeight = cellHeight * (int) ((botToolbarY1() - pa.topToolbarY2()) / cellHeight);
-		gridFrame = new Rect(10, pa.topToolbarY2(), pa.width-10, pa.topToolbarY2() + gridHeight, pa.CORNERS);
+		gridFrame = consGridFrame(pa.width, pa.height);
+	}
+	
+	private static Rect consGridFrame(int screenWidth, int screenHeight) {
+		float gridHeight = cellHeight * (int) ((botToolbarY1(screenHeight) - PhasesPApplet.topToolbarY2()) / cellHeight);
+		return new Rect(10, PhasesPApplet.topToolbarY2(), screenWidth-10,
+				PhasesPApplet.topToolbarY2() + gridHeight, PApplet.CORNERS);
 	}
 	
 	/**
@@ -151,14 +178,15 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	
 	/**
 	 * Initalizes the ControlP5 object and controllers, in addition to adding the controllers to the CP5 object.
+	 * @gridFrame Used to position the controllers.
 	 */
-	private void initCP5Objects() {
+	private void initCP5Objects(Rect gridFrame) {
 		cp5 = new ControlP5(pa);
 		cp5.setAutoDraw(false);
 		initScaleMenus();
 		initBPMSliders(scaleMenu);
 		initPlayStopToggle(bpmDifferenceSlider);
-		initHorizontalScrollbar();
+		initHorizontalScrollbar(gridFrame);
 	    initSubNoteButton(hScrollbar);
 	    initAddNoteButton(hScrollbar);
 	}
@@ -169,28 +197,27 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param hScrollbar This is here to make explicit that this method relies on hScrollbar being already initialized.
 	 */
 	private void initSubNoteButton(Scrollbar hScrollbar) {
-		subNoteButton = consSubNoteButton(cp5, this);
-		subNoteButton.setPosition(Util.getX1(hScrollbar) - subNoteButton.getWidth() - 10,
-		                          Util.getY2(hScrollbar) - hScrollbar.getHeight()/2f - subNoteButton.getWidth()/2f);
+		subNoteButton = consSubNoteButton(cp5, this, hScrollbar);
 	}
 	
 	/**
-	 * Constructs a sub-note button, associates it with the given ControlP5,
-	 * and positions at (0, 0) and returns it.
+	 * Constructs a sub-note button, associates it with the given ControlP5 and returns it.
 	 * 
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the Button.
+	 * @param hScrollbar The horizontal scrollbar that this controllers is positioned in relation to.
 	 * @return The button.
 	 */
-	private static Button consSubNoteButton(ControlP5 cp5, Object listener) {
+	private static Button consSubNoteButton(ControlP5 cp5, Object listener, Scrollbar hScrollbar) {
 		int sideLength = 24;
 		
 		Button b = cp5.addButton("decreasePhraseLength")
-			               .setPosition(0, 0)
-			               .setSize(sideLength, sideLength)
-			               .setView(new PlusMinusButtonView(false))
-			               .plugTo(listener)
-			               ;
+				      .setPosition(Util.getX1(hScrollbar) - sideLength - 10,
+                                   Util.getY2(hScrollbar) - hScrollbar.getHeight()/2f - sideLength/2f)
+			          .setSize(sideLength, sideLength)
+			          .setView(new PlusMinusButtonView(false))
+			          .plugTo(listener)
+			          ;
 		
 		colorController(b);
 		
@@ -203,29 +230,29 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param hScrollbar This is here to make explicit that this method relies on hScrollbar being already initialized.
 	 */
 	private void initAddNoteButton(Scrollbar hScrollbar) {
-		addNoteButton = consAddNoteButton(cp5, this);
-		addNoteButton.setPosition(Util.getX2(hScrollbar) + 10,
-		                           Util.getY2(hScrollbar) - hScrollbar.getHeight()/2f - addNoteButton.getWidth()/2f);
+		addNoteButton = consAddNoteButton(cp5, this, hScrollbar);
+		
 	}
 	
 	/**
-	 * Constructs an add-note button, associates it with the given ControlP5,
-	 * and positions at (0, 0) and returns it.
+	 * Constructs an add-note button, associates it with the given ControlP5 and returns it.
 	 * 
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the Button.
+	 * @param hScrollbar The horizontal scrollbar that this controllers is positioned in relation to.
 	 * @return The button.
 	 */
-	private static Button consAddNoteButton(ControlP5 cp5, Object listener) {
+	private static Button consAddNoteButton(ControlP5 cp5, Object listener, Scrollbar hScrollbar) {
 		int sideLength = 24;
 		
 		Button b = cp5.addButton("increasePhraseLength")
-				      .setPosition(0, 0)
 				      .setSize(sideLength, sideLength)
+				      .setPosition(Util.getX2(hScrollbar) + 10,
+                                   Util.getY2(hScrollbar) - hScrollbar.getHeight()/2f - sideLength/2f)
 		              .setView(new PlusMinusButtonView(true))
 	    	          .plugTo(listener)
 				      ;
-		
+
 		colorController(b);
 		
 		return b;
@@ -234,31 +261,32 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	/**
 	 * Initializes the scrollbar that controls which sub-section of the phrase is displayed.
 	 * Adds the scrollbar to the CP5 object.
+	 * @param gridFrame The shape of the grid this controller is positioned in relation to.
 	 */
-	private void initHorizontalScrollbar() {
-		hScrollbar = consHorizontalScrollbar(cp5, this, hScrollbarWidth(),
-				PApplet.min(rowSize(), pa.currentPhrase.getGridRowSize()), pa.currentPhrase.getGridRowSize());
-		hScrollbar.setPosition(gridFrame.getX1() + 40, pa.height - 25f);
+	private void initHorizontalScrollbar(Rect gridFrame) {
+		hScrollbar = consHorizontalScrollbar(cp5, this,
+				PApplet.min(rowSize(), pa.currentPhrase.getGridRowSize()), pa.currentPhrase.getGridRowSize(),
+				pa.height, gridFrame);
 	}
 	
 	/**
-	 * Constructs a horizontal scrollbar, associates it with the given ControlP5,
-	 * and positions at (0, 0) and returns it.
+	 * Constructs a horizontal scrollbar, associates it with the given ControlP5 and returns it.
 	 * 
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the Scrollbar.
-	 * @param width The width of the scrollbar.
 	 * @param ticksPerScroller The number of ticks in the scroller (see Scrollbar documentation).
 	 * @param ticksPerTrack The number of ticks in the track (see Scrollbar documentation).
+	 * @param windowHeight The height of the window.
+	 * @param gridFrame The shape of the grid this controller is positioned in relation to.
 	 * @return The scrollbar.
 	 */
 	private static Scrollbar consHorizontalScrollbar(ControlP5 cp5, Object listener,
-			int width, int ticksPerScroller, int ticksPerTrack) {
+			int ticksPerScroller, int ticksPerTrack, int windowHeight, Rect gridFrame) {
 		
 		Scrollbar s = new Scrollbar(cp5, "hScrollbar", ticksPerScroller, ticksPerTrack);
 	    
-		s.setPosition(0, 0)
-	     .setSize(width, 15)
+		s.setPosition(gridFrame.getX1() + 40, windowHeight - 25f)
+	     .setSize(hScrollbarWidth(gridFrame), 15)
 		 .plugTo(listener)
 	     ;
 	    colorController(s);
@@ -272,25 +300,24 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param bpmDifferenceSlider This is here to make explicit that this method relies on bpmDifferenceSlider being already initialized.
 	 */
 	private void initPlayStopToggle(Slider bpmDifferenceSlider) {
-		playToggle = consPlayToggle(cp5, this);
-		playToggle.setPosition(Util.getX2(bpmDifferenceSlider) + this.controller_dx,
-		  		               pa.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - playToggle.getWidth());
+		playToggle = consPlayToggle(bpmDifferenceSlider, cp5, this);
 	}
 	
 	/**
-	 * Constructs and returns a play toggle that is connected with the given ControlP5 instance
-	 * and is positioned at (0,0).
+	 * Constructs and returns a play toggle that is connected with the given ControlP5 instance.
 	 * 
+	 * @param bpmDifferenceSlider The slider that this controller is positioned in relation to.
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the Toggle.
 	 * @return The toggle.
 	 */
-	private static Toggle consPlayToggle(ControlP5 cp5, Object listener) {
+	private static Toggle consPlayToggle(Slider bpmDifferenceSlider, ControlP5 cp5, Object listener) {
 		int sideLength = 35;
 		Toggle t = cp5.addToggle("play")
 					  .setSize(sideLength, sideLength)
-					  .setPosition(0, 0)
-					  .plugTo(cp5)
+					  .setPosition(Util.getX2(bpmDifferenceSlider) + controller_dx,
+		  		                   PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sideLength)
+					  .plugTo(listener)
 					  .setView(new ControllerView<Toggle>() {
 						    @Override
 							public void display(PGraphics pg, Toggle t) {
@@ -333,41 +360,34 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param scaleMenu This is here to make explicit that this method relies on scaleMenu being already initialized.
 	 */
 	private void initBPMSliders(DropdownList scaleMenu) {
-		int sliderWidth = getSliderWidth();
-		int sliderHeight = 23;
-		bpmSlider = consBPMSlider(Util.getX2(scaleMenu) + controller_dx, 
-				                  pa.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
-				                  (int)(1.1f * sliderWidth),
-				                  sliderHeight,
-				                  pa.getBPM1(),
-				                  cp5, this);
+		bpmSlider = consBPMSlider(pa.width, pa.height, pa.getBPM1(), scaleMenu, cp5, this);
 		
-		bpmDifferenceSlider = consBPMDifferenceSlider(Util.getX2(bpmSlider) + controller_dx,
-				                                     pa.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
-				                                     (int)(0.9f * sliderWidth), 
-				                                     sliderHeight,
-				                                     pa.getBPM2() - pa.getBPM1(),
-				                                     -MAX_DIFFERENCE,
-				                                     MAX_DIFFERENCE,
-				                                     cp5, this);
+		bpmDifferenceSlider = consBPMDifferenceSlider(pa.width, pa.height,
+				                                      pa.getBPM2() - pa.getBPM1(),
+				                                      bpmSlider, cp5, this);
 	}
 	
 	/**
 	 * Constructs the slider that controls the first player's tempo (in beats per minute)
 	 * at a given location and with a given size.
 	 * 
-	 * @param x The leftmost x-coordinate of the slider.
-	 * @param y The uppermost y-coordinate of the slider.
-	 * @param w The width of the slider.
-	 * @param h The height of the slider.
+	 * @param windowWidth The width of the window in which this slider will be displayed.
+	 * @param windowHeight THe height of the window in which this slider will be displayed.
 	 * @param value The initial bpm value.
+	 * @param scaleMenu The scale menu that this controller is positioned in relation to.
 	 * @param cp5 The ControlP5 instance to attach the controller to.
 	 * @param listener The object that should recieve events from the controller.
 	 * @return The slider.
 	 */
-	private static Slider consBPMSlider(float x, float y, int w, int h, float value, ControlP5 cp5, Object listener) {
+	private static Slider consBPMSlider(int windowWidth, int windowHeight, float value,
+			DropdownList scaleMenu, ControlP5 cp5, Object listener) {
+		int sliderWidth = getSliderWidth(windowWidth);
+		int sliderHeight = getSliderHeight();
 		return consBPMSlider("beatsPerMinute", "Beats Per Minute", BPM_1,
-			                x, y, w, h,
+							Util.getX2(scaleMenu) + controller_dx, 
+			                PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
+			                (int)(1.1f * sliderWidth),
+			                sliderHeight,
 			                value,
 			                11, 100,
 			                1,
@@ -379,23 +399,25 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * Constructs the slider that controls the difference between the 1st player's tempo and the 2nd player's tempo (in beats per minute)
 	 * at a given location and with a given size.
 	 * 
-	 * @param x The leftmost x-coordinate of the slider.
-	 * @param y The uppermost y-coordinate of the slider.
-	 * @param w The width of the slider.
-	 * @param h The height of the slider.
+     * @param windowWidth The width of the window in which this slider will be displayed.
+	 * @param windowHeight THe height of the window in which this slider will be displayed.
 	 * @param value The initial value of the slider.
-	 * @param minValue The minimum slider value.
-	 * @param maxValue The maximum slider value.
+	 * @param bpmSlider The bpm slider which this slider is defined in relation to.
 	 * @param cp5 The ControlP5 instance to attach the controller to.
 	 * @param listener The object that should recieve events from the controller.
 	 * @return The slider.
 	 */
-	private static Slider consBPMDifferenceSlider(float x, float y, int w, int h, float value,
-			int minValue, int maxValue, ControlP5 cp5, Object listener) {
+	private static Slider consBPMDifferenceSlider(int windowWidth, int windowHeight, float value,
+				Slider bpmSlider, ControlP5 cp5, Object listener) {
+		int sliderWidth = getSliderWidth(windowWidth);
+		int sliderHeight = getSliderHeight();
 		return consBPMSlider("bpmDifference", "Difference ", BPM_DIFFERENCE,
-			                x, y, w, h,
+				            Util.getX2(bpmSlider) + controller_dx,
+                            PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
+                            (int)(0.9f * sliderWidth), 
+                            sliderHeight,
 			                value,
-			                minValue, maxValue,
+			                -MAX_DIFFERENCE, MAX_DIFFERENCE,
 			                4, 
 			                (floatingPoint) -> String.format("%.2f", floatingPoint),
 			                cp5, listener);
@@ -448,17 +470,13 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	private void initScaleMenus() {
 		rootMenu = consRootMenu(cp5, this);
 		rootMenu.addItems(pa.roots);
-		rootMenu.setPosition(pa.getChangeScreenButtonX2() + controller_dx, 
-		                      pa.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - rootMenu.getHeight());
 		rootMenu.setSize(rootMenu.getWidth(), rootMenu.getHeight()*(pa.roots.length+1));
 		rootMenu.setLabel(pa.currentScale.getName());
 		formatLabel(rootMenu);
 		rootLabel = rootMenu.getLabel();
 		
-		scaleMenu = consScaleMenu(cp5, this);
+		scaleMenu = consScaleMenu(rootMenu, cp5, this);
 		scaleMenu.addItems(pa.scaleTypes);
-		scaleMenu.setPosition(rootMenu.getPosition()[0] + rootMenu.getWidth() + controller_dx,
-			                  pa.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - scaleMenu.getHeight());
 		scaleMenu.setSize(scaleMenu.getWidth(), scaleMenu.getHeight()*(pa.scaleTypes.size()+1));
 		scaleMenu.setLabel(pa.currentScale.getClassName());
 		formatLabel(scaleMenu);
@@ -466,18 +484,19 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	}
 	
 	/**
-	 * Constructs and returns a label-less, empty scale menu that is connected with the given ControlP5 instance
-	 * and is positioned at (0,0).
+	 * Constructs and returns a label-less, empty scale menu that is connected with the given ControlP5 instance.
 	 * 
+	 * @param rootMenu The root menu the controller is positioned in relation to.
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the controller.
 	 * @return The scale menu.
 	 */
-	private static DropdownListPlus consScaleMenu(ControlP5 cp5, Object listener) {
+	private static DropdownListPlus consScaleMenu(DropdownListPlus rootMenu, ControlP5 cp5, Object listener) {
 		int menuItemHeight = 22;
 		
 		DropdownListPlus d = new DropdownListPlus(cp5, "Scale");
-		d.setPosition(0, 0)
+		d.setPosition(rootMenu.getPosition()[0] + rootMenu.getWidth() + controller_dx,
+                      PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - menuItemHeight)
 		 .setSize(130, menuItemHeight)
 	     .setItemHeight(menuItemHeight)
 		 .setBarHeight(menuItemHeight)
@@ -490,8 +509,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	}
 	
 	/**
-	 * Constructs and returns a label-less, empty root menu that is connected with the given ControlP5 instance
-	 * and is positioned at (0,0).
+	 * Constructs and returns a label-less, empty root menu that is connected with the given ControlP5 instance.
 	 * 
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the controller.
@@ -500,8 +518,9 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	private static DropdownListPlus consRootMenu(ControlP5 cp5, Object listener) {
 		int menuItemHeight = 22;
 		
-		DropdownListPlus d = new DropdownListPlus(cp5, "root");
-		d.setPosition(0, 0)
+		DropdownListPlus d = new DropdownListPlus(cp5, "Root");
+		d.setPosition(PhasesPApplet.getChangeScreenButtonX2() + controller_dx, 
+				      PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - menuItemHeight)
 	     .setSize(90, menuItemHeight)  
 	     .setItemHeight(menuItemHeight)
 	     .setBarHeight(menuItemHeight)
@@ -567,7 +586,15 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	}
 
 	private int getSliderWidth() {
-		return (int)PApplet.constrain(PApplet.map(pa.width, 800, 1366, 160, 442), 160, 442);
+		return getSliderWidth(pa.width);
+	}
+	
+	private static int getSliderWidth(int windowWidth) {
+		return (int)PApplet.constrain(PApplet.map(windowWidth, 800, 1366, 160, 442), 160, 442);
+	}
+	
+	private static int getSliderHeight() {
+		return 23;
 	}
 	
 	/**
@@ -688,7 +715,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	public void windowResized() {
 		initGridFrame();
 		cp5.dispose();
-		initCP5Objects();
+		initCP5Objects(gridFrame);
 		hideAllControllers();
 		showUnlockedControllers();
 	}
@@ -1213,12 +1240,13 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	/**
 	 * Constructs a copy of the controller, one that looks just like the one that appears in the Editor.
 	 * 
+	 * @param bpmDifferenceSlider The slider this controller is positioned in relation to.
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the controller.
 	 * @return The controller.
 	 */
-	public static Toggle copyPlayToggle(ControlP5 cp5, Object listener) {
-		return consPlayToggle(cp5, listener);
+	public static Toggle copyPlayToggle(Slider bpmDifferenceSlider, ControlP5 cp5, Object listener) {
+		return consPlayToggle(bpmDifferenceSlider, cp5, listener);
 	}
 	
 	/**
@@ -1226,12 +1254,14 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * 
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the controller.
-	 * @param width The width of the controller.
-	 * @param height The height of the controller.
+	 * @param scaleMenu The scale menu that this controller is defined in relation to.
+	 * @param windowWidth The width of the window in which this controller will be drawn.
+	 * @param windowHeight The heigh of the window in which this controller will be drawn.
 	 * @return The controller.
 	 */
-	public static Slider copyBPMSlider(ControlP5 cp5, Object listener, int width, int height) {
-		return consBPMSlider(0, 0, width, height, 50, cp5, listener);
+	public static Slider copyBPMSlider(ControlP5 cp5, Object listener,
+			DropdownListPlus scaleMenu, int windowWidth, int windowHeight) {
+		return consBPMSlider(windowWidth, windowHeight, 60, scaleMenu, cp5, listener);
 	}
 	
 	/**
@@ -1239,13 +1269,14 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * 
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the controller.
-	 * @param width The width of the controller.
-	 * @param height The height of the controller.
+	 * @param bpmSlider The bpm slider that this controller is positioned in relation to.
+	 * @param windowWidth The width of the window in which this controller will be drawn.
+	 * @param windowHeight The heigh of the window in which this controller will be drawn.
 	 * @return The controller.
-	 */
-	public static Slider copyBPMDifferenceSlider(ControlP5 cp5, Object listener, int width, int height) {
-		return consBPMDifferenceSlider(0, 0, width, height, 0,
-				-MAX_DIFFERENCE, MAX_DIFFERENCE, cp5, listener);
+	 */	
+	public static Slider copyBPMDifferenceSlider(ControlP5 cp5, Object listener,
+			Slider bpmSlider, int windowWidth, int windowHeight) {
+		return consBPMDifferenceSlider(windowWidth, windowHeight, 0.5f, bpmSlider, cp5, listener);
 	}
 	
 	/**
@@ -1256,18 +1287,23 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @return The controller.
 	 */
 	public static DropdownListPlus copyRootMenu(ControlP5 cp5, Object listener) {
-		return consRootMenu(cp5, listener);
+		DropdownListPlus r = consRootMenu(cp5, listener);
+		formatLabel(r);
+		return r;
 	}
 	
 	/**
 	 * Constructs a copy of the controller, one that looks just like the one that appears in the Editor.
 	 * 
+	 * @param rootMenu The root menu the controller is positioned in relation to.
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the controller.
 	 * @return The controller.
 	 */
-	public static DropdownListPlus copyScaleMenu(ControlP5 cp5, Object listener) {
-		return consScaleMenu(cp5, listener);
+	public static DropdownListPlus copyScaleMenu(DropdownListPlus rootMenu, ControlP5 cp5, Object listener) {
+		DropdownListPlus s = consScaleMenu(rootMenu, cp5, listener);
+		formatLabel(s);
+		return s;
 	}
 	
 	/**
@@ -1275,14 +1311,15 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * 
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the controller.
-	 * @param width The width of the controller.
 	 * @param ticksPerScroller The number of ticks in the scroller (see Scrollbar documentation).
 	 * @param ticksPerTrack The number of ticks in the track (see Scrollbar documentation).
+	 * @param screenHeight The height of the screen this controller is being defined in.
+	 * @param gridFrame The shape of the grid this controller is positioned in relation to.
 	 * @return The controller.
 	 */
 	public static Scrollbar copyHScrollbar(ControlP5 cp5, Object listener,
-			int width, int ticksPerScroller, int ticksPerTrack) {
-		return consHorizontalScrollbar(cp5, listener, width, ticksPerScroller, ticksPerTrack);
+			int ticksPerScroller, int ticksPerTrack, int screenHeight, Rect gridFrame) {
+		return consHorizontalScrollbar(cp5, listener, ticksPerScroller, ticksPerTrack, screenHeight, gridFrame);
 	}
 	
 	/**
@@ -1290,10 +1327,11 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * 
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the controller.
+	 * @param hScrollbar The scrollbar that this controller is positioned in relation to.
 	 * @return The controller.
 	 */
-	public static Button copySubNoteButton(ControlP5 cp5, Object listener) {
-		return consSubNoteButton(cp5, listener);
+	public static Button copySubNoteButton(ControlP5 cp5, Object listener, Scrollbar hScrollbar) {
+		return consSubNoteButton(cp5, listener, hScrollbar);
 	}
 	
 	/**
@@ -1301,9 +1339,21 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * 
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the controller.
+	 * @param hScrollbar The scrollbar that this controller is positioned in relation to.
 	 * @return The controller.
 	 */
-	public static Button copyAddNoteButton(ControlP5 cp5, Object listener) {
-		return consAddNoteButton(cp5, listener);
+	public static Button copyAddNoteButton(ControlP5 cp5, Object listener, Scrollbar hScrollbar) {
+		return consAddNoteButton(cp5, listener, hScrollbar);
+	}
+	
+	/**
+	 * Constructs a copy of the shape of the grid, one that is just like the shape of the Editor's grid.
+	 * 
+	 * @param windowWidth The width of the window in which the grid shape will be used.
+	 * @param windowHeight The height of the window in which the grid shape will be used.
+	 * @return The shape of the grid.
+	 */
+	public static Rect copyGridFrame(int windowWidth, int windowHeight) {
+		return consGridFrame(windowWidth, windowHeight);
 	}
 }

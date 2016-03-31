@@ -2,11 +2,11 @@ package screens;
 
 import controlP5.Button;
 import controlP5.ControlP5;
-import controlP5.Controller;
 import controlP5.Slider;
 import controlP5.Toggle;
 import controlp5.DropdownListPlus;
 import controlp5.Scrollbar;
+import geom.Rect;
 import phasing.PhasesPApplet;
 
 /**
@@ -15,6 +15,8 @@ import phasing.PhasesPApplet;
  *
  */
 public class HelpScreen extends Screen {
+	//grid shape
+	Rect gridShape;
 	
 	//controlp5
 	private ControlP5 cp5;
@@ -26,36 +28,23 @@ public class HelpScreen extends Screen {
 	private int controller_dy = 30;
 
 	public HelpScreen(PhasesPApplet pa) {
-		super(pa);	
-		initControlP5Objects();
+		super(pa);
+		gridShape = Editor.copyGridFrame(pa.width, pa.height);
+		initControlP5Objects(gridShape);
 	}
 	
-	private void initControlP5Objects() {
+	private void initControlP5Objects(Rect gridShape) {
 		cp5 = new ControlP5(pa);
 		
-		addNoteButton = Editor.copyAddNoteButton(cp5, this);
-		subNoteButton = Editor.copySubNoteButton(cp5, this);
-		bpmDifferenceSlider = Editor.copyBPMDifferenceSlider(cp5, this, 100, 23);
-		bpmSlider = Editor.copyBPMSlider(cp5, this, 100, 23);
-		hScrollbar = Editor.copyHScrollbar(cp5, this, 200, 8, 10);
-		playToggle = Editor.copyPlayToggle(cp5, this);
+		hScrollbar = Editor.copyHScrollbar(cp5, this, 8, 10, pa.height, gridShape);
+		addNoteButton = Editor.copyAddNoteButton(cp5, this, hScrollbar);
+		subNoteButton = Editor.copySubNoteButton(cp5, this, hScrollbar);
 		rootMenu = Editor.copyRootMenu(cp5, this);
-		scaleMenu = Editor.copyScaleMenu(cp5, this);
-		
-		Controller[] cs = new Controller[] {addNoteButton,
-				                            subNoteButton,
-				                            bpmDifferenceSlider,
-				                            bpmSlider,
-				                            hScrollbar,
-				                            playToggle,
-				                            rootMenu,
-				                            scaleMenu};
-		
-		int x1 = 0, y1 = 0;
-		for (int i=0; i<cs.length; i++) {
-			cs[i].setPosition(x1, y1);
-			y1 += cs[i].getHeight() + controller_dy;
-		}
+		scaleMenu = Editor.copyScaleMenu(rootMenu, cp5, this);
+		bpmSlider = Editor.copyBPMSlider(cp5, this, scaleMenu, pa.width, pa.height);
+		bpmDifferenceSlider = Editor.copyBPMDifferenceSlider(cp5, this, bpmSlider, pa.width, pa.height);
+	
+		playToggle = Editor.copyPlayToggle(bpmDifferenceSlider, cp5, this);	
 	}
 
 	@Override

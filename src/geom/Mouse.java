@@ -3,7 +3,7 @@ package geom;
 import processing.core.PApplet;
 
 /**
- * Vector graphic computer mouse image, defined in terms of Java/Procespa.sing code.
+ * Vector graphic computer mouse image, defined in terms of Java/Processing code.
  * 
  * @author James Morrow
  *
