@@ -733,7 +733,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 			downButton.hide();
 		}
 		
-		if (pa.playerInfo.minutesSpentWithMusician < 2.5f) {
+		if (pa.playerInfo.minutesSpentWithMusician < 1f) {
 			pa.hideChangeScreenButtons();
 		}
 		else {
@@ -903,7 +903,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 * @return True if the conditions are met for the PhaseShifter icon to be unlocked, false otherwise.
 	 */
 	private boolean phaseShifterUnlocked() {
-		return pa.playerInfo.minutesSpentWithMusician > 1f;
+		return pa.playerInfo.minutesSpentWithMusician > 3f;
 	}
 	
 	/**

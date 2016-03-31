@@ -159,7 +159,7 @@ public class PhasesPApplet extends PApplet {
 		initCurrentPhrase();
 		initCurrentScale(currentPhrase);
 		initScreens();
-		currentScreen = editor;
+		currentScreen = presenter;
 		initCP5Objects(currentScreen);
 		changeScreenTo(currentScreen);
 		currentScreen.onEnter();

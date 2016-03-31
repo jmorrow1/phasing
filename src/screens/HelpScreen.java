@@ -117,9 +117,9 @@ public class HelpScreen extends Screen {
 			pa.pushMatrix();
 				//1920, 1080
 				float scale = PApplet.min(pa.width / 800f, pa.height / 600f);
-				pa.translate(0, gridShape.getCeny());
+				pa.translate(20, gridShape.getCeny());
 				pa.scale(scale);
-				float x1 = gridShape.getX1() + 20;
+				float x1 = gridShape.getX1();
 				float ceny1 = (-gridShape.getHeight()/2) + gridShape.getHeight()/3 - mouseHeight/2;
 				float ceny2 = (-gridShape.getHeight()/2) + 2*gridShape.getHeight()/3 - mouseHeight/2;
 				showToDrawNotesMessage(x1, ceny1);
