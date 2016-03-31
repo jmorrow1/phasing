@@ -383,15 +383,15 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		int sliderWidth = getSliderWidth(windowWidth);
 		int sliderHeight = getSliderHeight();
 		return consBPMSlider("beatsPerMinute", "Tempo 1", BPM_1,
-							Util.getX2(scaleMenu) + PhasesPApplet.CONTROLLER_DX, 
-			                PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
-			                (int)(1.1f * sliderWidth),
-			                sliderHeight,
-			                value,
-			                11, 100,
-			                1,
-			                (floatingPoint) -> "" + PApplet.round(floatingPoint),
-			                cp5, listener);
+						  	 Util.getX2(scaleMenu) + PhasesPApplet.CONTROLLER_DX, 
+			                 PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
+			                 (int)(1.1f * sliderWidth),
+			                 sliderHeight,
+			                 value,
+			                 11, 100,
+			                 1,
+			                 (floatingPoint) -> "" + PApplet.round(floatingPoint),
+			                 cp5, listener);
 	}
 	
 	/**
@@ -411,15 +411,15 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		int sliderWidth = getSliderWidth(windowWidth);
 		int sliderHeight = getSliderHeight();
 		return consBPMSlider("bpmDifference", "Tempo Difference ", BPM_DIFFERENCE,
-				            Util.getX2(bpmSlider) + PhasesPApplet.CONTROLLER_DX,
-                            PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
-                            (int)(0.9f * sliderWidth), 
-                            sliderHeight,
-			                value,
-			                -MAX_DIFFERENCE, MAX_DIFFERENCE,
-			                4, 
-			                (floatingPoint) -> String.format("%.2f", floatingPoint),
-			                cp5, listener);
+				             Util.getX2(bpmSlider) + PhasesPApplet.CONTROLLER_DX,
+                             PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
+                             (int)(0.9f * sliderWidth), 
+                             sliderHeight,
+			                 value,
+			                 -MAX_DIFFERENCE, MAX_DIFFERENCE,
+			                 4, 
+			                 (floatingPoint) -> String.format("%.2f", floatingPoint),
+			                 cp5, listener);
 	}
 	
 	/**
@@ -517,8 +517,9 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		int menuItemHeight = 22;
 		
 		DropdownListPlus d = new DropdownListPlus(cp5, "Root");
-		d.setPosition(PhasesPApplet.getHelpButtonX2() + PhasesPApplet.CONTROLLER_DX, 12)
-	     .setSize(130, menuItemHeight)  
+		d.setPosition(PhasesPApplet.getPresenterButtonX2() + PhasesPApplet.CONTROLLER_DX,
+				      PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - menuItemHeight)
+	     .setSize(90, menuItemHeight)  
 	     .setItemHeight(menuItemHeight)
 	     .setBarHeight(menuItemHeight)
 	     .close()

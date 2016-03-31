@@ -77,7 +77,7 @@ public class PhasesPApplet extends PApplet {
 	
 	//controlp5
 	private ControlP5 cp5;
-	private Button presenterButton, editorButton, phraseRepoButton, aboutButton, helpButton;
+	private Button presenterButton, editorButton, phraseRepoButton, helpButton;
 	private static final int PRESENTER_BUTTON_X2 = 135;
 	private static final int HELP_BUTTON_X2 = 240;
 	private boolean helpOn;
@@ -288,12 +288,8 @@ public class PhasesPApplet extends PApplet {
 			
 		helpButton = consChangeScreenButton("toHelp", "Help",
                                             (int)Util.getX2(presenterButton) + CONTROLLER_DX,
-                                            (int)Util.getY1(phraseRepoButton),
+                                            (int)Util.getY1(presenterButton) + height/2 + 2,
                                             90, height);
-		aboutButton = consChangeScreenButton("toAbout", "About",
-											 (int)Util.getX2(presenterButton) + CONTROLLER_DX, 
-											 (int)Util.getY1(editorButton),
-											 90, height);
 		
 		updateHighlightedChangeScreenButton(currentScreen);
 	}
@@ -349,11 +345,9 @@ public class PhasesPApplet extends PApplet {
 	private void updateHiddenChangeScreenButtons(Screen currentScreen) {
 		if (currentScreen == editor || currentScreen == help) {
 			helpButton.show();
-			aboutButton.show();
 		}
 		else {
 			helpButton.hide();
-			aboutButton.hide();
 		}
 	}
 	
@@ -1440,6 +1434,14 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public static float getHelpButtonX2() {
 		return HELP_BUTTON_X2;
+	}
+	
+	/**
+	 * Gives the rightmost x-coordinate of the presenter button.
+	 * @return The rightmost x-coordinate of the presenter button.
+	 */
+	public static float getPresenterButtonX2() {
+		return PRESENTER_BUTTON_X2;
 	}
 
 	/**
