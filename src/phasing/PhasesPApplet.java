@@ -22,6 +22,7 @@ import processing.core.PGraphics;
 import processing.data.JSONObject;
 import processing.event.MouseEvent;
 import screens.Editor;
+import screens.HelpScreen;
 import screens.PhraseRepository;
 import screens.Presenter;
 import screens.Screen;
@@ -155,7 +156,7 @@ public class PhasesPApplet extends PApplet {
 		initCurrentPhrase();
 		initCurrentScale(currentPhrase);
 		initScreens();
-		currentScreen = presenter;
+		currentScreen = new HelpScreen(this);
 		initCP5Objects(currentScreen);
 		changeScreenTo(currentScreen);
 		currentScreen.onEnter();

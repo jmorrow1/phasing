@@ -62,7 +62,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	
 	//cp5
 	private final static int BPM_1 = 1, BPM_DIFFERENCE = 2;
-	private int maxPhaseDifferenceAmplitude = 5;
+	private static int MAX_DIFFERENCE = 5;
 	private ControlP5 cp5;
 	private Toggle playToggle;
 	private Slider bpmSlider, bpmDifferenceSlider;
@@ -338,12 +338,18 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		bpmSlider = consBPMSlider(Util.getX2(scaleMenu) + controller_dx, 
 				                  pa.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
 				                  (int)(1.1f * sliderWidth),
-				                  sliderHeight);
+				                  sliderHeight,
+				                  pa.getBPM1(),
+				                  cp5, this);
 		
 		bpmDifferenceSlider = consBPMDifferenceSlider(Util.getX2(bpmSlider) + controller_dx,
 				                                     pa.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
 				                                     (int)(0.9f * sliderWidth), 
-				                                     sliderHeight);
+				                                     sliderHeight,
+				                                     pa.getBPM2() - pa.getBPM1(),
+				                                     -MAX_DIFFERENCE,
+				                                     MAX_DIFFERENCE,
+				                                     cp5, this);
 	}
 	
 	/**
@@ -354,15 +360,19 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param y The uppermost y-coordinate of the slider.
 	 * @param w The width of the slider.
 	 * @param h The height of the slider.
+	 * @param value The initial bpm value.
+	 * @param cp5 The ControlP5 instance to attach the controller to.
+	 * @param listener The object that should recieve events from the controller.
 	 * @return The slider.
 	 */
-	private Slider consBPMSlider(float x, float y, int w, int h) {
+	private static Slider consBPMSlider(float x, float y, int w, int h, float value, ControlP5 cp5, Object listener) {
 		return consBPMSlider("beatsPerMinute", "Beats Per Minute", BPM_1,
 			                x, y, w, h,
-			                pa.getBPM1(),
+			                value,
 			                11, 100,
 			                1,
-			                (floatingPoint) -> "" + PApplet.round(floatingPoint));
+			                (floatingPoint) -> "" + PApplet.round(floatingPoint),
+			                cp5, listener);
 	}
 	
 	/**
@@ -373,15 +383,22 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param y The uppermost y-coordinate of the slider.
 	 * @param w The width of the slider.
 	 * @param h The height of the slider.
+	 * @param value The initial value of the slider.
+	 * @param minValue The minimum slider value.
+	 * @param maxValue The maximum slider value.
+	 * @param cp5 The ControlP5 instance to attach the controller to.
+	 * @param listener The object that should recieve events from the controller.
 	 * @return The slider.
 	 */
-	private Slider consBPMDifferenceSlider(float x, float y, int w, int h) {
+	private static Slider consBPMDifferenceSlider(float x, float y, int w, int h, float value,
+			int minValue, int maxValue, ControlP5 cp5, Object listener) {
 		return consBPMSlider("bpmDifference", "Difference ", BPM_DIFFERENCE,
 			                x, y, w, h,
-			                pa.getBPM2() - pa.getBPM1(),
-			                -maxPhaseDifferenceAmplitude, maxPhaseDifferenceAmplitude,
+			                value,
+			                minValue, maxValue,
 			                4, 
-			                (floatingPoint) -> String.format("%.2f", floatingPoint));
+			                (floatingPoint) -> String.format("%.2f", floatingPoint),
+			                cp5, listener);
 	}
 	
 	/**
@@ -402,11 +419,14 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param maxValue The maximum value the slider can have.
 	 * @param ticksPerWholeNumber 
 	 * @param f The function that converts floating points to Strings.
+	 * @param cp5 The ControlP5 to attach the controller to.
+	 * @param listener The object that should receive events from the controller.
 	 * @return The slider.
 	 */
-	private Slider consBPMSlider(String name, String label, int id, float x, float y, int w, int h,
-			  float value, int minValue, int maxValue, int ticksPerWholeNumber, FloatFormatter f) {
-		Slider s = new SliderPlus(cp5, name, pa.pfont12, pa.pfont18, f);
+	private static Slider consBPMSlider(String name, String label, int id, float x, float y, int w, int h,
+			  float value, int minValue, int maxValue, int ticksPerWholeNumber, FloatFormatter f,
+			  ControlP5 cp5, Object listener) {
+		Slider s = new SliderPlus(cp5, name, PhasesPApplet.pfont12, PhasesPApplet.pfont18, f);
         s.setId(id);
         s.setCaptionLabel(label);
         s.setDecimalPrecision(0);
@@ -416,7 +436,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
         s.setValue(value);
         s.setLabelVisible(false);
         s.setNumberOfTickMarks((maxValue-minValue) * ticksPerWholeNumber + 1);
-        s.plugTo(this);
+        s.plugTo(listener);
 		colorController(s);
 		return s;
 	}
@@ -1197,7 +1217,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param listener The object that should receive callbacks from the controller.
 	 * @return The controller.
 	 */
-	public Toggle copyPlayToggle(ControlP5 cp5, Object listener) {
+	public static Toggle copyPlayToggle(ControlP5 cp5, Object listener) {
 		return consPlayToggle(cp5, listener);
 	}
 	
@@ -1210,8 +1230,8 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param height The height of the controller.
 	 * @return The controller.
 	 */
-	public Slider copyBPMSlider(ControlP5 cp5, Object listener, int width, int height) {
-		return consBPMSlider(0, 0, width, height);
+	public static Slider copyBPMSlider(ControlP5 cp5, Object listener, int width, int height) {
+		return consBPMSlider(0, 0, width, height, 50, cp5, listener);
 	}
 	
 	/**
@@ -1223,8 +1243,9 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param height The height of the controller.
 	 * @return The controller.
 	 */
-	public Slider copyBPMDifferenceSlider(ControlP5 cp5, Object listener, int width, int height) {
-		return consBPMDifferenceSlider(0, 0, width, height);
+	public static Slider copyBPMDifferenceSlider(ControlP5 cp5, Object listener, int width, int height) {
+		return consBPMDifferenceSlider(0, 0, width, height, 0,
+				-MAX_DIFFERENCE, MAX_DIFFERENCE, cp5, listener);
 	}
 	
 	/**
@@ -1234,7 +1255,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param listener The object that should receive callbacks from the controller.
 	 * @return The controller.
 	 */
-	public DropdownListPlus copyRootMenu(ControlP5 cp5, Object listener) {
+	public static DropdownListPlus copyRootMenu(ControlP5 cp5, Object listener) {
 		return consRootMenu(cp5, listener);
 	}
 	
@@ -1245,11 +1266,12 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param listener The object that should receive callbacks from the controller.
 	 * @return The controller.
 	 */
-	public DropdownListPlus copyScaleMenu(ControlP5 cp5, Object listener) {
+	public static DropdownListPlus copyScaleMenu(ControlP5 cp5, Object listener) {
 		return consScaleMenu(cp5, listener);
 	}
 	
 	/**
+	 * Constructs a copy of the controller, one that looks just like the one that appears in the Editor.
 	 * 
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the controller.
@@ -1258,7 +1280,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param ticksPerTrack The number of ticks in the track (see Scrollbar documentation).
 	 * @return The controller.
 	 */
-	public Scrollbar copyHScrollbar(ControlP5 cp5, Object listener,
+	public static Scrollbar copyHScrollbar(ControlP5 cp5, Object listener,
 			int width, int ticksPerScroller, int ticksPerTrack) {
 		return consHorizontalScrollbar(cp5, listener, width, ticksPerScroller, ticksPerTrack);
 	}
@@ -1270,7 +1292,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param listener The object that should receive callbacks from the controller.
 	 * @return The controller.
 	 */
-	public Button copySubNoteButton(ControlP5 cp5, Object listener) {
+	public static Button copySubNoteButton(ControlP5 cp5, Object listener) {
 		return consSubNoteButton(cp5, listener);
 	}
 	
@@ -1281,7 +1303,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param listener The object that should receive callbacks from the controller.
 	 * @return The controller.
 	 */
-	public Button copyAddNoteButton(ControlP5 cp5, Object listener) {
+	public static Button copyAddNoteButton(ControlP5 cp5, Object listener) {
 		return consAddNoteButton(cp5, listener);
 	}
 }
