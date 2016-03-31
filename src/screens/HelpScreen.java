@@ -10,6 +10,7 @@ import geom.Rect;
 import phasing.PhasesPApplet;
 
 /**
+ * A screen that gives information about the Editor and how to use it.
  * 
  * @author James Morrow
  *
@@ -28,19 +29,22 @@ public class HelpScreen extends Screen {
 	private int controller_dy = 30;
 
 	public HelpScreen(PhasesPApplet pa) {
-		super(pa);
-		gridShape = Editor.copyGridFrame(pa.width, pa.height);
-		initControlP5Objects(gridShape);
+		super(pa);		
 	}
 	
 	private void initControlP5Objects(Rect gridShape) {
+		if (cp5 != null) {
+			cp5.dispose();
+		}
 		cp5 = new ControlP5(pa);
 		
 		hScrollbar = Editor.copyHScrollbar(cp5, this, 8, 10, pa.height, gridShape);
 		addNoteButton = Editor.copyAddNoteButton(cp5, this, hScrollbar);
 		subNoteButton = Editor.copySubNoteButton(cp5, this, hScrollbar);
+		
+		scaleMenu = Editor.copyScaleMenu(cp5, this);
 		rootMenu = Editor.copyRootMenu(cp5, this);
-		scaleMenu = Editor.copyScaleMenu(rootMenu, cp5, this);
+		
 		bpmSlider = Editor.copyBPMSlider(cp5, this, scaleMenu, pa.width, pa.height);
 		bpmDifferenceSlider = Editor.copyBPMDifferenceSlider(cp5, this, bpmSlider, pa.width, pa.height);
 	
@@ -49,36 +53,32 @@ public class HelpScreen extends Screen {
 
 	@Override
 	public void windowResized() {
-		// TODO Auto-generated method stub
-		
+		gridShape = Editor.copyGridFrame(pa.width, pa.height);
+		initControlP5Objects(gridShape);
 	}
 
 	@Override
 	public void onEnter() {
-		// TODO Auto-generated method stub
-		
+		gridShape = Editor.copyGridFrame(pa.width, pa.height);
+		initControlP5Objects(gridShape);
 	}
 
 	@Override
 	public void onExit() {
-		// TODO Auto-generated method stub
-		
+		if (cp5 != null) {
+			cp5.dispose();
+		}
 	}
 
 	@Override
-	public void onPause() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onPause() {}
 
 	@Override
-	public void onResume() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onResume() {}
 
 	@Override
 	public void draw() {
 		pa.background(255);
+		pa.drawControlP5();
 	}
 }

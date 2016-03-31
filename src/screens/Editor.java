@@ -75,7 +75,6 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	private boolean rootMenuOpen, scaleMenuOpen;
 	
 	//controller layout
-	private final static int controller_dx = 15;
 	private final static int margin_btwn_top_toolbar_y2_and_controllers = 10;
 	
 	//cursor
@@ -315,7 +314,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		int sideLength = 35;
 		Toggle t = cp5.addToggle("play")
 					  .setSize(sideLength, sideLength)
-					  .setPosition(Util.getX2(bpmDifferenceSlider) + controller_dx,
+					  .setPosition(Util.getX2(bpmDifferenceSlider) + PhasesPApplet.CONTROLLER_DX,
 		  		                   PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sideLength)
 					  .plugTo(listener)
 					  .setView(new ControllerView<Toggle>() {
@@ -384,7 +383,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		int sliderWidth = getSliderWidth(windowWidth);
 		int sliderHeight = getSliderHeight();
 		return consBPMSlider("beatsPerMinute", "Beats Per Minute", BPM_1,
-							Util.getX2(scaleMenu) + controller_dx, 
+							Util.getX2(scaleMenu) + PhasesPApplet.CONTROLLER_DX, 
 			                PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
 			                (int)(1.1f * sliderWidth),
 			                sliderHeight,
@@ -412,7 +411,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		int sliderWidth = getSliderWidth(windowWidth);
 		int sliderHeight = getSliderHeight();
 		return consBPMSlider("bpmDifference", "Difference ", BPM_DIFFERENCE,
-				            Util.getX2(bpmSlider) + controller_dx,
+				            Util.getX2(bpmSlider) + PhasesPApplet.CONTROLLER_DX,
                             PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - sliderHeight,
                             (int)(0.9f * sliderWidth), 
                             sliderHeight,
@@ -468,35 +467,34 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * Adds the menus to the CP5 object.
 	 */
 	private void initScaleMenus() {
+		scaleMenu = consScaleMenu(cp5, this);
+		scaleMenu.addItems(pa.scaleTypes);
+		scaleMenu.setSize(scaleMenu.getWidth(), scaleMenu.getHeight()*(pa.scaleTypes.size()+1));
+		scaleMenu.setLabel(pa.currentScale.getClassName());
+		formatLabel(scaleMenu);
+		scaleLabel = scaleMenu.getLabel();
+		
 		rootMenu = consRootMenu(cp5, this);
 		rootMenu.addItems(pa.roots);
 		rootMenu.setSize(rootMenu.getWidth(), rootMenu.getHeight()*(pa.roots.length+1));
 		rootMenu.setLabel(pa.currentScale.getName());
 		formatLabel(rootMenu);
 		rootLabel = rootMenu.getLabel();
-		
-		scaleMenu = consScaleMenu(rootMenu, cp5, this);
-		scaleMenu.addItems(pa.scaleTypes);
-		scaleMenu.setSize(scaleMenu.getWidth(), scaleMenu.getHeight()*(pa.scaleTypes.size()+1));
-		scaleMenu.setLabel(pa.currentScale.getClassName());
-		formatLabel(scaleMenu);
-		scaleLabel = scaleMenu.getLabel();
 	}
 	
 	/**
 	 * Constructs and returns a label-less, empty scale menu that is connected with the given ControlP5 instance.
 	 * 
-	 * @param rootMenu The root menu the controller is positioned in relation to.
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the controller.
 	 * @return The scale menu.
 	 */
-	private static DropdownListPlus consScaleMenu(DropdownListPlus rootMenu, ControlP5 cp5, Object listener) {
+	private static DropdownListPlus consScaleMenu(ControlP5 cp5, Object listener) {
 		int menuItemHeight = 22;
 		
 		DropdownListPlus d = new DropdownListPlus(cp5, "Scale");
-		d.setPosition(rootMenu.getPosition()[0] + rootMenu.getWidth() + controller_dx,
-                      PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - menuItemHeight)
+		d.setPosition(PhasesPApplet.getHelpButtonX2() + PhasesPApplet.CONTROLLER_DX,
+				      PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - menuItemHeight)
 		 .setSize(130, menuItemHeight)
 	     .setItemHeight(menuItemHeight)
 		 .setBarHeight(menuItemHeight)
@@ -519,9 +517,8 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		int menuItemHeight = 22;
 		
 		DropdownListPlus d = new DropdownListPlus(cp5, "Root");
-		d.setPosition(PhasesPApplet.getChangeScreenButtonX2() + controller_dx, 
-				      PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - menuItemHeight)
-	     .setSize(90, menuItemHeight)  
+		d.setPosition(PhasesPApplet.getHelpButtonX2() + PhasesPApplet.CONTROLLER_DX, 12)
+	     .setSize(130, menuItemHeight)  
 	     .setItemHeight(menuItemHeight)
 	     .setBarHeight(menuItemHeight)
 	     .close()
@@ -1295,13 +1292,12 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	/**
 	 * Constructs a copy of the controller, one that looks just like the one that appears in the Editor.
 	 * 
-	 * @param rootMenu The root menu the controller is positioned in relation to.
 	 * @param cp5 The ControlP5 instance.
 	 * @param listener The object that should receive callbacks from the controller.
 	 * @return The controller.
 	 */
-	public static DropdownListPlus copyScaleMenu(DropdownListPlus rootMenu, ControlP5 cp5, Object listener) {
-		DropdownListPlus s = consScaleMenu(rootMenu, cp5, listener);
+	public static DropdownListPlus copyScaleMenu(ControlP5 cp5, Object listener) {
+		DropdownListPlus s = consScaleMenu(cp5, listener);
 		formatLabel(s);
 		return s;
 	}

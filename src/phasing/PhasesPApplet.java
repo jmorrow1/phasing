@@ -67,6 +67,7 @@ public class PhasesPApplet extends PApplet {
 	private Presenter presenter;
 	private Editor editor;
 	private PhraseRepository phraseRepo;
+	private HelpScreen help;
 	private boolean presenterEntered = false;
 	private Screen prevScreen, currentScreen;
 	
@@ -76,10 +77,11 @@ public class PhasesPApplet extends PApplet {
 	
 	//controlp5
 	private ControlP5 cp5;
-	private Button presenterButton, editorButton, phraseRepoButton;
-	private static final int CHANGE_SCREEN_BUTTON_X2 = 135;
-	private Button helpToggle;
+	private Button presenterButton, editorButton, phraseRepoButton, aboutButton, helpButton;
+	private static final int PRESENTER_BUTTON_X2 = 135;
+	private static final int HELP_BUTTON_X2 = 240;
 	private boolean helpOn;
+	public final static int CONTROLLER_DX = 15;
 	
 	//screen size
 	private int prevWidth, prevHeight;
@@ -156,7 +158,7 @@ public class PhasesPApplet extends PApplet {
 		initCurrentPhrase();
 		initCurrentScale(currentPhrase);
 		initScreens();
-		currentScreen = new HelpScreen(this);
+		currentScreen = editor;
 		initCP5Objects(currentScreen);
 		changeScreenTo(currentScreen);
 		currentScreen.onEnter();
@@ -182,7 +184,6 @@ public class PhasesPApplet extends PApplet {
 		cp5 = new ControlP5(this);
 		cp5.setAutoDraw(false);
 		initChangeScreenButtons(currentScreen);
-		initHelpToggle(phraseRepoButton);
 	}
 	
 	/**
@@ -200,6 +201,7 @@ public class PhasesPApplet extends PApplet {
 	 */
 	private void initScreens() {
 		presenter = new Presenter(this);
+		help = new HelpScreen(this);
 		editor = new Editor(this);
 		phraseRepo = new PhraseRepository(this);
 	}
@@ -275,7 +277,7 @@ public class PhasesPApplet extends PApplet {
 	private void initChangeScreenButtons(Screen currentScreen) {
 		int x1 = 10;
 		int y1 = 2;	
-		int width = CHANGE_SCREEN_BUTTON_X2 - 10;
+		int width = PRESENTER_BUTTON_X2 - 10;
 		int height = 16;
 		
 		presenterButton = consChangeScreenButton("toPresenter", "Present", x1, y1, width, height);
@@ -283,6 +285,15 @@ public class PhasesPApplet extends PApplet {
 		editorButton = consChangeScreenButton("toEditor", "Compose", x1, y1, width, height);	
 		y1 += height + 5;		
 		phraseRepoButton = consChangeScreenButton("toPhraseRepo", "Load", x1, y1, width, height);
+			
+		helpButton = consChangeScreenButton("toHelp", "Help",
+                                            (int)Util.getX2(presenterButton) + CONTROLLER_DX,
+                                            (int)Util.getY1(phraseRepoButton),
+                                            90, height);
+		aboutButton = consChangeScreenButton("toAbout", "About",
+											 (int)Util.getX2(presenterButton) + CONTROLLER_DX, 
+											 (int)Util.getY1(editorButton),
+											 90, height);
 		
 		updateHighlightedChangeScreenButton(currentScreen);
 	}
@@ -325,6 +336,9 @@ public class PhasesPApplet extends PApplet {
 		else if (currentScreen == phraseRepo) {
 			highlight(phraseRepoButton);
 		}
+		else if (currentScreen == help) {
+			highlight(helpButton);
+		}
 	}
 	
 	/**
@@ -344,27 +358,9 @@ public class PhasesPApplet extends PApplet {
 		if (changeScreenButton != phraseRepoButton) {
 			phraseRepoButton.setColorBackground(getColor1());
 		}
-	}
-	
-	/**
-	 * Initializes the helpToggle;
-	 * @param changeScreenButton This is here to make explicit that this method relies on changeScreenButton being already initialized.
-	 */
-	private void initHelpToggle(Button phraseRepoButton) {
-		int toggleWidth = phraseRepoButton.getWidth();
-		int toggleHeight = 12;
-		float x1 = Util.getX1(phraseRepoButton);
-		float y1 = Util.getY2(phraseRepoButton) + 5;
-		helpToggle = cp5.addButton("toggleHelp")
-				        .setLabel("Help")
-				        .setPosition(x1, y1)
-				        .setSize(toggleWidth, toggleHeight)
-				        ;
-		helpToggle.getCaptionLabel().toUpperCase(false);
-		helpToggle.getCaptionLabel().setFont(pfont12);
-		colorControllerShowingLabel(helpToggle);
-		
-		helpToggle.hide();
+		if (changeScreenButton != helpButton) {
+			helpButton.setColorBackground(getColor1());
+		}
 	}
 	
 	/**
@@ -759,7 +755,10 @@ public class PhasesPApplet extends PApplet {
 	 *****************************/
 	
 	/**
-	 * Draws the PhasesPapplet's controllers.
+	 * The PhasesPApplet does not draw its own controllers, because sometimes
+	 * a more customized draw order is required.
+	 * 
+	 * This method draws and updates the PhasesPApplet's controllers.
 	 */
 	public void drawControlP5() {
 		cp5.draw();
@@ -769,7 +768,6 @@ public class PhasesPApplet extends PApplet {
 	 * Makes all the PhasesPApplet's controllers invisible.
 	 */
 	public void hideAllControllers() {
-		helpToggle.hide();
 		hideChangeScreenButtons();
 	}
 	
@@ -786,7 +784,6 @@ public class PhasesPApplet extends PApplet {
 	 * Makes all the PhasesPApplet's controllers visible.
 	 */
 	public void showAllControllers() {
-		helpToggle.show();
 		showChangeScreenButtons();
 	}
 	
@@ -832,6 +829,16 @@ public class PhasesPApplet extends PApplet {
 	public void toPresenter() {
 		if (currentScreen != presenter) {
 			changeScreenTo(presenter);
+		}
+	}
+	
+	/**
+	 * Callback from ControlP5.
+	 * Changes the current screen to the Help screen.
+	 */
+	public void toHelp() {
+		if (currentScreen != help) {
+			changeScreenTo(help);
 		}
 	}
 	
@@ -890,21 +897,6 @@ public class PhasesPApplet extends PApplet {
 			
 	}
 	
-	/**
-	 * Callback from ControlP5.
-	 * Controls whether or not the help information is displayed.
-	 */
-	public void toggleHelp() {
-		helpOn = !helpOn;
-		
-		if (helpOn) {
-			helpToggle.setColorBackground(getColor1Bold());
-		}
-		else {
-			helpToggle.setColorBackground(getColor1());
-		}
-	}
-	
 	/*********************
 	 ***** Draw Loop *****
 	 *********************/
@@ -954,16 +946,13 @@ public class PhasesPApplet extends PApplet {
 	 * Sends key pressed events to the current screen.
 	 */
 	public void keyPressed() {
-		/*if (key == 'm') { //TODO eliminate when no longer needed
-			this.phraseToMidiFile(currentPhrase, saveFolderPath, "cycle");
-		}*/		
-		if (key == 'p') { //TODO eliminate when no longer needed
-			save("17.png");
-		}
-		if (key == 'h') {
-			toggleHelp();
-		}
-		else if (key == ESC) {
+		//if (key == 'm') { //TODO eliminate when no longer needed
+		//	this.phraseToMidiFile(currentPhrase, saveFolderPath, "cycle");
+		//}	
+		//if (key == 'p') { //TODO eliminate when no longer needed
+		//	save("17.png");
+		//}
+		if (key == ESC) {
 			key = 0; //disables Processing's default behavior to close the program when ESC is pressed
 		}
 		else  {
@@ -1429,11 +1418,11 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
-	 * Gives the rightmost x-coordinate of the change screen button.
-	 * @return The rightmost x-coordinate of the change screen button.
+	 * Gives the rightmost x-coordinate of the help button.
+	 * @return The rightmost x-coordinate of the help button.
 	 */
-	public static float getChangeScreenButtonX2() {
-		return CHANGE_SCREEN_BUTTON_X2;
+	public static float getHelpButtonX2() {
+		return HELP_BUTTON_X2;
 	}
 
 	/**
