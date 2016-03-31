@@ -77,7 +77,7 @@ public class PhasesPApplet extends PApplet {
 	
 	//controlp5
 	private ControlP5 cp5;
-	private Button presenterButton, editorButton, phraseRepoButton, helpButton;
+	private Button presentButton, composeButton, loadButton, helpButton;
 	private static final int PRESENTER_BUTTON_X2 = 135;
 	private static final int HELP_BUTTON_X2 = 240;
 	private boolean helpOn;
@@ -280,15 +280,15 @@ public class PhasesPApplet extends PApplet {
 		int width = PRESENTER_BUTTON_X2 - 10;
 		int height = 16;
 		
-		presenterButton = consChangeScreenButton("toPresenter", "Present", x1, y1, width, height);
+		presentButton = consChangeScreenButton("toPresenter", "Present", x1, y1, width, height);
 		y1 += height + 5;		
-		editorButton = consChangeScreenButton("toEditor", "Compose", x1, y1, width, height);	
+		composeButton = consChangeScreenButton("toEditor", "Compose", x1, y1, width, height);	
 		y1 += height + 5;		
-		phraseRepoButton = consChangeScreenButton("toPhraseRepo", "Load", x1, y1, width, height);
+		loadButton = consChangeScreenButton("toPhraseRepo", "Load", x1, y1, width, height);
 			
 		helpButton = consChangeScreenButton("toHelp", "Help",
-                                            (int)Util.getX2(presenterButton) + CONTROLLER_DX,
-                                            (int)Util.getY1(presenterButton) + height/2 + 2,
+                                            (int)Util.getX2(presentButton) + CONTROLLER_DX,
+                                            (int)Util.getY1(presentButton) + height/2 + 2,
                                             90, height);
 		
 		updateHighlightedChangeScreenButton(currentScreen);
@@ -324,13 +324,13 @@ public class PhasesPApplet extends PApplet {
 	 */
 	private void updateHighlightedChangeScreenButton(Screen currentScreen) {
 		if (currentScreen == presenter) {
-			highlight(presenterButton);
+			highlight(presentButton);
 		}
 		else if (currentScreen == editor) {
-			highlight(editorButton);
+			highlight(composeButton);
 		}
 		else if (currentScreen == phraseRepo) {
-			highlight(phraseRepoButton);
+			highlight(loadButton);
 		}
 		else if (currentScreen == help) {
 			highlight(helpButton);
@@ -359,14 +359,14 @@ public class PhasesPApplet extends PApplet {
 	private void highlight(Button changeScreenButton) {
 		changeScreenButton.setColorBackground(getColor1Bold());
 		
-		if (changeScreenButton != presenterButton) {
-			presenterButton.setColorBackground(getColor1());
+		if (changeScreenButton != presentButton) {
+			presentButton.setColorBackground(getColor1());
 		}
-		if (changeScreenButton != editorButton) {
-			editorButton.setColorBackground(getColor1());
+		if (changeScreenButton != composeButton) {
+			composeButton.setColorBackground(getColor1());
 		}
-		if (changeScreenButton != phraseRepoButton) {
-			phraseRepoButton.setColorBackground(getColor1());
+		if (changeScreenButton != loadButton) {
+			loadButton.setColorBackground(getColor1());
 		}
 		if (changeScreenButton != helpButton) {
 			helpButton.setColorBackground(getColor1());
@@ -785,9 +785,9 @@ public class PhasesPApplet extends PApplet {
 	 * Makes all the PhasesPApplet's controllers related to changing the screen invisible.
 	 */
 	public void hideChangeScreenButtons() {
-		presenterButton.hide();
-		editorButton.hide();
-		phraseRepoButton.hide();
+		presentButton.hide();
+		composeButton.hide();
+		loadButton.hide();
 	}
 	
 	/**
@@ -801,9 +801,9 @@ public class PhasesPApplet extends PApplet {
 	 * Makes all the PhasesPApplet's controllers related to changing the screen visible.
 	 */
 	public void showChangeScreenButtons() {
-		presenterButton.show();
-		editorButton.show();
-		phraseRepoButton.show();
+		presentButton.show();
+		composeButton.show();
+		loadButton.show();
 	}
 	
 	/**
@@ -1437,10 +1437,10 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
-	 * Gives the rightmost x-coordinate of the presenter button.
-	 * @return The rightmost x-coordinate of the presenter button.
+	 * Gives the rightmost x-coordinate of the present button.
+	 * @return The rightmost x-coordinate of the present button.
 	 */
-	public static float getPresenterButtonX2() {
+	public static float getPresentButtonX2() {
 		return PRESENTER_BUTTON_X2;
 	}
 
@@ -1542,6 +1542,38 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public int indexOfCurrentPhrasePicture() {
 		return phrasePictures.indexOf(currentPhrasePicture);
+	}
+	
+	/**
+	 * 
+	 * @return True, if the mouse is over the PhasesPApplet's present button, false otherwise.
+	 */
+	public boolean isMouseOverPresentButton() {
+		return presentButton.isMouseOver();
+	}
+	
+	/**
+	 * 
+	 * @return True, if the mouse is over the PhasesPApplet's compose button, false otherwise.
+	 */
+	public boolean isMouseOverComposeButton() {
+		return composeButton.isMouseOver();
+	}
+	
+	/**
+	 * 
+	 * @return True, if the mouse is over the PhasesPApplet's load button, false otherwise.
+	 */
+	public boolean isMouseOverLoadButton() {
+		return loadButton.isMouseOver();
+	}
+	
+	/**
+	 * 
+	 * @return True, if the mouse is over the PhasesPApplet's help button, false otherwise.
+	 */
+	public boolean isMouseOverHelpButton() {
+		return helpButton.isMouseOver();
 	}
 	
 	/**

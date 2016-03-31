@@ -30,10 +30,31 @@ public class HelpScreen extends Screen {
 	private Toggle playToggle;
 	private DropdownListPlus rootMenu, scaleMenu;
 	private int controller_dy = 30;
-
+	
+	//copy
+	private String activeText = "";
+	private static final String presentButtonText = "Where you can watch your compositions unfold.";
+	private static final String composeButtonText = "Where you can compose music.";
+	private static final String loadButtonText = "Where you can load previously created music and generate new music.";
+	private static final String rootMenuText = "Change the starting pitch of the scale.";
+	private static final String scaleMenuText = "Change the type of scale. \n\nThe pentatonic scales are good for making highly harmonious music. \n\nWith the chromatic scales, it is possible to make highly disharmonious music. \n\nThe major and minor scales give more color than the pentatonic scales while still avoiding some of the possible disharmonies of the chromatic scales.";
+	private static final String tempoSliderText = "Change the speed (in beats per minute) of the music. The larger the tempo, the faster the music.";
+	private static final String tempoDifferenceSliderText = "Change the difference in speed between the two players. \n\nA tempo difference of 0 means the two players will play at exactly the same speed. \n\nThings become interesting when you make the tempo difference a non-zero value.";
+	private static final String playToggleText = "Play back melodies in the editor before trying them out in the presenter.";
+	private static final String hScrollbarText = "Browse a melody that is longer than what can be contained on a single screen.";
+	private static final String subNoteButtonText = "Make the melody one note shorter.";
+	private static final String addNoteButtonText = "Make the melody one note longer.";
+	
+	//grid info toggle
+	private boolean drawGridInfo;
+	
+	//style
+	private final int gridColor;
+	
 	public HelpScreen(Editor editor, PhasesPApplet pa) {
 		super(pa);
 		this.editor = editor;
+		gridColor = pa.lerpColor(pa.color(0), pa.getColor1(), 0.25f);
 	}
 	
 	private void initControlP5Objects(Rect gridShape) {
@@ -81,8 +102,72 @@ public class HelpScreen extends Screen {
 	public void draw() {
 		pa.background(255);
 		pa.fill(255);
-		pa.stroke(pa.getColor2());
+		pa.strokeWeight(1);
+		pa.stroke(gridColor);
 		gridShape.display(pa);
+		drawInfo();
 		pa.drawControlP5();
+	}
+	
+	private void drawInfo() {
+		if (drawGridInfo) {
+			
+		}
+		else {
+			pa.textFont(pa.pfont18);
+			pa.textAlign(pa.LEFT, pa.TOP);
+			pa.rectMode(pa.CORNERS);
+			pa.fill(gridColor);
+			pa.text(activeText, 
+					gridShape.getX1() + 15, gridShape.getY1() + 15,
+					gridShape.getX2() - 15, gridShape.getY2() - 15);
+		}
+	}
+	
+	@Override
+	public void mouseMoved() {
+		if (gridShape.touches(pa.mouseX, pa.mouseY)) {
+			drawGridInfo = true;
+			activeText = "";
+		}
+		else {
+			drawGridInfo = false;
+			if (pa.isMouseOverPresentButton()) {
+				activeText = presentButtonText;
+			}
+			else if (pa.isMouseOverComposeButton()) {
+				activeText = composeButtonText;
+			}
+			else if (pa.isMouseOverLoadButton()) {
+				activeText = loadButtonText;
+			}
+			else if (rootMenu.isMouseOver()) {
+				activeText = rootMenuText;
+			}
+			else if (scaleMenu.isMouseOver()) {
+				activeText = scaleMenuText;
+			}
+			else if (bpmSlider.isMouseOver()) {
+				activeText = tempoSliderText;
+			}
+			else if (bpmDifferenceSlider.isMouseOver()) {
+				activeText = tempoDifferenceSliderText;
+			}
+			else if (playToggle.isMouseOver()) {
+				activeText = playToggleText;
+			}
+			else if (subNoteButton.isMouseOver()) {
+				activeText = subNoteButtonText;
+			}
+			else if (hScrollbar.isMouseOver()) {
+				activeText = hScrollbarText;
+			}
+			else if (addNoteButton.isMouseOver()) {
+				activeText = addNoteButtonText;
+			}
+			else {
+				activeText = "";
+			}
+		}
 	}
 }

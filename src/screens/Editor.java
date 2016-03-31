@@ -492,7 +492,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	private static DropdownListPlus consScaleMenu(ControlP5 cp5, Object listener) {
 		int menuItemHeight = 22;
 		
-		DropdownListPlus d = new DropdownListPlus(cp5, "Scale");
+		DropdownListPlus d = new DropdownListPlus(cp5, "Scale Type");
 		d.setPosition(PhasesPApplet.getHelpButtonX2() + PhasesPApplet.CONTROLLER_DX,
 				      PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - menuItemHeight)
 		 .setSize(130, menuItemHeight)
@@ -517,7 +517,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		int menuItemHeight = 22;
 		
 		DropdownListPlus d = new DropdownListPlus(cp5, "Root");
-		d.setPosition(PhasesPApplet.getPresenterButtonX2() + PhasesPApplet.CONTROLLER_DX,
+		d.setPosition(PhasesPApplet.getPresentButtonX2() + PhasesPApplet.CONTROLLER_DX,
 				      PhasesPApplet.topToolbarY2() - margin_btwn_top_toolbar_y2_and_controllers - menuItemHeight)
 	     .setSize(90, menuItemHeight)  
 	     .setItemHeight(menuItemHeight)
