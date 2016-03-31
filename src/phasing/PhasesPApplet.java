@@ -73,7 +73,7 @@ public class PhasesPApplet extends PApplet {
 	
 	//visual variables
 	private static ColorScheme colorScheme;
-	public static PFont pfont12, pfont14, pfont18, pfont42, musicFont;
+	public static PFont pfont12, pfont14, pfont18, pfont24, pfont42, musicFont;
 	
 	//controlp5
 	private ControlP5 cp5;
@@ -129,6 +129,7 @@ public class PhasesPApplet extends PApplet {
 		pfont12 = loadFont("DejaVuSans-12.vlw");
 		pfont14 = loadFont("DejaVuSans-14.vlw");
 		pfont18 = loadFont("DejaVuSans-18.vlw");
+		pfont24 = loadFont("DejaVuSans-24.vlw");
 		pfont42 = loadFont("DejaVuSans-42.vlw");
 		musicFont = loadFont("MaestroWide-48.vlw");
 		
@@ -1026,6 +1027,18 @@ public class PhasesPApplet extends PApplet {
 	/************************************************
 	 ***** Extended Primitive Drawing Functions *****
 	 ************************************************/
+	
+	/**
+	 * Draws a plus (+) centered about (cenx, ceny) and with the given radius.
+	 * 
+	 * @param cenx The center x-coordinate.
+	 * @param ceny The center y-coordinate.
+	 * @param radius The radius.
+	 */
+	public void drawPlus(float cenx, float ceny, float radius) {
+		line(cenx - radius, ceny, cenx + radius, ceny);
+		line(cenx, ceny - radius, cenx, ceny + radius);
+	}
 	
 	/**
 	 * Draws an arrow head from two lines (which looks like this: >).

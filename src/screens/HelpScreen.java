@@ -6,8 +6,10 @@ import controlP5.Slider;
 import controlP5.Toggle;
 import controlp5.DropdownListPlus;
 import controlp5.Scrollbar;
+import geom.Mouse;
 import geom.Rect;
 import phasing.PhasesPApplet;
+import processing.core.PApplet;
 
 /**
  * A screen that gives information about the Editor and how to use it.
@@ -17,10 +19,11 @@ import phasing.PhasesPApplet;
  */
 public class HelpScreen extends Screen {
 	//editor
-	Editor editor;
+	private Editor editor;
 	
-	//grid shape
-	Rect gridShape;
+	//grid
+	private Rect gridShape;
+	private final static float mouseWidth=40, mouseHeight=80; //for an 800x600 window
 	
 	//controlp5
 	private ControlP5 cp5;
@@ -38,7 +41,7 @@ public class HelpScreen extends Screen {
 	private static final String loadButtonText = "Where you can load previously created music and generate new music.";
 	private static final String rootMenuText = "Change the starting pitch of the scale.";
 	private static final String scaleMenuText = "Change the type of scale. \n\nThe pentatonic scales are good for making highly harmonious music. \n\nWith the chromatic scales, it is possible to make highly disharmonious music. \n\nThe major and minor scales give more color than the pentatonic scales while still avoiding some of the possible disharmonies of the chromatic scales.";
-	private static final String tempoSliderText = "Change the speed (in beats per minute) of the music. The larger the tempo, the faster the music.";
+	private static final String tempoSliderText = "Change the speed of the music. The larger the tempo, the faster the music. Tempo is measured in beats per minute.";
 	private static final String tempoDifferenceSliderText = "Change the difference in speed between the two players. \n\nA tempo difference of 0 means the two players will play at exactly the same speed. \n\nThings become interesting when you make the tempo difference a non-zero value.";
 	private static final String playToggleText = "Play back melodies in the editor before trying them out in the presenter.";
 	private static final String hScrollbarText = "Browse a melody that is longer than what can be contained on a single screen.";
@@ -106,12 +109,22 @@ public class HelpScreen extends Screen {
 		pa.stroke(gridColor);
 		gridShape.display(pa);
 		drawInfo();
-		pa.drawControlP5();
+		pa.drawControlP5();	
 	}
 	
 	private void drawInfo() {
 		if (drawGridInfo) {
-			
+			pa.pushMatrix();
+				//1920, 1080
+				float scale = PApplet.min(pa.width / 800f, pa.height / 600f);
+				pa.translate(0, gridShape.getCeny());
+				pa.scale(scale);
+				float x1 = gridShape.getX1() + 20;
+				float ceny1 = (-gridShape.getHeight()/2) + gridShape.getHeight()/3 - mouseHeight/2;
+				float ceny2 = (-gridShape.getHeight()/2) + 2*gridShape.getHeight()/3 - mouseHeight/2;
+				showToDrawNotesMessage(x1, ceny1);
+				showToEraseNotesMessage(x1, ceny2);
+			pa.popMatrix();
 		}
 		else {
 			pa.textFont(pa.pfont18);
@@ -121,6 +134,59 @@ public class HelpScreen extends Screen {
 			pa.text(activeText, 
 					gridShape.getX1() + 15, gridShape.getY1() + 15,
 					gridShape.getX2() - 15, gridShape.getY2() - 15);
+		}
+	}
+	
+	private void showToDrawNotesMessage(float x1, float ceny) {
+		pa.stroke(1);
+		pa.textFont(pa.pfont24);
+		pa.textAlign(pa.LEFT, pa.CENTER);
+		pa.fill(gridColor);
+		pa.text("to draw notes:", x1, ceny);
+		drawMouse(x1 + mouseWidth/2 + pa.textWidth("add notes width:") + 40,
+				  ceny, mouseWidth, mouseHeight, true, false);
+	}
+	
+	private void showToEraseNotesMessage(float x1, float ceny) {
+		pa.fill(gridColor);
+		pa.text("to erase notes:", x1, ceny);
+		x1 += pa.textWidth("erase notes with") + 43;
+		drawMouse(x1 + mouseWidth/2, ceny, mouseWidth, mouseHeight, false, true);
+		x1 += mouseWidth + 40;
+		pa.text("or", x1, ceny);
+		x1 += pa.textWidth("or") + 40;
+		drawMouse(x1 + mouseWidth/2, ceny, mouseWidth, mouseHeight, true, false);
+		x1 += mouseWidth + 25;
+		pa.stroke(gridColor);
+		pa.strokeWeight(4);
+		pa.drawPlus(x1 + 5, ceny, 10);
+		x1 += 10 + 25;
+		pa.strokeWeight(1);
+		pa.noFill();
+		pa.rectMode(pa.CENTER);
+		pa.fill(gridColor);
+		pa.rect(x1 + 40, ceny, 75, 25);
+		pa.fill(255);
+		pa.textFont(pa.pfont12);
+		pa.textAlign(pa.LEFT, pa.CENTER);
+		pa.text("SHIFT", x1 + 50, ceny, 75, 25);
+	}
+	
+	private void drawMouse(float cenx, float ceny, float width, float height,
+			boolean fillLeftMouseButton, boolean fillRightMouseButton) {
+		
+		Mouse.draw(cenx, ceny, width, height, gridColor, pa);
+		
+		if (fillLeftMouseButton) {
+			pa.noStroke();
+			pa.fill(gridColor);
+			Mouse.displayLeftButton(cenx, ceny, width, height, pa);
+		}
+		
+		if (fillRightMouseButton) {
+			pa.noStroke();
+			pa.fill(gridColor);
+			Mouse.displayRightButton(cenx, ceny, width, height, pa);
 		}
 	}
 	
