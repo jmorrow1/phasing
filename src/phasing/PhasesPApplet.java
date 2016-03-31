@@ -288,7 +288,8 @@ public class PhasesPApplet extends PApplet {
 			
 		helpButton = consChangeScreenButton("toHelp", "Help",
                                             (int)Util.getX2(presenterButton) + CONTROLLER_DX,
-                                            (int)Util.getY1(presenterButton) + height/2 + 2,
+                                            //(int)Util.getY1(presenterButton) + height/2 + 2,
+                                            (int)Util.getY1(presenterButton),
                                             90, height);
 		
 		updateHighlightedChangeScreenButton(currentScreen);
