@@ -16,6 +16,9 @@ import phasing.PhasesPApplet;
  *
  */
 public class HelpScreen extends Screen {
+	//editor
+	Editor editor;
+	
 	//grid shape
 	Rect gridShape;
 	
@@ -28,8 +31,9 @@ public class HelpScreen extends Screen {
 	private DropdownListPlus rootMenu, scaleMenu;
 	private int controller_dy = 30;
 
-	public HelpScreen(PhasesPApplet pa) {
-		super(pa);		
+	public HelpScreen(Editor editor, PhasesPApplet pa) {
+		super(pa);
+		this.editor = editor;
 	}
 	
 	private void initControlP5Objects(Rect gridShape) {
@@ -38,28 +42,25 @@ public class HelpScreen extends Screen {
 		}
 		cp5 = new ControlP5(pa);
 		
-		hScrollbar = Editor.copyHScrollbar(cp5, this, 8, 10, pa.height, gridShape);
-		addNoteButton = Editor.copyAddNoteButton(cp5, this, hScrollbar);
-		subNoteButton = Editor.copySubNoteButton(cp5, this, hScrollbar);
-		
-		scaleMenu = Editor.copyScaleMenu(cp5, this);
-		rootMenu = Editor.copyRootMenu(cp5, this);
-		
-		bpmSlider = Editor.copyBPMSlider(cp5, this, scaleMenu, pa.width, pa.height);
-		bpmDifferenceSlider = Editor.copyBPMDifferenceSlider(cp5, this, bpmSlider, pa.width, pa.height);
-	
-		playToggle = Editor.copyPlayToggle(bpmDifferenceSlider, cp5, this);	
+		hScrollbar = editor.copyHScrollbar(cp5, this, 8, 10, pa.height, gridShape);
+		addNoteButton = editor.copyAddNoteButton(cp5, this, hScrollbar);
+		subNoteButton = editor.copySubNoteButton(cp5, this, hScrollbar);
+		scaleMenu = editor.copyScaleMenu(cp5, this);
+		rootMenu = editor.copyRootMenu(cp5, this);	
+		bpmSlider = editor.copyBPMSlider(cp5, this, scaleMenu, pa.width, pa.height);
+		bpmDifferenceSlider = editor.copyBPMDifferenceSlider(cp5, this, bpmSlider, pa.width, pa.height);
+		playToggle = editor.copyPlayToggle(bpmDifferenceSlider, cp5, this);	
 	}
 
 	@Override
 	public void windowResized() {
-		gridShape = Editor.copyGridFrame(pa.width, pa.height);
+		gridShape = editor.copyGridFrame(pa.width, pa.height);
 		initControlP5Objects(gridShape);
 	}
 
 	@Override
 	public void onEnter() {
-		gridShape = Editor.copyGridFrame(pa.width, pa.height);
+		gridShape = editor.copyGridFrame(pa.width, pa.height);
 		initControlP5Objects(gridShape);
 	}
 
@@ -79,6 +80,9 @@ public class HelpScreen extends Screen {
 	@Override
 	public void draw() {
 		pa.background(255);
+		pa.fill(255);
+		pa.stroke(pa.getColor2());
+		gridShape.display(pa);
 		pa.drawControlP5();
 	}
 }

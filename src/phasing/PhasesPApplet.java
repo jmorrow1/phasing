@@ -201,9 +201,9 @@ public class PhasesPApplet extends PApplet {
 	 */
 	private void initScreens() {
 		presenter = new Presenter(this);
-		help = new HelpScreen(this);
 		editor = new Editor(this);
 		phraseRepo = new PhraseRepository(this);
+		help = new HelpScreen(editor, this);
 	}
 	
 	/**

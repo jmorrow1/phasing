@@ -580,7 +580,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 					}
 				}
 			}
-		}	
+		}
 	}
 
 	private int getSliderWidth() {
@@ -1243,8 +1243,12 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param listener The object that should receive callbacks from the controller.
 	 * @return The controller.
 	 */
-	public static Toggle copyPlayToggle(Slider bpmDifferenceSlider, ControlP5 cp5, Object listener) {
-		return consPlayToggle(bpmDifferenceSlider, cp5, listener);
+	public Toggle copyPlayToggle(Slider bpmDifferenceSlider, ControlP5 cp5, Object listener) {
+		Toggle t = consPlayToggle(bpmDifferenceSlider, cp5, listener);
+		if (!this.playToggle.isVisible()) {
+			t.hide();
+		}
+		return t;
 	}
 	
 	/**
@@ -1257,9 +1261,13 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param windowHeight The heigh of the window in which this controller will be drawn.
 	 * @return The controller.
 	 */
-	public static Slider copyBPMSlider(ControlP5 cp5, Object listener,
+	public Slider copyBPMSlider(ControlP5 cp5, Object listener,
 			DropdownListPlus scaleMenu, int windowWidth, int windowHeight) {
-		return consBPMSlider(windowWidth, windowHeight, 60, scaleMenu, cp5, listener);
+		Slider s = consBPMSlider(windowWidth, windowHeight, 60, scaleMenu, cp5, listener);
+		if (!this.bpmSlider.isVisible()) {
+			s.hide();
+		}
+		return s;
 	}
 	
 	/**
@@ -1272,9 +1280,13 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param windowHeight The heigh of the window in which this controller will be drawn.
 	 * @return The controller.
 	 */	
-	public static Slider copyBPMDifferenceSlider(ControlP5 cp5, Object listener,
+	public Slider copyBPMDifferenceSlider(ControlP5 cp5, Object listener,
 			Slider bpmSlider, int windowWidth, int windowHeight) {
-		return consBPMDifferenceSlider(windowWidth, windowHeight, 0.5f, bpmSlider, cp5, listener);
+		Slider s = consBPMDifferenceSlider(windowWidth, windowHeight, 0.5f, bpmSlider, cp5, listener);
+		if (!this.bpmDifferenceSlider.isVisible()) {
+			s.hide();
+		}
+		return s;
 	}
 	
 	/**
@@ -1284,9 +1296,12 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param listener The object that should receive callbacks from the controller.
 	 * @return The controller.
 	 */
-	public static DropdownListPlus copyRootMenu(ControlP5 cp5, Object listener) {
+	public DropdownListPlus copyRootMenu(ControlP5 cp5, Object listener) {
 		DropdownListPlus r = consRootMenu(cp5, listener);
 		formatLabel(r);
+		if (!this.rootMenu.isVisible()) {
+			r.hide();
+		}
 		return r;
 	}
 	
@@ -1297,9 +1312,12 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param listener The object that should receive callbacks from the controller.
 	 * @return The controller.
 	 */
-	public static DropdownListPlus copyScaleMenu(ControlP5 cp5, Object listener) {
+	public DropdownListPlus copyScaleMenu(ControlP5 cp5, Object listener) {
 		DropdownListPlus s = consScaleMenu(cp5, listener);
 		formatLabel(s);
+		if (!this.scaleMenu.isVisible()) {
+			s.hide();
+		}
 		return s;
 	}
 	
@@ -1314,9 +1332,13 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param gridFrame The shape of the grid this controller is positioned in relation to.
 	 * @return The controller.
 	 */
-	public static Scrollbar copyHScrollbar(ControlP5 cp5, Object listener,
+	public Scrollbar copyHScrollbar(ControlP5 cp5, Object listener,
 			int ticksPerScroller, int ticksPerTrack, int screenHeight, Rect gridFrame) {
-		return consHorizontalScrollbar(cp5, listener, ticksPerScroller, ticksPerTrack, screenHeight, gridFrame);
+		Scrollbar s = consHorizontalScrollbar(cp5, listener, ticksPerScroller, ticksPerTrack, screenHeight, gridFrame);
+		if (!this.hScrollbar.isVisible()) {
+			s.hide();
+		}
+		return s;
 	}
 	
 	/**
@@ -1327,8 +1349,12 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param hScrollbar The scrollbar that this controller is positioned in relation to.
 	 * @return The controller.
 	 */
-	public static Button copySubNoteButton(ControlP5 cp5, Object listener, Scrollbar hScrollbar) {
-		return consSubNoteButton(cp5, listener, hScrollbar);
+	public Button copySubNoteButton(ControlP5 cp5, Object listener, Scrollbar hScrollbar) {
+		Button b = consSubNoteButton(cp5, listener, hScrollbar);
+		if (!this.subNoteButton.isVisible()) {
+			b.hide();
+		}
+		return b;
 	}
 	
 	/**
@@ -1339,8 +1365,12 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param hScrollbar The scrollbar that this controller is positioned in relation to.
 	 * @return The controller.
 	 */
-	public static Button copyAddNoteButton(ControlP5 cp5, Object listener, Scrollbar hScrollbar) {
-		return consAddNoteButton(cp5, listener, hScrollbar);
+	public Button copyAddNoteButton(ControlP5 cp5, Object listener, Scrollbar hScrollbar) {
+		Button b = consAddNoteButton(cp5, listener, hScrollbar);
+		if (!this.addNoteButton.isVisible()) {
+			b.hide();
+		}
+		return b;
 	}
 	
 	/**
@@ -1350,7 +1380,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * @param windowHeight The height of the window in which the grid shape will be used.
 	 * @return The shape of the grid.
 	 */
-	public static Rect copyGridFrame(int windowWidth, int windowHeight) {
+	public Rect copyGridFrame(int windowWidth, int windowHeight) {
 		return consGridFrame(windowWidth, windowHeight);
 	}
 }
