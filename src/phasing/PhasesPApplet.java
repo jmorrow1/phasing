@@ -322,7 +322,7 @@ public class PhasesPApplet extends PApplet {
 	}
 	
 	/**
-	 * Updates the change screen button that is highlighted based on what the current screen is.
+	 * Updates which change-screen button is highlighted based on the current screen.
 	 * 
 	 * @param currentScreen The current screen.
 	 */
@@ -338,6 +338,22 @@ public class PhasesPApplet extends PApplet {
 		}
 		else if (currentScreen == help) {
 			highlight(helpButton);
+		}
+	}
+
+	/**
+	 * Updates which change-screen buttons are highlighted based on the current screen.
+	 * 
+	 * @param currentScreen The current screen.
+	 */
+	private void updateHiddenChangeScreenButtons(Screen currentScreen) {
+		if (currentScreen == editor || currentScreen == help) {
+			helpButton.show();
+			aboutButton.show();
+		}
+		else {
+			helpButton.hide();
+			aboutButton.hide();
 		}
 	}
 	
@@ -874,6 +890,7 @@ public class PhasesPApplet extends PApplet {
 		currentScreen = destination;
 		currentScreen.onEnter();
 		updateHighlightedChangeScreenButton(currentScreen);
+		updateHiddenChangeScreenButtons(currentScreen);
 	}
 	
 	/**
