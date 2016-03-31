@@ -42,13 +42,13 @@ public class HelpScreen extends Screen {
 		addNoteButton = Editor.copyAddNoteButton(cp5, this, hScrollbar);
 		subNoteButton = Editor.copySubNoteButton(cp5, this, hScrollbar);
 		
-		bpmDifferenceSlider = Editor.copyBPMDifferenceSlider(cp5, this, pa.width, pa.height);
-		bpmSlider = Editor.copyBPMSlider(cp5, this, bpmDifferenceSlider, pa.width, pa.height);
+		scaleMenu = Editor.copyScaleMenu(cp5, this);
+		rootMenu = Editor.copyRootMenu(cp5, this);
 		
-		rootMenu = Editor.copyRootMenu(bpmSlider, cp5, this);
-		scaleMenu = Editor.copyScaleMenu(rootMenu, cp5, this);
+		bpmSlider = Editor.copyBPMSlider(cp5, this, scaleMenu, pa.width, pa.height);
+		bpmDifferenceSlider = Editor.copyBPMDifferenceSlider(cp5, this, bpmSlider, pa.width, pa.height);
 	
-		playToggle = Editor.copyPlayToggle(scaleMenu, cp5, this);	
+		playToggle = Editor.copyPlayToggle(bpmDifferenceSlider, cp5, this);	
 	}
 
 	@Override
