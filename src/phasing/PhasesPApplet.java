@@ -94,6 +94,9 @@ public class PhasesPApplet extends PApplet {
 	
 	//player
 	public PlayerInfo playerInfo;
+	
+	//cursor
+	public static boolean hideCursor;
 
 	/*****************
 	 ***** Setup *****
@@ -163,6 +166,9 @@ public class PhasesPApplet extends PApplet {
 		initCP5Objects(currentScreen);
 		changeScreenTo(currentScreen);
 		currentScreen.onEnter();
+		if (hideCursor) {
+			noCursor();
+		}
 	}
 	
 	/**

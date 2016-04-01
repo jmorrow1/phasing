@@ -1211,8 +1211,10 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 * Sets the cursor to be the cursor given by PApplet.cursor().
 	 */
 	private void defaultCursor() {
-		pa.cursor();
-		cursorIsX = false;
+		if (!pa.hideCursor) {
+			pa.cursor();
+			cursorIsX = false;
+		}
 	}
 	
 	/**
