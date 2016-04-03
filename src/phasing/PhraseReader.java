@@ -63,8 +63,8 @@ public class PhraseReader {
 	public void wakeUp(float notept) {
 		noteIndex = -1;
 		noteTimeTillNextNote = -notept;
-		
-		if (phrase.getNumNotes() > 0) {
+
+		if (notept != 0 && phrase.getNumNotes() > 0) {
 			while (noteTimeTillNextNote <= 0) {
 				noteIndex = (noteIndex+1) % phrase.getNumNotes();
 				noteTimeTillNextNote += phrase.getSCDuration(noteIndex);
