@@ -34,7 +34,7 @@ public class PhaseShifter extends View {
 	//geometrical data:
 	private float lineThickness;
 	private float fontSize;
-	private final static int DOT_RADIUS = 10;
+	private float dotRadius;
 	private ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
 	private ArrayList<DataConnection> dataConnections = new ArrayList<DataConnection>();
 	
@@ -99,11 +99,19 @@ public class PhaseShifter extends View {
 		initData();
 		initLineThickness();
 		initFontSize();
+		initDotRadius();
+	}
+	
+	/**
+	 * Initializes the radius of dots.
+	 */
+	private void initDotRadius() {
+		dotRadius = 4 + PApplet.map(pa.width, 800, 1600, 10, 20);
 	}
 	
 	//TODO
 	private void initLineThickness() {
-		lineThickness = 4;
+		lineThickness = 6;
 	}
 	
 	/**
@@ -508,11 +516,11 @@ public class PhaseShifter extends View {
 			float d_x = d.x();
 			float d_y = d.y();
 					
-			pa.ellipseMode(pa.CENTER);
-			pa.ellipse(d_x, d_y, 20, 20);
+			pa.ellipseMode(pa.RADIUS);
+			pa.ellipse(d_x, d_y, dotRadius, dotRadius);
 			if (transformation.toInt() == TRANSLATE) {
-				pa.ellipse(d_x - width, d_y, 20, 20);
-				pa.ellipse(d_x + width, d_y, 20, 20);
+				pa.ellipse(d_x - width, d_y, dotRadius, dotRadius);
+				pa.ellipse(d_x + width, d_y, dotRadius, dotRadius);
 			}
 		}
 		else if (noteGraphic.toInt() == RECTS_OR_SECTORS) {
@@ -552,7 +560,7 @@ public class PhaseShifter extends View {
 		
 		private DataConnection(DataPoint d, DataPoint e) {
 			float lineDist = pa.dist(d.tx, d.ty, e.tx, e.ty);
-			float amt = (DOT_RADIUS / lineDist);
+			float amt = (dotRadius / lineDist);
 			
 			this.d = d;
 			this.e = e;
@@ -563,7 +571,7 @@ public class PhaseShifter extends View {
 			ty2 = pa.lerp(d.ty, e.ty, 1-amt);
 			
 			lineDist = pa.dist(d.txAlt, d.tyAlt, e.txAlt, e.tyAlt);
-			amt = (DOT_RADIUS / lineDist);
+			amt = (dotRadius / lineDist);
 			
 			tx1Alt = pa.lerp(d.txAlt, e.txAlt, amt);
 			ty1Alt = pa.lerp(d.tyAlt, e.tyAlt, amt);
@@ -571,7 +579,7 @@ public class PhaseShifter extends View {
 			ty2Alt = pa.lerp(d.tyAlt, e.tyAlt, 1-amt);
 			
 			lineDist = pa.dist(d.rx, d.ry, e.rx, e.ry);
-			amt = (DOT_RADIUS / lineDist);
+			amt = (dotRadius / lineDist);
 			
 			rx1 = pa.lerp(d.rx, e.rx, amt);
 			ry1 = pa.lerp(d.ry, e.ry, amt);
@@ -579,7 +587,7 @@ public class PhaseShifter extends View {
 			ry2 = pa.lerp(d.ry, e.ry, 1-amt);
 			
 			lineDist = pa.dist(d.rxAlt, d.ryAlt, e.rxAlt, e.ryAlt);
-			amt = (DOT_RADIUS / lineDist);
+			amt = (dotRadius / lineDist);
 			
 			rx1Alt = pa.lerp(d.rxAlt, e.rxAlt, amt);
 			ry1Alt = pa.lerp(d.ryAlt, e.ryAlt, amt);
