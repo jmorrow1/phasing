@@ -95,11 +95,11 @@ public class PhaseShifter extends View {
 	 * Initializes the PhaseShifter object.
 	 */
 	private void init() {
-		initBounds();	
-		initData();
 		initLineThickness();
 		initFontSize();
 		initDotRadius();
+		initBounds();	
+		initData();
 	}
 	
 	/**
@@ -111,7 +111,7 @@ public class PhaseShifter extends View {
 	
 	//TODO
 	private void initLineThickness() {
-		lineThickness = 6;
+		lineThickness = 4 + pa.map(pa.width, 800, 1600, 2, 6);
 	}
 	
 	/**
@@ -309,39 +309,15 @@ public class PhaseShifter extends View {
 					}
 				}
 			}
-			
-			//draw connections between dots
-			if (noteGraphic.toInt() == CONNECTED_DOTS) {
-				
-				int i = 0; //loops through the Phrase's notes
-				int j = 0; //loops through the data connections
-				while (i < pa.currentPhrase.getNumNotes()) {
-					boolean increment_j = !pa.currentPhrase.isRest(i) && dataConnections.size() > 0;
-					if (increment_j) {
-						boolean drawConnection = (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE || i == activeNote);
-						if (drawConnection) {
-							DataConnection c = dataConnections.get(j);						
-							if (i == activeNote && activeNoteMode.toInt() != DONT_SHOW_ACTIVE_NOTE) {
-								pa.stroke(activeColor);
-							}
-							else {
-								pa.stroke(nonActiveColor);
-							}
-							c.drawLine();
-						}
-						j++;
-					}
-					i++;
-				}
-				
-			}
-			
+
 			pa.popMatrix();
 		}
 		else if (noteGraphic.toInt() == LINE_SEGMENTS) {
+			pa.strokeWeight(lineThickness);			
 			drawLineSegments(waveNum, activeNote, nonActiveColor, activeColor);
 		}
 		else if (noteGraphic.toInt() == SINE_WAVE) {
+			pa.strokeWeight(lineThickness);
 			pa.stroke(nonActiveColor);
 			if (transformation.toInt() == TRANSLATE) {
 				if (plotPitchMode.toInt() == PLOT_PITCH) {
@@ -421,10 +397,6 @@ public class PhaseShifter extends View {
 				pa.vertex(c.e.x() + xOffset, c.e.y());
 				j++;
 			}
-			else {
-				pa.endShape();
-				pa.beginShape();
-			}
 			i++;
 		}
 		
@@ -443,8 +415,7 @@ public class PhaseShifter extends View {
 		float translation = normalTransform * width;
 		float theta = pa.map(translation, 0, width, 0, pa.TWO_PI);
 		float dTheta = dx / width * PApplet.TWO_PI;
-		
-		pa.strokeWeight(lineThickness);
+
 		pa.beginShape();
 		while (x <= halfWidth) {
 			pa.vertex(x, pa.sin(theta) * amp);
@@ -512,7 +483,7 @@ public class PhaseShifter extends View {
 				}
 			pa.popMatrix();
 		}
-		else if (noteGraphic.toInt() == DOTS1 || noteGraphic.toInt() == CONNECTED_DOTS) {
+		else if (noteGraphic.toInt() == DOTS1) {
 			float d_x = d.x();
 			float d_y = d.y();
 					
@@ -551,74 +522,17 @@ public class PhaseShifter extends View {
 	 *
 	 */
 	private class DataConnection {
-		//specific to connected dots:
-		float tx1, ty1, tx2, ty2;
-		float tx1Alt, ty1Alt, tx2Alt, ty2Alt;
-		float rx1, ry1, rx2, ry2;
-		float rx1Alt, ry1Alt, rx2Alt, ry2Alt;
+
 		DataPoint d, e;
 		
 		private DataConnection(DataPoint d, DataPoint e) {
-			float lineDist = pa.dist(d.tx, d.ty, e.tx, e.ty);
-			float amt = (dotRadius / lineDist);
-			
 			this.d = d;
 			this.e = e;
-			
-			tx1 = pa.lerp(d.tx, e.tx, amt);
-			ty1 = pa.lerp(d.ty, e.ty, amt);
-			tx2 = pa.lerp(d.tx, e.tx, 1-amt);
-			ty2 = pa.lerp(d.ty, e.ty, 1-amt);
-			
-			lineDist = pa.dist(d.txAlt, d.tyAlt, e.txAlt, e.tyAlt);
-			amt = (dotRadius / lineDist);
-			
-			tx1Alt = pa.lerp(d.txAlt, e.txAlt, amt);
-			ty1Alt = pa.lerp(d.tyAlt, e.tyAlt, amt);
-			tx2Alt = pa.lerp(d.txAlt, e.txAlt, 1-amt);
-			ty2Alt = pa.lerp(d.tyAlt, e.tyAlt, 1-amt);
-			
-			lineDist = pa.dist(d.rx, d.ry, e.rx, e.ry);
-			amt = (dotRadius / lineDist);
-			
-			rx1 = pa.lerp(d.rx, e.rx, amt);
-			ry1 = pa.lerp(d.ry, e.ry, amt);
-			rx2 = pa.lerp(d.rx, e.rx, 1-amt);
-			ry2 = pa.lerp(d.ry, e.ry, 1-amt);
-			
-			lineDist = pa.dist(d.rxAlt, d.ryAlt, e.rxAlt, e.ryAlt);
-			amt = (dotRadius / lineDist);
-			
-			rx1Alt = pa.lerp(d.rxAlt, e.rxAlt, amt);
-			ry1Alt = pa.lerp(d.ryAlt, e.ryAlt, amt);
-			rx2Alt = pa.lerp(d.rxAlt, e.rxAlt, 1-amt);
-			ry2Alt = pa.lerp(d.ryAlt, e.ryAlt, 1-amt);
 		}
 		
 		void drawLine() {
-			if (noteGraphic.toInt() == CONNECTED_DOTS) {
-				if (transformation.toInt() == TRANSLATE) {
-					if (plotPitchMode.toInt() == PLOT_PITCH) {
-						pa.line(tx1, ty1, tx2, ty2);
-						pa.line(tx1 - width, ty1, tx2 - width, ty2);
-						pa.line(tx1 + width, ty1, tx2 + width, ty2);
-					}
-					else {
-						pa.line(tx1Alt, ty1Alt, tx2Alt, ty2Alt);
-						pa.line(tx1Alt - width, ty1Alt, tx2Alt - width, ty2Alt);
-						pa.line(tx1Alt + width, ty1Alt, tx2Alt + width, ty2Alt);
-					}
-				}
-				else if (transformation.toInt() == ROTATE) {
-					if (plotPitchMode.toInt() == PLOT_PITCH) {
-						pa.line(rx1, ry1, rx2, ry2);
-					}
-					else {
-						pa.line(rx1Alt, ry1Alt, rx2Alt, ry2Alt);
-					}
-				}
-			}
-			else if (noteGraphic.toInt() == LINE_SEGMENTS) {
+			
+			if (noteGraphic.toInt() == LINE_SEGMENTS) {
 				if (transformation.toInt() == TRANSLATE) {
 					pa.line(d.x(), d.y(), e.x(), e.y());
 					pa.line(d.x() - width, d.y(), e.x() - width, e.y());

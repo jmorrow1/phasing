@@ -47,7 +47,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	
 	// unlock sequences (in terms of minutes to unlock thing 1, minutes to unlock thing 2, etc.)
 	private final float[] musicianUnlockSeq = {0f, 0.5f, 6};
-	private final float[] phaseShifterUnlockSeq = {1, 3, 5, 8, 9.5f, 11, 14, 17, 20, 25, 30};
+	private final float[] phaseShifterUnlockSeq = {1, 3, 5, 8f, 11, 14, 17, 20, 25, 30};
 	private final float[] liveScorerUnlockSeq = {4, 8, 12};
 
 	// playback
@@ -957,7 +957,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 			case colorSchemeName: 
 				return 2;
 			case activeNoteModeName:
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[4]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[3]) {
 					return 3;
 				}
 				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[0]) {
@@ -967,13 +967,10 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 					return 0;
 				}
 			case noteGraphicSet1Name:
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[9]) {
-					return 6;
-				}
-				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[7]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[8]) {
 					return 5;
 				}
-				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[3]) {
+				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[6]) {
 					return 4;
 				}
 				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[2]) {
@@ -986,24 +983,24 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 					return 0;
 				}
 			case cameraModeName:
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[10]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[9]) {
 					return 3;
 				}
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[5]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[4]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case plotPitchModeName:
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[6]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[5]) {
 					return 2;
 				}
 				else {
 					return 0;
 				}
 			case transformationName:
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[8]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[7]) {
 					return 2;
 				}
 				else {
