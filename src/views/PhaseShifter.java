@@ -32,9 +32,9 @@ public class PhaseShifter extends View {
 	private int activeNote1, activeNote2;
 	
 	//geometrical data:
-	private int lineThickness;
+	private float lineThickness;
 	private float fontSize;
-	private final static int DOT_RADIUS = 1;
+	private final static int DOT_RADIUS = 10;
 	private ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
 	private ArrayList<DataConnection> dataConnections = new ArrayList<DataConnection>();
 	
@@ -95,24 +95,22 @@ public class PhaseShifter extends View {
 	 * Initializes the PhaseShifter object.
 	 */
 	private void init() {
-		initFontSize();
 		initBounds();	
 		initData();
 		initLineThickness();
+		initFontSize();
 	}
 	
-	/**
-	 * Initializes the thickness of sine wave lines and connection lines.
-	 */
+	//TODO
 	private void initLineThickness() {
-		lineThickness = 8;
+		lineThickness = 4;
 	}
 	
 	/**
-	 * Initializes the font size for symbols mode.
+	 * Initializes the font size of symbols.
 	 */
 	private void initFontSize() {
-		fontSize = pa.map(pa.width, 800, 1600, 55, 80);
+		fontSize = pa.map(pa.width, 800, 1600, 55, 75);
 	}
 	
 	/**
@@ -120,7 +118,7 @@ public class PhaseShifter extends View {
 	 */
 	private void initBounds() {
 		width = this.getWidth();
-		height = pa.max(fontSize, this.getHeight()*0.6f);
+		height = this.getHeight()*0.6f;
 		halfWidth = width*0.5f;
 		halfHeight = height*0.5f;
 		
@@ -209,7 +207,7 @@ public class PhaseShifter extends View {
 	 ******************/
 
 	@Override
-	public void update(int dt, float dNotept1, float dNotept2) {		
+	public void update(int dt, float dNotept1, float dNotept2) {
 		if (pa.currentPhrase.getNumNotes() > 0) {
 			pa.pushMatrix();
 			
@@ -307,9 +305,6 @@ public class PhaseShifter extends View {
 			//draw connections between dots
 			if (noteGraphic.toInt() == CONNECTED_DOTS) {
 				
-				pa.strokeWeight(4);
-				pa.strokeCap(pa.ROUND);
-				
 				int i = 0; //loops through the Phrase's notes
 				int j = 0; //loops through the data connections
 				while (i < pa.currentPhrase.getNumNotes()) {
@@ -330,7 +325,7 @@ public class PhaseShifter extends View {
 					}
 					i++;
 				}
-		
+				
 			}
 			
 			pa.popMatrix();
@@ -358,14 +353,11 @@ public class PhaseShifter extends View {
 	}
 	
 	private void drawLineSegments(int waveNum, int activeNote, int nonActiveColor, int activeColor) {
-		pa.strokeWeight(4);
-		pa.strokeCap(pa.ROUND);
 		pa.pushMatrix();
 		transform(waveNum);
 		
 		if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
 			pa.stroke(nonActiveColor);
-			pa.strokeJoin(pa.ROUND);
 			pa.beginShape();
 			if (transformation.toInt() == TRANSLATE) {
 				drawLineSegments(waveNum, activeNote, nonActiveColor, activeColor, -width);
@@ -409,6 +401,7 @@ public class PhaseShifter extends View {
 	}
 	
 	private void drawLineSegments(int waveNum, int activeNote, int nonActiveColor, int activeColor, float xOffset) {
+
 		int i = 0; //loops through the Phrase's notes
 		int j = 0; //loops through the data connections
 		while (i < pa.currentPhrase.getNumNotes()) {
@@ -419,6 +412,10 @@ public class PhaseShifter extends View {
 				pa.vertex(c.d.x() + xOffset, c.d.y());
 				pa.vertex(c.e.x() + xOffset, c.e.y());
 				j++;
+			}
+			else {
+				pa.endShape();
+				pa.beginShape();
 			}
 			i++;
 		}
@@ -511,8 +508,8 @@ public class PhaseShifter extends View {
 			float d_x = d.x();
 			float d_y = d.y();
 					
-			pa.ellipseMode(pa.RADIUS);
-			pa.ellipse(d_x, d_y, DOT_RADIUS, DOT_RADIUS);
+			pa.ellipseMode(pa.CENTER);
+			pa.ellipse(d_x, d_y, 20, 20);
 			if (transformation.toInt() == TRANSLATE) {
 				pa.ellipse(d_x - width, d_y, 20, 20);
 				pa.ellipse(d_x + width, d_y, 20, 20);
@@ -533,7 +530,7 @@ public class PhaseShifter extends View {
 			}
 		}
 	}
-
+	
 	/********************************
 	 ***** DataConnection class *****
 	 ********************************/
