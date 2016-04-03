@@ -73,7 +73,7 @@ public class PhasesPApplet extends PApplet {
 	
 	//visual variables
 	private static ColorScheme colorScheme;
-	public static PFont pfont12, pfont14, pfont18, pfont24, pfont42, musicFont;
+	public static PFont pfont12, pfont14, pfont18, pfont24, pfont64, musicFont;
 	
 	//controlp5
 	private ControlP5 cp5;
@@ -133,7 +133,7 @@ public class PhasesPApplet extends PApplet {
 		pfont14 = loadFont("DejaVuSans-14.vlw");
 		pfont18 = loadFont("DejaVuSans-18.vlw");
 		pfont24 = loadFont("DejaVuSans-24.vlw");
-		pfont42 = loadFont("DejaVuSans-42.vlw");
+		pfont64 = loadFont("DejaVuSans-64.vlw");
 		musicFont = loadFont("MaestroWide-48.vlw");
 		
 		//init colors
@@ -287,7 +287,7 @@ public class PhasesPApplet extends PApplet {
 		int width = PRESENTER_BUTTON_X2 - 10;
 		int height = 16;
 		
-		presentButton = consChangeScreenButton("toPresenter", "Present", x1, y1, width, height);
+		presentButton = consChangeScreenButton("toPresenter", "Play", x1, y1, width, height);
 		y1 += height + 5;		
 		composeButton = consChangeScreenButton("toEditor", "Compose", x1, y1, width, height);	
 		y1 += height + 5;		

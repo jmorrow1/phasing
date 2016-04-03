@@ -32,8 +32,9 @@ public class PhaseShifter extends View {
 	private int activeNote1, activeNote2;
 	
 	//geometrical data:
-	private final int FONT_SIZE = 42;
-	private final static int DOT_RADIUS = 10;
+	private int lineThickness;
+	private float fontSize;
+	private final static int DOT_RADIUS = 1;
 	private ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
 	private ArrayList<DataConnection> dataConnections = new ArrayList<DataConnection>();
 	
@@ -94,8 +95,24 @@ public class PhaseShifter extends View {
 	 * Initializes the PhaseShifter object.
 	 */
 	private void init() {
+		initFontSize();
 		initBounds();	
 		initData();
+		initLineThickness();
+	}
+	
+	/**
+	 * Initializes the thickness of sine wave lines and connection lines.
+	 */
+	private void initLineThickness() {
+		lineThickness = 8;
+	}
+	
+	/**
+	 * Initializes the font size for symbols mode.
+	 */
+	private void initFontSize() {
+		fontSize = pa.map(pa.width, 800, 1600, 55, 80);
 	}
 	
 	/**
@@ -103,11 +120,11 @@ public class PhaseShifter extends View {
 	 */
 	private void initBounds() {
 		width = this.getWidth();
-		height = this.getHeight()*0.5f;
+		height = pa.max(fontSize, this.getHeight()*0.6f);
 		halfWidth = width*0.5f;
 		halfHeight = height*0.5f;
 		
-		maxRadius = pa.min(pa.lerp(getHeight(), getWidth(), 0.2f) * 0.35f, pa.height/2f - FONT_SIZE/2f);
+		maxRadius = pa.min(pa.lerp(getHeight(), getWidth(), 0.2f) * 0.35f, pa.height/2f - fontSize/2f);
 		minRadius = maxRadius * 0.45f;
 	}
 	
@@ -163,8 +180,7 @@ public class PhaseShifter extends View {
 	
 	@Override
 	protected void resized(float prevWidth, float prevHeight) {
-		initBounds();
-		initData();
+		init();
 	}
 	
 	@Override
@@ -193,7 +209,7 @@ public class PhaseShifter extends View {
 	 ******************/
 
 	@Override
-	public void update(int dt, float dNotept1, float dNotept2) {
+	public void update(int dt, float dNotept1, float dNotept2) {		
 		if (pa.currentPhrase.getNumNotes() > 0) {
 			pa.pushMatrix();
 			
@@ -291,6 +307,9 @@ public class PhaseShifter extends View {
 			//draw connections between dots
 			if (noteGraphic.toInt() == CONNECTED_DOTS) {
 				
+				pa.strokeWeight(4);
+				pa.strokeCap(pa.ROUND);
+				
 				int i = 0; //loops through the Phrase's notes
 				int j = 0; //loops through the data connections
 				while (i < pa.currentPhrase.getNumNotes()) {
@@ -311,7 +330,7 @@ public class PhaseShifter extends View {
 					}
 					i++;
 				}
-				
+		
 			}
 			
 			pa.popMatrix();
@@ -339,11 +358,14 @@ public class PhaseShifter extends View {
 	}
 	
 	private void drawLineSegments(int waveNum, int activeNote, int nonActiveColor, int activeColor) {
+		pa.strokeWeight(4);
+		pa.strokeCap(pa.ROUND);
 		pa.pushMatrix();
 		transform(waveNum);
 		
 		if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
 			pa.stroke(nonActiveColor);
+			pa.strokeJoin(pa.ROUND);
 			pa.beginShape();
 			if (transformation.toInt() == TRANSLATE) {
 				drawLineSegments(waveNum, activeNote, nonActiveColor, activeColor, -width);
@@ -387,7 +409,6 @@ public class PhaseShifter extends View {
 	}
 	
 	private void drawLineSegments(int waveNum, int activeNote, int nonActiveColor, int activeColor, float xOffset) {
-
 		int i = 0; //loops through the Phrase's notes
 		int j = 0; //loops through the data connections
 		while (i < pa.currentPhrase.getNumNotes()) {
@@ -398,10 +419,6 @@ public class PhaseShifter extends View {
 				pa.vertex(c.d.x() + xOffset, c.d.y());
 				pa.vertex(c.e.x() + xOffset, c.e.y());
 				j++;
-			}
-			else {
-				pa.endShape();
-				pa.beginShape();
 			}
 			i++;
 		}
@@ -422,7 +439,7 @@ public class PhaseShifter extends View {
 		float theta = pa.map(translation, 0, width, 0, pa.TWO_PI);
 		float dTheta = dx / width * PApplet.TWO_PI;
 		
-		pa.strokeWeight(4);
+		pa.strokeWeight(lineThickness);
 		pa.beginShape();
 		while (x <= halfWidth) {
 			pa.vertex(x, pa.sin(theta) * amp);
@@ -457,8 +474,8 @@ public class PhaseShifter extends View {
 	 * @param y The y-coordinate.
 	 */
 	private void drawString(String s, float x, float y) {
-		pa.textSize(FONT_SIZE);
-		pa.textFont(pa.pfont42);
+		pa.textFont(pa.pfont64);
+		pa.textSize(fontSize);
 		pa.text(s.charAt(0), x, y);
 		
 		x += pa.textWidth(s.charAt(0))/2f + 5;
@@ -494,8 +511,8 @@ public class PhaseShifter extends View {
 			float d_x = d.x();
 			float d_y = d.y();
 					
-			pa.ellipseMode(pa.CENTER);
-			pa.ellipse(d_x, d_y, 20, 20);
+			pa.ellipseMode(pa.RADIUS);
+			pa.ellipse(d_x, d_y, DOT_RADIUS, DOT_RADIUS);
 			if (transformation.toInt() == TRANSLATE) {
 				pa.ellipse(d_x - width, d_y, 20, 20);
 				pa.ellipse(d_x + width, d_y, 20, 20);
@@ -516,7 +533,7 @@ public class PhaseShifter extends View {
 			}
 		}
 	}
-	
+
 	/********************************
 	 ***** DataConnection class *****
 	 ********************************/
