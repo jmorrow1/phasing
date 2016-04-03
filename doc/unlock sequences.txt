@@ -9,17 +9,16 @@ Phase Shifter
 	(0) Color Scheme Variable (all values), plot pitch, relative camera, only show active note, symbols, scrolls
 	(1) Active Note Mode Variable, SHOW_ACTIVE_NOTE
 	(2) Note Graphic Variable, DOTS
-	(3) CONNECTED_DOTS
 	
-	(4) LINE_SEGMENTS
+	(3) LINE_SEGMENTS
 	
-	(5) Active Note Mode Variable, DONT_SHOW_ACTIVE_NOTE
-	(6) Camera Mode Variable, RELATIVE_TO_OTHER	
-	(7) Plot Pitch Mode Variable, DONT_PLOT_PITCH
-	(8) RECTS_OR_SECTORS
-	(9) Transformation Variable, ROTATE
-	(10) SINE_WAVE
-	(11) FIXED (camera)
+	(4) Active Note Mode Variable, DONT_SHOW_ACTIVE_NOTE
+	(5) Camera Mode Variable, RELATIVE_TO_OTHER	
+	(6) Plot Pitch Mode Variable, DONT_PLOT_PITCH
+	(7) RECTS_OR_SECTORS
+	(8) Transformation Variable, ROTATE
+	(9) SINE_WAVE
+	(10) FIXED (camera)
 
 Live Scorer
 	(0) Color Scheme Variable (all values), Score Mode Variable (all values), Note Graphic Variable (dots), not a sine wave

@@ -111,7 +111,7 @@ public class PhaseShifter extends View {
 	
 	//TODO
 	private void initLineThickness() {
-		lineThickness = 4 + pa.map(pa.width, 800, 1600, 2, 6);
+		lineThickness = 6 + pa.map(pa.width, 800, 1600, 2, 6);
 	}
 	
 	/**
@@ -341,6 +341,7 @@ public class PhaseShifter extends View {
 		transform(waveNum);
 		
 		if (activeNoteMode.toInt() != ONLY_SHOW_ACTIVE_NOTE) {
+			pa.strokeJoin(pa.ROUND);
 			pa.stroke(nonActiveColor);
 			pa.beginShape();
 			if (transformation.toInt() == TRANSLATE) {
@@ -385,7 +386,6 @@ public class PhaseShifter extends View {
 	}
 	
 	private void drawLineSegments(int waveNum, int activeNote, int nonActiveColor, int activeColor, float xOffset) {
-
 		int i = 0; //loops through the Phrase's notes
 		int j = 0; //loops through the data connections
 		while (i < pa.currentPhrase.getNumNotes()) {
@@ -515,8 +515,8 @@ public class PhaseShifter extends View {
 	 ********************************/
 	
 	/**
-	 * Container for positioning data regarding connections between note graphics (used when the noteGraphic is CONNECTED_DOTS).
-	 * This is so the data doesn't have to be recalculated every time its used, which is every frame when the noteGraphic is CONNECTED_DOTS.
+	 * Contains two adjacent data points.
+	 * Used to draw lines between connections.
 	 * 
 	 * @author James Morrow
 	 *
