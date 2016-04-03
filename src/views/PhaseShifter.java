@@ -35,6 +35,7 @@ public class PhaseShifter extends View {
 	private float lineThickness;
 	private float fontSize;
 	private float dotRadius;
+	private float rectHeight;
 	private ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
 	private ArrayList<DataConnection> dataConnections = new ArrayList<DataConnection>();
 	
@@ -95,11 +96,19 @@ public class PhaseShifter extends View {
 	 * Initializes the PhaseShifter object.
 	 */
 	private void init() {
+		initRectHeight();
 		initLineThickness();
 		initFontSize();
 		initDotRadius();
 		initBounds();	
 		initData();
+	}
+	
+	/**
+	 * Initializes the height of rects.
+	 */
+	private void initRectHeight() {
+		rectHeight = 12 + PApplet.map(pa.width, 800, 1600, 10, 20);
 	}
 	
 	/**
@@ -118,7 +127,7 @@ public class PhaseShifter extends View {
 	 * Initializes the font size of symbols.
 	 */
 	private void initFontSize() {
-		fontSize = pa.map(pa.width, 800, 1600, 55, 75);
+		fontSize = pa.map(pa.width, 800, 1600, 50, 75);
 	}
 	
 	/**
@@ -416,6 +425,9 @@ public class PhaseShifter extends View {
 		float theta = pa.map(translation, 0, width, 0, pa.TWO_PI);
 		float dTheta = dx / width * PApplet.TWO_PI;
 
+		pa.strokeJoin(pa.MITER);
+		pa.strokeCap(pa.ROUND);
+		
 		pa.beginShape();
 		while (x <= halfWidth) {
 			pa.vertex(x, pa.sin(theta) * amp);
@@ -494,15 +506,15 @@ public class PhaseShifter extends View {
 				pa.ellipse(d_x + width, d_y, dotRadius, dotRadius);
 			}
 		}
-		else if (noteGraphic.toInt() == RECTS_OR_SECTORS) {
+		else if (noteGraphic.toInt() == RECTS1) {
 			if (transformation.toInt() == TRANSLATE) {
 				float d_x = d.x();
 				float d_y = d.y();
 				
 				pa.rectMode(pa.CORNER);
-				pa.rect(d_x, d_y, d.twidth, 20);
-				pa.rect(d_x - width, d_y, d.twidth, 20);
-				pa.rect(d_x + width, d_y, d.twidth, 20);
+				pa.rect(d_x, d_y, d.twidth, rectHeight);
+				pa.rect(d_x - width, d_y, d.twidth, rectHeight);
+				pa.rect(d_x + width, d_y, d.twidth, rectHeight);
 			}
 			else {
 				d.curvedRect().display(pa);
@@ -568,9 +580,8 @@ public class PhaseShifter extends View {
 		final float rxAlt, ryAlt;
 		//specific to symbols:
 		final String pitchName;
-		//specific to sectors:
-		final static int sectorThickness = 20;
-		final CurvedRect curvedRect, sectorAlt;
+		//specific to curved rects:
+		final CurvedRect curvedRect, curvedRectAlt;
 		
 		private DataPoint(int i) {
 			float normalStart = pa.currentPhrase.getPercentDurationOfSCIndex(i % pa.currentPhrase.getNumNotes());
@@ -596,15 +607,15 @@ public class PhaseShifter extends View {
 			ry = pa.sin(theta1 - pa.HALF_PI) * radius;
 			rxAlt = pa.cos(theta1 - pa.HALF_PI)*pa.lerp(minRadius, maxRadius, 0.5f);
 			ryAlt = pa.sin(theta1 - pa.HALF_PI)*pa.lerp(minRadius, maxRadius, 0.5f);
-			curvedRect = new CurvedRect(radius, sectorThickness, theta1, theta2);
-			sectorAlt = new CurvedRect(pa.lerp(minRadius, maxRadius, 0.5f), sectorThickness, theta1, theta2);
+			curvedRect = new CurvedRect(radius, rectHeight, theta1, theta2);
+			curvedRectAlt = new CurvedRect(pa.lerp(minRadius, maxRadius, 0.5f), rectHeight, theta1, theta2);
 			
 			txAlt = tx;
 			tyAlt = 0;
 		}
 		
 		CurvedRect curvedRect() {
-			return (plotPitchMode.toInt() == PLOT_PITCH) ? curvedRect : sectorAlt;
+			return (plotPitchMode.toInt() == PLOT_PITCH) ? curvedRect : curvedRectAlt;
 		}
 		
 		float x() {

@@ -169,6 +169,7 @@ public class PhasesPApplet extends PApplet {
 		if (hideCursor) {
 			noCursor();
 		}
+		smooth();
 	}
 	
 	/**

@@ -29,7 +29,7 @@ public interface ViewVariableInfo {
 	
 	public final String noteGraphicSet1Name = "Note Graphic Set 1";
 	public final int numNoteGraphicSet1s=5;
-	public final int SYMBOLS=0, DOTS1=1, LINE_SEGMENTS = 2, RECTS_OR_SECTORS=3, SINE_WAVE=4;
+	public final int SYMBOLS=0, DOTS1=1, LINE_SEGMENTS = 2, RECTS1=3, SINE_WAVE=4;
 	
 	public final String cameraModeName = "Camera Mode";
 	public final int numCameraModes = 3;
@@ -45,7 +45,7 @@ public interface ViewVariableInfo {
 	
 	public final String noteGraphicSet2Name = "Note Graphic Set 2";
 	public final int numNoteGraphicSet2s=2;
-	public final int DOTS2=0, RECTS=1;
+	public final int DOTS2=0, RECTS2=1;
 	
 	public final String scoreModeName = "Score Mode";
 	public final int numScoreModes=2;

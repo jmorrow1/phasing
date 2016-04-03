@@ -35,7 +35,7 @@ public class NoteSetOneIcon implements Icon {
 	        	pa.stroke(0);
 	            pa.line(x - radius*0.5f, y, x + radius*0.5f, y);
 	            break;
-	        case RECTS_OR_SECTORS:
+	        case RECTS1:
 	        	pa.noStroke();
 	            pa.fill(0);
 	            pa.rectMode(pa.CENTER);

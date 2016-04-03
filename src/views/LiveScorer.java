@@ -432,7 +432,7 @@ public class LiveScorer extends View {
 				float x2 = endX - ROUND_STROKE_CAP_SURPLUS;
 				pa.line(x1, startY, x2, startY);
 			}
-			else if (noteGraphic.toInt() == RECTS) {
+			else if (noteGraphic.toInt() == RECTS2) {
 				pa.strokeCap(pa.SQUARE);
 				pa.line(startX, startY, endX, startY);
 			}

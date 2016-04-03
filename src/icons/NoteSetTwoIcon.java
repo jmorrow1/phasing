@@ -23,7 +23,7 @@ public class NoteSetTwoIcon implements Icon {
 	            pa.ellipseMode(pa.CENTER);
 	            pa.ellipse(x, y, radius*0.5f, radius*0.5f);
 	            break;
-	        case RECTS:
+	        case RECTS2:
 	        	pa.noStroke();
 	            pa.fill(0);
 	            pa.rectMode(pa.CENTER);
