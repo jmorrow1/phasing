@@ -1062,8 +1062,12 @@ public class PhasesPApplet extends PApplet {
 	 * @param pg The PGraphics instance on which to draw the arrow head
 	 */
 	public static void drawArrowHead(float x, float y, float leng, float headAngle, float deviationAngle, PGraphics pg) {
-		 pg.line(x, y, x + leng*cos(headAngle + deviationAngle), y + leng*sin(headAngle + deviationAngle));
-		 pg.line(x, y, x + leng*cos(headAngle - deviationAngle), y + leng*sin(headAngle - deviationAngle));
+		pg.noFill();
+		pg.beginShape();
+		pg.vertex(x + leng*cos(headAngle + deviationAngle), y + leng*sin(headAngle + deviationAngle));
+		pg.vertex(x, y);
+		pg.vertex(x + leng*cos(headAngle - deviationAngle), y + leng*sin(headAngle - deviationAngle));
+		pg.endShape();
 	}
 	
 	/**
@@ -1075,13 +1079,17 @@ public class PhasesPApplet extends PApplet {
 	 * 
 	 * @param x The x-coordinate of the arrow head's tip
 	 * @param y The y-coordinate of the aroow head's tip
-	 * @param length The length of each of the lines
+	 * @param leng The length of each of the lines
 	 * @param headAngle The direction in which the arrow head points, in radians
 	 * @param deviationAngle How much the lines bend away from the head angle, in radians
 	 */
-	public void drawArrowHead(float x, float y, float length, float headAngle, float deviationAngle) {
-	    line(x, y, x + length*cos(headAngle + deviationAngle), y + length*sin(headAngle + deviationAngle));
-	    line(x, y, x + length*cos(headAngle - deviationAngle), y + length*sin(headAngle - deviationAngle));
+	public void drawArrowHead(float x, float y, float leng, float headAngle, float deviationAngle) {
+		noFill();
+		beginShape();
+		vertex(x + leng*cos(headAngle + deviationAngle), y + leng*sin(headAngle + deviationAngle));
+		vertex(x, y);
+		vertex(x + leng*cos(headAngle - deviationAngle), y + leng*sin(headAngle - deviationAngle));
+		endShape();
 	}
 	
 	/**

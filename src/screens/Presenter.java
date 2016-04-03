@@ -365,7 +365,6 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 */
 	public void checkForInstrumentChange() {
 		if (instrumentShouldChange()) {
-			System.out.println("here");
 			changeInstrument();
 			musicianView.wakeUp(0, 0);
 			liveScorerView.wakeUp(0, 0);

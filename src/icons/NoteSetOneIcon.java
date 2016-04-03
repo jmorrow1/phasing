@@ -19,7 +19,7 @@ public class NoteSetOneIcon implements Icon {
         switch(noteType) {
 	        case SYMBOLS:
 	            pa.fill(0);
-	            pa.textFont(pa.pfont18);
+	            pa.textFont(pa.pfont24);
 	            pa.textSize(radius);
 	            pa.textAlign(pa.CENTER, pa.CENTER);
 	            pa.text("A", x, y);
