@@ -330,12 +330,14 @@ public class LiveScorer extends View {
 	 * @return The amount to decrease opacity by given that dt milliseconds have passed.
 	 */
 	private float fadeAmt(int dt) {
+		float adjustedFadeRate = fadeRate * (pa.getBPM1() / 65f);
+		
 		if (scoreMode.toInt() == MOVE_SPAWN_POINT) {
-			float amt = 0.6f * dt * fadeRate;
+			float amt = 0.6f * dt * adjustedFadeRate;
 			return amt;
 		}
 		else {
-			float amt = dt * fadeRate;
+			float amt = dt * adjustedFadeRate;
 			return amt;
 		}
 	}
