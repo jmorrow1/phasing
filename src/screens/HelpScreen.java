@@ -114,17 +114,15 @@ public class HelpScreen extends Screen {
 	
 	private void drawInfo() {
 		if (drawGridInfo) {
-			pa.pushMatrix();
-				//1920, 1080
-				float scale = PApplet.min(pa.width / 800f, pa.height / 600f);
-				pa.translate(20, gridShape.getCeny());
-				pa.scale(scale);
-				float x1 = gridShape.getX1();
-				float ceny1 = (-gridShape.getHeight()/2) + gridShape.getHeight()/3 - mouseHeight/2;
-				float ceny2 = (-gridShape.getHeight()/2) + 2*gridShape.getHeight()/3 - mouseHeight/2;
-				showToDrawNotesMessage(x1, ceny1);
-				showToEraseNotesMessage(x1, ceny2);
-			pa.popMatrix();
+			float x1 = gridShape.getX1() + 20;
+			showToDrawNotesMessage(x1, gridShape.getY1() + 60);
+			showToEraseNotesMessage(x1, gridShape.getY1() + 180);
+			pa.noStroke();
+			pa.fill(255);
+			pa.rectMode(pa.CORNERS);
+			pa.rect(0, gridShape.getY1(), gridShape.getX1(), gridShape.getY2());
+			pa.rect(gridShape.getX2() + 1, gridShape.getY1(), pa.width, gridShape.getY2());
+			pa.rect(gridShape.getX1(), gridShape.getY2() + 1, gridShape.getX2(), pa.height);
 		}
 		else {
 			pa.textFont(pa.pfont18);
@@ -142,25 +140,23 @@ public class HelpScreen extends Screen {
 		pa.textFont(pa.pfont24);
 		pa.textAlign(pa.LEFT, pa.CENTER);
 		pa.fill(gridColor);
-		pa.text("to draw notes:", x1, ceny);
-		drawMouse(x1 + mouseWidth/2 + pa.textWidth("add notes width:") + 40,
+		pa.text("To draw notes:", x1, ceny);
+		drawMouse(x1 + mouseWidth/2 + pa.textWidth("To draw notes:") + 21,
 				  ceny, mouseWidth, mouseHeight, true, false);
 	}
 	
 	private void showToEraseNotesMessage(float x1, float ceny) {
 		pa.fill(gridColor);
-		pa.text("to erase notes:", x1, ceny);
-		x1 += pa.textWidth("erase notes with") + 43;
+		pa.text("To erase notes:", x1, ceny);
+		x1 += pa.textWidth("To erase notes:") + 16;
 		drawMouse(x1 + mouseWidth/2, ceny, mouseWidth, mouseHeight, false, true);
-		x1 += mouseWidth + 40;
+		x1 += mouseWidth + 25;
 		pa.text("or", x1, ceny);
-		x1 += pa.textWidth("or") + 40;
+		x1 += pa.textWidth("or") + 25;
 		drawMouse(x1 + mouseWidth/2, ceny, mouseWidth, mouseHeight, true, false);
 		x1 += mouseWidth + 25;
-		pa.stroke(gridColor);
-		pa.strokeWeight(4);
-		pa.drawPlus(x1 + 5, ceny, 10);
-		x1 += 10 + 25;
+		pa.text("+", x1, ceny);
+		x1 += pa.textWidth("+") + 25;
 		pa.strokeWeight(1);
 		pa.noFill();
 		pa.rectMode(pa.CENTER);
