@@ -123,7 +123,7 @@ public class LiveScorer extends View {
 	 */
 	private void initNoteSize() {
 		float h = getHeight();
-		noteSize = (0 < h && h < 800) ? PApplet.map(h, 0, 800, 12, 24) : 24;
+		noteSize = 12 + PApplet.map(pa.width, 800, 1600, 12, 24);
 	}
 	
 	/**
