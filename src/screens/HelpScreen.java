@@ -41,8 +41,8 @@ public class HelpScreen extends Screen {
 	private static final String loadButtonText = "Where you can load previously created music and generate new music.";
 	private static final String rootMenuText = "Change the starting pitch of the scale.";
 	private static final String scaleMenuText = "Change the type of scale. \n\nThe pentatonic scales are good for making highly harmonious music. \n\nWith the chromatic scales, it is possible to make highly disharmonious music. \n\nThe major and minor scales give more color than the pentatonic scales while still avoiding some of the possible disharmonies of the chromatic scales.";
-	private static final String tempoSliderText = "Change the speed of the music. The larger the tempo, the faster the music. Tempo is measured in beats per minute.";
-	private static final String tempoDifferenceSliderText = "Change the difference in speed between the two players. \n\nA tempo difference of 0 means the two players will play at exactly the same speed. \n\nThings become interesting when you make the tempo difference a non-zero value.";
+	private static final String tempoSliderText = "Change the speed of the music. \n\nThe larger the tempo, the faster the music. \n\nTempo is measured in beats per minute.";
+	private static final String tempoDifferenceSliderText = "There are two pianists. \n\nThis slider changes the difference in speed between the two pianists. \n\nA tempo difference of 0 means the two pianists will play at exactly the same speed. \n\nThings become interesting when you make the tempo difference a non-zero value.";
 	private static final String playToggleText = "Play back melodies in the editor before trying them out in the presenter.";
 	private static final String hScrollbarText = "Browse a melody that is longer than what can be contained on a single screen.";
 	private static final String subNoteButtonText = "Make the melody one note shorter.";
@@ -150,13 +150,13 @@ public class HelpScreen extends Screen {
 		pa.text("To erase notes:", x1, ceny);
 		x1 += pa.textWidth("To erase notes:") + 16;
 		drawMouse(x1 + mouseWidth/2, ceny, mouseWidth, mouseHeight, false, true);
-		x1 += mouseWidth + 25;
+		x1 += mouseWidth + 40;
 		pa.text("or", x1, ceny);
-		x1 += pa.textWidth("or") + 25;
+		x1 += pa.textWidth("or") + 40;
 		drawMouse(x1 + mouseWidth/2, ceny, mouseWidth, mouseHeight, true, false);
-		x1 += mouseWidth + 25;
+		x1 += mouseWidth + 15;
 		pa.text("+", x1, ceny);
-		x1 += pa.textWidth("+") + 25;
+		x1 += pa.textWidth("+") + 15;
 		pa.strokeWeight(1);
 		pa.noFill();
 		pa.rectMode(pa.CENTER);
