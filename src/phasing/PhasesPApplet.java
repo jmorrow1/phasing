@@ -119,7 +119,7 @@ public class PhasesPApplet extends PApplet {
 	 * Sets up the size of the canvas/window
 	 */
 	public void settings() {
-		size(initialWidthSize, initialHeightSize);
+		size(initialWidthSize, initialHeightSize, OPENGL);
 		prevWidth = width;
 		prevHeight = height;
 	}
