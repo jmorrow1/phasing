@@ -831,7 +831,8 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 			}
 			else if ( (pa.mouseButton == pa.RIGHT || shiftClick())) {
 				drawState = DRAWING_REST;
-				if (pitchMousePressed == pa.currentPhrase.getGridPitch(indexMousePressed)) {
+				boolean indexInRange = 0 <= indexMousePressed && indexMousePressed < pa.currentPhrase.getGridRowSize();
+				if (indexInRange && pitchMousePressed == pa.currentPhrase.getGridPitch(indexMousePressed)) {
 					writeRest(indexMousePressed, pitchMousePressed);
 				}
 			}

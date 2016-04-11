@@ -514,9 +514,17 @@ public class PhasesPApplet extends PApplet {
 	/**
 	 * Saves the given PhrasePicture to the phrases subfolder of the save folder.
 	 * @param p The PhrasePicture.
+	 * @return True if the operation is successful, false otherwise.
 	 */
-	private void savePhrasePicture(PhrasePicture p) {
-		saveJSONObject(p.toJSON(), saveFolderPath + "phrases/" + p.getName() + ".json");
+	private boolean savePhrasePicture(PhrasePicture p) {
+		try {
+			saveJSONObject(p.toJSON(), saveFolderPath + "phrases/" + p.getName() + ".json");
+			return true;
+		}
+		catch (RuntimeException e) {
+			System.out.println("runtime exception encountered saving phrase picture.");
+			return false;
+		}
 	}
 	
 	/**
