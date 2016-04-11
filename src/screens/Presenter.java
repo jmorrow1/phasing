@@ -47,7 +47,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	
 	// unlock sequences (in terms of minutes to unlock thing 1, minutes to unlock thing 2, etc.)
 	private final float[] musicianUnlockSeq = {0f, 0.5f, 6};
-	private final float[] phaseShifterUnlockSeq = {1, 3, 5, 8f, 11, 14, 17, 20, 25, 30};
+	private final float[] phaseShifterUnlockSeq = {1, 3, 5, 8, 11, 14, 17, 20, 25};
 	private final float[] liveScorerUnlockSeq = {4, 8, 12};
 
 	// playback
@@ -966,10 +966,10 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 					return 0;
 				}
 			case noteGraphicSet1Name:
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[8]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[7]) {
 					return 5;
 				}
-				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[6]) {
+				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[5]) {
 					return 4;
 				}
 				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[2]) {
@@ -982,7 +982,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 					return 0;
 				}
 			case cameraModeName:
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[9]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[8]) {
 					return 3;
 				}
 				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[4]) {
@@ -992,14 +992,9 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 					return 0;
 				}
 			case plotPitchModeName:
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[5]) {
-					return 2;
-				}
-				else {
-					return 0;
-				}
+				return 0; //deprecated
 			case transformationName:
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[7]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[6]) {
 					return 2;
 				}
 				else {

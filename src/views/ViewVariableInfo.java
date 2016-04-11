@@ -35,8 +35,11 @@ public interface ViewVariableInfo {
 	public final int numCameraModes = 3;
 	public final int RELATIVE_TO_1=0, RELATIVE_TO_2=1, FIXED=2;
 	
+	@Deprecated
 	public final String plotPitchModeName = "Plot Pitch Mode";
+	@Deprecated
 	public final int numWaysOfPlottingPitchOrNot = 2;
+	@Deprecated
 	public final int PLOT_PITCH=0, DONT_PLOT_PITCH=1;
 	
 	public final String transformationName = "Transformation";

@@ -44,7 +44,6 @@ public class PhaseShifter extends View {
 	public ModInt transformation = new ModInt(0, numTransformations, transformationName);
 	public ModInt cameraMode = new ModInt(0, numCameraModes, cameraModeName);
 	public ModInt noteGraphic = new ModInt(0, numNoteGraphicSet1s, noteGraphicSet1Name);
-	public ModInt plotPitchMode = new ModInt(0, numWaysOfPlottingPitchOrNot, plotPitchModeName);
 	public ModInt colorScheme = new ModInt(1, numColorSchemes, colorSchemeName);
 
 	/**************************
@@ -88,7 +87,6 @@ public class PhaseShifter extends View {
 		this.transformation.setValue(ps.transformation.toInt());
 		this.cameraMode.setValue(ps.cameraMode.toInt());
 		this.noteGraphic.setValue(ps.noteGraphic.toInt());
-		this.plotPitchMode.setValue(ps.plotPitchMode.toInt());
 		this.colorScheme.setValue(ps.colorScheme.toInt());
 	}
 	
@@ -329,12 +327,7 @@ public class PhaseShifter extends View {
 			pa.strokeWeight(lineThickness);
 			pa.stroke(nonActiveColor);
 			if (transformation.toInt() == TRANSLATE) {
-				if (plotPitchMode.toInt() == PLOT_PITCH) {
-					drawSineWave((waveNum == 1) ? normalTransform2 : normalTransform1);
-				}
-				else {
-					pa.line(-halfWidth, 0, halfWidth, 0);
-				}
+				drawSineWave((waveNum == 1) ? normalTransform2 : normalTransform1);
 			}
 			else if (transformation.toInt() == ROTATE) {
 				float radius = pa.min(halfWidth, halfHeight);
@@ -551,12 +544,7 @@ public class PhaseShifter extends View {
 					pa.line(d.x() + width, d.y(), e.x() + width, e.y());
 				}
 				else if (transformation.toInt() == ROTATE) {
-					if (plotPitchMode.toInt() == PLOT_PITCH) {
-						pa.line(d.x(), d.y(), e.x(), e.y());
-					}
-					else {
-						pa.line(d.x(), d.y(), e.x(), e.y());
-					}
+					pa.line(d.x(), d.y(), e.x(), e.y());
 				}
 			}
 		}
@@ -575,9 +563,7 @@ public class PhaseShifter extends View {
 	 */
 	private class DataPoint {
 		final float tx, ty, twidth;
-		final float txAlt, tyAlt;
 		final float rx, ry, theta1, theta2, radius;
-		final float rxAlt, ryAlt;
 		//specific to symbols:
 		final String pitchName;
 		//specific to curved rects:
@@ -605,34 +591,29 @@ public class PhaseShifter extends View {
 					                                                              : pa.lerp(minRadius, maxRadius, 0.5f);
 			rx = pa.cos(theta1 - pa.HALF_PI) * radius;
 			ry = pa.sin(theta1 - pa.HALF_PI) * radius;
-			rxAlt = pa.cos(theta1 - pa.HALF_PI)*pa.lerp(minRadius, maxRadius, 0.5f);
-			ryAlt = pa.sin(theta1 - pa.HALF_PI)*pa.lerp(minRadius, maxRadius, 0.5f);
 			curvedRect = new CurvedRect(radius, rectHeight, theta1, theta2);
 			curvedRectAlt = new CurvedRect(pa.lerp(minRadius, maxRadius, 0.5f), rectHeight, theta1, theta2);
-			
-			txAlt = tx;
-			tyAlt = 0;
 		}
 		
 		CurvedRect curvedRect() {
-			return (plotPitchMode.toInt() == PLOT_PITCH) ? curvedRect : curvedRectAlt;
+			return curvedRect;
 		}
 		
 		float x() {
 			if (transformation.toInt() == TRANSLATE) {
-				return (plotPitchMode.toInt() == PLOT_PITCH) ? tx : txAlt;
+				return tx;
 			}
 			else {
-				return (plotPitchMode.toInt() == PLOT_PITCH) ? rx : rxAlt;
+				return rx;
 			}
 		}
 	
 		float y() {
 		    if (transformation.toInt() == TRANSLATE) {
-				return (plotPitchMode.toInt() == PLOT_PITCH) ? ty : tyAlt;
+				return ty;
 			}
 			else {
-				return (plotPitchMode.toInt() == PLOT_PITCH) ? ry : ryAlt;
+				return ry;
 			}
 		}
 	}
@@ -647,7 +628,6 @@ public class PhaseShifter extends View {
 		save(transformation, "transformation", playerInfo);
 		save(cameraMode, "cameraMode", playerInfo);
 		save(noteGraphic, "noteGraphic1", playerInfo);
-		save(plotPitchMode, "plotPitchMode", playerInfo);
 		save(colorScheme, "colorScheme", playerInfo);
 	}
 	
@@ -657,7 +637,6 @@ public class PhaseShifter extends View {
 		tryToSet(transformation, "transformation", playerInfo);
 		tryToSet(cameraMode, "cameraMode", playerInfo);
 		tryToSet(noteGraphic, "noteGraphic1", playerInfo);
-		tryToSet(plotPitchMode, "plotPitchMode", playerInfo);
 		tryToSet(colorScheme, "colorScheme", playerInfo);
 		settingsChanged();
 	}
