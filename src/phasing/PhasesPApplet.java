@@ -1008,12 +1008,12 @@ public class PhasesPApplet extends PApplet {
 	 ************************/
 	
 	@Override
-	public void exit() {
+	public void exitActual() {
 		presenter.saveViewSettings();
 		this.savePlayerInfo();
 		this.saveCurrentPhrasePicture();
 		this.savePhrasePictures();	
-		super.exit();
+		super.exitActual();
 	}
 	
 	/**
