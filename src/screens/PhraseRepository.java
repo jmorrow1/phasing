@@ -153,7 +153,9 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	
 	@Override
 	public void newPhrase() {
-		pa.currentPhrase = new Phrase("Major", "C");
+		int numCells = 12;
+		pa.currentPhrase = new Phrase(pa.repeat(60f, numCells), pa.repeat(50f, numCells), pa.repeat(Phrase.REST, numCells),
+				"Major", "C");
 		pa.currentPhrasePicture = new PhrasePicture(pa.currentPhrase, pa);
 		addPhrasePicture(pa.currentPhrasePicture);
 		pa.setCurrentScale(pa.currentPhrase.getScaleClassName(), pa.currentPhrase.getScaleRootName());

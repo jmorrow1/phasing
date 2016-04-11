@@ -722,7 +722,6 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	public void onEnter() {
 		cp5.show();
 		showUnlockedControllers();
-		drawToolbar();
 		prev_t = pa.millis();
 		playToggle.setValue(false);
 		
@@ -1008,6 +1007,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		
 		drawBody();
 		drawToolbar();
+		
 		pa.drawControlP5();
 		
 		drawCursor();
@@ -1122,7 +1122,7 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 		
 		for (int i=0; i<pa.currentPhrase.getNumNotes(); i++) {
 			float numCellsWide = pa.currentPhrase.getSCDuration(i) / pa.currentPhrase.getUnitDuration();
-			if (pa.currentPhrase.getSCDynamic(i) != 0) {
+			if (!pa.currentPhrase.isRest(i)) {
 				if (i == activeNoteIndex) {
 					pa.fill(activeColor);
 				}

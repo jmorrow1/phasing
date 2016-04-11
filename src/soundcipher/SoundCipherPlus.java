@@ -52,8 +52,8 @@ public class SoundCipherPlus extends SoundCipher implements PhraseReaderListener
 		int i = phraseReader.getNoteIndex();
 		if (!phrase.isRest(i)) {
 			super.playNote(phrase.getSCPitch(i), phrase.getSCDynamic(i), 0.9f*phrase.getSCDuration(i));
-			listener.noteEvent(this);
 		}
+		listener.noteEvent(this);
 	}
 	
 	/**

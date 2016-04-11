@@ -119,7 +119,7 @@ public class PhasesPApplet extends PApplet {
 	 * Sets up the size of the canvas/window
 	 */
 	public void settings() {
-		size(initialWidthSize, initialHeightSize, OPENGL);
+		size(initialWidthSize, initialHeightSize/*, OPENGL*/);
 		prevWidth = width;
 		prevHeight = height;
 	}
@@ -169,7 +169,8 @@ public class PhasesPApplet extends PApplet {
 		if (hideCursor) {
 			noCursor();
 		}
-		smooth();
+		//smooth();
+		//hint(DISABLE_OPTIMIZED_STROKE);
 	}
 	
 	/**
@@ -1247,6 +1248,35 @@ public class PhasesPApplet extends PApplet {
 	 */
 	public static float millisToMinutes(int amt) {
 		return amt * minutesPerMillisecond;
+	}
+	
+	/**
+	 * Takes an x and an n and returns an array of n xs.
+	 * 
+	 * @param x
+	 * @param n
+	 * @return An int array of n xs.
+	 */
+	public static int[] repeat(int x, int n) {
+		int[] xs = new int[n];
+		for (int i=0; i<n; i++) {
+			xs[i] = x;
+		}
+		return xs;
+	}
+	
+	/**
+	 * Takes an x and an n and returns an array of n xs.
+	 * @param x
+	 * @param n
+	 * @return A float array of n xs.
+	 */
+	public static float[] repeat(float x, int n) {
+		float[] xs = new float[n];
+		for (int i=0; i<n; i++) {
+			xs[i] = x;
+		}
+		return xs;
 	}
 	
 	/*******************************
