@@ -119,7 +119,7 @@ public class PhasesPApplet extends PApplet {
 	 * Sets up the size of the canvas/window
 	 */
 	public void settings() {
-		size(initialWidthSize, initialHeightSize/*, OPENGL*/);
+		size(initialWidthSize, initialHeightSize, P2D);
 		prevWidth = width;
 		prevHeight = height;
 	}
@@ -169,8 +169,8 @@ public class PhasesPApplet extends PApplet {
 		if (hideCursor) {
 			noCursor();
 		}
-		//smooth();
-		//hint(DISABLE_OPTIMIZED_STROKE);
+		
+		smooth();
 	}
 	
 	/**
