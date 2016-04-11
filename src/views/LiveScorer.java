@@ -425,20 +425,20 @@ public class LiveScorer extends View {
 		 * @param color
 		 */
 		void display(int color) {
-			pa.stroke(color, opacity);
-			pa.strokeWeight(noteSize);
+			pa.noStroke();
 			pa.fill(color, opacity);
-			if (noteGraphic.toInt() == DOTS2) {
-				pa.strokeCap(pa.ROUND);
-				float x1 = startX + ROUND_STROKE_CAP_SURPLUS;
-				float x2 = endX - ROUND_STROKE_CAP_SURPLUS;
-				pa.line(x1, startY, x2, startY);
+			
+			float x1 = startX + ROUND_STROKE_CAP_SURPLUS;
+			float x2 = endX - ROUND_STROKE_CAP_SURPLUS;
+			
+			if (noteGraphic.toInt() == RECTS2) {	
+				pa.rectMode(pa.CORNER);
+				pa.rect(startX, startY, noteSize, noteSize);
 			}
-			else if (noteGraphic.toInt() == RECTS2) {
-				pa.strokeCap(pa.SQUARE);
-				pa.line(startX, startY, endX, startY);
+			else if (noteGraphic.toInt() == DOTS2) {
+				pa.ellipseMode(pa.CORNER);
+				pa.ellipse(startX, startY, noteSize, noteSize);
 			}
-			pa.strokeCap(pa.ROUND); //back to default stroke cap
 		}
 	}
 	
