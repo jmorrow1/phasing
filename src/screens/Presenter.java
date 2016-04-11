@@ -969,7 +969,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[7]) {
 					return 5;
 				}
-				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[5]) {
+				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[6]) {
 					return 4;
 				}
 				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[2]) {
@@ -994,7 +994,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 			case plotPitchModeName:
 				return 0; //deprecated
 			case transformationName:
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[6]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[5]) {
 					return 2;
 				}
 				else {
