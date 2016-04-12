@@ -16,9 +16,11 @@ import controlP5.ControlP5;
 import controlP5.Controller;
 import controlp5.Util;
 import geom.Polygon;
+import geom.Rect;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
+import processing.core.PImage;
 import processing.data.JSONObject;
 import processing.event.MouseEvent;
 import screens.Editor;
@@ -975,12 +977,6 @@ public class PhasesPApplet extends PApplet {
 	 * Sends key pressed events to the current screen.
 	 */
 	public void keyPressed() {
-		//if (key == 'm') { //TODO eliminate when no longer needed
-		//	this.phraseToMidiFile(currentPhrase, saveFolderPath, "cycle");
-		//}	
-		//if (key == 'p') { //TODO eliminate when no longer needed
-		//	save("17.png");
-		//}
 		if (key == ESC) {
 			key = 0; //disables Processing's default behavior to close the program when ESC is pressed
 		}
@@ -1171,6 +1167,38 @@ public class PhasesPApplet extends PApplet {
 	/*****************************
 	 ***** Utility Functions *****
 	 *****************************/
+	
+	/**
+	 * Saves the pixels on the canvas contained within the given rectangle to an image file.
+	 * 
+	 * @param rect The rectangle.
+	 * @param filename The name to give the saved image file.
+	 */
+	public void saveImage(Rect rect, String filename) {
+		int rectWidth = ceil(rect.getX2()) - floor(rect.getX1());
+		int rectHeight = ceil(rect.getY2()) - floor(rect.getY1());
+		PImage img = createImage(rectWidth, rectHeight, ARGB);
+		
+		img.loadPixels();
+		this.loadPixels();
+		
+		int i = 0;
+		int y = (int)rect.getY1();
+		while (y < rect.getY2()) {
+			int x = (int)rect.getX1();
+			while (x < rect.getX2()) {
+				img.pixels[i] = this.pixels[y * width + x];
+				i++;
+				x++;
+			}
+			y++;
+		}
+		
+		img.updatePixels();
+		this.updatePixels();
+		
+		img.save(filename);
+	}
 	
 	//Algorithm is somewhat sound, but score.writeMidiFile() won't produce a playable MIDI file.
 	public void phraseToMidiFile(Phrase phrase, String location, String name) {	
