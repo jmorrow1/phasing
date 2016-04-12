@@ -64,7 +64,7 @@ public class ViewTypeIcon implements Icon {
 	}
 	
 	private void past(float x, float y, float handLength, PApplet pa) {
-		hand(x, y, handLength, pa.TWO_PI/6f - pa.HALF_PI, pa);
+		hand(x, y, handLength, -pa.TWO_PI/6f - pa.HALF_PI, pa);
 	}
 	
 	private void present(float x, float y, float handLength, PApplet pa) {
@@ -72,7 +72,7 @@ public class ViewTypeIcon implements Icon {
 	}
 	
 	private void future(float x, float y, float handLength, PApplet pa) {
-		hand(x, y, handLength, -pa.TWO_PI/6f - pa.HALF_PI, pa);
+		hand(x, y, handLength, pa.TWO_PI/6f - pa.HALF_PI, pa);
 	}
 	
 	private void hand(float x, float y, float length, float angle, PApplet pa) {
