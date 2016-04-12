@@ -448,13 +448,14 @@ public class PhaseShifter extends View {
 	}
 	
 	/**
-	 * Draws the String at (x,y).
+	 * Draws the symbol at (x,y).
 	 * 
 	 * @param s The string.
 	 * @param x The x-coordinate.
 	 * @param y The y-coordinate.
 	 */
-	private void drawString(String s, float x, float y) {
+	private void drawSymbol(String s, float x, float y) {
+		pa.textAlign(pa.CENTER, pa.CENTER);
 		pa.textFont(pa.pfont64);
 		pa.textSize(fontSize);
 		pa.text(s.charAt(0), x, y);
@@ -481,10 +482,10 @@ public class PhaseShifter extends View {
 				if (transformation.toInt() == ROTATE) {
 					pa.rotate(d.theta1);
 				}
-				drawString(d.pitchName, 0, 0);
+				drawSymbol(d.pitchName, 0, 0);
 				if (transformation.toInt() == TRANSLATE) {
-					drawString(d.pitchName, width, 0);
-					drawString(d.pitchName, -width, 0);
+					drawSymbol(d.pitchName, width, 0);
+					drawSymbol(d.pitchName, -width, 0);
 				}
 			pa.popMatrix();
 		}

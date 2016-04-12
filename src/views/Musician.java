@@ -246,7 +246,7 @@ public class Musician extends View {
 				pa.fill(pa.getColor1(), opacity);
 			}
 			else {
-				pa.fill(0, opacity);
+				pa.stroke(0, opacity);
 			}
 			playerA.draw(pa);
 			if (colorScheme.toInt() == DIACHROMATIC) {

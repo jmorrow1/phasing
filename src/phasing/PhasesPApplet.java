@@ -171,6 +171,7 @@ public class PhasesPApplet extends PApplet {
 		}
 		
 		smooth();
+		hint(this.DISABLE_OPTIMIZED_STROKE);
 	}
 	
 	/**
