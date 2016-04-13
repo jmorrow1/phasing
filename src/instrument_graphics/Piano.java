@@ -167,7 +167,6 @@ public class Piano extends Rect implements Instrument {
 	 * @param pa The PApplet to draw to.
 	 */
 	private void displayWhiteKeys(PApplet pa) {
-		pa.strokeWeight(1);
 		pa.stroke(100);
 		pa.fill(255);
 		for (int i=0; i<whiteKeys.length; i++) {
@@ -180,7 +179,6 @@ public class Piano extends Rect implements Instrument {
 	 * @param pa The PApplet to draw to.
 	 */
 	private void drawBlackKeys(PApplet pa) {
-		pa.strokeWeight(1);
 		pa.stroke(100);
 		pa.fill(blackKeyColor);
 		for (int i=0; i<blackKeys.length; i++) {

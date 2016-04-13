@@ -129,7 +129,6 @@ public class Marimba implements Instrument {
 
 	@Override
 	public void display(PApplet pa) {
-		pa.strokeWeight(1);
 		pa.stroke(100);
 	    pa.noFill();
 	    for (Shape s : bars) {

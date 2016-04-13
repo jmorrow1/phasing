@@ -35,6 +35,9 @@ public class Musician extends View {
 	public ModInt colorScheme = new ModInt(0, numColorSchemes, colorSchemeName);
 	public ModInt instrument = new ModInt(0, numInstruments, instrumentName);
 	
+	//style:
+	private float strokeWeight;
+	
 	/**************************
 	 ***** Initialization *****
 	 **************************/
@@ -83,6 +86,7 @@ public class Musician extends View {
 		initInstruments();
 		assignInstruments();
 		initInstrumentPlayers();
+		setStrokeWeight();
 	}
 	
 	/**
@@ -205,12 +209,14 @@ public class Musician extends View {
 	protected void resized(float prevWidth, float prevHeight) {			
 		resetInstruments();
 		resetInstrumentPlayers();
+		setStrokeWeight();
 	}
 	
 	@Override
 	public void settingsChanged() {
 		assignInstruments();
 		resetInstrumentPlayers();
+		setStrokeWeight();
 	}
 	
 	@Override
@@ -233,6 +239,7 @@ public class Musician extends View {
 	@Override
 	public void update(int dt, float dNotept1, float dNotept2) {
 		if (pa.currentPhrase.getNumNotes() > 0) {
+			pa.strokeWeight(strokeWeight);
 			if (superimposedOrSeparated.toInt() == SUPERIMPOSED) {
 				instrumentAB.display(pa);
 			}
@@ -246,7 +253,7 @@ public class Musician extends View {
 				pa.fill(pa.getColor1(), opacity);
 			}
 			else {
-				pa.stroke(0, opacity);
+				pa.fill(0, opacity);
 			}
 			playerA.draw(pa);
 			if (colorScheme.toInt() == DIACHROMATIC) {
@@ -257,6 +264,13 @@ public class Musician extends View {
 			}
 			playerB.draw(pa);
 		}
+	}
+	
+	/**
+	 * Sets the stroke weight with which instruments are drawn based on the size of the view area.
+	 */
+	private void setStrokeWeight() {
+		strokeWeight = PApplet.map(this.getArea(), 30000, 300000, 1, 1.5f);
 	}
 	
 	/***************************************
