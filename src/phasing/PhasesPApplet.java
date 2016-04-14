@@ -292,7 +292,7 @@ public class PhasesPApplet extends PApplet {
 		int width = PRESENTER_BUTTON_X2 - 10;
 		int height = 16;
 		
-		presentButton = consChangeScreenButton("toPresenter", "Present", x1, y1, width, height);
+		presentButton = consChangeScreenButton("toPresenter", "Play", x1, y1, width, height);
 		y1 += height + 5;		
 		composeButton = consChangeScreenButton("toEditor", "Compose", x1, y1, width, height);	
 		y1 += height + 5;		
