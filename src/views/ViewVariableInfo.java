@@ -32,7 +32,7 @@ public interface ViewVariableInfo {
 	public final int SYMBOLS=0, DOTS1=1, LINE_SEGMENTS = 2, RECTS1=3, SINE_WAVE=4;
 	
 	public final String cameraModeName = "Camera Mode";
-	public final int numCameraModes = 3;
+	public final int numCameraModes = 2;
 	public final int RELATIVE_TO_1=0, RELATIVE_TO_2=1, FIXED=2;
 	
 	@Deprecated

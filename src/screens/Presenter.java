@@ -47,7 +47,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	
 	// unlock sequences (in terms of minutes to unlock thing 1, minutes to unlock thing 2, etc.)
 	private final float[] musicianUnlockSeq = {0f, 0.5f, 6};
-	private final float[] phaseShifterUnlockSeq = {1, 3, 5, 8, 11, 14, 17, 20, 25};
+	private final float[] phaseShifterUnlockSeq = {1, 3, 5, 8, 11, 14, 17, 20};
 	private final float[] liveScorerUnlockSeq = {4, 8, 12};
 
 	// playback
@@ -983,9 +983,6 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 					return 0;
 				}
 			case cameraModeName:
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[8]) {
-					return 3;
-				}
 				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[4]) {
 					return 2;
 				}
