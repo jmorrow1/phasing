@@ -614,8 +614,8 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 		float avg_dNotept1 = totalNotept1 / dataPts;
 		float avg_dNotept2 = totalNotept2 / dataPts;
 		
-		float actual_dNotept1 = avg_dNotept1 + 0.01f * accountBalance1;
-		float actual_dNotept2 = avg_dNotept2 + 0.01f * accountBalance2;
+		float actual_dNotept1 = avg_dNotept1 + 0.05f * accountBalance1;
+		float actual_dNotept2 = avg_dNotept2 + 0.05f * accountBalance2;
 		
 		accountBalance1 += (dNotept1 - actual_dNotept1);
 		accountBalance2 += (dNotept2 - actual_dNotept2);

@@ -257,6 +257,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 					pa.removePhrasePicture(pa.currentPhrasePicture);
 					
 					if (pa.hasAnotherPhrasePictureWithName(pa.currentPhrasePicture, name)) {
+						System.out.println("here");
 						pa.currentPhrasePicture.setName(pa.phrasePictureNameGenerator.getUniqueNameFrom(name));
 					}
 					else {
