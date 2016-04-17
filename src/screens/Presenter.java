@@ -415,7 +415,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 		activeIconIndex = 0;
 		repositionDirectionalButtons();
 		cp5.show();	
-		setupPlayback();
+		
 		checkForInstrumentChange();
 		if (pa.playerInfo.nextMusicianUnlockIndex != 0) {
 			upButton.show();
@@ -425,6 +425,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 			upButton.hide();
 			downButton.hide();
 		}
+		setupPlayback();
 	}
 	
 	/**

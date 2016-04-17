@@ -22,7 +22,7 @@ import processing.core.PApplet;
 public class SoundCipherPlus extends SoundCipher implements PhraseReaderListener {
 	private PhraseReader phraseReader;
 	private Phrase phrase;
-	private SoundCipherPlusListener listener;
+	private PhraseReaderListener listener;
 	
 	/**
 	 * 
@@ -31,7 +31,7 @@ public class SoundCipherPlus extends SoundCipher implements PhraseReaderListener
 	 * @param callee The object on which to invoke the callback
 	 * @param callback The method to call when playNote is called
 	 */
-	public SoundCipherPlus(PApplet pa, Phrase phrase, SoundCipherPlusListener listener) {
+	public SoundCipherPlus(PApplet pa, Phrase phrase, PhraseReaderListener listener) {
 		super(pa);
 		this.phrase = phrase;
 		phraseReader = new PhraseReader(phrase, 0, this);
@@ -53,7 +53,7 @@ public class SoundCipherPlus extends SoundCipher implements PhraseReaderListener
 		if (!phrase.isRest(i)) {
 			super.playNote(phrase.getSCPitch(i), phrase.getSCDynamic(i), 0.9f*phrase.getSCDuration(i));
 		}
-		listener.noteEvent(this);
+		listener.noteEvent(phraseReader);
 	}
 	
 	/**
@@ -64,18 +64,5 @@ public class SoundCipherPlus extends SoundCipher implements PhraseReaderListener
 		return phraseReader.getNoteIndex();
 	}
 	
-	/**
-	 * 
-	 * @author James Morrow
-	 *
-	 */
-	public interface SoundCipherPlusListener {
-		/**
-		 * Responds to a note event.
-		 * 
-		 * @param scPlus The SoundCipherPlus sending the note events.
-		 */
-		public void noteEvent(SoundCipherPlus scPlus);
-	}
 
 }

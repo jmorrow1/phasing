@@ -1,7 +1,5 @@
 package screens;
 
-import java.util.Arrays;
-
 import controlP5.Button;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
@@ -18,12 +16,13 @@ import controlp5.Util;
 import geom.Rect;
 import phasing.PhasesPApplet;
 import phasing.Phrase;
+import phasing.PhraseReader;
+import phasing.PhraseReader.PhraseReaderListener;
 import phasing.Scale;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.event.MouseEvent;
 import soundcipher.SoundCipherPlus;
-import soundcipher.SoundCipherPlus.SoundCipherPlusListener;
 import util.FloatFormatter;
 
 /**
@@ -31,7 +30,7 @@ import util.FloatFormatter;
  * @author James Morrow
  *
  */
-public class Editor extends Screen implements SoundCipherPlusListener {
+public class Editor extends Screen implements PhraseReaderListener {
 	//time
 	private int prev_t;
 	private float[] unlockTimes = new float[] {0, 0, 1, 2, 3, 4};
@@ -701,8 +700,8 @@ public class Editor extends Screen implements SoundCipherPlusListener {
 	 **************************/
 	
 	@Override
-	public void noteEvent(SoundCipherPlus livePlayer) {
-		activeNoteIndex = livePlayer.getNoteIndex();
+	public void noteEvent(PhraseReader phraseReader) {
+		activeNoteIndex = phraseReader.getNoteIndex();
 	}
 	
 	/*********************************
