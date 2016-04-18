@@ -57,9 +57,9 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	private boolean playing;
 
 	// musical time
-	private final boolean PRINT_OUT_ANIMATION_ACCURACY = false;
+	private final boolean SHOW_ANIMATION_ERROR;
 	private float prev_notept1, prev_notept2;
-	private float accountBalance1 = 0, accountBalance2 = 0;
+	private float syncDebt1 = 0, syncDebt2 = 0;
 	private float totalNotept1, totalNotept2;
 	private float target_dNotept1, target_dNotept2;
 	private int dataPts = 0;
@@ -107,12 +107,13 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 * @param pa The PhasesPApplet on which to draw views
 	 * 
 	 */
-	public Presenter(PhasesPApplet pa) {
+	public Presenter(PhasesPApplet pa, boolean showAnimationError) {
 		super(pa);
 		initPhraseReaders();
 		initViews(pa.playerInfo);	
 		initCP5Objects();
 		cp5.hide();
+		this.SHOW_ANIMATION_ERROR = showAnimationError;
 	}
 	
 	/**
@@ -436,8 +437,8 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 		prev_notept2 = 0;
 		totalNotept1 = 0;
 		totalNotept2 = 0;
-		accountBalance1 = 0;
-		accountBalance2 = 0;
+		syncDebt1 = 0;
+		syncDebt2 = 0;
 		dataPts = 0;
 		
 		pa.currentPhrase.addToScore(player1, 0, 0, instrument);
@@ -614,14 +615,19 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 		float avg_dNotept1 = totalNotept1 / dataPts;
 		float avg_dNotept2 = totalNotept2 / dataPts;
 		
-		float actual_dNotept1 = avg_dNotept1 + 0.05f * accountBalance1;
-		float actual_dNotept2 = avg_dNotept2 + 0.05f * accountBalance2;
+		float actual_dNotept1 = avg_dNotept1 + 0.05f * syncDebt1;
+		float actual_dNotept2 = avg_dNotept2 + 0.05f * syncDebt2;
 		
-		accountBalance1 += (dNotept1 - actual_dNotept1);
-		accountBalance2 += (dNotept2 - actual_dNotept2);
+		syncDebt1 += (dNotept1 - actual_dNotept1);
+		syncDebt2 += (dNotept2 - actual_dNotept2);
 	
-		if (PRINT_OUT_ANIMATION_ACCURACY) {
-			System.out.println("accountBalance1: " + accountBalance1 + ", accountBalance2: " + accountBalance2);
+		if (SHOW_ANIMATION_ERROR) {
+			String s = "sync debt 1: " + String.format("%.3f", syncDebt1);
+			String t = "sync debt 2: " + String.format("%.3f", syncDebt2);
+			pa.fill(0);
+			pa.textFont(pa.pfont12);
+			pa.text(s, pa.width - 150, 20);
+			pa.text(t, pa.width - 150, 40);
 		}
 			
 		prev_notept1 = notept1;

@@ -44,9 +44,6 @@ public class PhasesPApplet extends PApplet {
 	//phrase picture name generator
 	public static NameGenerator phrasePictureNameGenerator;
 	
-	//music parameters
-	public static final float MIN_BPM = 1, MAX_BPM = 100;
-	
 	//all music variables
 	public final static String[] roots = new String[] {"A", "A#/Bb", "B", "C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab"};
 	public final static ArrayList<String> scaleTypes = new ArrayList<String>();
@@ -93,6 +90,9 @@ public class PhasesPApplet extends PApplet {
 	//save folder location
 	public String saveFolderPath;
 	public String dataFolderPath;
+	
+	//debug
+	public static boolean showAnimationError = false;
 	
 	//player
 	public PlayerInfo playerInfo;
@@ -212,7 +212,7 @@ public class PhasesPApplet extends PApplet {
 	 * Initializes the screens.
 	 */
 	private void initScreens() {
-		presenter = new Presenter(this);
+		presenter = new Presenter(this, showAnimationError);
 		editor = new Editor(this);
 		phraseRepo = new PhraseRepository(this);
 		help = new HelpScreen(editor, this);
@@ -1348,15 +1348,14 @@ public class PhasesPApplet extends PApplet {
 	 * Takes two strings, which presumably represent note names, and compares them,
 	 * returning true if the two strings represent the same note.
 	 * 
-	 * There are 4 cases in which the two strings are taken to be equal.
+	 * There are 4 cases in which the two names are taken to be equal.
 	 * (1) name1.equals(name2)
 	 * (2) name1.contains("/") && name1.contains(name2) && name2.length() == 2
 	 * (3) name2.contains("/") && name2.contains(name1) && name1.length() == 2
 	 * (4) The two strings reference the same pitch, but by different aliases.
 	 * 
 	 * Cases (2) and (3) are present so to the method returns true on instances where
-	 * a name gives two aliases for a note, like:
-	 * name1.equals("A#/Bb") and name2.equals("A#").
+	 * a name gives two aliases for a note, like: noteNamesAreEquivalent("A#/Bb", "A#").
 	 * 
 	 * Example of case (4): name1.equals("A#") && name2.equals("Bb").
 	 * 

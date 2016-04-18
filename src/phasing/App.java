@@ -13,6 +13,9 @@ public class App {
 			if (args[i].equals("NO_CURSOR")) {
 				PhasesPApplet.hideCursor = true;
 			}
+			if (args[i].equals("DEBUG")) {
+				PhasesPApplet.showAnimationError = true;
+			}
 		}
 		
 		if (args.length >= 2) {
