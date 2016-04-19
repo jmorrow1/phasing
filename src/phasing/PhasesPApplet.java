@@ -36,7 +36,7 @@ import util.NameGenerator;
  *
  */
 public class PhasesPApplet extends PApplet {
-	public final static int MIN_OCTAVE = 3;
+	public final static int MIN_OCTAVE = 4;
 	private final static boolean unlockEverything = false;
 
 	//time
