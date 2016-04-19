@@ -109,10 +109,6 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	 */
 	public Presenter(PhasesPApplet pa, boolean showAnimationError) {
 		super(pa);
-		initPhraseReaders();
-		initViews(pa.playerInfo);	
-		initCP5Objects();
-		cp5.hide();
 		this.SHOW_ANIMATION_ERROR = showAnimationError;
 	}
 	
@@ -415,7 +411,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 		setupIconLists();
 		activeIconIndex = 0;
 		repositionDirectionalButtons();
-		cp5.show();	
+		cp5.show();
 		
 		checkForInstrumentChange();
 		if (pa.playerInfo.nextMusicianUnlockIndex != 0) {
@@ -466,8 +462,9 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 	public void onExit() {
 		player1.stop();
 		player2.stop();
-		cp5.hide();
-		
+		if (cp5 != null) {
+			cp5.hide();
+		}
 	}
 	
 	@Override

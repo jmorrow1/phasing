@@ -41,9 +41,16 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	public PhraseRepository(PhasesPApplet pa) {
 		super(pa);
 		
-		cp5 = new ControlP5(pa);
+		createControlP5();
 		initDirectionalButtons();
 		cp5.hide();
+	}
+	
+	private void createControlP5() {
+		if (cp5 != null) {
+			cp5.dispose();
+		}
+		cp5 = new ControlP5(pa);
 	}
 	
 	/**
@@ -205,8 +212,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	
 	@Override
 	public void windowResized() {
-		cp5.dispose();
-		cp5 = new ControlP5(pa);
+		createControlP5();
 		initCells();
 		while (currPageNum*cells.size() > pa.getNumPhrasePictures()) {
 			currPageNum--;
@@ -216,8 +222,7 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 
 	@Override
 	public void onEnter() {
-		cp5.dispose();
-		cp5 = new ControlP5(pa);
+		createControlP5();
 		initCells();
 		cp5.show();
 		currPageNum = pa.indexOfCurrentPhrasePicture() != -1 ? pa.indexOfCurrentPhrasePicture() / cells.size() : 0;

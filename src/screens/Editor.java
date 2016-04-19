@@ -178,6 +178,9 @@ public class Editor extends Screen implements PhraseReaderListener {
 	 * @gridFrame Used to position the controllers.
 	 */
 	private void initCP5Objects(Rect gridFrame) {
+		if (cp5 != null) {
+			cp5.dispose();
+		}
 		cp5 = new ControlP5(pa);
 		cp5.setAutoDraw(false);
 		initScaleMenus();
@@ -710,7 +713,6 @@ public class Editor extends Screen implements PhraseReaderListener {
 	@Override
 	public void windowResized() {
 		initGridFrame();
-		cp5.dispose();
 		initCP5Objects(gridFrame);
 		hideAllControllers();
 		showUnlockedControllers();
@@ -729,8 +731,7 @@ public class Editor extends Screen implements PhraseReaderListener {
 		else {
 			windowResized();
 		}
-		
-		initMusicPlayer();
+
 		scaleMenu.setLabel(pa.currentScale.getClassName());
 		rootMenu.setLabel(pa.currentScale.getName());
 	}
@@ -740,6 +741,7 @@ public class Editor extends Screen implements PhraseReaderListener {
 		cp5.hide();
 		pa.savePlayerInfo(); //TODO Is this line necessary?
 		pa.saveCurrentPhrasePicture(); //TODO Is this line necessary?
+		livePlayer.stop();
 	}
 	
 	@Override
@@ -1183,7 +1185,6 @@ public class Editor extends Screen implements PhraseReaderListener {
 		pa.textAlign(pa.CENTER, pa.CENTER);
 		pa.textFont(pa.pfont18);
 		pa.textSize(16);
-		//for (int i=pitchOffset; i<numKeys+pitchOffset; i++) {
 		for (int i=0; i<numKeys(); i++) {
 			int iModScaleSize = i % pa.currentScale.size();
 			int noteValueMod12 = pa.currentScale.getNoteValue(iModScaleSize) % 12;
