@@ -36,6 +36,7 @@ import util.NameGenerator;
  *
  */
 public class PhasesPApplet extends PApplet {
+	public final static int MIN_OCTAVE = 3;
 	private final static boolean unlockEverything = false;
 
 	//time
@@ -121,7 +122,7 @@ public class PhasesPApplet extends PApplet {
 	 * Sets up the size of the canvas/window
 	 */
 	public void settings() {
-		size(initialWidthSize, initialHeightSize, P2D);
+		size(initialWidthSize, initialHeightSize);
 		prevWidth = width;
 		prevHeight = height;
 	}
@@ -642,7 +643,9 @@ public class PhasesPApplet extends PApplet {
 	 * @return The generated phrase.
 	 */
 	public Phrase generateReichLikePhrase(final Scale scale) {
-		return generateReichLikePhrase(scale, 5, (random(1) < 0.5f));
+		float r = random(1);
+		int startingOctave = (r < 0.7f) ? MIN_OCTAVE + 1 : MIN_OCTAVE;
+		return generateReichLikePhrase(scale, startingOctave, (random(1) < 0.5f));
 	}
 	
 	/**
