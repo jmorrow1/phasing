@@ -197,7 +197,15 @@ public class PhaseShifter extends View {
 	}
 	
 	@Override
-	public void wakeUp(float notept1, float notept2) {}
+	public void wakeUp(float notept1, float notept2) {
+		if (notept1 == 0) {
+			normalTransform1 = 0;
+		}
+		
+		if (notept2 == 0) {
+			normalTransform2 = 0;
+		}
+	}
 	
 	@Override
 	public void noteEvent(PhraseReader reader) {
@@ -420,6 +428,7 @@ public class PhaseShifter extends View {
 
 		pa.strokeJoin(pa.MITER);
 		pa.strokeCap(pa.ROUND);
+		pa.noFill();
 		
 		pa.beginShape();
 		while (x <= halfWidth) {
