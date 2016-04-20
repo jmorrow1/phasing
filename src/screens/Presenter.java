@@ -960,7 +960,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 			case colorSchemeName: 
 				return 2;
 			case activeNoteModeName:
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[3]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[4]) {
 					return 3;
 				}
 				else if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[0]) {
@@ -995,7 +995,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 			case plotPitchModeName:
 				return 0; //deprecated
 			case transformationName:
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[4]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[3]) {
 					return 2;
 				}
 				else {
