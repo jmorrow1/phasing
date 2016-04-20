@@ -986,7 +986,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 					return 0;
 				}
 			case cameraModeName:
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[4]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[5]) {
 					return 2;
 				}
 				else {
@@ -995,7 +995,7 @@ public class Presenter extends Screen implements ViewVariableInfo, PhraseReaderL
 			case plotPitchModeName:
 				return 0; //deprecated
 			case transformationName:
-				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[5]) {
+				if (pa.playerInfo.minutesSpentWithPhaseShifter > phaseShifterUnlockSeq[4]) {
 					return 2;
 				}
 				else {
