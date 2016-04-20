@@ -3,7 +3,7 @@ package screens;
 import controlP5.Button;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
-import controlP5.Textfield;
+import controlp5.Textfield2;
 import geom.Rect;
 import phasing.PhasesPApplet;
 import phasing.PhrasePicture;
@@ -29,7 +29,7 @@ class Cell {
 	private Button deleteButton;
 	private Button generateButton;
 	private Button newPhraseButton;
-	private Textfield titleForm;
+	private Textfield2 titleForm;
 	
 	/**************************
 	 ***** Initialization *****
@@ -62,7 +62,7 @@ class Cell {
 		int width = (int)rect.getWidth() - 2;
 		int height = (int)(rect.getHeight() * 0.1f);
 		
-		titleForm = cp5.addTextfield((char)nextId + " title")
+		titleForm = new Textfield2(cp5, (char)nextId + " title")
 				       .setPosition(rect.getX1() + 1, rect.getY1())
 				       .setSize(width, height)
 				       .setId(TITLE)
@@ -273,6 +273,13 @@ class Cell {
 	 ***** Misc *****
 	 ****************/
 	
+	public void dispose(ControlP5 cp5) {
+		removeControllers(cp5);
+		rect = null;
+		eventHandler = null;
+		titleForm.nullifyBuffer();
+	}
+	
 	/**
 	 * Sets the title that is displayed on the text form.
 	 * 
@@ -294,11 +301,14 @@ class Cell {
 	 * Removes the controllers this Cell generated from the given ControlP5 object.
 	 */
 	protected void removeControllers(ControlP5 cp5) {
-		cp5.remove(copyButton.getName());
-		cp5.remove(deleteButton.getName());
-		cp5.remove(generateButton.getName());
-		cp5.remove(newPhraseButton.getName());
-		cp5.remove(titleForm.getName());
+		if (cp5 != null) {
+			cp5.remove(copyButton.getName());
+			cp5.remove(deleteButton.getName());
+			cp5.remove(generateButton.getName());
+			cp5.remove(newPhraseButton.getName());
+			cp5.remove(titleForm.getName());
+			titleForm.nullifyBuffer();
+		}
 	}
 	
 	/**

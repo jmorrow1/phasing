@@ -48,9 +48,12 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	
 	private void createControlP5() {
 		if (cp5 != null) {
+			for (Cell c : cells) {
+				c.removeControllers(cp5);
+			}
 			cp5.dispose();
 		}
-		cp5 = new ControlP5(pa);
+		cp5 = new ControlP5(pa);	
 	}
 	
 	/**
@@ -99,6 +102,9 @@ public class PhraseRepository extends Screen implements CellEventHandler {
 	 * @param colSize The number of cells in a column.
 	 */
 	private void populateCellList(Rect box, float cellSize) {
+		for (Cell c : cells) {
+			c.dispose(cp5);
+		}
 		cells.clear();
 		
 		int rowSize = (int)(box.getWidth() / cellSize);
