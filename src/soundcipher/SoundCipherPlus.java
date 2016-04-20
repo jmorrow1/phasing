@@ -64,5 +64,8 @@ public class SoundCipherPlus extends SoundCipher implements PhraseReaderListener
 		return phraseReader.getNoteIndex();
 	}
 	
-
+	public void setPhrase(Phrase phrase) {
+		this.phrase = phrase;
+		phraseReader = new PhraseReader(phrase, 0, this);
+	}
 }

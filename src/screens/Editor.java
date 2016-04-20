@@ -171,6 +171,7 @@ public class Editor extends Screen implements PhraseReaderListener {
 	 */
 	private void initMusicPlayer() {
 		livePlayer = new SoundCipherPlus(pa, pa.currentPhrase, this);
+		
 	}
 	
 	/**
@@ -734,6 +735,8 @@ public class Editor extends Screen implements PhraseReaderListener {
 
 		scaleMenu.setLabel(pa.currentScale.getClassName());
 		rootMenu.setLabel(pa.currentScale.getName());
+		
+		livePlayer.setPhrase(pa.currentPhrase);
 	}
 	
 	@Override
