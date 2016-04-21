@@ -850,7 +850,7 @@ public class Editor extends Screen implements PhraseReaderListener {
 	 * @param pitch The pitch.
 	 */
 	private void writeNote(int index, int pitch) {
-		boolean success = pa.currentPhrase.setCell(index, pitch, defaultDynamic(), Phrase.NOTE_START);
+		boolean success = pa.currentPhrase.setCell(index, pitch, PhasesPApplet.defaultDynamic(), Phrase.NOTE_START);
 		if (success) {
 			boolean editSubsequentNote = index+1 < pa.currentPhrase.getGridRowSize() &&
 											pa.currentPhrase.getNoteType(index+1) == Phrase.NOTE_SUSTAIN;
@@ -870,7 +870,7 @@ public class Editor extends Screen implements PhraseReaderListener {
 	 * @param pitch The pitch.
 	 */
 	private void writeRest(int index, int pitch) {
-		boolean success = pa.currentPhrase.setCell(index, pitch, defaultDynamic(), Phrase.REST);
+		boolean success = pa.currentPhrase.setCell(index, pitch, PhasesPApplet.defaultDynamic(), Phrase.REST);
 		pa.currentPhrase.setNoteType(index, Phrase.REST);
 		if (success) {
 			boolean editSubsequentNote = index+1 < pa.currentPhrase.getGridRowSize() && 
@@ -909,12 +909,12 @@ public class Editor extends Screen implements PhraseReaderListener {
 						pa.currentPhrase.setNoteType(newIndex+1, Phrase.NOTE_START);
 						indexMousePressed++;
 					}
-					pa.currentPhrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_SUSTAIN);
+					pa.currentPhrase.setCell(newIndex, pitchMousePressed, PhasesPApplet.defaultDynamic(), Phrase.NOTE_SUSTAIN);
 				}
 				else if (newIndex < indexMousePressed && newIndex < startIndexOfUserDrawnNote) {
-					pa.currentPhrase.setCell(newIndex, pitchMousePressed, defaultDynamic(), Phrase.NOTE_START);
+					pa.currentPhrase.setCell(newIndex, pitchMousePressed, PhasesPApplet.defaultDynamic(), Phrase.NOTE_START);
 					if (newIndex+1 < pa.currentPhrase.getGridRowSize()) {
-						pa.currentPhrase.setCell(newIndex+1, pitchMousePressed, defaultDynamic(), Phrase.NOTE_SUSTAIN);
+						pa.currentPhrase.setCell(newIndex+1, pitchMousePressed, PhasesPApplet.defaultDynamic(), Phrase.NOTE_SUSTAIN);
 						indexMousePressed++;
 					}
 					startIndexOfUserDrawnNote = newIndex;
@@ -1226,14 +1226,6 @@ public class Editor extends Screen implements PhraseReaderListener {
 	private void xCursor() {
 		pa.noCursor();
 		cursorIsX = true;
-	}
-	
-	/**
-	 * 
-	 * @return The default dynamic value for notes created in the Editor
-	 */
-	private float defaultDynamic() {
-		return 50 + pa.random(-5, 5);
 	}
 	
 	/*******************************

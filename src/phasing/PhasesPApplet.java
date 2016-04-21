@@ -603,7 +603,7 @@ public class PhasesPApplet extends PApplet {
 	public Phrase pianoPhase() {
 		int n = Phrase.NOTE_START;
 		return currentPhrase = new Phrase(new float[] {64, 66, 71, 73, 74, 66, 64, 73, 71, 66, 74, 73},
-	                                      new float[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50},
+	                                      repeat(defaultDynamic(), 12),
 	                                      new int[] {n, n, n, n, n, n, n, n, n, n, n, n},
 	                                      "Chromatic", "E");
 	}
@@ -732,7 +732,7 @@ public class PhasesPApplet extends PApplet {
 			}
 			int pitch = map.get(c);
 			pitches[i] = pitch;
-			dynamics[i] = (pitch == REST) ? 0 : 50;
+			dynamics[i] = (pitch == REST) ? 0 : defaultDynamic();
 			cellTypes[i] = (pitch == REST) ? Phrase.REST : Phrase.NOTE_START;
 		}
 		
@@ -1694,5 +1694,13 @@ public class PhasesPApplet extends PApplet {
 			blendedColorBold = lerpColor(color1Bold, color2Bold, 0.5f);
 			blendedColorVeryBold = lerpColor(color1VeryBold, color2VeryBold, 0.5f);
 		}
+	}
+	
+	/**
+	 * 
+	 * @return The default dynamic value for notes created in the Editor
+	 */
+	public static float defaultDynamic() {
+		return 60 + ((float)Math.random()*10 - 5);
 	}
 }
