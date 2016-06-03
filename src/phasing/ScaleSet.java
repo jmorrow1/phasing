@@ -28,7 +28,7 @@ public class ScaleSet {
 		}
 	}
 	
-	/*
+	/**
 	 * Returns the name of the scale class.
 	 */
 	public String getName() {
