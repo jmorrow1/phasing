@@ -78,4 +78,8 @@ public class ViewTypeIcon implements Icon {
 	private void hand(float x, float y, float length, float angle, PApplet pa) {
 		pa.line(x, y, x + length*PApplet.cos(angle), y + length*PApplet.sin(angle));
 	}
+	
+	public static int numTypes() {
+		return numViewTypes;
+	}
 }

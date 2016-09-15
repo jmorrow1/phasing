@@ -31,4 +31,8 @@ public class ShowActiveNoteIcon implements Icon {
             pa.drawQuarterNoteSymbol(x + radius*0.65f, y, quarterNoteSize);
         }
     }
+    
+    public static int numTypes() {
+    	return numActiveNoteModes;
+    }
 }

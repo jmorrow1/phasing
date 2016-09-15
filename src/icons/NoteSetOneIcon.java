@@ -46,7 +46,10 @@ public class NoteSetOneIcon implements Icon {
 	        	pa.stroke(0);
         		pa.drawSineWave(x, y, 1.5f*radius, 0.5f*radius);
 	        	break;
-        }
-        
+        } 
+    }
+    
+    public static int numTypes() {
+    	return numNoteGraphicSet1s;
     }
 }

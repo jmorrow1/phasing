@@ -37,4 +37,8 @@ public class OrientationIcon implements Icon {
 			pa.drawArrowHead(x1, y2, arrowHeadSize, pa.PI, 0.8f*pa.PI);
 		}
 	}
+	
+	public static int numTypes() {
+		return numOrientationModes;
+	}
 }

@@ -52,7 +52,6 @@ public class InstrumentIcon implements Icon {
 		}
 	}
 	
-	
 	//Draws a mallet circumscribed in an ellipse.
 	private static void drawMallet(float cenx, float ceny, float halfW, float halfH, float angle, PApplet pa) {
 		pa.pushMatrix();
@@ -68,5 +67,9 @@ public class InstrumentIcon implements Icon {
 		pa.ellipseMode(pa.RADIUS);
 		pa.ellipse(0, 0, halfW*0.2f, halfH*0.2f);
 		pa.popMatrix();
+	}
+	
+	public static int numTypes() {
+		return numInstruments;
 	}
 }

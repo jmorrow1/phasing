@@ -1,6 +1,7 @@
 package icons;
 
 import phasing.PhasesPApplet;
+import views.ViewVariableInfo;
 
 /**
  * 
@@ -91,5 +92,9 @@ public class CameraIcon implements Icon {
         pa.ellipse(x2, y1, w2, h2);
         pa.fill(pa.getColor2());
         pa.ellipse(x3, y1, w2, h2);
+    }
+    
+    public static int numTypes() {
+    	return numCameraModes;
     }
 }

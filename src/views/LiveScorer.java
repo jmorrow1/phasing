@@ -68,7 +68,7 @@ public class LiveScorer extends View {
 	public LiveScorer(Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
 		super(viewBox, opacity, pa);	
 		init();
-		loadSettings(playerInfo);
+		if (playerInfo != null) loadSettings(playerInfo);
 	}
 	
 	/**

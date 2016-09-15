@@ -29,4 +29,8 @@ public class SuperimposedOrSeparatedIcon implements Icon {
         	pa.rect(cenx + rectWidth, ceny, rectWidth, rectHeight);
         }
     }
+    
+    public static int numTypes() {
+    	return numWaysOfBeingSuperimposedOrSeparated;
+    }
 }

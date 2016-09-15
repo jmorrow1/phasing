@@ -33,4 +33,8 @@ public class TransformIcon implements Icon {
             pa.drawArrowHead(x + radius - 10, y, arrowHeadSize, pa.HALF_PI, 0.75f*pa.PI);
         }
     }
+    
+    public static int numTypes() {
+    	return numTransformations;
+    }
 }

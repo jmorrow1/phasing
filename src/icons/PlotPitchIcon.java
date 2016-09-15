@@ -32,4 +32,8 @@ public class PlotPitchIcon implements Icon {
             pa.drawArrowHead(x, y2, arrowHeadSize, pa.HALF_PI, 0.75f*pa.PI);
         }
     }
+    
+    public static int numTypes() {
+    	return numWaysOfPlottingPitchOrNot;
+    }
 }

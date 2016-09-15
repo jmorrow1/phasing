@@ -162,7 +162,9 @@ public class PhasesPApplet extends PApplet {
 		initBPMData(playerInfo);
 		surface.setResizable(true);
 		initScales();
-		initCurrentPhrase();
+		if (currentPhrase == null) {
+			initCurrentPhrase();
+		}	
 		initCurrentScale(currentPhrase);
 		initScreens();
 		currentScreen = presenter;

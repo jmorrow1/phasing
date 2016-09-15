@@ -60,7 +60,9 @@ public class PhaseShifter extends View {
 	public PhaseShifter(Rect viewBox, int opacity, PlayerInfo playerInfo, PhasesPApplet pa) {
 		super(viewBox, opacity, pa);
 		init();
-		loadSettings(playerInfo);
+		if (playerInfo != null) {
+			loadSettings(playerInfo);
+		}	
 	}
 	
 	/**

@@ -35,4 +35,8 @@ public class ScoreModeIcon implements Icon {
             pa.drawArrowHead(x - radius*0.5f, y - radius*0.75f, arrowHeadSize, -pa.HALF_PI, pa.PI*0.75f);
         }
     }
+    
+    public static int numTypes() {
+    	return numScoreModes;
+    }
 }

@@ -32,4 +32,8 @@ public class NoteSetTwoIcon implements Icon {
         }
         
     }
+    
+    public static int numTypes() {
+    	return numNoteGraphicSet2s;
+    }
 }

@@ -37,4 +37,8 @@ public class ColorSchemeIcon implements Icon {
 
         pa.ellipse(x + radius/3f, y, radius, radius);
     }
+    
+    public static int numTypes() {
+    	return numColorSchemes;
+    }
 }

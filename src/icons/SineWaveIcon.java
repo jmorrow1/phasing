@@ -47,4 +47,8 @@ public class SineWaveIcon implements Icon {
 			}
 		}
 	}
+	
+	public static int numTypes() {
+		return numWaysOfBeingASineWaveOrNot;
+	}
 }
