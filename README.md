@@ -1,6 +1,6 @@
 # Phasing
 
-An open-ended video game about making, seeing, and exploring music.
+An open-ended music video game about making, seeing, and exploring music.
 
 Inspired by composer Steve Reich's [Piano Phase](https://www.youtube.com/watch?v=AnQdP03iYIo).
 
