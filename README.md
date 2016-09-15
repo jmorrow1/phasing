@@ -4,7 +4,7 @@ An open-ended video game about making, seeing, and exploring music.
 
 Inspired by composer Steve Reich's [Piano Phase](https://www.youtube.com/watch?v=AnQdP03iYIo).
 
-<img src="http://jamesmorrowdesign.com/images/phasing.gif"></img>
+<img src="https://github.com/jmorrow1/phasing/blob/master/phasing.gif"></img>
 
 Made with
 * [Processing](https://processing.org/), a graphics library for making visual art
