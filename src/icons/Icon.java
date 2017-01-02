@@ -9,5 +9,5 @@ import views.ViewVariableInfo;
  *
  */
 public interface Icon extends ViewVariableInfo {
-	public void draw(float cenx, float ceny, float radius, PhasesPApplet pa);
+    public void draw(float cenx, float ceny, float radius, PhasesPApplet pa);
 }

@@ -6,5 +6,5 @@ package util;
  *
  */
 public interface FloatFormatter {
-	public String format(float x);
+    public String format(float x);
 }
